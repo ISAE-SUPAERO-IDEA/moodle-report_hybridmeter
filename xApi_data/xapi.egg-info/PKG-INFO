@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: xapi
+Version: 1.0
+Summary: CLI pour récupération de traces xApi sur un LRS à un BD
+Home-page: UNKNOWN
+Author: Gauthier Hautecoeur
+Author-email: hautecoeur.gauthier4@gmail.com
+License: UNKNOWN
+Description: ça existe pas
+Platform: UNKNOWN
+Classifier: Development Status :: 2-Pre-Alpha
+Classifier: Environment :: Console
+Classifier: Programming Language :: Python :: 3 :: Only
