@@ -1,8 +1,0 @@
-[console_scripts]
-xapi = xapi.main:main
-
-[xapi]
-config = xapi.config:Config
-info = xapi.info:Info
-statements = xapi.statements:Statements
-
