@@ -77,7 +77,7 @@ class Config(Command):
         """
         # On récupère les informations de connexion à la base LRS
         parametersLRS = {
-            'endpoint': input("ENDPOINT URL : "),
+            'endpoint': input("ENDPOINT URL (http://example.com/ws/xapi) : "),
             'xApiVersion': input("XAPI VERSION : "),
             'username': input("USERNAME BASIC HTTP AUTHENTICATION : "),
             'password': getpass("PASSWORD BASIC HTTP AUTHENTICATION : ")
@@ -191,4 +191,4 @@ class Config(Command):
         file = open(file_name + '.bin', 'wb')
         pickle.dump(config, file)
         file.close()
-        print("Connexion parameters saved in : " + file_name + 'bin')
+        print("Connexion parameters saved in : " + os.path.abspath(file_name + '.bin'))

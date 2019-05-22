@@ -118,11 +118,11 @@ class lrs_data:
         # Création de l'url avec le endpoint
         url = self.endpoint + "/statements"
 
-        res = self.__insertStatementsBracket(url)
+        res = get(url, headers=self.headers, auth=self.basic_auth)
 
         # Vérification de l'état de connexion
         if res.status_code == 200:
-            print('Connexion etasblish ! Connexion parameters are valid')
+            print('Connexion establish ! Connexion parameters are valid')
             return True
         elif res.status_code == 401:
             print('Unauthorized ! Basic Authentication credentials are wrong\n' +
