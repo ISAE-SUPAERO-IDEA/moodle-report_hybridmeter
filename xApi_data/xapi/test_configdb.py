@@ -4,8 +4,8 @@
 """
 
 # IMPORTATION DES MODULES
-from xapi.lrs_xApi_data import lrs_data
-from xapi.datastore_xApi import datastore
+from xapi.lrs.lrs_xApi_data import lrs_data
+from xapi.store.datastore_xApi import datastore
 import os
 import pickle
 
