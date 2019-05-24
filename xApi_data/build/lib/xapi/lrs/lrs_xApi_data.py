@@ -92,7 +92,7 @@ class lrs_data:
         # Exécution de la requête
         exec_time = time.time()
         res = get(url, headers=self.headers, params=params, auth=self.basic_auth)
-        print('Request LRS time: ' + str(time.time() - exec_time) + '\n')
+        print('\nRequest LRS time: ' + str(time.time() - exec_time))
         res.encoding = 'utf-8'
         result = json.loads(res.text)
         return result

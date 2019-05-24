@@ -7,7 +7,7 @@
 from xapi.lrs.lrs_xApi_data import lrs_data
 from xapi.store.datastore_xApi import datastore
 import os
-import pickle
+import json
 
 
 # TEST PING
@@ -36,8 +36,8 @@ def getInfoConnexionDb(filename):
             "[lrs, store]"
         )
     else:
-        file = open(filename, 'rb')
-        config = pickle.load(file)
+        file = open(filename, 'r')
+        config = json.load(file)
         for key, value in config.items():
             if key != 'password':
                 print(key + ': ' + str(value))

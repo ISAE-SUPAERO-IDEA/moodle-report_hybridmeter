@@ -4,6 +4,7 @@ import logging
 import os
 import pickle
 from getpass import getpass
+import json
 
 from cliff.command import Command
 import xapi.test_configdb as testDb
@@ -188,7 +189,7 @@ class Config(Command):
         file_name = input('Insert your config file name: ')
         while self.__verifFileName(file_name) == 2:
             file_name = input('Insert an another config file name: ')
-        file = open(file_name + '.bin', 'wb')
-        pickle.dump(config, file)
+        file = open(file_name + '.txt', 'w')
+        config = json.dump(config, file, indent=1)
         file.close()
-        print("Connexion parameters saved in : " + os.path.abspath(file_name + '.bin'))
+        print("Connexion parameters saved in : " + os.path.abspath(file_name + '.txt'))

@@ -1,7 +1,6 @@
 from xapi.lrs.lrs_xApi_data import lrs_data
 from xapi.store.datastore_xApi import datastore
-import os
-import pickle
+import json
 """Ce script permet d'ajouter l'ensemble des statements de la base LRS
    dans la base de données receveuse
    Ce script supprime l'index de la base qui stocke les statements si il existe
@@ -16,7 +15,7 @@ def addStatementsLRS(action, lrs, store):
     Ce script supprime l'index de la base qui stocke les statements si il existe
     """
 
-    config_lrs = pickle.load(open(lrs, 'rb'))
+    config_lrs = json.load(open(lrs, 'r'))
 
     # Création de de l'objet LRS
     lrs = lrs_data(
@@ -27,7 +26,7 @@ def addStatementsLRS(action, lrs, store):
     )
 
     # Création de de l'objet STORE
-    config_db = pickle.load(open(store, 'rb'))
+    config_db = json.load(open(store, 'r'))
     store = datastore(config_db)
 
     # Récupération des statements
