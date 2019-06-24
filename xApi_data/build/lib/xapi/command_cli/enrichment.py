@@ -6,23 +6,23 @@ from cliff.command import Command
 from xapi.add_statements_lrs import addStatementsLRS
 
 
-class Statements(Command):
+class Enrich(Command):
     """
-    La commande statements permet d'insérer \ndes statements LRS dans le store\n
+    La commande enrich permet d'enrichir \nles statements LRS dans le store\n
     """
 
     log = logging.getLogger(__name__)
 
     # Fonction paramétrant les arguments de la commande
     def get_parser(self, prog_name):
-        parser = super(Statements, self).get_parser(prog_name)
+        parser = super(Enrich, self).get_parser(prog_name)
 
         # Arguments de la commandes
-        parser.add_argument('-A', '--all', help='Get all statements from LRS', action='store_true')
+        parser.add_argument('-A', '--all', help='Enrich all the statements', action='store_true')
         parser.add_argument(
             '-u',
             '--update',
-            help='Add LRS statements that are not in the Store',
+            help='Enrich LRS statements that are not enrich yet',
             action='store_true'
         )
         parser.add_argument('lrs', help='filename of the lrs config')
@@ -43,8 +43,8 @@ class Statements(Command):
         else:
             # On recupere l'argument choisit et on traite la commande en fonction
             if parsed_args.all:
-                addStatementsLRS(action='all', lrs=parsed_args.lrs, store=parsed_args.store)
+                addStatementsLRS(action='all_enrich', lrs=parsed_args.lrs, store=parsed_args.store)
             elif parsed_args.update:
-                addStatementsLRS(action='update', lrs=parsed_args.lrs, store=parsed_args.store)
+                addStatementsLRS(action='update_enrich', lrs=parsed_args.lrs, store=parsed_args.store)
             else:
                 print('Nothing specified, nothing added.\nMaybe you wanted to say : xapi statements "." ?\nSee help for information')

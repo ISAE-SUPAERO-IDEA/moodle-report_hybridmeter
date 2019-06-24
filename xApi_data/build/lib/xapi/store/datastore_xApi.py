@@ -18,21 +18,33 @@ class datastore:
             self.db = elastic_search(config_db)
 
     # AJOUT STATEMENTS
-    def saveStatements(self, statements):
-        self.db.saveStatements(statements)
+    def saveStatements(self, statements, index):
+        self.db.saveStatements(statements, index)
 
     # DELETE INDEX OR DB TABLES
-    def deleteIndex_dbName(self):
-        self.db.deleteIndex_dbName()
+    def deleteIndex_dbName(self, index_type):
+        self.db.deleteIndex_dbName(index_type)
 
     # CREATE INDEX OR DB NAME
-    def createIndex_dbName(self):
-        self.db.createIndex_dbName()
+    def createIndex_dbName(self, index_type):
+        self.db.createIndex_dbName(index_type)
 
     # RETRIEVE LAST TIMESTAMP
-    def retrieveLastTimestamp(self):
-        return self.db.retrieveLastTimestamp()
+    def retrieveLastTimestamp(self, index_type):
+        return self.db.retrieveLastTimestamp(index_type)
+
+    # RÉCUPÈRE LES STATEMENTS BRUTES DE L'INDEX NON ENRICHI
+    def retrieveFlatStatements(self, action):
+        return self.db.retrieveFlatStatements(action)
 
     # TEST PING
     def testPing(self):
         return self.db.testPing()
+
+    # RÉCUPÈRE LES STATEMENTS BRUTES DE L'INDEX NON ENRICHI
+    def retrieveStatementsWithoutTimePassed(self):
+        return self.db.retrieveStatementsWithoutTimePassed()
+
+    # RÉCUPÈRE LE TIMESTAMP DE LA TRACE SUIVANTE POUR UN USER DONNÉ
+    def getPassedTime(self, statement):
+        return self.db.getPassedTime(statement)

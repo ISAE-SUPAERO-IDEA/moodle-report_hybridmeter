@@ -13,11 +13,14 @@ xapi.egg-info/not-zip-safe
 xapi.egg-info/requires.txt
 xapi.egg-info/top_level.txt
 xapi/command_cli/__init__.py
+xapi/command_cli/advanced_enrich.py
 xapi/command_cli/config.py
+xapi/command_cli/enrichment.py
 xapi/command_cli/info.py
 xapi/command_cli/statements.py
+xapi/enrichment/__init__.py
+xapi/enrichment/data_enrichment.py
 xapi/lrs/__init__.py
-xapi/lrs/add_name_trax.py
 xapi/lrs/lrs_xApi_data.py
 xapi/store/__init__.py
 xapi/store/datastore_xApi.py

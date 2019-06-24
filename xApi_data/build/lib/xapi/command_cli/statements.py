@@ -32,7 +32,6 @@ class Statements(Command):
     # Fonction déclenché par l'appel de la commande
     def take_action(self, parsed_args):
         # On vérifie si les fichiers de configuration existent
-        os.chdir(os.environ['HOME'] + '/.config_xapi')
         if not os.path.exists(parsed_args.lrs):
             print('LRS configuration file is not configured\n' +
                 'To retrieve the statements, please configure the file \nwith this command : xapi config lrs'

@@ -7,7 +7,6 @@ from requests import *
 from requests import auth
 import json
 import time
-from xapi.lrs.add_name_trax import addNameUUID
 
 
 class lrs_data:
@@ -55,8 +54,8 @@ class lrs_data:
         # Récupération de tous les statements
         if action == 'all':
             # Suppresion et création de l'index
-            db.deleteIndex_dbName()
-            db.createIndex_dbName()
+            db.deleteIndex_dbName('flat')
+            db.createIndex_dbName('flat')
 
             # Parémètres de la requête
             params = {'ascending': 'true'}
@@ -64,7 +63,7 @@ class lrs_data:
         # Réupération des statements qui ne sont pas insérés dans le STORE
         elif action == 'update':
             # Récupération du timestamp du dernier statement inséré dans le STORE
-            timestamp = db.retrieveLastTimestamp()
+            timestamp = db.retrieveLastTimestamp('flat')
             # Paramètres de la requête
             params = {
                 'since': timestamp
@@ -97,16 +96,14 @@ class lrs_data:
         result = json.loads(res.text)
         return result
 
-    # RÉCUPÉRATION D'UN PAQUET DE STATEMENTS, AJOUT DES NOMS ET INSERTION DANS LE STORE
+    # RÉCUPÉRATION D'UN PAQUET DE STATEMENTS
+    # AJOUT DES TRACES BRUTES ET DES TRACES ENRICHIES DANS LE STORE
     def __insertStatementsBracket(self, db, url, params=None):
         # Récupération des statements
         result = self.__getStatementsRequest(url, params)
 
-        # Insertion des noms
-        addNameUUID(result['statements'])
-
-        # Ajout des statements dans la base ELASTICSEARCH
-        db.saveStatements(result['statements'])
+        # Enregistrement des traces brutes dans le store
+        db.saveStatements(result['statements'], 'flat')
 
         if 'more' in result:
             return {'more': result['more'], 'nb_statements': len(result['statements'])}

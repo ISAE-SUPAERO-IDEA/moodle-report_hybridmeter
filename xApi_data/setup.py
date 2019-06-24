@@ -28,7 +28,7 @@ setup(
     scripts=[],
 
     provides=[],
-    install_requires=['cliff', 'elasticsearch', 'requests'],
+    install_requires=['cliff', 'elasticsearch', 'requests', 'cachetools'],
 
     namespace_packages=[],
     packages=find_packages(),
@@ -41,7 +41,9 @@ setup(
         'xapi': [
             'config = xapi.command_cli.config:Config',
             'statements = xapi.command_cli.statements:Statements',
-            'info = xapi.command_cli.info:Info'
+            'info = xapi.command_cli.info:Info',
+            'enrich = xapi.command_cli.enrichment:Enrich',
+            'advanced_enrich = xapi.command_cli.advanced_enrich:AdvancedEnrich'
         ]
     },
 

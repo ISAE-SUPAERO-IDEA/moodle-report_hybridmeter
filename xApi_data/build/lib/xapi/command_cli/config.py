@@ -113,7 +113,8 @@ class Config(Command):
             "Do you want to use default parameters ?\n" +
             "host : localhost\n" +
             "port : 9200\n" +
-            "index : statements_xapi\n Proceed (y/n) : "
+            "index used to store flat statements: flat_xapi\n" +
+            "index used to store enrichment statements : enrichment_xapi\n Proceed (y/n) : "
         )
 
         # Paramètres par défaut
@@ -122,7 +123,8 @@ class Config(Command):
                 'host': 'localhost',
                 'port': 9200,
                 'use_ssl': False,
-                'index': 'statements_xapi',
+                'index_flat': 'flat_xapi',
+                'index_enrichment': 'enrichment_xapi',
                 'username': None,
                 'password': None
         }
@@ -140,9 +142,13 @@ class Config(Command):
             if port == '443':
                 config_store['use_ssl'] = True
 
-            index = input('Index used to store xApi data (Default : statements_xApi ): ')
-            if index is not '':
-                config_store['index'] = index
+            index_flat = input('Index used to store flat xApi data (Default : flat_xapi ): ')
+            if index_flat is not '':
+                config_store['index_flat'] = index_flat
+
+            index_enrichment = input('Index used to store flat xApi data (Default : flat_xapi ): ')
+            if index_enrichment is not '':
+                config_store['index_enrichment'] = index_enrichment
 
             username = input("Username for basic authentication (Leave it blank if None) : ")
             password = getpass("Password for basic authentication (Leave it blank if None) : ")
@@ -172,7 +178,7 @@ class Config(Command):
         os.chdir(os.environ['HOME'] + '/.config_xapi')
 
         # Vérification de l'existence du nom de fichier de config
-        if os.path.exists(filename + '.bin'):
+        if os.path.exists(filename + '.txt'):
             print('This file name is already used\n')
             res = input('Do you want to continue ? [y or n] :\n')
             while str.lower(res) not in ['y', 'n']:
