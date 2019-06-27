@@ -7,9 +7,9 @@ from requests.adapters import HTTPAdapter
 from requests.exceptions import ConnectionError
 import json
 import time
-import os
 from cachetools import cached, TTLCache
 import hashlib
+from urllib import parse
 
 
 # CREATION D'UN CACHE
@@ -57,6 +57,9 @@ def enrichStatements(action, lrs, store):
 
         # On ajoute la définition du système
         __addSystem(trax, lrs)
+
+        #On ajoute l'activité correspondante à la trace
+        __addActivity(trax)
 
         # On ajoute les acl à la trace
         __addACL(trax)
@@ -278,3 +281,16 @@ def __addPassedTime(store):
     print(str(nb_statements) + 'STATEMENTS ENRICHED')
 
 
+# Ajout de l'activité de la trace
+def __addActivity(statement):
+
+    # On récupère la définition et le type de la trace
+    objectType = statement['object']['definition']['type']
+
+    # On vérifie si l'objet de la trace est une activité
+    if "activities" in objectType:
+
+        # On ajoute le paramètre "activity" dans la trace
+        statement['activity'] = statement['object']
+        definition = objectType.split("/")
+        statement['activity']['type'] = definition[len(definition) - 1]

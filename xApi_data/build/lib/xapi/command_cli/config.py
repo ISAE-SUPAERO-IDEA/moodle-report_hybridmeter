@@ -162,13 +162,13 @@ class Config(Command):
     # VÉRIFICATION D'UN NOM FICHIER DE CONFIG
     def __verifFileName(self, filename):
         """Vérifie si le nom de fichier existe déjà
-        
+
         Si il existe déjà, l'utilisateur aura le choix d'écraser le contenu du fichier
         de configuration qui a le même nom ou non
-        
+
         Arguments:
             filename {string} -- nom du fichier de configuration
-        
+
         Returns:
             number -- Retourne 1 si il veut écraser le contenu du fichier qui porte déja le nom passé en paramètre
                       Retourne 2 si il veut insérer un autre nom de fichier
