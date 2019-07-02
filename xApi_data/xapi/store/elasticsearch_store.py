@@ -15,7 +15,7 @@ class elastic_search:
     def __init__(self, config):
         logging.getLogger('elasticsearch').setLevel(logging.WARNING)
         self.index_flat = config['index_flat']
-        self.index_enrichment = config['index_enrichment']
+        self.index_enrichment = config['index_enriched']
         connexion = {
             'host': config['host'],
             'port': config['port'],
@@ -124,7 +124,7 @@ class elastic_search:
         body = {}
         # Si l'utilisateur veut enrichir les traces brutes qu'il n'a pas encore enrichi
         # Et qu'elles se trouvent dans l'index brut
-        if action == 'update_enrich':
+        if action == 'update':
             # On recherche le timestamp de la dernière trace enrichie
             timestamp = self.retrieveLastTimestamp('enrich')
             # On créé la requête afin de récupérer uniquement les traces brutes

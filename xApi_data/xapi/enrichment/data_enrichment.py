@@ -36,7 +36,8 @@ def enrichStatements(action, lrs, store):
         configStore -- objet de la base Store
     """
 
-    if action == 'all_enrich':
+    if action == 'all':
+        print("Recreating index 'enrich'")
         store.deleteIndex_dbName('enrich')
         store.createIndex_dbName('enrich')
 
@@ -265,7 +266,7 @@ def __addPassedTime(store):
 
         # Si NONE, on ne peut pas savoir le temps passé
         if passedTime is not None:
-            statement['passedTime'] = passedTime
+            statement['timespent'] = passedTime
             nb_statements += 1
             bulk_list.append(statement)
 

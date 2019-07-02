@@ -54,6 +54,7 @@ class lrs_data:
         # Récupération de tous les statements
         if action == 'all':
             # Suppresion et création de l'index
+            print("Recreating index 'flat'")
             db.deleteIndex_dbName('flat')
             db.createIndex_dbName('flat')
 
@@ -68,6 +69,7 @@ class lrs_data:
             params = {
                 'since': timestamp
             }
+            print("Continuing from last timestamp {}".format(timestamp))
 
         # Création de l'url avec le endpoint
         url = self.endpoint + "/statements"

@@ -3,7 +3,7 @@ import logging
 import os
 
 from cliff.command import Command
-from xapi.add_statements_lrs import addStatementsLRS
+from xapi.executor import getStatements
 
 
 class Statements(Command):
@@ -43,8 +43,8 @@ class Statements(Command):
         else:
             # On recupere l'argument choisit et on traite la commande en fonction
             if parsed_args.all:
-                addStatementsLRS(action='all', lrs=parsed_args.lrs, store=parsed_args.store)
+                getStatements(action='all', lrs=parsed_args.lrs, store=parsed_args.store)
             elif parsed_args.update:
-                addStatementsLRS(action='update', lrs=parsed_args.lrs, store=parsed_args.store)
+                getStatements(action='update', lrs=parsed_args.lrs, store=parsed_args.store)
             else:
                 print('Nothing specified, nothing added.\nMaybe you wanted to say : xapi statements "." ?\nSee help for information')

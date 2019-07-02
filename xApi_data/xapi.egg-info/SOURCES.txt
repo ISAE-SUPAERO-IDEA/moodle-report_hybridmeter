@@ -1,7 +1,7 @@
 setup.py
 xapi/__init__.py
 xapi/__main__.py
-xapi/add_statements_lrs.py
+xapi/executor.py
 xapi/main.py
 xapi/test_configdb.py
 xapi.egg-info/PKG-INFO
@@ -13,7 +13,6 @@ xapi.egg-info/not-zip-safe
 xapi.egg-info/requires.txt
 xapi.egg-info/top_level.txt
 xapi/command_cli/__init__.py
-xapi/command_cli/advanced_enrich.py
 xapi/command_cli/config.py
 xapi/command_cli/enrichment.py
 xapi/command_cli/info.py
