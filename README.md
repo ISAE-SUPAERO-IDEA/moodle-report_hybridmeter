@@ -30,6 +30,11 @@ Installation du wheel
 pip install dist/xapi-1.0-py3-none-any.whl
 ```
 
+En cas de besoin le wheel peut être recompilé
+```
+python3 setup.py bdist_wheel
+```
+
 ## COMMANDES DU CLI
 On accède au CLI avec le mot clé : "xapi"
 Trois commandes sont disponibles :

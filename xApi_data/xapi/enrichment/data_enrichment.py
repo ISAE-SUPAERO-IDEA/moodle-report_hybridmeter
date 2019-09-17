@@ -102,14 +102,21 @@ def __addNameUUID(statement):
     """
     exec_time = time.time()
     # Renommage du paramètre "name" en "uuid" dans l'objet actor
-    __renameNameToUUID(statement)
+    if 'account' in statement['actor']:
+        __renameNameToUUID(statement)
 
-    # Insertion du nom et du login dans le statement
-    namelogin = __getNameAndLogin(statement['actor']['account']['uuid'])
-    statement['actor']['account']['name'] = namelogin['name']
-    statement['actor']['account']['login'] = namelogin['login']
+        # Insertion du nom et du login dans le statement
+        namelogin = __getNameAndLogin(statement['actor']['account']['uuid'])
+        statement['actor']['account']['name'] = namelogin['name']
+        statement['actor']['account']['login'] = namelogin['login']
+    elif 'mbox' in statement['actor']:
+        statement['actor']['account'] = {
+            'name' : statement['actor']['name'],
+            'login' : statement['actor']['mbox'],
+            'uuid' : statement['actor']['mbox']
+        }
 
-    # print('REAL NAME INSERTION TIME: ' + str(time.time() - exec_time))
+        # print('REAL NAME INSERTION TIME: ' + str(time.time() - exec_time))
 
 
 # RENOMMAGE DU PARAMÈTRE "NAME" EN "UUID"
@@ -204,6 +211,7 @@ def __getCourse(courseId, configLRS):
     # Envoi de la requête
     res = get(url, headers=configLRS.headers, params=params, auth=configLRS.basic_auth)
     res.encoding = 'utf-8'
+    print(res.text)
     result = json.loads(res.text)
     return result
 
@@ -266,7 +274,7 @@ def __addPassedTime(store):
 
         # Si NONE, on ne peut pas savoir le temps passé
         if passedTime is not None:
-            statement['timespent'] = passedTime
+            statement['passedTime'] = passedTime
             nb_statements += 1
             bulk_list.append(statement)
 
