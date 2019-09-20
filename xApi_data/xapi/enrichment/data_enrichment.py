@@ -168,16 +168,19 @@ def __addCourseDefinition(statement, configLRS):
     courseId = None
     # On vérifie si l'activité de la trace est un cours
     contextActivities = statement['context']['contextActivities']
+    print("---")
+    print(contextActivities)
     if statement['object']['definition']['type'] == "http://vocab.xapi.fr/activities/course":
         courseId = statement['object']['id']
 
     # On récupère les traces qui contient une activité au sein d'un cours
     # On vérifie si la trace contient un parent
     elif(('parent' in contextActivities) and 
-        (contextActivities['parent'][0]['definition']['type'] == "http://vocab.xapi.fr/activities/course")):
+        "definition" in contextActivities['parent'][0] and
+        contextActivities['parent'][0]['definition']['type'] == "http://vocab.xapi.fr/activities/course"):
         # On regarde si la trace a plus d'un parent
         if len(contextActivities['parent']) > 1:
-            print("The statement " + statement['id'] + "have more than one parent")  # Créer un LOG
+            print("The statement " + statement['id'] + "has more than one parent")  # Créer un LOG
 
         courseId = contextActivities['parent'][0]['id']
 
@@ -211,7 +214,6 @@ def __getCourse(courseId, configLRS):
     # Envoi de la requête
     res = get(url, headers=configLRS.headers, params=params, auth=configLRS.basic_auth)
     res.encoding = 'utf-8'
-    print(res.text)
     result = json.loads(res.text)
     return result
 
