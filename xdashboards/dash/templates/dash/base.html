@@ -1,0 +1,45 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Basic Site Template</title>
+        <script src="{% static "dash/cash.min.js" %}"></script>
+        <script src="{% static "dash/Chart.bundle.js" %}"></script>
+        <script src="{% static "dash/utils.js" %}"></script>
+        <link rel="stylesheet"  href="{% static "dash/bootstrap.min.css" %}"></link>
+    </head>
+
+    <body>
+        <select type="" id="actor" class="form-control">
+            {% for actor in actors %}
+                <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
+            {% endfor %}
+        </select>
+            {% block content %}
+            {% endblock %}
+    </body>
+    <script>
+    
+    // on user selection
+        var changeParam = function(key, value) {
+            var loc = window.location;
+            var searchParams = new URLSearchParams(loc.search);
+            searchParams.set(key, value);
+            url = `${loc.protocol}//${loc.hostname}:${loc.port}${loc.pathname}?${searchParams.toString()}`;
+            window.location = url;
+        }
+        $('#actor').on("change", (e) => {
+            changeParam("user",$('#actor').val());
+        });
+
+        // On page load
+        // Select user
+        $(document).ready((e) => {
+                var urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('user')) {
+                  $('#actor').val(urlParams.get('user'));  
+                } 
+        });
+       
+    </script>
+</html>

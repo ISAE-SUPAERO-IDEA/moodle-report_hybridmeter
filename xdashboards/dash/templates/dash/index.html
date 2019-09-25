@@ -1,0 +1,166 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Basic Site Template</title>
+        <script src="{% static "dash/cash.min.js" %}"></script>
+        <script src="{% static "dash/Chart.bundle.js" %}"></script>
+        <script src="{% static "dash/utils.js" %}"></script>
+        <link rel="stylesheet"  href="{% static "dash/bootstrap.min.css" %}"></link>
+    </head>
+
+    <body>
+                <select type="" id="actor" class="form-control">
+        {% for actor in actors %}
+            <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
+        {% endfor %}
+        </select>
+        <!--
+        <table class="table">
+            {% for trace in traces %}
+            <tr>
+                <td>{{ trace.timestamp }} - {{ trace.system }} </td><td>{{ trace.phrase }}</td><td>({{trace.id}}) </td>
+            </tr>
+            {% endfor %}    
+
+  -->
+        </table>
+        <div class="container">
+          <canvas id="examChart"></canvas>
+        </div>
+            <div style="width:75%">
+        <canvas id="canvas"></canvas>
+    </div>
+    </body>
+    <script>
+    
+    // on user selection
+    
+    $('#actor').on("change", (e) => {
+        loc = window.location;
+        url = `${loc.protocol}//${loc.hostname}:${loc.port}${loc.pathname}?user=${$('#actor').val()}`;
+        window.location = url;
+    });
+
+    // On page load
+    // Select user
+    $(document).ready((e) => {
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('user')) {
+              $('#actor').val(urlParams.get('user'));  
+            } 
+    });
+    
+/*
+    var ctx = document.getElementById("examChart").getContext("2d");
+
+var myChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [new Date("2015-3-15 13:3").toLocaleString(), new Date("2015-3-25 13:2").toLocaleString(), new Date("2015-4-25 14:12").toLocaleString()],
+    datasets: [{
+      label: 'Demo',
+      data: [{
+          t: new Date("2015-3-15 13:3"),
+          y: 12
+        },
+        {
+          t: new Date("2015-3-25 13:2"),
+          y: 21
+        },
+        {
+          t: new Date("2015-4-25 14:12"),
+          y: 32
+        }
+      ],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)'
+      ],
+      borderColor: [
+        'rgba(255,99,132,1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+      ],
+      borderWidth: 1
+    }]
+  }
+});
+  */      
+    </script>
+    <script>
+    
+
+            var ctx = document.getElementById('canvas').getContext('2d');
+{% autoescape off %} 
+var data= {{ activity_data }}
+{% endautoescape %} 
+var pointRadius = []
+labels= []
+for (i=0;i<data.length;i++) {
+    var date = new Date(data[i].key); 
+    var hours = date.getHours() - 2;
+    data[i].x = date.setHours(2);
+    data[i].y = hours;
+    var size = data[i].doc_count;
+    if (size>0) size = 5 + Math.sqrt(size);
+    pointRadius.push(size);
+    labels.push("eza");
+}
+
+var scatterChart = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+        labels,
+        datasets: [{
+            label: 'Scatter Dataset',
+            showLine: false,
+            pointRadius,
+            data: data
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                type: 'linear',
+
+                ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, values) {
+
+                        return `${value}h-${value+3}h`;
+                    },
+                    min: 0,
+                    max: 23,
+                    stepSize: 3,
+                },
+                gridLines: {
+                    color: "rgba(0, 0, 0, 0)",
+                }
+            }],
+            xAxes: [{
+                type: 'time',
+                position: 'bottom',
+                time: {
+                    unit: 'day'
+                },
+                gridLines: {
+                    color: "rgba(0, 0, 0, 0)",
+                }
+            }]
+        }
+    }
+});
+
+
+
+        
+    </script>
+</html>

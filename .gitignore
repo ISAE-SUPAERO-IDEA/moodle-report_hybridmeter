@@ -3,3 +3,4 @@ build
 *.whl
 venv
 .Trash*
+*.pyc
