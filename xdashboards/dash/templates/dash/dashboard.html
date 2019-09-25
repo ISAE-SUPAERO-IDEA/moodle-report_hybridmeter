@@ -4,85 +4,19 @@
 
     <h1> Activité</h1>
     <hr/>
-    <div>
-         <canvas id="canvas"></canvas>
+    {% include "dash/includes/activity.html" %}    
+    {% if traces %}
+        <h2>{{ traces.0.date }}</h2>
+        <hr/>
+    <div class="row">
+        <div class="col-lg-6">
+            {% include "dash/includes/learning_path.html" %}    
+        </div>
+        <div class="col-lg-6">
+            {% include "dash/includes/traces.html" %}    
+        </div>
     </div>
-    <script>
-    
+    {% endif %}
 
-        var ctx = document.getElementById('canvas').getContext('2d');
-        document.getElementById('canvas').height = 50;
-        document.getElementById('canvas').onclick=function(evt) {
-            var activePoints = scatterChart.getElementsAtEvent(evt);
-
-            data = activity_data[activePoints[0]._index];
-            changeParam("traces_range", data.key)
-            return;
-        };
-        {% autoescape off %} 
-        var activity_data= {{ activity_data }};
-        {% endautoescape %} 
-
-        var pointRadius = []
-        labels= []
-        for (i=0;i<activity_data.length;i++) {
-            var date = new Date(activity_data[i].key); 
-            var hours = date.getHours() - 2;
-            activity_data[i].x = date.setHours(2);
-            activity_data[i].y = hours;
-            var size = activity_data[i].doc_count;
-            if (size>0) size = 5 + Math.sqrt(size);
-            pointRadius.push(size);
-            labels.push("eza");
-        }
-
-        var scatterChart = new Chart(ctx, {
-            type: 'scatter',
-                  
-            data: {
-                labels,
-                datasets: [{
-                    label: 'Scatter Dataset',
-                    showLine: false,
-                    pointRadius,
-                    data: activity_data
-                }]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        type: 'linear',
-
-                        ticks: {
-                            // Include a dollar sign in the ticks
-                            callback: function(value, index, values) {
-
-                                return `${value}h-${value+3}h`;
-                            },
-                            min: 0,
-                            max: 23,
-                            stepSize: 3,
-                        },
-                        gridLines: {
-                            color: "rgba(0, 0, 0, 0)",
-                        }
-                    }],
-                    xAxes: [{
-                        type: 'time',
-                        position: 'bottom',
-                        time: {
-                            unit: 'day'
-                        },
-                        gridLines: {
-                            color: "rgba(0, 0, 0, 0)",
-                        }
-                    }]
-                }
-            }
-        });
-       
-    </script>
+   
 {% endblock %}

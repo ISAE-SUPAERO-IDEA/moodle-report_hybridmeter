@@ -1,0 +1,10 @@
+    <h1>Traces</h1>
+    <table class="table">
+        {% for trace in traces %}
+        <tr>
+          <td><span class="badge badge-{{trace.system_color}} float-right">{{ trace.system }}</span></td>
+          <td>{{ trace.hour }}</td>
+          <td>{{ trace.phrase }}</td>
+        </tr>
+        {% endfor %}    
+    </table>

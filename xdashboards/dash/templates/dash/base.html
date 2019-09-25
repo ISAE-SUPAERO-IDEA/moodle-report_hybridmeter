@@ -6,17 +6,23 @@
         <script src="{% static "dash/cash.min.js" %}"></script>
         <script src="{% static "dash/Chart.bundle.js" %}"></script>
         <script src="{% static "dash/utils.js" %}"></script>
+        <script src="{% static "dash/vis/vis-network.js" %}"></script>
         <link rel="stylesheet"  href="{% static "dash/bootstrap.min.css" %}"></link>
+        <link rel="stylesheet"  href="{% static "dash/xdash.css" %}"></link>
+        <link rel="stylesheet"  href="{% static "dash/vis/vis.css" %}"></link>
+
     </head>
 
     <body>
-        <select type="" id="actor" class="form-control">
-            {% for actor in actors %}
-                <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
-            {% endfor %}
-        </select>
+        <div class="container-fluid">
+            <select type="" id="actor" class="form-control">
+                {% for actor in actors %}
+                    <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
+                {% endfor %}
+            </select>
             {% block content %}
             {% endblock %}
+        </div>
     </body>
     <script>
     
@@ -42,4 +48,7 @@
         });
        
     </script>
+    <style>
+  
+    </style>
 </html>
