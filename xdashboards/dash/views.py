@@ -74,6 +74,9 @@ convert_paths = {
     "score_max": {
         "field": "_source.result.score.max"
     },
+    "score_scaled": {
+        "field": "_source.result.score.scaled"
+    },
     "source": {
         "field": "_source",
         "transform": "stringify"

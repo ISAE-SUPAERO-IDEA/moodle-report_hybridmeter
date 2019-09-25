@@ -1,11 +1,11 @@
- <div>
-         <canvas id="canvas"></canvas>
+ <div  class="chart-container">
+         <canvas id="canvas" height="150"></canvas>
     </div>
     <script>
     
 
         var ctx = document.getElementById('canvas').getContext('2d');
-        document.getElementById('canvas').height = 50;
+        //#document.getElementById('canvas').height = 50;
         document.getElementById('canvas').onclick=function(evt) {
             var activePoints = scatterChart.getElementsAtEvent(evt);
 
@@ -43,6 +43,8 @@
                 }]
             },
             options: {
+                responsive: true, 
+                maintainAspectRatio: false,
                 legend: {
                     display: false
                 },
@@ -54,7 +56,7 @@
                             // Include a dollar sign in the ticks
                             callback: function(value, index, values) {
 
-                                return `${value}h-${value+3}h`;
+                                return value<=21 ? `${value}h-${value+3}h` : "";
                             },
                             min: 0,
                             max: 23,

@@ -1,18 +1,31 @@
 {% extends 'dash/base.html' %}
 
+{% block top %}
+    <div class="activity">
+        <h4>Activité</h4>
+        <hr/>
+        {% include "dash/includes/activity.html" %}    
+    </div>
+
+    <style>
+    .activity {
+        background-color:#fff;
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
 
-    <h1> Activité</h1>
-    <hr/>
-    {% include "dash/includes/activity.html" %}    
     {% if traces %}
-        <h2>{{ traces.0.date }}</h2>
+        <h4>{{ traces.0.date }}</h4>
         <hr/>
     <div class="row">
         <div class="col-lg-6">
+            <h4>Chemin d'apprentissage</h4>
             {% include "dash/includes/learning_path.html" %}    
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-6 vh-100 overflow-auto">
+            <h4>Traces</h4>
             {% include "dash/includes/traces.html" %}    
         </div>
     </div>
@@ -20,3 +33,4 @@
 
    
 {% endblock %}
+

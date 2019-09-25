@@ -1,58 +1,19 @@
 
-
-<h1>Chemin d'apprentissage</h1>
-    <style>
-        body {
-            color: #000000;
-            font: 10pt;
-            font-family: 'Open Sans';
-            background-color: #ffffff;
-        }
-
-        #mynetwork {
-            width: 1000px;
-            height: 1000px;
-            border: 1px solid #444444;
-            background-color: #ffffff;
-            font-family: 'Open Sans';
-            background-color: #ffffff;
-        }
-    </style>
-
-
-
 <div id="learning_path"></div>
 
-<script type="text/javascript">
-    var len = undefined;
-    /*
-    var nodes = [{
-        id: 0, label: "Début", title:"online.isae-supaero.fr", group: 'start'},
-        {id: 1, label: "Fin", title:"online.isae-supaero.fr", group: 'end'},
-        {id: 2, label: "Vidéo: Introduction to the course", title:"online.isae-supaero.fr", group:'resource'},
-        {id: 3, label: "Document HTML", title:"adn.isae-supaero.fr", group:'resource'},
-        {id: 4, label: "Nugget: Components", title:"adn.isae-supaero.fr", group: 'nugget'},
-        {id: 5, label: "Nugget: Airplane", title:"adn.isae-supaero.fr", group: 'nugget'},
-        {id: 6, label: "Quiz: Middle exam", title:"online.isae-supaero.fr", group:'quiz'},
-        {id: 7, label: "Document HTML", title:"online.isae-supaero.fr", group:'resource'},
-        {id: 8, label: "Nugget: Components", title:"adn.isae-supaero.fr", group:'nugget'},
-        {id: 9, label: "Nugget: Airplane", title:"adn.isae-supaero.fr", group:'nugget'},
-        {id: 10, label: "Quiz: Final Exam", title:"online.isae-supaero.fr", group:'quiz'},
-    ];
+<style>
+    #learning_path{
+        border: 1px solid #444444;
+        background-color: #ffffff;
+        font-family: 'Open Sans';
+        background-color: #ffffff;
+    }
+</style>
 
-    var edges = [
-        {from: 0, to: 2, arrows:'to', dashes:true},
-        {from: 2, to: 3, arrows:'to'},
-        {from: 3, to: 4, arrows:'to'},
-        {from: 4, to: 5, arrows:'to', label: "x2"},
-        {from: 5, to: 6, arrows:'to', label: "x2"},
-        {from: 6, to: 4, arrows:'to', label: "x1"},
-        {from: 6, to: 7, arrows:'to'},  
-        {from: 7, to: 8, arrows:'to'},
-        {from: 8, to: 9, arrows:'to'},
-        {from: 9, to: 10, arrows:'to'},
-        {from: 10, to: 1, arrows:'to', dashes:true},
-    ]*/
+
+
+
+<script type="text/javascript">
 
     {% autoescape off %} 
     var traces = {{ traces_json }};
@@ -63,17 +24,31 @@
     var nodes = [{
         id: 0,
         label: "Début",
-        group: "start"
+        shape: 'dot',
+        color: {
+            background: '#99cc00',
+            border: '#669900'
+        }
     }];
     var edges = [];
     var i = 0;
     var prev_i = -1;
     
+    function color_scale(r,g,b,s) {
+        r = Math.floor(r * s);
+        g = Math.floor(g * s);
+        b = Math.floor(b * s);
+        return `rgb(${r},${g},${b})`;
+        
+    }
     for (i=0;i<traces.length;i = i + 1) {
         var trace = traces[i];
         var title="";
         var group = "resource";
         var label = traces[i].object;
+        var color = {};
+        var shape= 'hexagon';
+        var size=30;
         if (i > 0) {
             //if (trace.verb === "s'est connecté(e)") continue;
             var prev_trace = traces[prev_i];
@@ -81,20 +56,31 @@
                 && trace.verb == prev_trace.verb
                 && typeof trace.score !== "number") continue;
         }
-        if (trace.verb === "s'est connecté(e)") {
-            group="auth";
-            label="";
+        if (trace.system==="ADN") {
+            color.background = '#FFFF00';
+            color.border= '#FFA500';
         }
-        else if (typeof trace.score === "number") { 
-            group = "quiz";
+        if (trace.verb === "s'est connecté(e)") {
+            size = 5;
+            label="";
+            color.background = "#000000";
+            color.border = "#000000";
+        }
+        if (typeof trace.score === "number") { 
+            if (trace.system==="ADN") {
+                color.background = color_scale(255, 255, 0, trace.score_scaled);
+                color.border = color_scale(255, 165, 0, trace.score_scaled);
+            }
+            shape= 'star';
             title = `${trace.score}/${trace.score_max}`;
         }
-        else if (trace.system=="ADN") group = "nugget";
         nodes.push({
             id: i+1,
             label,
             title,
-            group,
+            color,
+            shape,
+            size,
             es_id: trace.id
         })
         if (i >= 0) {
@@ -109,7 +95,11 @@
     nodes.push({
         id: prev_i+2,
         label: "Fin",
-        group: "end"
+        shape: 'dot',
+        color: {
+            background: '#ff0000',
+            border: '#cc0000'
+        }
     })
     edges.push({
         from: prev_i+1,
@@ -139,46 +129,6 @@
         edges: {
             width: 2,
             shadow:true
-        },
-        groups: {
-            nugget: {
-                shape: 'hexagon',
-                color: {
-                    background: '#FFFF00',
-                    border: '#FFA500'
-                }
-            },
-            resource: {
-                shape: 'hexagon',
-            },
-            quiz: {
-                shape: 'star',
-                color: {
-                    background: '#aaaaEE',
-                    border: '#000000'
-                }
-            },
-            auth: {
-                shape: 'dot',
-                size:"5",
-                color: {
-                    background: '#000000'
-                }
-            },
-            start: {
-                shape: 'dot',
-                color: {
-                    background: '#99cc00',
-                    border: '#669900'
-                }
-            },
-            end: {
-                shape: 'dot',
-                color: {
-                    background: '#ff0000',
-                    border: '#cc0000'
-                }
-            }
         }
     };
 
