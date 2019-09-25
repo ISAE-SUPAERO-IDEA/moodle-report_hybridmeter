@@ -1,10 +1,30 @@
-    <h1>Traces</h1>
-    <table class="table">
-        {% for trace in traces %}
-        <tr>
-          <td><span class="badge badge-{{trace.system_color}} float-right">{{ trace.system }}</span></td>
-          <td>{{ trace.hour }}</td>
-          <td>{{ trace.phrase }}</td>
-        </tr>
-        {% endfor %}    
-    </table>
+<h1>Traces</h1>
+<table class="table">
+    {% for trace in traces %}
+    <tr id="trace-{{trace.id}}">
+      <td><span class="badge badge-{{trace.system_color}} float-right">{{ trace.system }}</span></td>
+      <td>{{ trace.hour }}</td>
+      <td>{{ trace.phrase }}</td>
+    </tr>
+    <tr id="trace-{{trace.id}}-modal" class="d-none">
+      <td colspan="3">
+        <pre> {% autoescape off %} {{trace.source}} {% endautoescape %} </pre>
+      </td>
+    </tr>
+    {% endfor %}    
+</table>
+<script>
+var trace_selected_id;
+function select_trace(id) {
+  if (trace_selected_id) { 
+    $(`#trace-${trace_selected_id}`).removeClass('table-active');
+    $(`#trace-${trace_selected_id}-modal`).addClass('d-none');
+  }
+  $(`#trace-${id}`).addClass('table-active');
+  $(`#trace-${id}-modal`).removeClass('d-none');
+  trace_selected_id = id;
+}
+</script>
+<style>
+
+</style>

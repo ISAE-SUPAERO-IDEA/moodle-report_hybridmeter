@@ -57,7 +57,9 @@
     {% autoescape off %} 
     var traces = {{ traces_json }};
     {% endautoescape %} 
-    
+    traces.sort(function(a, b) {
+      return a.timestamp - b.timestamp;
+    });
     var nodes = [{
         id: 0,
         label: "Début",
@@ -66,27 +68,34 @@
     var edges = [];
     var i = 0;
     var prev_i = -1;
-    var title;
-    for (i in traces) {
+    
+    for (i=0;i<traces.length;i = i + 1) {
         var trace = traces[i];
-        if (trace.verb === "s'est connecté(e)") continue;
+        var title="";
+        var group = "resource";
+        var label = traces[i].object;
         if (i > 0) {
+            //if (trace.verb === "s'est connecté(e)") continue;
             var prev_trace = traces[prev_i];
             if (trace.object == prev_trace.object 
                 && trace.verb == prev_trace.verb
                 && typeof trace.score !== "number") continue;
         }
-        group = "resource";
-        if (typeof trace.score === "number") { 
+        if (trace.verb === "s'est connecté(e)") {
+            group="auth";
+            label="";
+        }
+        else if (typeof trace.score === "number") { 
             group = "quiz";
             title = `${trace.score}/${trace.score_max}`;
         }
         else if (trace.system=="ADN") group = "nugget";
         nodes.push({
             id: i+1,
-            label: traces[i].object,
+            label,
             title,
-            group
+            group,
+            es_id: trace.id
         })
         if (i >= 0) {
             edges.push({
@@ -96,7 +105,6 @@
             })
         }
         prev_i = i;        
-        i = i + 1;
     }
     nodes.push({
         id: prev_i+2,
@@ -108,13 +116,7 @@
         to: prev_i+2,
         arrows:'to'
     })
-    console.log(nodes);
-    console.log(traces);
-
-
-
-
-    
+   
 
     // create a network
     var container = document.getElementById('learning_path');
@@ -148,16 +150,20 @@
             },
             resource: {
                 shape: 'hexagon',
-                color: {
-                    background: '#FFFF00',
-                    border: '#FFA500'
-                }
-            },
-            resource: {
-                shape: 'dot'
             },
             quiz: {
-                shape: 'star'
+                shape: 'star',
+                color: {
+                    background: '#aaaaEE',
+                    border: '#000000'
+                }
+            },
+            auth: {
+                shape: 'dot',
+                size:"5",
+                color: {
+                    background: '#000000'
+                }
             },
             start: {
                 shape: 'dot',
@@ -175,5 +181,13 @@
             }
         }
     };
+
     network = new vis.Network(container, data, options);
+    network.on("click", (ctx) => {
+        var node = ctx.nodes[0];
+        var id = nodes[node].es_id;
+        console.log(id);
+        select_trace(id);
+
+    });
 </script>

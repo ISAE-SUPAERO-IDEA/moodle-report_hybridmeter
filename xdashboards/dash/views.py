@@ -22,43 +22,6 @@ def template_from_string(template_string, using=None):
             chain.append(e)
     raise TemplateSyntaxError(template_string, chain=chain)
 
-convert_paths= {
-
-    "_id": {
-        "field": "id"
-    },
-    "_source.actor.account.name": {
-        "field": "actor"
-    },
-    "_source.verb.id": {
-        "field": "verb",
-        "translations": {
-            "https://w3id.org/xapi/adl/verbs/logged-in": "s'est connecté(e)",
-            "http://vocab.xapi.fr/verbs/navigated-in": "a navigué vers",
-            "http://adlnet.gov/expapi/verbs/answered": "a répondu à",
-            "http://vocab.xapi.fr/verbs/graded": "a obtenu",
-        }
-    },
-    "_source.system.definition.name.en": {
-        "field": "system"
-    },
-    "fields.timestamp": {
-        "field": "timestamp",
-        "transform": "date"
-    },
-    "_source.object.definition.name.en-US": {
-        "field": "object"
-    },
-    "_source.object.definition.name.en": {
-        "field": "object"
-    },
-    "_source.result.score.raw": {
-        "field": "score"
-    },
-    "_source.result.score.max": {
-        "field": "score_max"
-    }
-}
 convert_paths = {
     "id": {
         "field": "_id"
@@ -98,6 +61,10 @@ convert_paths = {
         "field": "fields.timestamp",
         "transform": "hour"
     },
+    "timestamp": {
+        "field": "fields.timestamp",
+        "transform": "timestamp"
+    },
     "object": {
         "field": "_source.object.definition.name.en|_source.object.definition.name.en-US"
     },
@@ -106,6 +73,10 @@ convert_paths = {
     },
     "score_max": {
         "field": "_source.result.score.max"
+    },
+    "source": {
+        "field": "_source",
+        "transform": "stringify"
     }
 
 }
@@ -138,35 +109,18 @@ def convert_trace(trace):
             val = config["translations"][val]
 
         if "transform" in config and val:
-            dt_object = dt.datetime.fromtimestamp(val[0]/1000)
             if config["transform"] == "date":
+                dt_object = dt.datetime.fromtimestamp(val[0]/1000)
                 val = dt_object.strftime("%d/%m/%Y")
             if config["transform"] == "hour":
+                dt_object = dt.datetime.fromtimestamp(val[0]/1000)
                 val = dt_object.strftime("%H:%M:%S")
+            if config["transform"] == "timestamp":
+                val = val[0]
+            if config["transform"] == "stringify":
+                val = json.dumps(val, indent=4, sort_keys=True)
 
         res[key] = val
-
-    """
-    for key in convert_paths.keys():
-        convert_path = convert_paths[key]
-        paths = key.split(".")
-        val = trace
-        i = 0
-        while val and i<len(paths):
-            val = val.get(paths[i])
-            i = i + 1
-
-        if "translations" in convert_path and val in convert_path["translations"]:
-            val = convert_path["translations"][val]
-
-        if "transform" in convert_path and convert_path["transform"] =="date" and val:
-            dt_object = dt.datetime.fromtimestamp(val[0]/1000)
-            val = dt_object.strftime("le %d/%m/%Y à %H:%M:%S")
-        field = convert_path["field"]
-        if val or not field in res:
-            res[field] = val
-    """
-
     verb = trace["_source"]["verb"]["id"]
     if verb in verbs_to_phrases:
         t_string = verbs_to_phrases[verb]
@@ -186,7 +140,7 @@ def index(request):
     index = "xapi_adn_enriched"
     daterangequery = { "timestamp": {
                             "gte": "now-1M/d",
-                            "lt": "now/d"
+                            "lte": "now/d"
                         }
                     }
     # actor list
