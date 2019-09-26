@@ -6,7 +6,7 @@
       <td>{{ trace.hour }}</td>
       <td>{{ trace.phrase }}</td>
     </tr>
-    <tr id="trace-{{trace.id}}-modal" class="d-none">
+    <tr id="trace-{{trace.id}}-modal" class="d-none trace-info">
       <td colspan="4">
         <pre> {% autoescape off %} {{trace.source}} {% endautoescape %} </pre>
       </td>
@@ -42,5 +42,7 @@ $(`.trace-button`).on("click", function(e) {
 });
 </script>
 <style>
-
+.trace-info {
+  font-size: 10px;
+}
 </style>

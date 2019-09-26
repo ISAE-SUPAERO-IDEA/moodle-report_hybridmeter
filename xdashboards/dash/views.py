@@ -80,8 +80,13 @@ convert_paths = {
     "source": {
         "field": "_source",
         "transform": "stringify"
+    },
+    "object_type": {
+        "field": "_source.object.type"
+    },
+    "object_id": {
+        "field": "_source.object.id"
     }
-
 }
 verbs_to_phrases = {
     "https://w3id.org/xapi/adl/verbs/logged-in": "{{ t.actor }} {{ t.verb }}",
