@@ -1,83 +1,80 @@
  <div  class="chart-container">
-         <canvas id="canvas" height="150"></canvas>
-    </div>
-    <script>
-    
+     <canvas id="canvas" height="150"></canvas>
+</div>
+<script>
 
-        var ctx = document.getElementById('canvas').getContext('2d');
-        //#document.getElementById('canvas').height = 50;
-        document.getElementById('canvas').onclick=function(evt) {
-            var activePoints = scatterChart.getElementsAtEvent(evt);
 
-            data = activity_data[activePoints[0]._index];
-            changeParam("traces_range", data.key)
-            return;
-        };
-        {% autoescape off %} 
-        var activity_data= {{ activity_data_json }};
-        {% endautoescape %} 
+    var ctx = document.getElementById('canvas').getContext('2d');
+    //#document.getElementById('canvas').height = 50;
+    document.getElementById('canvas').onclick=function(evt) {
+        var activePoints = scatterChart.getElementsAtEvent(evt);
 
-        var pointRadius = []
-        labels= []
-        for (i=0;i<activity_data.length;i++) {
-            var date = new Date(activity_data[i].key); 
-            var hours = date.getHours() - 2;
-            activity_data[i].x = date.setHours(2);
-            activity_data[i].y = hours;
-            var size = activity_data[i].doc_count;
-            if (size>0) size = 5 + Math.sqrt(size);
-            pointRadius.push(size);
-            labels.push("eza");
-        }
+        data = activity_data[activePoints[0]._index];
+        change_param("traces_range", data.key);
+        return;
+    };
+    {% autoescape off %} 
+    var activity_data= {{ activity_data_json }};
+    {% endautoescape %} 
 
-        var scatterChart = new Chart(ctx, {
-            type: 'scatter',
-                  
-            data: {
-                labels,
-                datasets: [{
-                    label: 'Scatter Dataset',
-                    showLine: false,
-                    pointRadius,
-                    data: activity_data
-                }]
+    var pointRadius = []
+    for (i=0;i<activity_data.length;i++) {
+        var date = new Date(activity_data[i].key); 
+        var hours = date.getHours();
+        activity_data[i].x = date;
+        activity_data[i].y = hours;
+        var size = activity_data[i].doc_count;
+        if (size>0) size = 5 + Math.sqrt(size);
+        pointRadius.push(size);
+    }
+
+    var scatterChart = new Chart(ctx, {
+        type: 'scatter',
+              
+        data: {
+            datasets: [{
+                label: 'Scatter Dataset',
+                showLine: false,
+                pointRadius,
+                data: activity_data
+            }]
+        },
+        options: {
+            responsive: true, 
+            maintainAspectRatio: false,
+            legend: {
+                display: false
             },
-            options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        type: 'linear',
+            scales: {
+                yAxes: [{
+                    type: 'linear',
 
-                        ticks: {
-                            // Include a dollar sign in the ticks
-                            callback: function(value, index, values) {
+                    ticks: {
+                        // Include a dollar sign in the ticks
+                        callback: function(value, index, values) {
 
-                                return value<=21 ? `${value}h-${value+3}h` : "";
-                            },
-                            min: 0,
-                            max: 23,
-                            stepSize: 3,
+                            return hour_to_range(value);
                         },
-                        gridLines: {
-                            color: "rgba(0, 0, 0, 0)",
-                        }
-                    }],
-                    xAxes: [{
-                        type: 'time',
-                        position: 'bottom',
-                        time: {
-                            unit: 'day'
-                        },
-                        gridLines: {
-                            color: "rgba(0, 0, 0, 0)",
-                        }
-                    }]
-                }
+                        min: 0,
+                        max: 23,
+                        stepSize: 3,
+                    },
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0)",
+                    }
+                }],
+                xAxes: [{
+                    type: 'time',
+                    position: 'bottom',
+                    time: {
+                        unit: 'day'
+                    },
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0)",
+                    }
+                }]
             }
-        });
-       
-    </script>
+        }
+    });
+   
+</script>

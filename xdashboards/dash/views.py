@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from elasticsearch import Elasticsearch
 import datetime as dt
-import pytz
 from django.template import engines, TemplateSyntaxError, Context
 import json
+import pprint
+import pytz
+from django.conf import settings
 
 def template_from_string(template_string, using=None):
     """
@@ -96,6 +98,15 @@ verbs_to_phrases = {
     "http://vocab.xapi.fr/verbs/graded": "{{ t.actor }} {{ t.verb }}  {{t.score}}/{{t.score_max}} sur {{ t.object }}"
 }
 
+def timezonize(date):
+    date = date.replace(tzinfo=pytz.timezone('UTC'))
+    date = date.astimezone(pytz.timezone('Europe/Paris'))
+    return date
+
+def timezonize_format(date, format):
+    return timezonize(date).strftime(format)
+
+
 # Create your views here.
 def convert_trace(trace):
     res = {}
@@ -118,11 +129,9 @@ def convert_trace(trace):
 
         if "transform" in config and val:
             if config["transform"] == "date":
-                dt_object = dt.datetime.fromtimestamp(val[0]/1000)
-                val = dt_object.strftime("%d/%m/%Y")
+                val = timezonize_format(dt.datetime.fromtimestamp(val[0]/1000), "%d/%m/%Y")
             if config["transform"] == "hour":
-                dt_object = dt.datetime.fromtimestamp(val[0]/1000)
-                val = dt_object.strftime("%H:%M:%S")
+                val = timezonize_format(dt.datetime.fromtimestamp(val[0]/1000), "%H:%M:%S")
             if config["transform"] == "timestamp":
                 val = val[0]
             if config["transform"] == "stringify":
@@ -133,10 +142,11 @@ def convert_trace(trace):
     if verb in verbs_to_phrases:
         t_string = verbs_to_phrases[verb]
         template = template_from_string(t_string)
-        context = { "t": res }
+        context = {"t": res}
         res["phrase"] = template.render(context)
     else:
         res["phrase"] = res
+        del res["phrase"]["phrase"]
 
     return res
 
@@ -144,20 +154,29 @@ def convert_traces(traces):
     return [convert_trace(trace) for trace in traces]
 
 def index(request):
+    if not request.user.is_authenticated:
+        return redirect("cas_ng_login")
+
+    if request.user.username not in settings.AUTHORIZED_USERS:
+        return render(request, 'dash/error.html', {"error": "Not authorized: {}".format(request.user.username)})
+
     es = Elasticsearch(["idea-db"])
     index = "xapi_adn_enriched"
-    daterangequery = { "timestamp": {
-                            "gte": "now-1M/d",
+    daterangequery = {"timestamp": {
+                            "gte": "now-2M/d",
                             "lte": "now/d"
                         }
-                    }
+                }
+    activity_data_json = {}
+    traces = []
     # actor list
     actors = es.search(index=index, size=0, filter_path="aggregations.actor.buckets", body={
-        "query": { "range": daterangequery },
+        "query": {"range": daterangequery},
         "aggs": {
             "actor": {
-                "terms": {"field": "actor.account.login.keyword",
-                "size": 50
+                "terms": {
+                    "field": "actor.account.login.keyword",
+                    "size": 50
                 },
                 "aggs": {
                     "name": {"terms": {"field": "actor.account.name.keyword"}}
@@ -176,7 +195,8 @@ def index(request):
                 "activity": {
                     "date_histogram": {
                         "field": "timestamp",
-                        "interval": "3h"
+                        "interval": "3h",
+                        "time_zone": "+02:00"
                     }
                 }
             },
@@ -189,7 +209,8 @@ def index(request):
                         }
                     }
                 },
-            }})
+        }})
+
 
         # traces
         daterangequery_traces = daterangequery
@@ -201,6 +222,7 @@ def index(request):
                             "lt": traces_range + 3 * 60 * 60 * 1000
                         }
                     }
+        activity_data_json = json.dumps(activity["aggregations"]["activity"]["buckets"])
 
         traces = es.search(index=index, size=100, filter_path="hits.hits", body={
             "sort": {"timestamp": "desc"},
@@ -220,9 +242,9 @@ def index(request):
                     }
                 },
             }})
+        traces = convert_traces(traces["hits"]["hits"])
 
-    activity_data_json = json.dumps(activity["aggregations"]["activity"]["buckets"])
-    traces = convert_traces(traces["hits"]["hits"])
+    
     return render(request, 'dash/dashboard.html', {
         'actors': actors,
         "activity_data_json": activity_data_json,

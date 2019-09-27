@@ -22,11 +22,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '301934f@#+)m(*5^#+p3zcya9iwy_8nan#&!bl1yhi!$1w+3*o'
 
+AUTHORIZED_USERS = ["b.ilponse", "c.juaneda", "s.bernard", "l.dairaine", "a.luga", "t.perennou", "e.poquillon"]
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["local.isae.fr", "xdash.isae.fr"]
 
+CAS_SERVER_URL = "https://ssocas.isae.fr/cas/"
+CAS_REDIRECT_URL = "/dash"
+CAS_LOGOUT_COMPLETELY = True
+CAS_PROVIDE_URL_TO_LOGOUT = True
+CAS_AUTO_CREATE_USER = False
 
 # Application definition
 
@@ -37,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'dash.apps.DashConfig'
+    'dash.apps.DashConfig',
+    'django_cas_ng',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_cas_ng.middleware.CASMiddleware'
 ]
 
 ROOT_URLCONF = 'xdashboards.urls'
@@ -75,12 +84,16 @@ WSGI_APPLICATION = 'xdashboards.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'django_cas_ng.backends.CASBackend'
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

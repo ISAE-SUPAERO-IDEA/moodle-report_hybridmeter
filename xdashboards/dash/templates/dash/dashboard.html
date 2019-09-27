@@ -1,14 +1,14 @@
 {% extends 'dash/base.html' %}
 
 {% block top %}
-    <div class="activity">
-        <h4>Activité</h4>
-        <hr/>
+    <button type="button" class="btn btn-secondary-outline dropdown-toggle float-right" id="activity_toogle_button"></button>
+    <h4>Activité</h4>
+    <div id="activity_div">
         {% include "dash/includes/activity.html" %}    
     </div>
 
     <style>
-    .activity {
+    #activity_div {
         background-color:#fff;
     }
     </style>
@@ -17,19 +17,38 @@
 {% block content %}
 
     {% if traces %}
-        <h4>{{ traces.0.date }}</h4>
         <hr/>
+        <h4>{{ traces.0.date }}</h4>
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-6" id="learning_path_div">
             <h4>Chemin d'apprentissage</h4>
             {% include "dash/includes/learning_path.html" %}    
         </div>
-        <div class="col-lg-6 vh-100 overflow-auto">
-            <h4>Traces</h4>
+        <div class="col-lg-6 vh-100 overflow-auto" id="traces_div">
+           <td>
+            <button type="button" class="btn btn-secondary-outline dropdown-toggle float-right" id="traces_toogle_button"></button></td>
+           <h4>Traces</h4>
             {% include "dash/includes/traces.html" %}    
         </div>
     </div>
     {% endif %}
+    <script>
+        var activity_visible = true;
+
+        $(activity_toogle_button).on("click", () => {
+            switch_class("#activity_div", "d-block", "d-none", activity_visible);
+            activity_visible = switch_class("#learning_path_canvas", "learning_path_canvas_small", "learning_path_canvas_bigl", activity_visible);
+        });
+
+        {% if traces %}
+            var traces_visible = true;
+            $(traces_toogle_button).on("click", () => {
+                switch_class("#learning_path_div", "col-lg-6", "col-lg-11", traces_visible);
+                traces_visible = switch_class("#traces_div", "col-lg-6", "col-lg-1", traces_visible);
+            });
+        {% endif %}
+
+    </script>
 
    
 {% endblock %}

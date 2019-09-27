@@ -4,3 +4,4 @@ build
 venv
 .Trash*
 *.pyc
+db.sqlite3

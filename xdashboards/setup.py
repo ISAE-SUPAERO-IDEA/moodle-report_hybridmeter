@@ -10,7 +10,8 @@ setup(name='xDashboards',
       url='https://www.isae-supaero.fr',
       packages=['xdashboards'],
       install_requires=[
-          'django',
+          'django==2.1.*',
+          'django-cas-ng',
           'elasticsearch'
         ],
       )

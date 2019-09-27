@@ -1,31 +1,20 @@
-{% load static %}
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>xDash</title>
-        <script src="{% static "dash/cash.min.js" %}"></script>
-        <script src="{% static "dash/Chart.bundle.js" %}"></script>
-        <script src="{% static "dash/utils.js" %}"></script>
-        <script src="{% static "dash/vis/vis-network.js" %}"></script>
-        <!--<script src="{% static "dash/jquery-1.12.4.min.js" %}"></script>
-        <script src="{% static "dash/bootstrap.min.js" %}"></script>
-    -->
-        <link rel="stylesheet"  href="{% static "dash/bootstrap.min.css" %}"></link>
-        <link rel="stylesheet"  href="{% static "dash/xdash.css" %}"></link>
-        <link rel="stylesheet"  href="{% static "dash/vis/vis.css" %}"></link>
+{% extends 'dash/layout.html' %}
 
-    </head>
+{% block body %}
 
-    <body>
         <div class="top">
             <div class="container-fluid">
-               <select type="" id="actor" class="form-control">
-                    {% for actor in actors %}
-                        <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
-                    {% endfor %}
-                </select>
-                {% block top %}
-                {% endblock %}
+                <a href="{% url 'cas_ng_logout' %}" class="float-right">Déconnexion</a>
+                <div>
+                   <select type="" id="actor" class="form-control">
+                        {% for actor in actors %}
+                            <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
+                        {% endfor %}
+                    </select>
+                    <hr/>
+                    {% block top %}
+                    {% endblock %}
+                </div>
                 
             </div>
         </div>
@@ -36,26 +25,21 @@
                 {% endblock %}
             </div>
         </div>
-    </body>
+
     <style>
         .top {
             position:sticky;
             top:0px;
+            background-color:#fff;
             z-index:1000;
         }
     </style>
     <script>
     
     // on user selection
-        var changeParam = function(key, value) {
-            var loc = window.location;
-            var searchParams = new URLSearchParams(loc.search);
-            searchParams.set(key, value);
-            url = `${loc.protocol}//${loc.hostname}:${loc.port}${loc.pathname}?${searchParams.toString()}`;
-            window.location = url;
-        }
+
         $('#actor').on("change", (e) => {
-            changeParam("user",$('#actor').val());
+            change_param("user",$('#actor').val());
         });
 
         // On page load
@@ -68,7 +52,5 @@
         });
        
     </script>
-    <style>
-  
-    </style>
+{% endblock %}  
 </html>
