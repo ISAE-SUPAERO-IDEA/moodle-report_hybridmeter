@@ -8,16 +8,25 @@
     //#document.getElementById('canvas').height = 50;
     document.getElementById('canvas').onclick=function(evt) {
         var activePoints = scatterChart.getElementsAtEvent(evt);
-
-        data = activity_data[activePoints[0]._index];
-        change_param("traces_range", data.key);
+        if (activePoints[0]) {
+            data = activity_data[activePoints[0]._index];
+            change_param("traces_range", data.key);
+        }
         return;
     };
     {% autoescape off %} 
     var activity_data= {{ activity_data_json }};
     {% endautoescape %} 
 
+    activity_data.sort((a, b) => {
+        if (a.active == b.active) return 0;
+        return a.active ? 1 : -1;
+    })
+
     var pointRadius = []
+    var pointBackgroundColor = []
+    var pointBorderColor = []
+    var pointHoverRadius = []
     for (i=0;i<activity_data.length;i++) {
         var date = new Date(activity_data[i].key); 
         var hours = date.getHours();
@@ -26,6 +35,11 @@
         var size = activity_data[i].doc_count;
         if (size>0) size = 5 + Math.sqrt(size);
         pointRadius.push(size);
+        pointHoverRadius.push(size*1.5);
+        pointBackgroundColor.push(activity_data[i].active ? "#e00" : "#eee");
+        pointBorderColor.push(activity_data[i].active ? "#900" : "#999");
+    }
+    for (i=0;i<activity_data.length;i++) {
     }
 
     var scatterChart = new Chart(ctx, {
@@ -36,6 +50,9 @@
                 label: 'Scatter Dataset',
                 showLine: false,
                 pointRadius,
+                pointHoverRadius,
+                pointBackgroundColor,
+                pointBorderColor,
                 data: activity_data
             }]
         },

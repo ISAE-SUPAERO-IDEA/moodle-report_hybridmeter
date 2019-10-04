@@ -27,8 +27,11 @@
     traces.sort(function(a, b) {
       return a.timestamp - b.timestamp;
     });
+    var prev_trace = { 
+        id: -1
+    };
     var nodes = [{
-        id: 0,
+        id: -1,
         label: "Début",
         shape: 'dot',
         color: {
@@ -38,7 +41,6 @@
     }];
     var edges = [];
     var i = 0;
-    var prev_i = -1;
     
     function color_scale(r,g,b,s) {
         r = Math.floor(r * s);
@@ -55,13 +57,10 @@
         var color = {};
         var shape= 'hexagon';
         var size=20;
-        if (i > 0) {
-            //if (trace.verb === "s'est connecté(e)") continue;
-            var prev_trace = traces[prev_i];
-            if (trace.object == prev_trace.object 
-                && trace.verb == prev_trace.verb
-                && typeof trace.score !== "number") continue;
-        }
+        if (trace.object == prev_trace.object 
+            && trace.verb == prev_trace.verb
+            && typeof trace.score !== "number") continue;
+    
         if (trace.system==="ADN") {
             color.background = '#FFFF00';
             color.border= '#FFA500';
@@ -85,7 +84,7 @@
             title = `${trace.score}/${trace.score_max}`;
         }
         nodes.push({
-            id: i+1,
+            id: trace.id,
             label,
             title,
             color,
@@ -96,15 +95,15 @@
         })
         if (i >= 0) {
             edges.push({
-                from: prev_i+1,
-                to: i+1,
+                from: prev_trace.id,
+                to: trace.id,
                 arrows:'to'
             })
         }
-        prev_i = i;        
+        prev_trace = trace;
     }
     nodes.push({
-        id: prev_i+2,
+        id: -2,
         label: "Fin",
         shape: 'dot',
         color: {
@@ -113,10 +112,12 @@
         }
     })
     edges.push({
-        from: prev_i+1,
-        to: prev_i+2,
+        from: prev_trace.id,
+        to: -2,
         arrows:'to'
     })
+
+    // dotted lines
     for (i=0;i<nodes.length-1;i++) {
         for (j=i+1;j<nodes.length; j++) {
             if (nodes[i].trace && nodes[j].trace && nodes[i].trace.object_id == nodes[j].trace.object_id && 
@@ -163,11 +164,19 @@
 
     network = new vis.Network(container, data, options);
     network.on("click", (ctx) => {
-        var node = ctx.nodes[0];
-        if (node) {
-            var id = nodes[node].trace.id;
-            console.log(id);
+        
+        var id = ctx.nodes[0];
+        if (id !==undefined) {
             select_trace(id);
+            var top = $(`#trace-${id}`).offset().top - $(traces_list).offset().top + $(traces_list).scrollTop()
+            $(traces_list).stop().animate({
+                scrollTop: top,
+                duration:400
+            });
+            $("body").stop().animate({
+                scrollTop: 0,
+                duration:400
+            });
         }
 
     });

@@ -68,7 +68,7 @@ convert_paths = {
         "transform": "timestamp"
     },
     "object": {
-        "field": "_source.object.definition.name.en|_source.object.definition.name.en-US"
+        "field": "_source.object.definition.name.en|_source.object.definition.name.en-US|_source.object.definition.name.fr"
     },
     "score": {
         "field": "_source.result.score.raw"
@@ -162,9 +162,13 @@ def index(request):
 
     es = Elasticsearch(["idea-db"])
     index = "xapi_adn_enriched"
+
+    global_range_end =  (dt.datetime.now().timestamp() * 1000) + 24 * 60 * 60 * 1000
+    global_range_start =  global_range_end - 60 * 24 * 60 * 60 * 1000
+    
     daterangequery = {"timestamp": {
-                            "gte": "now-2M/d",
-                            "lte": "now/d"
+                            "gte": global_range_start,
+                            "lte": global_range_end
                         }
                 }
     activity_data_json = {}
@@ -188,6 +192,22 @@ def index(request):
 
     user = request.GET.get('user')
     if user:
+        # traces ranges
+        daterangequery_traces = daterangequery
+
+        traces_range = request.GET.get('traces_range')
+        if traces_range:
+            traces_range_start = int(traces_range)
+            traces_range_end = traces_range_start + 3 * 60 * 60 * 1000
+        else:
+            traces_range_start = global_range_start
+            traces_range_end = global_range_end
+        daterangequery_traces = { "timestamp": {
+                        "gte": traces_range_start,
+                        "lt": traces_range_end
+                    }
+                }
+
         # activity data
         activity = es.search(index=index, size=25, filter_path="aggregations.activity.buckets", body={
             "sort": {"timestamp": "desc"},
@@ -210,20 +230,18 @@ def index(request):
                     }
                 },
         }})
+        activity_buckets = activity["aggregations"]["activity"]["buckets"]
+        for i, bucket in enumerate(activity_buckets):
+            key = activity_buckets[i]["key"]
+            activity_buckets[i]["active"] = True if key >= traces_range_start and key < traces_range_end else False
+            print(activity_buckets[i], traces_range_start, traces_range_end)
 
+
+
+
+        activity_data_json = json.dumps(activity_buckets)
 
         # traces
-        daterangequery_traces = daterangequery
-        traces_range = request.GET.get('traces_range')
-        if traces_range:
-            traces_range = int(traces_range)
-            daterangequery_traces = { "timestamp": {
-                            "gte": traces_range,
-                            "lt": traces_range + 3 * 60 * 60 * 1000
-                        }
-                    }
-        activity_data_json = json.dumps(activity["aggregations"]["activity"]["buckets"])
-
         traces = es.search(index=index, size=100, filter_path="hits.hits", body={
             "sort": {"timestamp": "desc"},
             "script_fields": {
