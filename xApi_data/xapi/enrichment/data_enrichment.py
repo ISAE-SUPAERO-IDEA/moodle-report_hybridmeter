@@ -65,6 +65,12 @@ def enrichStatements(action, lrs, store):
         # On ajoute les acl à la trace
         __addACL(trax)
 
+        # On ajoute dans "any" la description de l'objet
+        __addObjectDescription(trax, "object")
+        __addObjectDescription(trax, "activity")
+        __addObjectDescription(trax, "course")
+        __addObjectDescription(trax, "system")
+
         bulk_list.append(trax)
         nb_statements += 1
 
@@ -154,11 +160,18 @@ def __getNameAndLogin(uuid):
     res = s.post(url=url, data=body, timeout=None)
     res.encoding = 'utf-8'
     result = json.loads(res.text)
-    result = json.loads(result[0]['xapi'])
-    namelogin = {
-                    'name': result['name'],
-                    'login': result['account']['name']
-                }
+    try:
+        result = json.loads(result[0]['xapi'])
+        namelogin = {
+                        'name': result['name'],
+                        'login': result['account']['name']
+                    }
+    except:
+        print("Cannot identify user {}: {}".format(uuid, result))
+        namelogin = {
+                        'name': "?",
+                        'login': "?"
+                    }
     return namelogin
 
 
@@ -168,8 +181,6 @@ def __addCourseDefinition(statement, configLRS):
     courseId = None
     # On vérifie si l'activité de la trace est un cours
     contextActivities = statement['context']['contextActivities']
-    print("---")
-    print(contextActivities)
     if statement['object']['definition']['type'] == "http://vocab.xapi.fr/activities/course":
         courseId = statement['object']['id']
 
@@ -216,6 +227,17 @@ def __getCourse(courseId, configLRS):
     res.encoding = 'utf-8'
     result = json.loads(res.text)
     return result
+
+# AJOUT DU LIBELLE DU PARENT
+def __addObjectDescription(statement, key):
+    if key in statement:
+        obj = statement[key]
+        try:
+            trads = list(obj["definition"]["name"].keys())
+        except:
+            print("Cannot get trad list for " + statement["id"])
+            return
+        obj["definition"]["name"]["any"] = obj["definition"]["name"][trads[0]]
 
 
 # AJOUT DES ACL À LA TRACE
