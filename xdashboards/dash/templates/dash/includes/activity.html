@@ -1,0 +1,97 @@
+ <div  class="chart-container">
+     <canvas id="canvas" height="150"></canvas>
+</div>
+<script>
+
+
+    var ctx = document.getElementById('canvas').getContext('2d');
+    //#document.getElementById('canvas').height = 50;
+    document.getElementById('canvas').onclick=function(evt) {
+        var activePoints = scatterChart.getElementsAtEvent(evt);
+        if (activePoints[0]) {
+            data = activity_data[activePoints[0]._index];
+            change_param("traces_range", data.key);
+        }
+        return;
+    };
+    {% autoescape off %} 
+    var activity_data= {{ activity_data_json }};
+    {% endautoescape %} 
+
+    activity_data.sort((a, b) => {
+        if (a.active == b.active) return 0;
+        return a.active ? 1 : -1;
+    })
+
+    var pointRadius = []
+    var pointBackgroundColor = []
+    var pointBorderColor = []
+    var pointHoverRadius = []
+    for (i=0;i<activity_data.length;i++) {
+        var date = new Date(activity_data[i].key); 
+        var hours = date.getHours();
+        activity_data[i].x = date;
+        activity_data[i].y = hours;
+        var size = activity_data[i].doc_count;
+        if (size>0) size = 5 + Math.sqrt(size);
+        pointRadius.push(size);
+        pointHoverRadius.push(size*1.5);
+        pointBackgroundColor.push(activity_data[i].active ? "#e00" : "#eee");
+        pointBorderColor.push(activity_data[i].active ? "#900" : "#999");
+    }
+    for (i=0;i<activity_data.length;i++) {
+    }
+
+    var scatterChart = new Chart(ctx, {
+        type: 'scatter',
+              
+        data: {
+            datasets: [{
+                label: 'Scatter Dataset',
+                showLine: false,
+                pointRadius,
+                pointHoverRadius,
+                pointBackgroundColor,
+                pointBorderColor,
+                data: activity_data
+            }]
+        },
+        options: {
+            responsive: true, 
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            scales: {
+                yAxes: [{
+                    type: 'linear',
+
+                    ticks: {
+                        // Include a dollar sign in the ticks
+                        callback: function(value, index, values) {
+
+                            return hour_to_range(value);
+                        },
+                        min: 0,
+                        max: 23,
+                        stepSize: 3,
+                    },
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0)",
+                    }
+                }],
+                xAxes: [{
+                    type: 'time',
+                    position: 'bottom',
+                    time: {
+                        unit: 'day'
+                    },
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0)",
+                    }
+                }]
+            }
+        }
+    });
+   
+</script>

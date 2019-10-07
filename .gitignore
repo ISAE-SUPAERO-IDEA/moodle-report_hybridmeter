@@ -3,3 +3,5 @@ build
 *.whl
 venv
 .Trash*
+*.pyc
+db.sqlite3

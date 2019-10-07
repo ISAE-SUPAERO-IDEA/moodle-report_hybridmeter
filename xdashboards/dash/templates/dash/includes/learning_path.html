@@ -1,0 +1,183 @@
+
+<div id="learning_path_canvas" class="learning_path_canvas_small"></div>
+
+<style>
+    #learning_path_canvas{
+        border: 1px solid #444444;
+        background-color: #ffffff;
+        font-family: 'Open Sans';
+        background-color: #ffffff;
+    }
+    .learning_path_canvas_big{
+        height:1000px;
+    }
+    .learning_path_canvas_small{
+        height:500px;
+    }
+</style>
+
+
+
+
+<script type="text/javascript">
+
+    {% autoescape off %} 
+    var traces = {{ traces_json }};
+    {% endautoescape %} 
+    traces.sort(function(a, b) {
+      return a.timestamp - b.timestamp;
+    });
+    var prev_trace = { 
+        id: -1
+    };
+    var nodes = [{
+        id: -1,
+        label: "Début",
+        shape: 'dot',
+        color: {
+            background: '#99cc00',
+            border: '#669900'
+        }
+    }];
+    var edges = [];
+    var i = 0;
+    
+    function color_scale(r,g,b,s) {
+        r = Math.floor(r * s);
+        g = Math.floor(g * s);
+        b = Math.floor(b * s);
+        return `rgb(${r},${g},${b})`;
+        
+    }
+    for (i=0;i<traces.length;i = i + 1) {
+        var trace = traces[i];
+        var title="";
+        var group = "resource";
+        var label = traces[i].object;
+        var color = {};
+        var shape= 'hexagon';
+        var size=20;
+        if (trace.object == prev_trace.object 
+            && trace.verb == prev_trace.verb
+            && typeof trace.score !== "number") continue;
+    
+        if (trace.system==="ADN") {
+            color.background = '#FFFF00';
+            color.border= '#FFA500';
+        }
+        if (trace.verb === "s'est connecté(e)") {
+            size = 5;
+            label="";
+            color.background = "#000000";
+            color.border = "#000000";
+        }
+        if (trace.object_type === "course") { 
+            shape= 'dot';
+            size = 15;
+        }
+        if (typeof trace.score === "number") { 
+            if (trace.system==="ADN") {
+                color.background = color_scale(255, 255, 0, trace.score_scaled);
+                //color.border = color_scale(255, 165, 0, trace.score_scaled);
+            }
+            shape= 'star';
+            title = `${trace.score}/${trace.score_max}`;
+        }
+        nodes.push({
+            id: trace.id,
+            label,
+            title,
+            color,
+            shape,
+            size,
+            trace 
+            
+        })
+        if (i >= 0) {
+            edges.push({
+                from: prev_trace.id,
+                to: trace.id,
+                arrows:'to'
+            })
+        }
+        prev_trace = trace;
+    }
+    nodes.push({
+        id: -2,
+        label: "Fin",
+        shape: 'dot',
+        color: {
+            background: '#ff0000',
+            border: '#cc0000'
+        }
+    })
+    edges.push({
+        from: prev_trace.id,
+        to: -2,
+        arrows:'to'
+    })
+
+    // dotted lines
+    for (i=0;i<nodes.length-1;i++) {
+        for (j=i+1;j<nodes.length; j++) {
+            if (nodes[i].trace && nodes[j].trace && nodes[i].trace.object_id == nodes[j].trace.object_id && 
+                nodes[i].trace.verb == nodes[j].trace.verb &&
+                (nodes[i].trace.object_type === "course" || nodes[i].trace.object_type === "web-content")) {
+                edges.push({
+                    from: nodes[i].id,
+                    to: nodes[j].id,
+                    dashes:true,
+                    arrows:'',
+                    physics:false,
+                    color:"#aaaaaa"
+                })
+            }
+        }
+    }
+   
+
+    // create a network
+    var container = document.getElementById('learning_path_canvas');
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+
+    var options = {
+        nodes: {
+            shape: 'dot',
+            size: 30,
+            font: {
+                size: 12,
+                face: 'Open Sans'
+            },
+            borderWidth: 2,
+            shadow:true
+        },
+        edges: {
+            width: 2,
+            shadow:true
+        },
+        height:"80%", 
+        width:"100%"
+    };
+
+    network = new vis.Network(container, data, options);
+    network.on("click", (ctx) => {
+        
+        var id = ctx.nodes[0];
+        if (id !==undefined) {
+            select_trace(id);
+            var top = $(`#trace-${id}`).offset().top - $(traces_list).offset().top + $(traces_list).scrollTop()
+            $(traces_list).stop().animate({
+                scrollTop: top,
+                duration:400
+            });
+            $("body").stop().animate({
+                scrollTop: 0,
+                duration:400
+            });
+        }
+
+    });
+</script>

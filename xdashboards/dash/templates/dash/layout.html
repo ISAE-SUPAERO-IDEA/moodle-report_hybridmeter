@@ -1,0 +1,24 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>xDash</title>
+    <!--    <script src="{% static "dash/cash.min.js" %}"></script> -->
+        <script src="{% static "dash/jquery-1.12.4.min.js" %}"></script>
+        <script src="{% static "dash/Chart.bundle.js" %}"></script>
+        <script src="{% static "dash/utils.js" %}"></script>
+        <script src="{% static "dash/vis/vis-network.js" %}"></script>
+        <script src="{% static "dash/xdash.js" %}"></script>
+        <script src="{% static "dash/bootstrap.min.js" %}"></script>
+    
+        <link rel="stylesheet"  href="{% static "dash/bootstrap.min.css" %}"></link>
+        <link rel="stylesheet"  href="{% static "dash/xdash.css" %}"></link>
+        <link rel="stylesheet"  href="{% static "dash/vis/vis.css" %}"></link>
+
+    </head>
+
+    <body>
+         {% block body %}
+        {% endblock %}
+    </body>
+</html>

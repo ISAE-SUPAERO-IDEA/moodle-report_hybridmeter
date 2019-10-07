@@ -1,0 +1,63 @@
+{% extends 'dash/base.html' %}
+
+{% block top %}
+    <div class="float-right">
+        <a id="activity_select_all" href="#" onclick="return false;">Tout sélectionner</a>
+        <button type="button" class="btn btn-secondary-outline dropdown-toggle" id="activity_toogle_button"></button>
+    </div>
+    <h4>Activité</h4>
+    <div id="activity_div">
+        {% include "dash/includes/activity.html" %}    
+    </div>
+
+    <style>
+    #activity_div {
+        background-color:#fff;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    {% if traces %}
+        <hr/>
+    <div class="row">
+        <div class="col-lg-6" id="learning_path_div">
+            <h4>Chemin d'apprentissage</h4>
+            {% include "dash/includes/learning_path.html" %}    
+        </div>
+        <div class="col-lg-6" id="traces_div">
+            <button type="button" class="btn btn-secondary-outline dropdown-toggle float-right" id="traces_toogle_button"></button></td>
+           <h4>Traces</h4>
+            <div id="traces_list" class="overflow-auto vh-100">
+                {% include "dash/includes/traces.html" %}    
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <script>
+        var activity_visible = true;
+
+        $(activity_toogle_button).on("click", () => {
+            switch_class("#activity_div", "d-block", "d-none", activity_visible);
+            activity_visible = switch_class("#learning_path_canvas", "learning_path_canvas_small", "learning_path_canvas_bigl", activity_visible);
+        });
+
+        switch_class(activity_select_all, "d-none", "d-inline", has_param("traces_range"));
+        $(activity_select_all).on("click", () => {
+            remove_param("traces_range");
+        });
+
+        {% if traces %}
+            var traces_visible = true;
+            $(traces_toogle_button).on("click", () => {
+                switch_class("#learning_path_div", "col-lg-6", "col-lg-11", traces_visible);
+                traces_visible = switch_class("#traces_div", "col-lg-6", "col-lg-1", traces_visible);
+            });
+        {% endif %}
+
+    </script>
+
+   
+{% endblock %}
+

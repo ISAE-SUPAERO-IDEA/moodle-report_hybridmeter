@@ -1,0 +1,56 @@
+{% extends 'dash/layout.html' %}
+
+{% block body %}
+
+        <div class="top">
+            <div class="container-fluid">
+                <a href="{% url 'cas_ng_logout' %}" class="float-right">Déconnexion</a>
+                <div>
+                   <select type="" id="actor" class="form-control">
+                        {% for actor in actors %}
+                            <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
+                        {% endfor %}
+                    </select>
+                    <hr/>
+                    {% block top %}
+                    {% endblock %}
+                </div>
+                
+            </div>
+        </div>
+        <div>
+            <div class="container-fluid">
+                
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+
+    <style>
+        .top {
+            position:sticky;
+            top:0px;
+            background-color:#fff;
+            z-index:1000;
+        }
+    </style>
+    <script>
+    
+    // on user selection
+
+        $('#actor').on("change", (e) => {
+            change_param("user",$('#actor').val());
+        });
+
+        // On page load
+        // Select user
+        $(document).ready((e) => {
+                var urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('user')) {
+                  $('#actor').val(urlParams.get('user'));  
+                } 
+        });
+       
+    </script>
+{% endblock %}  
+</html>

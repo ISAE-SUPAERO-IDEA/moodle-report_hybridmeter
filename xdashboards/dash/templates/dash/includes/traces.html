@@ -1,0 +1,55 @@
+<table class="table">
+    {% for trace in traces %}
+    <tr id="trace-{{trace.id}}">
+      <td><button type="button" class="btn btn-secondary-outline dropdown-toggle trace-button" data-trace="{{trace.id}}" ></button></td>
+      <td><span class="badge badge-{{trace.system_color}} float-right">{{ trace.system }}</span></td>
+      <td>{{ trace.hour }}</td>
+      <td>{{ trace.phrase }}</td>
+    </tr>
+    <tr id="trace-{{trace.id}}-modal" class="d-none trace-info">
+      <td colspan="4">
+        <pre> {% autoescape off %} {{trace.source}} {% endautoescape %} </pre>
+      </td>
+    </tr>
+    {% endfor %}    
+</table>
+<script>
+var trace_selected_id;
+function show_trace(id) {
+  if (trace_selected_id) { 
+    hide_trace(id);
+  }
+  $(`#trace-${id}`).addClass('table-active');
+  $(`#trace-${id}-modal`).removeClass('d-none');
+  trace_selected_id = id;
+}
+function hide_trace(id) {
+    $(`#trace-${trace_selected_id}`).removeClass('table-active');
+    $(`#trace-${trace_selected_id}-modal`).addClass('d-none');
+    trace_selected_id = undefined;
+}
+function select_trace(id) {
+  show_trace(id);
+}
+function toogle_trace(id) {
+  if (trace_selected_id === id) {
+    hide_trace(id);
+  }
+  else show_trace(id);
+}
+$(`.trace-button`).on("click", function(e) {
+  toogle_trace(e.target.dataset.trace);
+});
+</script>
+<style>
+.trace-info {
+  font-size: 10px;
+}
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+</style>
