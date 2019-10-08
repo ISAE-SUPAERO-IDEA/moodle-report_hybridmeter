@@ -17,7 +17,7 @@ class Enrich(Command):
         parser = super(Enrich, self).get_parser(prog_name)
 
         # Arguments de la commandes
-        parser.add_argument('data', help='type of data', choices=['basic_all', 'basic_update', 'time'])
+        parser.add_argument('data', help='type of data', choices=['basic_all', 'basic_update', 'next', 'previous'])
         parser.add_argument('lrs', help='filename of the lrs config')
         parser.add_argument('store', help='filename of the store config')
         return parser

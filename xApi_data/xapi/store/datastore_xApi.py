@@ -42,9 +42,13 @@ class datastore:
         return self.db.testPing()
 
     # RÉCUPÈRE LES STATEMENTS BRUTES DE L'INDEX NON ENRICHI
-    def retrieveStatementsWithoutTimePassed(self):
-        return self.db.retrieveStatementsWithoutTimePassed()
+    def retrieveStatementsWithoutField(self, field):
+        return self.db.retrieveStatementsWithoutField(field)
 
     # RÉCUPÈRE LE TIMESTAMP DE LA TRACE SUIVANTE POUR UN USER DONNÉ
-    def getPassedTime(self, statement):
-        return self.db.getPassedTime(statement)
+    def getNextStatement(self, statement):
+        return self.db.getNextStatement(statement)
+
+    # RÉCUPÈRE LE TIMESTAMP DE LA TRACE SUIVANTE POUR UN USER DONNÉ
+    def getPreviousStatement(self, statement):
+        return self.db.getPreviousStatement(statement)
