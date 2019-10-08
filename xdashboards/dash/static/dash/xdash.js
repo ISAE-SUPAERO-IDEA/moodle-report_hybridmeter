@@ -69,7 +69,7 @@ var get_node = function(conf) {
         node.size = 15;
     }
     if (typeof conf.score === "number") { 
-        if (conf.system==="ADN") {
+        if (conf.system==="https://adn.isae-supaero.fr") {
             node.color.background = color_scale(255, 255, 0, conf.score_scaled);
             //color.border = color_scale(255, 165, 0, trace.score_scaled);
         }
