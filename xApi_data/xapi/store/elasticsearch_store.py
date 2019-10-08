@@ -150,13 +150,13 @@ class elastic_search:
 
     # CETTE FONCTION RENVOIE UNIQUEMENT LES STATEMENTS
     # N'AYANT PAS LE TEMPS PASSÉ COMME DONNÉE
-    def retrieveStatementsWithoutTimePassed(self):
+    def retrieveStatementsWithoutField(self, field):
         body = {
             "query": {
                 "bool": {
                     "must_not": {
                         "exists": {
-                            "field": "passedTime"
+                            "field": field
                         }
                     }
                 }
@@ -167,7 +167,13 @@ class elastic_search:
         # On requête l'index qui contient les traces brutes
         return helpers.scan(self.es, query=body, index=self.index_enrichment, preserve_order=True)
 
-    def getPassedTime(self, statement):
+    def getNextStatement(self, statement):
+        return self.getAdjacentStatement(statement, filter_operator="gte", sort_order="asc")
+
+    def getPreviousStatement(self, statement):
+        return self.getAdjacentStatement(statement, filter_operator="lte", sort_order="desc")
+
+    def getAdjacentStatement(self, statement, filter_operator, sort_order):
 
         # On récupère le timestamp de la trace
         # Requête
@@ -178,7 +184,7 @@ class elastic_search:
                         {
                             "range": {
                                 "timestamp": {
-                                    "gte": statement['timestamp']
+                                    filter_operator: statement['timestamp']
                                 }
                             }
                         },
@@ -192,10 +198,9 @@ class elastic_search:
                 }
             },
             "sort": {
-                "timestamp": "asc"
+                "timestamp": sort_order
             },
-            "size": 2,
-            "_source": "false",
+            "size": 5,
             "docvalue_fields": ["timestamp"]
         }
 
@@ -204,21 +209,53 @@ class elastic_search:
             body=body
         )
 
-        # On vérifie si l'utilisateur a laissé une trace après celle passé en paramètre
-        if len(res['hits']['hits']) == 1:
+        # On cherche la trace
+        statement_db = res['hits']['hits'][0]
+        i = 1
+        adjacent_statement_db = None
+        while len(res['hits']['hits']) > i:
+            candidate = res['hits']['hits'][1]
+            if candidate["_source"]["object"]["id"] != statement_db["_source"]["object"]["id"]:
+                adjacent_statement_db = candidate
+                break
+            i = i + 1
+
+        if not adjacent_statement_db:
             return None
 
-        next_timestamp = res['hits']['hits'][1]['fields']['timestamp'][0]
-        timestamp = res['hits']['hits'][0]['fields']['timestamp'][0]
+        
+        
+
+        adjacent_timestamp = adjacent_statement_db['fields']['timestamp'][0]
+        timestamp = statement_db['fields']['timestamp'][0]
 
         # Conversion des timestamps ISO en datetime
-        next = datetime.datetime.strptime(next_timestamp, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()
+        next = datetime.datetime.strptime(adjacent_timestamp, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()
         now = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()
 
-        passedTime = next - now
+        distance = next - now
 
         # On regarde si le temps passé est trop long
-        if passedTime > 3600 * 4:
-            return 3600
-        else:
-            return passedTime
+        if distance < 0:
+            distance = - distance
+        if distance > 3600:
+            distance = 3600
+
+        obj_id = adjacent_statement_db["_source"]["object"]["id"]
+        try:
+            obj_name = adjacent_statement_db["_source"]["object"]["definition"]["name"]["any"]
+        except:
+            obj_name = obj_id
+
+        adjacent_statement = {
+            "object": { 
+                "id": obj_id,
+                "definition": {
+                    "name": { "any": obj_name }
+                }
+            },
+            "system_id": adjacent_statement_db["_source"]["system"]["id"],
+            "id": adjacent_statement_db["_source"]["id"],
+            "distance": distance
+        }
+        return adjacent_statement

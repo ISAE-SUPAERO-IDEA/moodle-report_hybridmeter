@@ -49,6 +49,14 @@ def enrichStatements(action, lrs, store):
     for statement in statements:
 
         trax = statement['_source']
+
+        # On ne prend pas les traces guest
+        try:
+            if "Guest user" in trax["actor"]["name"]:
+                continue
+        except:
+            pass
+
         # On ajoute les noms et les logins aux traces
         __addNameUUID(trax)
 
@@ -94,8 +102,8 @@ def enrichStatements(action, lrs, store):
 
 # ENRICHIT LES TRACES AVEC DONNÉES AVANCÉES
 def advancedEnrichStatements(data, store):
-    if data == 'time':
-        __addPassedTime(store)
+    if data == 'next' or data == 'previous':
+        __addAdjacentStatement(store, data)
 
 
 # AJOUTE UN NOM À PARTIR D'UN UUID
@@ -280,11 +288,11 @@ def __addSystem(statement, lrs):
     statement['system']['hash'] = __getHash(id)
 
 
-# Ajout du temps passé aux traces
-def __addPassedTime(store):
+# Ajout d'un statement adjacent aux traces
+def __addAdjacentStatement(store, order):
 
     # On récupère d'abord les traces n'ayant pas la durée
-    statements = store.retrieveStatementsWithoutTimePassed()
+    statements = store.retrieveStatementsWithoutField(order)
     nb_statements = 0
 
     bulk_list = []
@@ -294,22 +302,25 @@ def __addPassedTime(store):
         statement = statement['_source']
         # On récupère le temps passé de la trace
         # Si il y a une trace stockée après celle en paramètre
-        passedTime = store.getPassedTime(statement)
+
+        adjacent_statement = store.getNextStatement(statement) if order == "next" else store.getPreviousStatement(statement)
 
         # Si NONE, on ne peut pas savoir le temps passé
-        if passedTime is not None:
-            statement['passedTime'] = passedTime
+        if adjacent_statement is not None:
+            statement[order] = adjacent_statement
             nb_statements += 1
             bulk_list.append(statement)
+
 
             # Au bout de 1000 traces enrichies
             # Je les insère dans l'index pour éviter d'insérer
             # 4 millions de traces d'un coup
             if len(bulk_list) == 1000:
                 print('Insertion of 1000 enrich statements')
-                print(str(bulk_list[0]['passedTime']))
+                print(str(bulk_list[0][order]))
                 store.saveStatements(bulk_list, 'enrich')
                 bulk_list = []
+    store.saveStatements(bulk_list, 'enrich')
 
     print(str(nb_statements) + 'STATEMENTS ENRICHED')
 
