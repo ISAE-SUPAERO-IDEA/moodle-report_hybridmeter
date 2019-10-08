@@ -1,0 +1,54 @@
+{% extends 'dash/base.html' %}
+
+{% block top %}
+
+    <div class="float-right">
+        <!-- Activity select all -->
+        <a id="activity_select_all" href="#" onclick="return false;">Tout sélectionner</a>
+        <script>
+            switch_class(activity_select_all, "d-none", "d-inline", has_param("traces_range"));
+            $(activity_select_all).on("click", () => {
+                remove_param("traces_range");
+            });
+        </script>
+        <!-- Activity toogle -->
+        <button type="button" class="btn btn-secondary-outline dropdown-toggle" id="activity_toogle_button"></button>
+        <script>
+            var activity_visible = true;
+            $(activity_toogle_button).on("click", () => {
+                switch_class("#activity_div", "d-block", "d-none", activity_visible);
+                activity_visible = switch_class("#learning_path_canvas", "learning_path_canvas_small", "learning_path_canvas_big", activity_visible);
+            });
+        </script>
+    </div>
+    <!-- Activity graphic -->
+    <h4>Activité</h4>
+    <div id="activity_div">
+        {% include "dash/includes/activity.html" %}    
+    </div>
+    
+    <style>
+    #activity_div {
+        background-color:#fff;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    
+    {% if ways %}
+        <hr/>
+    <div class="row">
+        <!-- Learner path -->
+        <div class="col-lg-12" id="resource_access_div">
+            <h4>Accès à la resource</h4>
+            {% include "dash/includes/resource_access.html" %}    
+        </div>
+
+    </div>
+    {% endif %}
+
+   
+{% endblock %}
+

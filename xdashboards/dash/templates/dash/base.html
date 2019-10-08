@@ -1,17 +1,42 @@
 {% extends 'dash/layout.html' %}
+{% load dash %}
 
 {% block body %}
 
         <div class="top">
             <div class="container-fluid">
+                <a href="{% url 'learners' %}" >Apprenants</a>
+                &nbsp;|&nbsp;
+                <a href="{% url 'resources' %}" >Ressources</a>
                 <a href="{% url 'cas_ng_logout' %}" class="float-right">Déconnexion</a>
                 <div>
-                   <select type="" id="actor" class="form-control">
-                        {% for actor in actors %}
-                            <option value="{{ actor.key }}">{{ actor.name.buckets.0.key }}</option>
+                   <!-- Item selection -->
+                   <select type="" id="selector" class="form-control">
+                        {% for choice in choices %}
+                            <option value="{{ choice.key }}">{{ choice.name }}</option>
                         {% endfor %}
                     </select>
                     <hr/>
+                    <script>
+                    
+                        // on learner selection
+
+                        $('#selector').on("change", (e) => {
+                            change_param("id",$('#selector').val());
+                        });
+
+                        // On page load
+                        // Select user
+                        $(document).ready((e) => {
+                                var urlParams = new URLSearchParams(window.location.search);
+                                if (urlParams.has('id')) {
+                                  $('#selector').val(urlParams.get('id'));  
+                                } 
+                        });
+                       
+                    </script>
+
+
                     {% block top %}
                     {% endblock %}
                 </div>
@@ -34,23 +59,5 @@
             z-index:1000;
         }
     </style>
-    <script>
-    
-    // on user selection
-
-        $('#actor').on("change", (e) => {
-            change_param("user",$('#actor').val());
-        });
-
-        // On page load
-        // Select user
-        $(document).ready((e) => {
-                var urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.has('user')) {
-                  $('#actor').val(urlParams.get('user'));  
-                } 
-        });
-       
-    </script>
 {% endblock %}  
 </html>

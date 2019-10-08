@@ -1,17 +1,14 @@
 {% load dash %} 
 
-<div id="learning_path_canvas" class="learning_path_canvas_small"></div>
+<div id="resource_access_canvas" class="resource_access_canvas"></div>
 
 <style>
-    #learning_path_canvas{
+    #resource_access_canvas{
         font-family: 'Open Sans';
         background-color: #ffffff;
     }
-    .learning_path_canvas_big{
+    .resource_access_canvas{
         height:1000px;
-    }
-    .learning_path_canvas_small{
-        height:500px;
     }
 </style>
 
@@ -20,71 +17,50 @@
 
 <script type="text/javascript">
 
-    var traces = {{ traces|jsonify }};
-    
-    traces.sort(function(a, b) {
-      return a.timestamp - b.timestamp;
-    });
-    var prev_trace = { 
-        id: -1
-    };
-    var nodes = [{
-        id: -1,
-        label: "Début",
-        shape: 'dot',
-        color: {
-            background: '#99cc00',
-            border: '#669900'
-        }
-    }];
+    var ways = {{ ways|jsonify }};
+    var selected = {{selected | jsonify}};
+
+
+    console.log(ways);
+    console.log(selected);
+
+    var node = get_node({
+        id: selected.id,
+        label: selected.definition.name.any,
+        system: selected.system,
+        type: selected.type,
+        title: selected.id
+    })
+    var nodes = [node];
     var edges = [];
-    var i = 0;
-    
-    for (i=0;i<traces.length;i = i + 1) {
-        var trace = traces[i];
 
-        if (trace.object == prev_trace.object 
-            && trace.verb == prev_trace.verb
-            && typeof trace.score !== "number") continue;
-        
-        var node = get_node({ 
-            id: trace.id, 
-            label: traces[i].object, 
-            system: trace.system_id, 
-            type: trace.object_type, 
-            verb: trace.verb, 
-            score: trace.score, 
-            score_max: trace.score_max, 
-            score_scaled: trace.score_scaled
-        })
-
-        node.trace = trace
-        nodes.push(node)
-
-        if (i >= 0) {
-            edges.push({
-                from: prev_trace.id,
-                to: trace.id,
-                arrows:'to'
+    function addNodes(data, arrows, edge_color) {
+        for (key in data.items) {
+            info = data.items[key]
+            id = arrows + "|" + key;
+            var node = get_node({
+                id,
+                label: `${info["name"]} (${Math.round(info.quota*100)}% - ${Math.round(info["distance"])}s)`,
+                system: info["system"],
+                type: info["type"],
+                title: key
             })
-        }
-        prev_trace = trace;
-    }
-    nodes.push({
-        id: -2,
-        label: "Fin",
-        shape: 'dot',
-        color: {
-            background: '#ff0000',
-            border: '#cc0000'
-        }
-    })
-    edges.push({
-        from: prev_trace.id,
-        to: -2,
-        arrows:'to'
-    })
+            node.size = info.relative_count * 25
 
+            nodes.push(node);
+            edges.push({
+                from: selected.id,
+                to: id,
+                arrows,
+                color: edge_color.border,
+                length:info["relative_distance"] * 50
+            })
+
+        }
+    }
+    addNodes(ways.previous, "from", { background: '#99cc00', border: '#669900'})
+    addNodes(ways.next, "to", { background: '#ff0000', border: '#cc0000'})
+    /*
     // dotted lines
     for (i=0;i<nodes.length-1;i++) {
         for (j=i+1;j<nodes.length; j++) {
@@ -94,18 +70,18 @@
                 edges.push({
                     from: nodes[i].id,
                     to: nodes[j].id,
-                    dashes:[1, 8],
+                    dashes:true,
                     arrows:'',
                     physics:false,
                     color:"#aaaaaa"
                 })
             }
         }
-    }
+    }*/
    
 
     // create a network
-    var container = document.getElementById('learning_path_canvas');
+    var container = document.getElementById('resource_access_canvas');
     var data = {
         nodes: nodes,
         edges: edges
