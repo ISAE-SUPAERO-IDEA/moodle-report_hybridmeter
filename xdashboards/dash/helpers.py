@@ -182,7 +182,7 @@ class Helper():
         if not request.user.is_authenticated:
             self.error_response = redirect("cas_ng_login")
 
-        if request.user.username not in settings.AUTHORIZED_USERS:
+        elif request.user.username not in settings.AUTHORIZED_USERS:
             self.error_response = render(request, 'dash/error.html', {"error": "Not authorized: {}".format(request.user.username)})
 
 

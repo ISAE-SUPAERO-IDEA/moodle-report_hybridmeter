@@ -37,10 +37,10 @@ var hour_to_range = function(hour) {
     return hour<=21 ? `${hour}h-${hour+3}h` : "";    
 }
 
-function color_scale(r,g,b,s) {
-    r = Math.floor(r * s);
-    g = Math.floor(g * s);
-    b = Math.floor(b * s);
+function color_scale(r1,g1,b1,r2,g2,b2,s) {
+    r = Math.floor(r1 + (r2 - r1) * s);
+    g = Math.floor(g1 + (g2 - g1) * s);
+    b = Math.floor(b1 + (b2 - b1) * s);
     return `rgb(${r},${g},${b})`;
     
 }
@@ -70,7 +70,7 @@ var get_node = function(conf) {
     }
     if (typeof conf.score === "number") { 
         if (conf.system==="https://adn.isae-supaero.fr") {
-            node.color.background = color_scale(255, 255, 0, conf.score_scaled);
+            node.color.background = color_scale(255, 0, 0, 0, 255, 0, conf.score_scaled);
             //color.border = color_scale(255, 165, 0, trace.score_scaled);
         }
         node.shape= 'star';

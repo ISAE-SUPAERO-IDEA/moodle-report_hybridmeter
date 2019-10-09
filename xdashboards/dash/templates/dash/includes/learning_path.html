@@ -65,6 +65,7 @@
             edges.push({
                 from: prev_trace.id,
                 to: trace.id,
+                color:"#000000",
                 arrows:'to'
             })
         }
@@ -81,6 +82,7 @@
     })
     edges.push({
         from: prev_trace.id,
+        color:"#000000",
         to: -2,
         arrows:'to'
     })
@@ -129,12 +131,24 @@
         height:"80%", 
         width:"100%",
     };
+    var cluster_options = {
+        joinCondition:function(nodeOptions) {
+            res = nodeOptions.trace ? nodeOptions.trace.system_id === "https://adn.isae-supaero.fr" : false;
+            console.log(res);
+            return res
+        }
+    }
 
     network = new vis.Network(container, data, options);
+    //network.clustering.cluster(cluster_options);
     network.on("click", (ctx) => {
         
         var id = ctx.nodes[0];
         if (id !==undefined) {
+            if (id.includes("cluster")) { 
+                network.openCluster(id);
+                return;
+            }
             select_trace(id);
             var top = $(`#trace-${id}`).offset().top - $(traces_list).offset().top + $(traces_list).scrollTop()
             $(traces_list).stop().animate({

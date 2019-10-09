@@ -12,6 +12,7 @@
                 <div>
                    <!-- Item selection -->
                    <select type="" id="selector" class="form-control">
+                        <option value=""></option>
                         {% for choice in choices %}
                             <option value="{{ choice.key }}">{{ choice.name }}</option>
                         {% endfor %}

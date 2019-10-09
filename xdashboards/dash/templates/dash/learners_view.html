@@ -22,10 +22,12 @@
         </script>
     </div>
     <!-- Activity graphic -->
+    {% if activity_buckets %}
     <h4>Activité</h4>
     <div id="activity_div">
         {% include "dash/includes/activity.html" %}    
     </div>
+    {% endif %}
     
     <style>
     #activity_div {

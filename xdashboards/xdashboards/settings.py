@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["local.isae.fr", "xdash.isae.fr"]
 
 CAS_SERVER_URL = "https://ssocas.isae.fr/cas/"
-CAS_REDIRECT_URL = "/dash"
+CAS_REDIRECT_URL = "/dash/learners"
 CAS_LOGOUT_COMPLETELY = True
 CAS_PROVIDE_URL_TO_LOGOUT = True
 CAS_AUTO_CREATE_USER = False
