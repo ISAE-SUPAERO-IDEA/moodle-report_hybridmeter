@@ -1,5 +1,6 @@
 {% load dash %} 
 
+<b>{{ selected.definition.name.any}}</b>
 <div id="resource_access_canvas" class="resource_access_canvas"></div>
 
 <style>
@@ -24,61 +25,58 @@
     console.log(ways);
     console.log(selected);
 
+    edge_group_from = ways.edge_groups[`from|${selected.id}`];
+
     var node = get_node({
         id: selected.id,
-        label: selected.definition.name.any,
+        //label: `${Math.round(edge_group_from.average_distance)}s - {{ learners|sum:"doc_count" }} hits`,
         system: selected.system,
         type: selected.type,
+        type_link: selected.definition.type,
         title: selected.id
     })
+    node.size = 50;
+    node.widthConstraint = {"minimum": 100, "maximum": 100 };
+//    node.font =  { "color":"#000", "size":16, "bold": true};
     var nodes = [node];
     var edges = [];
 
-    function addNodes(data, arrows, edge_color) {
-        for (key in data.items) {
-            info = data.items[key]
-            id = arrows + "|" + key;
-            var node = get_node({
-                id,
-                label: `${info["name"]} (${Math.round(info.quota*100)}% - ${Math.round(info["distance"])}s)`,
-                system: info["system"],
-                type: info["type"],
-                title: key
-            })
-            node.size = info.relative_count * 25
+    for (key in ways.nodes) {
+        raw_node = ways.nodes[key]
+        var node = get_node({
+            id: key,
+            system: raw_node["system"],
+            type: raw_node["type"],
+            type_link: raw_node["type_link"],
+            title: key,
+            raw_id: key
+        })
+        node.label = `${raw_node["name"]}`;
+        node.size = 15;
 
-            nodes.push(node);
-            edges.push({
-                from: selected.id,
-                to: id,
-                arrows,
-                color: edge_color.border,
-                length:info["relative_distance"] * 50
-            })
-
-        }
+        nodes.push(node);
     }
-    addNodes(ways.previous, "from", { background: '#99cc00', border: '#669900'})
-    addNodes(ways.next, "to", { background: '#ff0000', border: '#cc0000'})
-    /*
-    // dotted lines
-    for (i=0;i<nodes.length-1;i++) {
-        for (j=i+1;j<nodes.length; j++) {
-            if (nodes[i].trace && nodes[j].trace && nodes[i].trace.object_id == nodes[j].trace.object_id && 
-                nodes[i].trace.verb == nodes[j].trace.verb &&
-                (nodes[i].trace.object_type === "course" || nodes[i].trace.object_type === "web-content")) {
-                edges.push({
-                    from: nodes[i].id,
-                    to: nodes[j].id,
-                    dashes:true,
-                    arrows:'',
-                    physics:false,
-                    color:"#aaaaaa"
-                })
-            }
+    for (key in ways.edges) {
+        raw_edge = ways.edges[key]
+        if (raw_edge.adjency=="previous") {
+            edge_color = { background: '#99cc00', border: '#669900'};
         }
-    }*/
-   
+        else {
+            edge_color = { background: '#ff0000', border: '#cc0000'};
+        }
+        edges.push({
+            from: raw_edge.node_from,
+            to: raw_edge.node_to,
+            arrows: "to",
+            color: edge_color.border,
+            font: {
+                color: edge_color
+            },
+            //length:info["relative_distance"] * 200,
+            length:150 + 750 * Math.pow((1 - raw_edge.relative_hits),1.2),
+            label: `${Math.round(raw_edge.relative_hits*100)}% - ${Math.round(raw_edge.average_distance)}s`
+        })
+    }
 
     // create a network
     var container = document.getElementById('resource_access_canvas');
@@ -102,25 +100,32 @@
             width: 2,
             shadow:true
         },
+        physics: {
+            forceAtlas2Based: {
+                gravitationalConstant: -26,
+                centralGravity: 0.005,
+                avoidOverlap: 1.5
+            },
+            maxVelocity: 146,
+            solver: 'forceAtlas2Based',
+            timestep: 0.35,
+            stabilization: {
+                enabled: true,
+                iterations: 1000,
+                updateInterval: 25
+            }
+        },
         height:"80%", 
         width:"100%",
     };
 
     network = new vis.Network(container, data, options);
-    network.on("click", (ctx) => {
+    // Select another node
+    network.on("click", function(ctx) {
         
         var id = ctx.nodes[0];
         if (id !==undefined) {
-            select_trace(id);
-            var top = $(`#trace-${id}`).offset().top - $(traces_list).offset().top + $(traces_list).scrollTop()
-            $(traces_list).stop().animate({
-                scrollTop: top,
-                duration:400
-            });
-            $("body").stop().animate({
-                scrollTop: 0,
-                duration:400
-            });
+            change_param("id", id);
         }
 
     });

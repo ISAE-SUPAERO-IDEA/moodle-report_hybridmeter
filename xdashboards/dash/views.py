@@ -36,7 +36,7 @@ def resource(request):
         return helper.error_response
 
     activity_buckets = []
-    traces = []
+    learners = []
     ways =[]
     selected = None
     # object list
@@ -52,9 +52,15 @@ def resource(request):
         # traces ranges
         # activity data
         ways = helper.get_ways(id)
-        activity_buckets = helper.get_tree_activity("object.id.keyword", id)
+        #activity_buckets = helper.get_tree_activity("object.id.keyword", id)
+        activity_buckets = helper.get_activity("object.id.keyword", id)
         selected = helper.get_object_definition(id)
-
+        learners = helper.aggregate(
+            id_field="actor.account.login.keyword",
+            description_field="actor.account.name.keyword",
+            filter={
+                "term": {"object.id.keyword": id}
+            },range="filtered")
 
         # traces
         #traces = helper.get_traces(id)
@@ -63,7 +69,6 @@ def resource(request):
         'choices': choices,
         "selected": selected,
         "activity_buckets": activity_buckets,
-        "ways": ways
-        #"traces": traces,
-        #"traces_json": json.dumps(traces)
+        "ways": ways,
+        "learners": learners,
         })

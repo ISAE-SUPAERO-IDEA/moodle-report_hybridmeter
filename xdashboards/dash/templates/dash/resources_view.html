@@ -41,9 +41,13 @@
         <hr/>
     <div class="row">
         <!-- Learner path -->
-        <div class="col-lg-12" id="resource_access_div">
+        <div class="col-lg-8" id="resource_access_div">
             <h4>Accès à la resource</h4>
             {% include "dash/includes/resource_access.html" %}    
+        </div>
+        <div class="col-lg-4" id="resource_user_div">
+            <h4>Interactions</h4>
+            {% include "dash/includes/resource_learners.html" %}    
         </div>
 
     </div>

@@ -22,6 +22,9 @@ convert_paths = {
             "http://vocab.xapi.fr/verbs/graded": "a obtenu",
         }
     },
+    "verb_id": {
+        "field": "_source.verb.id"
+    },
     "system": {
         "field": "_source.system.definition.name.en",
         "translations": {
@@ -69,6 +72,9 @@ convert_paths = {
     },
     "object_type": {
         "field": "_source.object.type"
+    },
+    "object_type_link": {
+        "field": "_source.object.definition.type"
     },
     "object_id": {
         "field": "_source.object.id"
@@ -190,14 +196,22 @@ class Helper():
     def convert_traces(self, traces):
         return [convert_trace(trace) for trace in traces]
 
-    def aggregate(self, id_field, description_field):
+    def aggregate(self, id_field, description_field, range="full", filter=None, size=5000):
+        query = {"range": self.daterangequery} if range=="full" else {"range": self.daterangequery_traces}
+        if filter:
+            query = {
+                "bool": {
+                    "must": query,
+                    "filter": filter
+                    }
+                }
         choices = self.es.search(index=self.index, size=0, filter_path="aggregations.agg.buckets", body={
-            "query": {"range": self.daterangequery},
+            "query": query,
             "aggs": {
                 "agg": {
                     "terms": {
                         "field": id_field,
-                        "size": 5000
+                        "size": size
                     },
                     "aggs": {
                         "name": {"terms": {"field": description_field, "size": 1}},
@@ -219,10 +233,10 @@ class Helper():
         return choices
 
     def get_object_occurences(self, id, size = 1000000):
-        obj = self.es.search(index=self.index, size=500, filter_path="hits.hits._source", body={
+        obj = self.es.search(index=self.index, size=500, body={
         "query": {
                 "bool": {
-                    "must": {"range": self.daterangequery},
+                    "must": {"range": self.daterangequery_traces},
                     "filter": {
                         "term": {
                             "object.id.keyword": id
@@ -236,11 +250,12 @@ class Helper():
 
     def get_object_definition(self, id):
         objs = self.get_object_occurences(id, 1)
-        obj = objs[0]["_source"]
-        print(obj)
-        defn = obj["object"]
-        defn["system"] = obj["system"]["id"]
-        return defn
+        if objs:
+            obj = objs[0]["_source"]
+            defn = obj["object"]
+            defn["system"] = obj["system"]["id"]
+            return defn
+
 
     def get_activity(self, field, id):
         activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
@@ -275,6 +290,8 @@ class Helper():
     def get_tree_activity(self, field, id):
         obj = self.get_object_definition(id)
         activity_buckets = []
+        if obj:
+            return
         if obj["type"] == "system":
             activity_buckets = self.get_activity("system.id.keyword", id)
         elif obj["type"] == "course":
@@ -306,60 +323,127 @@ class Helper():
             }})
         return self.convert_traces(traces["hits"]["hits"])
 
+    def add_way(self, source, adjency, ways):
+        nodes = ways["nodes"]
+        edges = ways["edges"]
+        edge_groups = ways["edge_groups"]
+        if adjency in source:
+            adjacent = source[adjency]
+            node_id = adjacent["object"]["id"]
+            source_node_id = source["object"]["id"]
+            if adjency == "previous":
+                node_from = node_id
+                node_to = source_node_id
+            else:
+                node_from = source_node_id
+                node_to = node_id
+            edge_id = "{}|{}".format(node_from, node_to)
+
+            if adjacent["distance"] < 3600 and node_id != source_node_id and node_id != self.request.GET.get('id'):
+                if not node_id in nodes:
+                    nodes[node_id] = {
+                        "name": adjacent["object"]["definition"]["name"]["any"],
+                        "system": adjacent["system_id"],
+                        "type_link": adjacent["object"]["definition"]["type"],
+                        "type": adjacent["object"]["type"] if "type" in adjacent["object"] else "",
+                    }
+                if not edge_id in edges:
+                    edges[edge_id] = {
+                        "hits": 0,
+                        "total_distance": 0,
+                        "average_distance": 0,
+                        "adjency": adjency,
+                        "node_from": node_from,
+                        "node_to": node_to,
+                    }
+                edges[edge_id]["total_distance"] += adjacent["distance"]
+                edges[edge_id]["hits"] += 1
+
+
+                def add_to_edge_group(adjency, name, edge_id):
+                    key = "{}|{}".format(adjency, name)
+                    if not key in edge_groups:
+                        edge_groups[key] = { "edges": {} }
+                    edge_groups[key]["edges"][edge_id] = edges[edge_id]
+
+                if adjency == "next":
+                    add_to_edge_group("from", node_from, edge_id)
+                else:
+                    add_to_edge_group("to", node_to, edge_id)
+
+
+    def add_node_ways(self, ways, id, previous, next, recursion, cull):
+        occurences = self.get_object_occurences(id)
+        for oc in occurences:
+            oc = oc["_source"]
+            if previous:
+                self.add_way(oc, "previous", ways)
+            if next:
+                self.add_way(oc, "next", ways)
+
+        for edge_group_key in ways["edge_groups"]:
+            edge_group = ways["edge_groups"][edge_group_key]
+            if not "done" in edge_group:
+                edge_group["nb_edges"] = len(list(edge_group.keys()))
+                edge_group["total_hits"] = sum(map(lambda e: e["hits"], edge_group["edges"].values()))
+                edge_group["total_distance"] = sum(map(lambda e: e["total_distance"], edge_group["edges"].values()))
+                edge_group["average_distance"] = edge_group["total_distance"] / edge_group["total_hits"]
+                for key in edge_group["edges"]:
+                    edge = edge_group["edges"][key]
+                    edge["relative_hits"] = edge["hits"] / edge_group["total_hits"]
+                    edge["average_distance"] = edge["total_distance"] / edge["hits"]
+                    if edge["relative_hits"] < cull:
+                        edge["cull"] = True
+                edge_group["done"] = True
+
+        # delete culled nodes
+        edge_ids = list(ways["edges"].keys())
+        for edge_id in edge_ids:
+            edge = ways["edges"][edge_id]
+            if "cull" in edge:
+                del ways["edges"][edge_id]
+
+        def node_has_edge(node_id, type):
+            found = False
+            for edge_id in ways["edges"]:
+                edge = ways["edges"][edge_id]
+                if not "cull" in edge and (edge["node_" + type] == node_id):
+                    found = True
+                    break
+            return found
+
+        
+        # delete culled nodes
+        node_ids = list(ways["nodes"].keys())
+        for node_id in node_ids:
+            if not (node_has_edge(node_id, "from") or node_has_edge(node_id, "to")):
+                del ways["nodes"][node_id]
+
+
+
+
+        if recursion:
+            node_ids = list(ways["nodes"].keys())
+            for node_id in node_ids:
+                self.add_node_ways(ways, node_id, 
+                    previous=node_has_edge(node_id, "from"), 
+                    next=node_has_edge(node_id, "to"), 
+                    recursion=recursion-1, 
+                    cull=0.5)
+
+
     def get_ways(self, id):
         # get all occurences
         occurences = self.get_object_occurences(id)
         ways = {
-            "max_count": 0,
-            "previous": {"items": {}, "count": 0, "total_distance": 0},
-            "next": {"items": {}, "count": 0, "total_distance": 0}
+            "nodes": {},
+            "edges": {},
+            "edge_groups": {}
         }
-        for oc in occurences:
-            oc = oc["_source"]
+        self.add_node_ways(ways, id, previous=True, next=True, recursion=1, cull=0.1)
+        
 
-            def add_way(key):
-                if key in oc:
-                    way_container = ways[key]
-                    adjacent = oc[key]
-                    adj_id = adjacent["object"]["id"]
-                    if adjacent["distance"] <3600 and adj_id != id:
-                        if not adj_id in  way_container["items"]:
-                            way_container["items"][adj_id] = {
-                                "name": adjacent["object"]["definition"]["name"]["any"],
-                                "system": adjacent["system_id"],
-                                "total_distance": adjacent["distance"],
-                                "count": 1,
-                            }
-                        else:
-                            way_container["items"][adj_id]["count"] += 1
-                            way_container["items"][adj_id]["total_distance"] += adjacent["distance"]
-                        if way_container["items"][adj_id]["count"] > ways["max_count"]:
-                            ways["max_count"] = way_container["items"][adj_id]["count"]
-                        way_container["count"] += 1
-                        way_container["total_distance"] += adjacent["distance"]
-
-            add_way("previous")
-            add_way("next")
-
-        ways["total_distance"] = ways["previous"]["total_distance"] + ways["next"]["total_distance"]
-        ways["count"] = ways["previous"]["count"] + ways["next"]["count"]
-        ways["keys"] = len(ways["previous"]["items"].keys()) + len(ways["next"]["items"].keys())
-        ways["average_distance"] = ways["total_distance"] / ways["count"] if ways["count"] else 0
-        ways["average_count"] = ways["count"] / ways["keys"] if ways["count"] else 0
-
-        def calc_quotas(key):
-            way_container = ways[key]
-            if len(way_container["items"]) != 0:
-                for item_key in way_container["items"]:
-                    item = way_container["items"][item_key]
-                    item["quota"] = item["count"] / way_container["count"]
-                    item["distance"] = item["total_distance"] / item["count"]
-                    item["relative_distance"] = item["distance"] / ways["average_distance"]
-                    item["relative_count"] = item["count"] / ways["max_count"]
-
-
-        calc_quotas("previous")
-        calc_quotas("next")
-
+        
+        
         return ways
 

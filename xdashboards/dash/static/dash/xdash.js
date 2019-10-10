@@ -45,6 +45,12 @@ function color_scale(r1,g1,b1,r2,g2,b2,s) {
     
 }
 
+entry_point_objects = [
+    "https://online.isae-supaero.fr",
+    "https://online.isae-supaero.fr/xapi/activities/course/cbe5d5cd-59d6-4877-a147-85f66f017589"
+
+]
+
 var get_node = function(conf) {
     node= {
         color: {},
@@ -58,15 +64,21 @@ var get_node = function(conf) {
             node.color.background = '#FFFF00';
             node.color.border= '#FFA500';
         }
-    if (conf.verb === "s'est connecté(e)") {
-        node.size = 5;
-        node.label="";
-        node.color.background = "#000000";
-        node.color.border = "#000000";
-    }
     if (conf.type === "course") { 
         node.shape= 'dot';
         node.size = 15;
+    }
+    if (conf.type_link === "http://vocab.xapi.fr/activities/system" || entry_point_objects.indexOf(conf.id)>=0) {
+        node.size = 5;
+        node.label="";
+        node.shape= 'diamond';
+        node.color.border = "#000";
+    }
+    if (conf.verb === "https://w3id.org/xapi/adl/verbs/logged-in") {
+        node.color.border = "#999";
+    }
+    if (conf.verb === "https://w3id.org/xapi/adl/verbs/logged-out") {
+        node.color.border = "#000";
     }
     if (typeof conf.score === "number") { 
         if (conf.system==="https://adn.isae-supaero.fr") {

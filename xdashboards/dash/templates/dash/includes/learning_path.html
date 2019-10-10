@@ -1,6 +1,6 @@
 {% load dash %} 
 
-<div id="learning_path_canvas" class="learning_path_canvas_small"></div>
+<div id="learning_path_canvas" class="learning_path_canvas_big"></div>
 
 <style>
     #learning_path_canvas{
@@ -52,7 +52,8 @@
             label: traces[i].object, 
             system: trace.system_id, 
             type: trace.object_type, 
-            verb: trace.verb, 
+            type_link: trace.object_type_link, 
+            verb: trace.verb_id, 
             score: trace.score, 
             score_max: trace.score_max, 
             score_scaled: trace.score_scaled
@@ -62,12 +63,17 @@
         nodes.push(node)
 
         if (i >= 0) {
-            edges.push({
+            edge = {
                 from: prev_trace.id,
                 to: trace.id,
                 color:"#000000",
                 arrows:'to'
-            })
+            }
+            if (nodes[nodes.length-2].shape=="diamond" || node.shape=="diamond") {
+                edge.length = 15;
+                edge.color="#000"
+            }
+            edges.push(edge)
         }
         prev_trace = trace;
     }
