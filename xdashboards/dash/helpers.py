@@ -5,12 +5,13 @@ import json
 import datetime as dt
 from django.conf import settings
 import os
+import io
 
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 
-clear_file = open(curdir + "/anonymize/clear.txt", "r")
-hashed_file = open(curdir + "/anonymize/hashed.txt", "r")
+clear_file = io.open(curdir + "/anonymize/clear.txt", "r", encoding="utf-8")
+hashed_file = io.open(curdir + "/anonymize/hashed.txt", "r", encoding="utf-8")
 ANONYMOUS_DB = {}
 ANONYMOUS_REVERSE_DB = {}
 for line in clear_file:
