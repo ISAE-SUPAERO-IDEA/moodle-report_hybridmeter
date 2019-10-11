@@ -13,17 +13,17 @@ def learner(request):
     traces = []
     # actor list
     choices = helper.aggregate(id_field="actor.account.login.keyword", description_field="actor.account.name.keyword")
-
     params = {}
 
     params["id"] = request.GET.get('id')
     if params["id"]:
+        id = helper.unanonymize(params["id"])
         # traces ranges
         # activity data
-        activity_buckets = helper.get_activity("actor.account.login.keyword", params["id"])
+        activity_buckets = helper.get_activity("actor.account.login.keyword", id)
 
         # traces
-        traces = helper.get_traces(params["id"])
+        traces = helper.get_traces(id)
 
     return render(request, 'dash/learners_view.html', {
         'choices': choices,

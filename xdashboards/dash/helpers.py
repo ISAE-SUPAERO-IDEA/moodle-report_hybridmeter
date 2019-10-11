@@ -4,13 +4,35 @@ import pytz
 import json
 import datetime as dt
 from django.conf import settings
+import os
+
+
+curdir = os.path.dirname(os.path.abspath(__file__))
+
+clear_file = open(curdir + "/anonymize/clear.txt", "r")
+hashed_file = open(curdir + "/anonymize/hashed.txt", "r")
+ANONYMOUS_DB = {}
+ANONYMOUS_REVERSE_DB = {}
+for line in clear_file:
+    hashed = hashed_file.readline().rstrip('\n')
+    clear = line.rstrip('\n')
+    ANONYMOUS_DB[clear] = hashed
+    ANONYMOUS_REVERSE_DB[hashed] = clear
+
+clear_file.close()
+hashed_file.close()
+
+def anonymize(key):
+    if key in ANONYMOUS_DB:
+        key = ANONYMOUS_DB.get(key)
+    return key
 
 convert_paths = {
     "id": {
         "field": "_id"
     },
     "actor": {
-        "field": "_source.actor.account.name"
+        "field": "_source.actor.account.uuid"
     },
     "verb": {
         "field": "_source.verb.id",
@@ -114,6 +136,44 @@ def timezonize(date):
 def timezonize_format(date, format):
     return timezonize(date).strftime(format)
 
+
+def anonymize_trace(trace):
+    """
+    def clear_path(path):
+        item = trace
+        paths = path.split(".")
+        i = 0
+        while i < len(paths) - 1
+            item = item[paths[i]]
+            i = i +1
+        del item[paths[i]]
+    clear_path("actor.account.name")
+    """
+
+
+    return anonymize_trace_be(trace)
+
+# Create your views here.
+def anonymize_trace_be(trace):
+    print(trace)
+    if type(trace) == dict:
+
+        for key in trace:
+            trace[key] = anonymize_trace_be(trace[key])
+        return trace
+    elif type(trace) == list:
+        return [anonymize_trace_be(e) for e in trace]
+    elif type(trace) == str:
+        return anonymize(trace)
+    elif type(trace) == int or type(trace) == float or type(trace) == bool or trace is None:
+        return trace
+    else:
+        print("-------------")
+        print(type(trace), trace)
+        raise(Exception("Unknown trace type"))
+
+
+
 # Create your views here.
 def convert_trace(trace):
     res = {}
@@ -166,7 +226,7 @@ class Helper():
         self.index = "xapi_adn_enriched"
         self.global_range_end =  (dt.datetime.now().timestamp() * 1000) + 24 * 60 * 60 * 1000
         self.global_range_start =  self.global_range_end - 60 * 24 * 60 * 60 * 1000
-        
+
         self.daterangequery = {"timestamp": {
                                 "gte": self.global_range_start,
                                 "lte": self.global_range_end
@@ -192,9 +252,10 @@ class Helper():
             self.error_response = render(request, 'dash/error.html', {"error": "Not authorized: {}".format(request.user.username)})
 
 
-
     def convert_traces(self, traces):
-        return [convert_trace(trace) for trace in traces]
+        traces = [anonymize_trace(trace) for trace in traces]
+        traces = [convert_trace(trace) for trace in traces]
+        return traces
 
     def aggregate(self, id_field, description_field, range="full", filter=None, size=5000):
         query = {"range": self.daterangequery} if range=="full" else {"range": self.daterangequery_traces}
@@ -229,8 +290,16 @@ class Helper():
             get_("name")
             get_("system")
             get_("type")
+            choice["name"] = self.anonymize(choice["key"])
+            choice["key"] = self.anonymize(choice["key"])
 
         return choices
+
+    def anonymize(self, key):
+        return anonymize(key)
+
+    def unanonymize(self, key):
+        return ANONYMOUS_REVERSE_DB.get(key)
 
     def get_object_occurences(self, id, size = 1000000):
         obj = self.es.search(index=self.index, size=500, body={
@@ -310,7 +379,9 @@ class Helper():
                 "script": "doc[\"timestamp\"].value.toInstant().toEpochMilli();"
               }
             },
-            "_source": True,
+            "_source": {
+                "excludes": ["actor.name", "actor.account.name"]
+            },
             "query": {
                 "bool": {
                     "must": {"range": self.daterangequery_traces},
@@ -425,10 +496,10 @@ class Helper():
         if recursion:
             node_ids = list(ways["nodes"].keys())
             for node_id in node_ids:
-                self.add_node_ways(ways, node_id, 
-                    previous=node_has_edge(node_id, "from"), 
-                    next=node_has_edge(node_id, "to"), 
-                    recursion=recursion-1, 
+                self.add_node_ways(ways, node_id,
+                    previous=node_has_edge(node_id, "from"),
+                    next=node_has_edge(node_id, "to"),
+                    recursion=recursion-1,
                     cull=0.5)
 
 
