@@ -18,3 +18,15 @@ def jsonify(object):
 @register.filter()
 def sum(lis, key):
     return functools.reduce(lambda a, b: {key: a[key] + b[key]}, lis, {key: 0})[key]
+
+@register.filter()
+def ontrue(obj, text):
+    return text if obj else ""
+
+@register.filter()
+def onequal(obj1, obj2, text):
+    return ontrue(obj1 == obj2, text)
+
+@register.filter()
+def compare(obj1, obj2):
+    return obj1 == obj2

@@ -1,6 +1,6 @@
 {% load dash %} 
 
-<b>{{ selected.definition.name.any}}</b>
+
 <div id="resource_access_canvas" class="resource_access_canvas"></div>
 
 <style>
@@ -9,7 +9,7 @@
         background-color: #ffffff;
     }
     .resource_access_canvas{
-        height:1000px;
+        height:750px;
     }
 </style>
 
@@ -17,13 +17,6 @@
 
 
 <script type="text/javascript">
-
-    var ways = {{ ways|jsonify }};
-    var selected = {{selected | jsonify }};
-
-
-    console.log(ways);
-    console.log(selected);
 
     edge_group_from = ways.edge_groups[`from|${selected.id}`];
 

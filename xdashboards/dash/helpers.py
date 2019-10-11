@@ -432,7 +432,7 @@ class Helper():
                     cull=0.5)
 
 
-    def get_ways(self, id):
+    def get_ways(self, id, previous=True, next=True, recursion=1, cull=0.1):
         # get all occurences
         occurences = self.get_object_occurences(id)
         ways = {
@@ -440,7 +440,7 @@ class Helper():
             "edges": {},
             "edge_groups": {}
         }
-        self.add_node_ways(ways, id, previous=True, next=True, recursion=1, cull=0.1)
+        self.add_node_ways(ways, id, previous=previous, next=next, recursion=recursion, cull=cull)
         
 
         

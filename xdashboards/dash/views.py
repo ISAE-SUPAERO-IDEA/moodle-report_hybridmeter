@@ -14,19 +14,22 @@ def learner(request):
     # actor list
     choices = helper.aggregate(id_field="actor.account.login.keyword", description_field="actor.account.name.keyword")
 
-    id = request.GET.get('id')
-    if id:
+    params = {}
+
+    params["id"] = request.GET.get('id')
+    if params["id"]:
         # traces ranges
         # activity data
-        activity_buckets = helper.get_activity("actor.account.login.keyword", id)
+        activity_buckets = helper.get_activity("actor.account.login.keyword", params["id"])
 
         # traces
-        traces = helper.get_traces(id)
+        traces = helper.get_traces(params["id"])
 
     return render(request, 'dash/learners_view.html', {
         'choices': choices,
         "activity_buckets": activity_buckets,
         "traces": traces,
+        "params": params
         })
 
 
@@ -47,19 +50,23 @@ def resource(request):
 
     choices.sort(key=lambda choice: choice["name"])
 
-    id = request.GET.get('id')
-    if id:
+    params = {}
+
+    params["id"] = request.GET.get('id')
+    params["next_nodes"] = False if request.GET.get('next_nodes') == "false" else True
+    params["previous_nodes"] = False if request.GET.get('previous_nodes') == "false" else True
+    if params["id"]:
         # traces ranges
         # activity data
-        ways = helper.get_ways(id)
+        ways = helper.get_ways(params["id"], previous=params["previous_nodes"], next=params["next_nodes"])
         #activity_buckets = helper.get_tree_activity("object.id.keyword", id)
-        activity_buckets = helper.get_activity("object.id.keyword", id)
-        selected = helper.get_object_definition(id)
+        activity_buckets = helper.get_activity("object.id.keyword", params["id"])
+        selected = helper.get_object_definition(params["id"])
         learners = helper.aggregate(
             id_field="actor.account.login.keyword",
             description_field="actor.account.name.keyword",
             filter={
-                "term": {"object.id.keyword": id}
+                "term": {"object.id.keyword": params["id"]}
             },range="filtered")
 
         # traces
@@ -71,4 +78,5 @@ def resource(request):
         "activity_buckets": activity_buckets,
         "ways": ways,
         "learners": learners,
+        "params": params
         })

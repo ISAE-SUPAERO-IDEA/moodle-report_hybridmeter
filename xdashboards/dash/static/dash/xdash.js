@@ -22,6 +22,10 @@ var has_param = function(key) {
     var searchParams = get_search_params();
     return searchParams.has(key);
 }
+var get_param = function(key) {
+    var searchParams = get_search_params();
+    return searchParams.has(key) ? searchParams.get(key) : undefined;   
+}
 
 var switch_class = function(elem, class1, class2, current_state) {
     if (current_state==false) {
