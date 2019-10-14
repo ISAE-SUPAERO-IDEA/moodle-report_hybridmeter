@@ -19,6 +19,8 @@ for line in clear_file:
     clear = line.rstrip('\n')
     ANONYMOUS_DB[clear] = hashed
     ANONYMOUS_REVERSE_DB[hashed] = clear
+    #ANONYMOUS_DB[clear] = clear
+    #ANONYMOUS_REVERSE_DB[clear] = clear
 
 clear_file.close()
 hashed_file.close()
@@ -156,7 +158,6 @@ def anonymize_trace(trace):
 
 # Create your views here.
 def anonymize_trace_be(trace):
-    print(trace)
     if type(trace) == dict:
 
         for key in trace:
@@ -169,8 +170,6 @@ def anonymize_trace_be(trace):
     elif type(trace) == int or type(trace) == float or type(trace) == bool or trace is None:
         return trace
     else:
-        print("-------------")
-        print(type(trace), trace)
         raise(Exception("Unknown trace type"))
 
 
@@ -226,7 +225,7 @@ class Helper():
         self.es = Elasticsearch(["idea-db"])
         self.index = "xapi_adn_enriched"
         self.global_range_end =  (dt.datetime.now().timestamp() * 1000) + 24 * 60 * 60 * 1000
-        self.global_range_start =  self.global_range_end - 60 * 24 * 60 * 60 * 1000
+        self.global_range_start =  self.global_range_end - 75 * 24 * 60 * 60 * 1000
 
         self.daterangequery = {"timestamp": {
                                 "gte": self.global_range_start,
@@ -291,7 +290,7 @@ class Helper():
             get_("name")
             get_("system")
             get_("type")
-            print("{} / {}".format(choice["name"], self.anonymize(choice["key"])))
+            #print("{} / {}".format(choice["name"], self.anonymize(choice["key"])))
             choice["name"] = self.anonymize(choice[name_field])
             choice["key"] = self.anonymize(choice["key"])
 
