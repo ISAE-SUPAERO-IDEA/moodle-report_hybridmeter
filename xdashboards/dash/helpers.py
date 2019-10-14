@@ -291,6 +291,7 @@ class Helper():
             get_("name")
             get_("system")
             get_("type")
+            print("{} / {}".format(choice["name"], self.anonymize(choice["key"])))
             choice["name"] = self.anonymize(choice["key"])
             choice["key"] = self.anonymize(choice["key"])
 
