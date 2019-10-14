@@ -13,6 +13,7 @@ def learner(request):
     traces = []
     # actor list
     choices = helper.aggregate(id_field="actor.account.login.keyword", description_field="actor.account.name.keyword", anonymize=True)
+    choices = filter(lambda x: x["name"] != "?", choices)
     params = {}
 
     params["id"] = request.GET.get('id')
