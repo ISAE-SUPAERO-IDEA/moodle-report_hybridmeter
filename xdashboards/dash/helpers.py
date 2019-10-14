@@ -25,10 +25,10 @@ for line in clear_file:
 clear_file.close()
 hashed_file.close()
 
-def anonymize(key):
+def anonymize(key, force=True):
     if key in ANONYMOUS_DB:
         key = ANONYMOUS_DB.get(key)
-    else:
+    elif force:
         key = "?"
     return key
 
@@ -168,7 +168,7 @@ def anonymize_trace_be(trace):
     elif type(trace) == list:
         return [anonymize_trace_be(e) for e in trace]
     elif type(trace) == str:
-        return anonymize(trace)
+        return anonymize(trace, False)
     elif type(trace) == int or type(trace) == float or type(trace) == bool or trace is None:
         return trace
     else:
@@ -300,7 +300,7 @@ class Helper():
         return choices
 
     def anonymize(self, key):
-        return anonymize(key)
+        return anonymize(key, True)
 
     def unanonymize(self, key):
         return ANONYMOUS_REVERSE_DB.get(key)
@@ -504,7 +504,7 @@ class Helper():
                     previous=node_has_edge(node_id, "from"),
                     next=node_has_edge(node_id, "to"),
                     recursion=recursion-1,
-                    cull=0.5)
+                    cull=0.33)
 
 
     def get_ways(self, id, previous=True, next=True, recursion=1, cull=0.1):
