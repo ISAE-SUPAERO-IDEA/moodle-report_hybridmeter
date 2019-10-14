@@ -12,7 +12,7 @@ def learner(request):
     activity_buckets = []
     traces = []
     # actor list
-    choices = helper.aggregate(id_field="actor.account.login.keyword", description_field="actor.account.name.keyword", name_field="key")
+    choices = helper.aggregate(id_field="actor.account.login.keyword", description_field="actor.account.name.keyword", anonymize=True)
     params = {}
 
     params["id"] = request.GET.get('id')
@@ -43,10 +43,11 @@ def resource(request):
     ways =[]
     selected = None
     # object list
-    choices = helper.aggregate(id_field="object.id.keyword", description_field="object.definition.name.any.keyword", name_field="name")
+    choices = helper.aggregate(id_field="object.id.keyword", description_field="object.definition.name.any.keyword", anonymize=False)
     for choice in choices:
         prefix = "Online" if choice["system"] == "https://online.isae-supaero.fr" else "ADN"
-        choice["name"] = "{} - {} - {} - ({})".format(prefix, choice["type"], choice["name"], choice["key"])
+        #choice["name"] = "{} - {} - {} - ({})".format(prefix, choice["type"], choice["name"], choice["key"])
+        choice["name"] = "{} - {} - {}".format(prefix, choice["type"], choice["name"] if choice["name"] else choice["key"])
 
     choices.sort(key=lambda choice: choice["name"])
 

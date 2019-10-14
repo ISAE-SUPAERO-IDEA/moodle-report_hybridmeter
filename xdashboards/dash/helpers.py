@@ -28,6 +28,8 @@ hashed_file.close()
 def anonymize(key):
     if key in ANONYMOUS_DB:
         key = ANONYMOUS_DB.get(key)
+    else:
+        key = "?"
     return key
 
 convert_paths = {
@@ -257,7 +259,7 @@ class Helper():
         traces = [convert_trace(trace) for trace in traces]
         return traces
 
-    def aggregate(self, id_field, description_field, range="full", filter=None, size=5000, name_field="name"):
+    def aggregate(self, id_field, description_field, range="full", filter=None, size=5000, anonymize=True):
         query = {"range": self.daterangequery} if range=="full" else {"range": self.daterangequery_traces}
         if filter:
             query = {
@@ -291,8 +293,9 @@ class Helper():
             get_("system")
             get_("type")
             #print("{} / {}".format(choice["name"], self.anonymize(choice["key"])))
-            choice["name"] = self.anonymize(choice[name_field])
-            choice["key"] = self.anonymize(choice["key"])
+            if anonymize:
+                choice["name"] = self.anonymize(choice["key"])
+                choice["key"] = self.anonymize(choice["key"])
 
         return choices
 
