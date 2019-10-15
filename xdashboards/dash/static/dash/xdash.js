@@ -50,9 +50,8 @@ function color_scale(r1,g1,b1,r2,g2,b2,s) {
 }
 
 entry_point_objects = [
-    "https://online.isae-supaero.fr",
+    "https://adn.isae-supaero.fr/xapi/activities/course/52ff34d2-242e-4ebc-9b9e-c00aa8065cda",
     "https://online.isae-supaero.fr/xapi/activities/course/cbe5d5cd-59d6-4877-a147-85f66f017589"
-
 ]
 
 var get_node = function(conf) {
@@ -72,7 +71,10 @@ var get_node = function(conf) {
         node.shape= 'dot';
         node.size = 15;
     }
-    if (conf.type_link === "http://vocab.xapi.fr/activities/system" || entry_point_objects.indexOf(conf.id)>=0) {
+    if (entry_point_objects.indexOf(conf.object_id)>=0) {
+        node.shape = "triangle";
+    }
+    if (conf.type_link === "http://vocab.xapi.fr/activities/system") {
         node.size = 5;
         node.label="";
         node.shape= 'diamond';

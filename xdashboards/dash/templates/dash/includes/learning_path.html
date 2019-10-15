@@ -48,7 +48,8 @@
             && typeof trace.score !== "number") continue;
         
         var node = get_node({ 
-            id: trace.id, 
+            id: trace.id,
+            object_id: traces[i].object_id,
             label: traces[i].object, 
             system: trace.system_id, 
             type: trace.object_type, 

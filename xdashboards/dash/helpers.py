@@ -439,7 +439,9 @@ class Helper():
                     key = "{}|{}".format(adjency, name)
                     if not key in edge_groups:
                         edge_groups[key] = { "edges": {} }
-                    edge_groups[key]["edges"][edge_id] = edges[edge_id]
+                    if not edge_id in edge_groups[key]["edges"]:
+                        edge_groups[key]["edges"][edge_id] = edges[edge_id]
+                        
 
                 if adjency == "next":
                     add_to_edge_group("from", node_from, edge_id)
