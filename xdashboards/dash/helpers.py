@@ -500,11 +500,12 @@ class Helper():
         if recursion:
             node_ids = list(ways["nodes"].keys())
             for node_id in node_ids:
-                self.add_node_ways(ways, node_id,
-                    previous=node_has_edge(node_id, "from"),
-                    next=node_has_edge(node_id, "to"),
-                    recursion=recursion-1,
-                    cull=0.33)
+                if not ways["nodes"][node_id]["type_link"] == "http://vocab.xapi.fr/activities/system":
+                    self.add_node_ways(ways, node_id,
+                        previous=node_has_edge(node_id, "from"),
+                        next=node_has_edge(node_id, "to"),
+                        recursion=recursion-1,
+                        cull=0.15)
 
 
     def get_ways(self, id, previous=True, next=True, recursion=1, cull=0.1):
