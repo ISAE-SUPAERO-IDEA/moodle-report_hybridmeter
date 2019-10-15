@@ -68,7 +68,7 @@ var get_node = function(conf) {
             node.color.background = '#FFFF00';
             node.color.border= '#FFA500';
         }
-    if (conf.type === "course") { 
+    if (conf.type_link ===  "http://vocab.xapi.fr/activities/course") { 
         node.shape= 'dot';
         node.size = 15;
     }
