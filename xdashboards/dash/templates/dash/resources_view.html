@@ -38,13 +38,17 @@
         </div>
         <div class="col-lg-4" id="resource_stats_div">
             <button type="button" class="btn btn-secondary-outline dropdown-toggle float-right" id="stats_toogle_button"></button></td>
-            {% include "dash/includes/resource_stats.html" %}  
-            {% include "dash/includes/resource_learners.html" %}    
+            <h4 class="d-inline">Statistiques</h4>
+            <div id="resource_info" class="x-clear">
+                {% include "dash/includes/resource_stats.html" %}  
+                {% include "dash/includes/resource_learners.html" %}    
+            </div>
         </div>
         <script>
             var stats_visible = true;
             $(stats_toogle_button).on("click", () => {
                 switch_class("#resource_access_div", "col-lg-8", "col-lg-11", stats_visible);
+                switch_class("#resource_info", "d-block", "d-none", stats_visible);
                 stats_visible = switch_class("#resource_stats_div", "col-lg-4", "col-lg-1", stats_visible);
             });
         </script>
