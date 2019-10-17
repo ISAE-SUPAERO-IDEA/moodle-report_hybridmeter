@@ -1,271 +1,84 @@
-from django.shortcuts import render, redirect
-from elasticsearch import Elasticsearch
-import datetime as dt
-from django.template import engines, TemplateSyntaxError, Context
+from django.shortcuts import render
 import json
-import pprint
-import pytz
-from django.conf import settings
 
-def template_from_string(template_string, using=None):
-    """
-    Convert a string into a template object,
-    using a given template engine or using the default backends 
-    from settings.TEMPLATES if no engine was specified.
-    """
-    # This function is based on django.template.loader.get_template, 
-    # but uses Engine.from_string instead of Engine.get_template.
-    chain = []
-    engine_list = engines.all() if using is None else [engines[using]]
-    for engine in engine_list:
-        try:
-            return engine.from_string(template_string)
-        except TemplateSyntaxError as e:
-            chain.append(e)
-    raise TemplateSyntaxError(template_string, chain=chain)
-
-convert_paths = {
-    "id": {
-        "field": "_id"
-    },
-    "actor": {
-        "field": "_source.actor.account.name"
-    },
-    "verb": {
-        "field": "_source.verb.id",
-        "translations": {
-            "https://w3id.org/xapi/adl/verbs/logged-in": "s'est connecté(e)",
-            "https://w3id.org/xapi/adl/verbs/logged-out": "s'est déconnecté(e)",
-            "http://vocab.xapi.fr/verbs/navigated-in": "a navigué vers",
-            "http://adlnet.gov/expapi/verbs/answered": "a répondu à",
-            "http://vocab.xapi.fr/verbs/graded": "a obtenu",
-        }
-    },
-    "system": {
-        "field": "_source.system.definition.name.en",
-        "translations": {
-            "ISAE-SUPAERO online": "Online",
-            "ISAE-SUPAERO micro-learning": "ADN"
-        }
-    },
-    "system_color": {
-        "field": "_source.system.definition.name.en",
-        "translations": {
-            "ISAE-SUPAERO online": "primary",
-            "ISAE-SUPAERO micro-learning": "warning"
-        }
-    },
-    "date": {
-        "field": "fields.timestamp",
-        "transform": "date"
-    },
-    "hour": {
-        "field": "fields.timestamp",
-        "transform": "hour"
-    },
-    "timestamp": {
-        "field": "fields.timestamp",
-        "transform": "timestamp"
-    },
-    "object": {
-        "field": "_source.object.definition.name.en|_source.object.definition.name.en-US|_source.object.definition.name.fr"
-    },
-    "score": {
-        "field": "_source.result.score.raw"
-    },
-    "score_max": {
-        "field": "_source.result.score.max"
-    },
-    "score_scaled": {
-        "field": "_source.result.score.scaled"
-    },
-    "source": {
-        "field": "_source",
-        "transform": "stringify"
-    },
-    "object_type": {
-        "field": "_source.object.type"
-    },
-    "object_id": {
-        "field": "_source.object.id"
-    }
-}
-verbs_to_phrases = {
-    "https://w3id.org/xapi/adl/verbs/logged-in": "{{ t.actor }} {{ t.verb }}",
-    "https://w3id.org/xapi/adl/verbs/logged-out": "{{ t.actor }} {{ t.verb }}",
-    "http://vocab.xapi.fr/verbs/navigated-in": "{{ t.actor }} {{ t.verb }} {{ t.object }}",
-    "http://adlnet.gov/expapi/verbs/answered": "{{ t.actor }} {{ t.verb }} {{ t.object }} ({{t.score}}/{{t.score_max}})",
-    "http://vocab.xapi.fr/verbs/graded": "{{ t.actor }} {{ t.verb }}  {{t.score}}/{{t.score_max}} sur {{ t.object }}"
-}
-
-def timezonize(date):
-    date = date.replace(tzinfo=pytz.timezone('UTC'))
-    date = date.astimezone(pytz.timezone('Europe/Paris'))
-    return date
-
-def timezonize_format(date, format):
-    return timezonize(date).strftime(format)
+from .helpers import Helper
 
 
-# Create your views here.
-def convert_trace(trace):
-    res = {}
-    for key in convert_paths.keys():
-        config = convert_paths[key]
-        fields = config["field"].split("|")
-        for field in fields:
-            paths = field.split(".")
-            val = trace
-            i = 0
-            while val and i < len(paths):
-                val = val.get(paths[i])
-                i = i + 1
+def learner(request):
+    helper = Helper(request)
+    if helper.error_response:
+        return helper.error_response
 
-            if val:
-                break
-        
-        if "translations" in config and val in config["translations"]:
-            val = config["translations"][val]
-
-        if "transform" in config and val:
-            if config["transform"] == "date":
-                val = timezonize_format(dt.datetime.fromtimestamp(val[0]/1000), "%d/%m/%Y")
-            if config["transform"] == "hour":
-                val = timezonize_format(dt.datetime.fromtimestamp(val[0]/1000), "%H:%M:%S")
-            if config["transform"] == "timestamp":
-                val = val[0]
-            if config["transform"] == "stringify":
-                val = json.dumps(val, indent=4, sort_keys=True)
-
-        res[key] = val
-    verb = trace["_source"]["verb"]["id"]
-    if verb in verbs_to_phrases:
-        t_string = verbs_to_phrases[verb]
-        template = template_from_string(t_string)
-        context = {"t": res}
-        res["phrase"] = template.render(context)
-    else:
-        res["phrase"] = res
-        del res["phrase"]["phrase"]
-
-    return res
-
-def convert_traces(traces):
-    return [convert_trace(trace) for trace in traces]
-
-def index(request):
-    if not request.user.is_authenticated:
-        return redirect("cas_ng_login")
-
-    if request.user.username not in settings.AUTHORIZED_USERS:
-        return render(request, 'dash/error.html', {"error": "Not authorized: {}".format(request.user.username)})
-
-    es = Elasticsearch(["idea-db"])
-    index = "xapi_adn_enriched"
-
-    global_range_end =  (dt.datetime.now().timestamp() * 1000) + 24 * 60 * 60 * 1000
-    global_range_start =  global_range_end - 60 * 24 * 60 * 60 * 1000
-    
-    daterangequery = {"timestamp": {
-                            "gte": global_range_start,
-                            "lte": global_range_end
-                        }
-                }
-    activity_data_json = {}
+    activity_buckets = []
     traces = []
     # actor list
-    actors = es.search(index=index, size=0, filter_path="aggregations.actor.buckets", body={
-        "query": {"range": daterangequery},
-        "aggs": {
-            "actor": {
-                "terms": {
-                    "field": "actor.account.login.keyword",
-                    "size": 50
-                },
-                "aggs": {
-                    "name": {"terms": {"field": "actor.account.name.keyword"}}
-                }
-            }
-        }
-    })
-    actors = actors["aggregations"]["actor"]["buckets"]
+    choices = helper.aggregate(id_field="actor.account.login.keyword", description_field="actor.account.name.keyword", anonymize=True)
+    choices = filter(lambda x: x["name"] != "?", choices)
+    params = {}
 
-    user = request.GET.get('user')
-    if user:
+    params["id"] = request.GET.get('id')
+    if params["id"]:
+        id = helper.unanonymize(params["id"])
         # traces ranges
-        daterangequery_traces = daterangequery
-
-        traces_range = request.GET.get('traces_range')
-        if traces_range:
-            traces_range_start = int(traces_range)
-            traces_range_end = traces_range_start + 3 * 60 * 60 * 1000
-        else:
-            traces_range_start = global_range_start
-            traces_range_end = global_range_end
-        daterangequery_traces = { "timestamp": {
-                        "gte": traces_range_start,
-                        "lt": traces_range_end
-                    }
-                }
-
         # activity data
-        activity = es.search(index=index, size=25, filter_path="aggregations.activity.buckets", body={
-            "sort": {"timestamp": "desc"},
-            "aggs": {
-                "activity": {
-                    "date_histogram": {
-                        "field": "timestamp",
-                        "interval": "3h",
-                        "time_zone": "+02:00"
-                    }
-                }
-            },
-            "query": {
-                "bool": {
-                    "must": {"range": daterangequery},
-                    "filter": {
-                        "term": {
-                            "actor.account.login.keyword": user
-                        }
-                    }
-                },
-        }})
-        activity_buckets = activity["aggregations"]["activity"]["buckets"]
-        for i, bucket in enumerate(activity_buckets):
-            key = activity_buckets[i]["key"]
-            activity_buckets[i]["active"] = True if key >= traces_range_start and key < traces_range_end else False
-            print(activity_buckets[i], traces_range_start, traces_range_end)
-
-
-
-
-        activity_data_json = json.dumps(activity_buckets)
+        activity_buckets = helper.get_activity("actor.account.login.keyword", id)
 
         # traces
-        traces = es.search(index=index, size=100, filter_path="hits.hits", body={
-            "sort": {"timestamp": "desc"},
-            "script_fields": {
-              "timestamp": {
-                "script": "doc[\"timestamp\"].value.toInstant().toEpochMilli();"
-              }
-            },
-            "_source": True,
-            "query": {
-                "bool": {
-                    "must": {"range": daterangequery_traces},
-                    "filter": {
-                        "term": {
-                            "actor.account.login.keyword": user
-                        }
-                    }
-                },
-            }})
-        traces = convert_traces(traces["hits"]["hits"])
+        traces = helper.get_traces(id)
 
-    
-    return render(request, 'dash/dashboard.html', {
-        'actors': actors,
-        "activity_data_json": activity_data_json,
+    return render(request, 'dash/learners_view.html', {
+        'choices': choices,
+        "activity_buckets": activity_buckets,
         "traces": traces,
-        "traces_json": json.dumps(traces)
+        "params": params
+        })
+
+
+def resource(request):
+    helper = Helper(request)
+    if helper.error_response:
+        return helper.error_response
+
+    activity_buckets = []
+    learners = []
+    ways =[]
+    selected = None
+    # object list
+    choices = helper.aggregate(id_field="object.id.keyword", description_field="object.definition.name.any.keyword", anonymize=False)
+    for choice in choices:
+        prefix = "Online" if choice["system"] == "https://online.isae-supaero.fr" else "ADN"
+        #choice["name"] = "{} - {} - {} - ({})".format(prefix, choice["type"], choice["name"], choice["key"])
+        choice["name"] = "{} - {} - {}".format(prefix, choice["type"], choice["name"] if choice["name"] else choice["key"])
+
+    choices.sort(key=lambda choice: choice["name"])
+
+    params = {}
+
+    params["id"] = request.GET.get('id')
+    params["next_nodes"] = False if request.GET.get('next_nodes') == "false" else True
+    params["previous_nodes"] = False if request.GET.get('previous_nodes') == "false" else True
+    if params["id"]:
+        # traces ranges
+        # activity data
+        ways = helper.get_ways(params["id"], previous=params["previous_nodes"], next=params["next_nodes"])
+        #activity_buckets = helper.get_tree_activity("object.id.keyword", id)
+        activity_buckets = helper.get_activity("object.id.keyword", params["id"])
+        selected = helper.get_object_definition(params["id"])
+        learners = helper.aggregate(
+            id_field="actor.account.login.keyword",
+            description_field="actor.account.name.keyword",
+            filter={
+                "term": {"object.id.keyword": params["id"]}
+            },range="filtered")
+
+        # traces
+        #traces = helper.get_traces(id)
+
+    return render(request, 'dash/resources_view.html', {
+        'choices': choices,
+        "selected": selected,
+        "activity_buckets": activity_buckets,
+        "ways": ways,
+        "learners": learners,
+        "params": params
         })

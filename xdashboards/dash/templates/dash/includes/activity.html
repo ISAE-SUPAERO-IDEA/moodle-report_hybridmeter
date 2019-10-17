@@ -1,3 +1,5 @@
+ {% load dash %}
+
  <div  class="chart-container">
      <canvas id="canvas" height="150"></canvas>
 </div>
@@ -14,9 +16,7 @@
         }
         return;
     };
-    {% autoescape off %} 
-    var activity_data= {{ activity_data_json }};
-    {% endautoescape %} 
+    var activity_data= {{ activity_buckets|jsonify }};
 
     activity_data.sort((a, b) => {
         if (a.active == b.active) return 0;

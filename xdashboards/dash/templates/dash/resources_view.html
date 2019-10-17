@@ -1,0 +1,60 @@
+{% extends 'dash/base.html' %}
+{% load dash %} 
+
+
+{% block content %}
+
+    
+    {% if ways %}
+    <script>
+        var ways = {{ ways|jsonify }};
+        var selected = {{selected | jsonify }};
+    </script>
+
+        <hr/>
+        <div class="float-right d-table">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="previous_nodes" {{ params.previous_nodes|ontrue:"checked" }}></input>
+                <label class="form-check-label">Chemins entrants</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="next_nodes" {{ params.next_nodes|ontrue:"checked" }}></input>
+                <label class="form-check-label">Chemins sortants</label>
+            </div>
+        </div>
+        <script>
+            $('#next_nodes').on("change", (e) => { change_param("next_nodes",$('#next_nodes').prop('checked')); });
+            $('#previous_nodes').on("change", (e) => { change_param("previous_nodes",$('#previous_nodes').prop('checked')); });
+        </script>
+        <h4>Accès à la resource</h4>
+        <b>{{ selected.definition.name.any}}</b><br/>
+        <hr/>
+            
+    <div class="row">
+        <!-- Learner path -->
+        <div class="col-lg-8" id="resource_access_div">
+
+            {% include "dash/includes/resource_access.html" %}    
+        </div>
+        <div class="col-lg-4" id="resource_stats_div">
+            <button type="button" class="btn btn-secondary-outline dropdown-toggle float-right" id="stats_toogle_button"></button></td>
+            <h4 class="d-inline">Statistiques</h4>
+            <div id="resource_info" class="x-clear">
+                {% include "dash/includes/resource_stats.html" %}  
+                {% include "dash/includes/resource_learners.html" %}    
+            </div>
+        </div>
+        <script>
+            var stats_visible = true;
+            $(stats_toogle_button).on("click", () => {
+                switch_class("#resource_access_div", "col-lg-8", "col-lg-11", stats_visible);
+                switch_class("#resource_info", "d-block", "d-none", stats_visible);
+                stats_visible = switch_class("#resource_stats_div", "col-lg-4", "col-lg-1", stats_visible);
+            });
+        </script>
+    </div>
+    {% endif %}
+
+   
+{% endblock %}
+

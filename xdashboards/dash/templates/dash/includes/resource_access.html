@@ -1,0 +1,133 @@
+{% load dash %} 
+
+
+<div id="resource_access_canvas" class="resource_access_canvas"></div>
+
+<style>
+    #resource_access_canvas{
+        font-family: 'Open Sans';
+        background-color: #ffffff;
+    }
+    .resource_access_canvas{
+        height:750px;
+    }
+</style>
+
+
+
+
+<script type="text/javascript">
+
+    edge_group_from = ways.edge_groups[`from|${selected.id}`];
+
+    var node = get_node({
+        id: selected.id,
+        //label: `${Math.round(edge_group_from.average_distance)}s - {{ learners|sum:"doc_count" }} hits`,
+        object_id: selected.id,
+        system: selected.system,
+        type: selected.type,
+        type_link: selected.definition.type,
+        title: selected.id
+    })
+    node.size = 50;
+    node.widthConstraint = {"minimum": 100, "maximum": 100 };
+//    node.font =  { "color":"#000", "size":16, "bold": true};
+    var nodes = [node];
+    var edges = [];
+
+    for (key in ways.nodes) {
+        raw_node = ways.nodes[key]
+        var node = get_node({
+            id: key,
+            object_id: key,
+            system: raw_node["system"],
+            type: raw_node["type"],
+            type_link: raw_node["type_link"],
+            title: key,
+            raw_id: key
+        })
+        node.label = `${raw_node["name"]}`;
+        node.size = 15;
+
+        nodes.push(node);
+    }
+    for (key in ways.edges) {
+        raw_edge = ways.edges[key]
+        if (raw_edge.adjency=="previous") {
+            edge_color = { background: '#99cc00', border: '#669900'};
+        }
+        else {
+            edge_color = { background: '#ff0000', border: '#cc0000'};
+        }
+        edges.push({
+            from: raw_edge.node_from,
+            to: raw_edge.node_to,
+            arrows: "to",
+            color: edge_color.border,
+            font: {
+                color: edge_color
+            },
+            //length:info["relative_distance"] * 200,
+            length: 50 + 100 * Math.pow((1 - raw_edge.relative_hits),2),
+            label: `${Math.round(raw_edge.relative_hits*100)}% / ${Math.round(raw_edge.average_distance)}s`
+        })
+    }
+
+    // create a network
+    var container = document.getElementById('resource_access_canvas');
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+
+    var options = {
+        nodes: {
+            shape: 'dot',
+            size: 30,
+            font: {
+                size: 12,
+                face: 'Open Sans'
+            },
+            borderWidth: 2,
+            shadow:true
+        },
+        edges: {
+            width: 2,
+            shadow:true
+        },
+        physics: {
+            barnesHut: {
+                gravitationalConstant: -5000
+            }
+        },
+        /*
+        physics: {
+            forceAtlas2Based: {
+                gravitationalConstant: -26,
+                centralGravity: 0.005,
+                avoidOverlap: 1.5
+            },
+            maxVelocity: 146,
+            solver: 'forceAtlas2Based',
+            timestep: 0.35,
+            stabilization: {
+                enabled: true,
+                iterations: 1000,
+                updateInterval: 25
+            }
+        },*/
+        height:"80%", 
+        width:"100%",
+    };
+
+    network = new vis.Network(container, data, options);
+    // Select another node
+    network.on("click", function(ctx) {
+        
+        var id = ctx.nodes[0];
+        if (id !==undefined) {
+            change_param("id", id);
+        }
+
+    });
+</script>

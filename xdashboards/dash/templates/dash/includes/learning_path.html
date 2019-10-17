@@ -1,10 +1,9 @@
+{% load dash %} 
 
-<div id="learning_path_canvas" class="learning_path_canvas_small"></div>
+<div id="learning_path_canvas" class="learning_path_canvas_big"></div>
 
 <style>
     #learning_path_canvas{
-        border: 1px solid #444444;
-        background-color: #ffffff;
         font-family: 'Open Sans';
         background-color: #ffffff;
     }
@@ -21,9 +20,8 @@
 
 <script type="text/javascript">
 
-    {% autoescape off %} 
-    var traces = {{ traces_json }};
-    {% endautoescape %} 
+    var traces = {{ traces|jsonify }};
+    
     traces.sort(function(a, b) {
       return a.timestamp - b.timestamp;
     });
@@ -42,63 +40,41 @@
     var edges = [];
     var i = 0;
     
-    function color_scale(r,g,b,s) {
-        r = Math.floor(r * s);
-        g = Math.floor(g * s);
-        b = Math.floor(b * s);
-        return `rgb(${r},${g},${b})`;
-        
-    }
     for (i=0;i<traces.length;i = i + 1) {
         var trace = traces[i];
-        var title="";
-        var group = "resource";
-        var label = traces[i].object;
-        var color = {};
-        var shape= 'hexagon';
-        var size=20;
+
         if (trace.object == prev_trace.object 
             && trace.verb == prev_trace.verb
             && typeof trace.score !== "number") continue;
-    
-        if (trace.system==="ADN") {
-            color.background = '#FFFF00';
-            color.border= '#FFA500';
-        }
-        if (trace.verb === "s'est connecté(e)") {
-            size = 5;
-            label="";
-            color.background = "#000000";
-            color.border = "#000000";
-        }
-        if (trace.object_type === "course") { 
-            shape= 'dot';
-            size = 15;
-        }
-        if (typeof trace.score === "number") { 
-            if (trace.system==="ADN") {
-                color.background = color_scale(255, 255, 0, trace.score_scaled);
-                //color.border = color_scale(255, 165, 0, trace.score_scaled);
-            }
-            shape= 'star';
-            title = `${trace.score}/${trace.score_max}`;
-        }
-        nodes.push({
+        
+        var node = get_node({ 
             id: trace.id,
-            label,
-            title,
-            color,
-            shape,
-            size,
-            trace 
-            
+            object_id: traces[i].object_id,
+            label: traces[i].object, 
+            system: trace.system_id, 
+            type: trace.object_type, 
+            type_link: trace.object_type_link, 
+            verb: trace.verb_id, 
+            score: trace.score, 
+            score_max: trace.score_max, 
+            score_scaled: trace.score_scaled
         })
+
+        node.trace = trace
+        nodes.push(node)
+
         if (i >= 0) {
-            edges.push({
+            edge = {
                 from: prev_trace.id,
                 to: trace.id,
+                color:"#000000",
                 arrows:'to'
-            })
+            }
+            if (nodes[nodes.length-2].shape=="diamond" || node.shape=="diamond") {
+                edge.length = 15;
+                edge.color="#000"
+            }
+            edges.push(edge)
         }
         prev_trace = trace;
     }
@@ -113,6 +89,7 @@
     })
     edges.push({
         from: prev_trace.id,
+        color:"#000000",
         to: -2,
         arrows:'to'
     })
@@ -126,7 +103,7 @@
                 edges.push({
                     from: nodes[i].id,
                     to: nodes[j].id,
-                    dashes:true,
+                    dashes:[1, 8],
                     arrows:'',
                     physics:false,
                     color:"#aaaaaa"
@@ -159,14 +136,26 @@
             shadow:true
         },
         height:"80%", 
-        width:"100%"
+        width:"100%",
     };
+    var cluster_options = {
+        joinCondition:function(nodeOptions) {
+            res = nodeOptions.trace ? nodeOptions.trace.system_id === "https://adn.isae-supaero.fr" : false;
+            console.log(res);
+            return res
+        }
+    }
 
     network = new vis.Network(container, data, options);
+    //network.clustering.cluster(cluster_options);
     network.on("click", (ctx) => {
         
         var id = ctx.nodes[0];
         if (id !==undefined) {
+            if (id.includes("cluster")) { 
+                network.openCluster(id);
+                return;
+            }
             select_trace(id);
             var top = $(`#trace-${id}`).offset().top - $(traces_list).offset().top + $(traces_list).scrollTop()
             $(traces_list).stop().animate({
