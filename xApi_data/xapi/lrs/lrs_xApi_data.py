@@ -103,6 +103,7 @@ class lrs_data:
     def __insertStatementsBracket(self, db, url, params=None):
         # Récupération des statements
         result = self.__getStatementsRequest(url, params)
+        #print(result["statements"][0]["timestamp"])
 
         # Enregistrement des traces brutes dans le store
         db.saveStatements(result['statements'], 'flat')

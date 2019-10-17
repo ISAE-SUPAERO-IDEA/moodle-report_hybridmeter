@@ -299,7 +299,6 @@ def __addAdjacentStatement(store, order):
 
     for statement in statements:
 
-        statement = statement['_source']
         # On récupère le temps passé de la trace
         # Si il y a une trace stockée après celle en paramètre
 
@@ -307,6 +306,7 @@ def __addAdjacentStatement(store, order):
 
         # Si NONE, on ne peut pas savoir le temps passé
         if adjacent_statement is not None:
+            statement = statement["_source"]
             statement[order] = adjacent_statement
             nb_statements += 1
             bulk_list.append(statement)
@@ -317,7 +317,6 @@ def __addAdjacentStatement(store, order):
             # 4 millions de traces d'un coup
             if len(bulk_list) == 1000:
                 print('Insertion of 1000 enrich statements')
-                print(str(bulk_list[0][order]))
                 store.saveStatements(bulk_list, 'enrich')
                 bulk_list = []
     store.saveStatements(bulk_list, 'enrich')

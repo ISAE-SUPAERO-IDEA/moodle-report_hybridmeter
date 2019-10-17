@@ -5,6 +5,10 @@ import logging
 import time
 
 
+VERB_LOGGED_IN = "https://w3id.org/xapi/adl/verbs/logged-in"
+VERB_LOGGED_OUT = "https://w3id.org/xapi/adl/verbs/logged-out"
+VERB_NAVIGATED_IN = "http://vocab.xapi.fr/verbs/navigated-in"
+
 class elastic_search:
     """Cette classe établit le lien de connexion
     à une base de données elasticsearch
@@ -103,7 +107,6 @@ class elastic_search:
         # On recupere le timestamp du statetement le plus récent inséré dans la BD ElasticSearch
         timestamp = last['hits']['hits'][0]['_source']['stored']
 
-        print(str(timestamp))
 
         # Conversion du timestap ISO du statement en datetime
         date_time = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -161,22 +164,28 @@ class elastic_search:
                     }
                 }
             },
-            "sort": {"stored": "asc"}
+            "sort": {"stored": "asc"},
+            "docvalue_fields": ["timestamp"]
         }
 
         # On requête l'index qui contient les traces brutes
         return helpers.scan(self.es, query=body, index=self.index_enrichment, preserve_order=True)
 
     def getNextStatement(self, statement):
-        return self.getAdjacentStatement(statement, filter_operator="gte", sort_order="asc")
+        return self.getAdjacentStatement(statement, filter_operator="gt", sort_order="asc",
+            rupture_verbs=[VERB_LOGGED_IN])
 
     def getPreviousStatement(self, statement):
-        return self.getAdjacentStatement(statement, filter_operator="lte", sort_order="desc")
+        return self.getAdjacentStatement(statement, filter_operator="lt", sort_order="desc",
+            rupture_verbs=[VERB_LOGGED_OUT])
 
-    def getAdjacentStatement(self, statement, filter_operator, sort_order):
+    def getAdjacentStatement(self, statement, filter_operator, sort_order, rupture_verbs=[]):
 
         # On récupère le timestamp de la trace
         # Requête
+        if not statement["_source"]["verb"]["id"] == VERB_NAVIGATED_IN:
+            return None
+
         body = {
             "query": {
                 "bool": {
@@ -184,13 +193,18 @@ class elastic_search:
                         {
                             "range": {
                                 "timestamp": {
-                                    filter_operator: statement['timestamp']
+                                    filter_operator: statement["_source"]['timestamp']
                                 }
+                            },
+                        },
+                        {
+                            "term": {
+                                "actor.account.uuid.keyword": statement["_source"]['actor']['account']['uuid'],
                             }
                         },
                         {
                             "term": {
-                                "actor.account.uuid.keyword": statement['actor']['account']['uuid']
+                                "verb.id.keyword": VERB_NAVIGATED_IN
                             }
                         }
                     ]
@@ -208,17 +222,28 @@ class elastic_search:
             index=self.index_enrichment,
             body=body
         )
-
+        
         # On cherche la trace
-        statement_db = res['hits']['hits'][0]
-        i = 1
+        i = 0
         adjacent_statement_db = None
         while len(res['hits']['hits']) > i:
-            candidate = res['hits']['hits'][1]
-            if candidate["_source"]["object"]["id"] != statement_db["_source"]["object"]["id"]:
+            candidate = res['hits']['hits'][i]
+            i = i + 1
+            is_sameplatform = candidate["_source"]["system"]["id"] == statement["_source"]["system"]["id"]
+            # si on a un logged in sur la même plateforme que la trace en cours on considére que la trace en cours est la dernière de la série 
+            if candidate["_source"]["verb"] in rupture_verbs and is_sameplatform:
+                print ("ruptured:" + statement["id"])
+                break
+
+            # On ignore logegd in et logged out
+            if candidate["_source"]["verb"] in [VERB_LOGGED_IN, VERB_LOGGED_OUT]:
+                continue
+            
+            # Finalement, si on a une trace avec un objet différent et un timestamp différent on la garde
+            if candidate["_source"]["object"]["id"] != statement["_source"]["object"]["id"] and candidate["fields"]['timestamp'][0] != statement["fields"]['timestamp'][0]:
                 adjacent_statement_db = candidate
                 break
-            i = i + 1
+            
 
         if not adjacent_statement_db:
             return None
@@ -227,7 +252,7 @@ class elastic_search:
         
 
         adjacent_timestamp = adjacent_statement_db['fields']['timestamp'][0]
-        timestamp = statement_db['fields']['timestamp'][0]
+        timestamp = statement['fields']['timestamp'][0]
 
         # Conversion des timestamps ISO en datetime
         next = datetime.datetime.strptime(adjacent_timestamp, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()
@@ -247,11 +272,17 @@ class elastic_search:
         except:
             obj_name = obj_id
 
+        try:
+            obj_type = adjacent_statement_db["_source"]["object"]["definition"]["type"]
+        except:
+            obj_type = None
+
         adjacent_statement = {
             "object": { 
                 "id": obj_id,
                 "definition": {
-                    "name": { "any": obj_name }
+                    "name": { "any": obj_name },
+                    "type": obj_type,
                 }
             },
             "system_id": adjacent_statement_db["_source"]["system"]["id"],
