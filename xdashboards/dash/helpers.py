@@ -6,7 +6,7 @@ import datetime as dt
 from django.conf import settings
 import os
 import io
-
+import math
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -226,8 +226,10 @@ class Helper():
         self.request = request
         self.es = Elasticsearch(["idea-db"])
         self.index = "xapi_adn_enriched"
-        self.global_range_end =  (dt.datetime.now().timestamp() * 1000) + 24 * 60 * 60 * 1000
+        self.global_range_end =  math.floor(dt.datetime.now().timestamp() * 1000)
         self.global_range_start =  self.global_range_end - 75 * 24 * 60 * 60 * 1000
+
+        print(self.global_range_end)
 
         self.daterangequery = {"timestamp": {
                                 "gte": self.global_range_start,
@@ -268,6 +270,8 @@ class Helper():
                     "filter": filter
                     }
                 }
+        #query = {'range': {'timestamp': {'gte': 1571927112456.732, 'lte': 1578407112456.732}}}
+        print (range)
         choices = self.es.search(index=self.index, size=0, filter_path="aggregations.agg.buckets", body={
             "query": query,
             "aggs": {
