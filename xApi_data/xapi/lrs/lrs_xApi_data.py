@@ -92,8 +92,9 @@ class lrs_data:
     def __getStatementsRequest(self, url, params=None):
         # Exécution de la requête
         exec_time = time.time()
+        print("LRS Request: {} {}".format(url, params))
         res = get(url, headers=self.headers, params=params, auth=self.basic_auth)
-        print('Retrieved statements: {} {}s'.format(url, str(time.time() - exec_time)))
+        print('Retrieved statements: {} in {}s'.format(url, str(time.time() - exec_time)))
         res.encoding = 'utf-8'
         result = json.loads(res.text)
         return result
@@ -130,7 +131,7 @@ class lrs_data:
             )
             return False
         elif res.status_code == 500:
-            print('Error servor. We cannot test your connexion configuration\n' +
+            print('Server error. We cannot test your connexion configuration\n' +
                   'Please try later'
             )
             return False

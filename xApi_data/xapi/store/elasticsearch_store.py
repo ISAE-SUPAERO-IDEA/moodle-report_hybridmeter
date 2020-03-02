@@ -62,7 +62,7 @@ class elastic_search:
             }
             bulk_action.append(bulk)
 
-        helpers.bulk(self.es, bulk_action)
+        helpers.bulk(self.es, bulk_action, request_timeout=60)
 
     # SUPPRESSION D'UN INDEX OU REINITIALISATION D'UNE BD
     def deleteIndex_dbName(self, index_type):
