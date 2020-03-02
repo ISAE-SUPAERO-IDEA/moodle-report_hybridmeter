@@ -226,11 +226,13 @@ class Helper():
         self.request = request
         self.es = Elasticsearch(["idea-db"])
         self.index = "xapi_adn_enriched"
-        self.global_range_end =  math.floor(dt.datetime.now().timestamp() * 1000)
-        self.global_range_start =  self.global_range_end - 75 * 24 * 60 * 60 * 1000
+        self.global_range_end = 1572566400 * 1000 # 1er novembre 2019
+        #self.global_range_end =  math.floor(dt.datetime.now().timestamp() * 1000)
+        print(self.global_range_end )
+        print(math.floor(dt.datetime.now().timestamp() * 1000))
+        self.global_range_start =  self.global_range_end - 60 * 24 * 60 * 60 * 1000
 
-        print(self.global_range_end)
-
+        
         self.daterangequery = {"timestamp": {
                                 "gte": self.global_range_start,
                                 "lte": self.global_range_end
@@ -248,6 +250,7 @@ class Helper():
                         "lt": self.traces_range_end
                     }
                 }
+        print(self.daterangequery_traces)
         self.error_response = None
         if not request.user.is_authenticated:
             self.error_response = redirect("cas_ng_login")
@@ -271,7 +274,6 @@ class Helper():
                     }
                 }
         #query = {'range': {'timestamp': {'gte': 1571927112456.732, 'lte': 1578407112456.732}}}
-        print (range)
         choices = self.es.search(index=self.index, size=0, filter_path="aggregations.agg.buckets", body={
             "query": query,
             "aggs": {
