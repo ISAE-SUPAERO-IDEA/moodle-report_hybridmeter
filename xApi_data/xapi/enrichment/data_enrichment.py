@@ -88,8 +88,8 @@ def enrichStatements(action, lrs, store):
         if len(bulk_list) == 1000:
             print('Insertion of 1000 enrich statements')
             print('ENRICHMENT 1000 TRAX TIME : ' + str(time.time() - exec_time))
-            print(str(bulk_list[0]['acl']))
-            print(str(bulk_list[999]['acl']))
+            #print(str(bulk_list[0]['acl']))
+            #print(str(bulk_list[999]['acl']))
             exec_time = time.time()
             store.saveStatements(bulk_list, 'enrich')
             bulk_list = []
@@ -150,38 +150,44 @@ def __getNameAndLogin(uuid):
     
 
     # Création de l'url avec le endpoint
-    url = "https://lms.isae.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=2b8a458c09615e816f571dfc025c3cb9"
-    
-    s.mount(url, lms_adapter)
-    
-    # Création du headers
-    # headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    urls = [ "https://lms.isae.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=2b8a458c09615e816f571dfc025c3cb9",
+     "https://adn.isae-supaero.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=e54ca4b5543c1bfeefe526d5fb9fbbd7",
+     "https://online.isae-supaero.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=8a67e0251440d8752d4cbbb010cccd7b",
+    ]    
+    for url in urls:    
+        s.mount(url, lms_adapter)
+        
+        # Création du headers
+        # headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    # Création du body
-    body = {}
+        # Création du body
+        body = {}
 
-    body['items[0][uuid]'] = uuid
+        body['items[0][uuid]'] = uuid
 
-    body['full'] = 1
+        body['full'] = 1
 
-    # Exécution de la requête POST
-    res = s.post(url=url, data=body, timeout=None)
-    res.encoding = 'utf-8'
-    result = json.loads(res.text)
-    try:
-        result = json.loads(result[0]['xapi'])
-        namelogin = {
-                        'name': result['name'],
-                        'login': result['account']['name']
-                    }
-    except:
-        print("Cannot identify user {}: {}".format(uuid, result))
-        namelogin = {
-                        'name': "?",
-                        'login': "?"
-                    }
+        # Exécution de la requête POST
+        res = s.post(url=url, data=body, timeout=None)
+        res.encoding = 'utf-8'
+        result = json.loads(res.text)
+        try:
+            result = json.loads(result[0]['xapi'])
+            namelogin = {
+                            'name': result['name'],
+                            'login': result['account']['name']
+                        }
+            break
+        except:
+            print("Cannot identify user {}: {}".format(uuid, result))
+            namelogin = {
+                            'name': "?",
+                            'login': "?"
+                        }
     return namelogin
 
+def __getObjectType(statement):
+	return statement['object']['definition']['type'] if 'definition' in statement['object'].keys() and 'type' in statement['object']['definition'].keys() else None
 
 # AJOUT DU LIBELLE DU PARENT
 def __addCourseDefinition(statement, configLRS):
@@ -189,7 +195,7 @@ def __addCourseDefinition(statement, configLRS):
     courseId = None
     # On vérifie si l'activité de la trace est un cours
     contextActivities = statement['context']['contextActivities']
-    if statement['object']['definition']['type'] == "http://vocab.xapi.fr/activities/course":
+    if __getObjectType(statement) == "http://vocab.xapi.fr/activities/course":
         courseId = statement['object']['id']
 
     # On récupère les traces qui contient une activité au sein d'un cours
@@ -277,7 +283,8 @@ def __addSystem(statement, lrs):
     system = "http://vocab.xapi.fr/activities/system"
     # On vérifie si la trace a comme pour objet une activité système
     id = None
-    if statement['object']['definition']['type'] == system:
+
+    if __getObjectType(statement) == system:
         id = statement['object']['id']
     else:
         for activity in statement['context']['contextActivities']['grouping']:
@@ -299,7 +306,6 @@ def __addAdjacentStatement(store, order):
 
     for statement in statements:
 
-        statement = statement['_source']
         # On récupère le temps passé de la trace
         # Si il y a une trace stockée après celle en paramètre
 
@@ -307,6 +313,7 @@ def __addAdjacentStatement(store, order):
 
         # Si NONE, on ne peut pas savoir le temps passé
         if adjacent_statement is not None:
+            statement = statement["_source"]
             statement[order] = adjacent_statement
             nb_statements += 1
             bulk_list.append(statement)
@@ -317,7 +324,6 @@ def __addAdjacentStatement(store, order):
             # 4 millions de traces d'un coup
             if len(bulk_list) == 1000:
                 print('Insertion of 1000 enrich statements')
-                print(str(bulk_list[0][order]))
                 store.saveStatements(bulk_list, 'enrich')
                 bulk_list = []
     store.saveStatements(bulk_list, 'enrich')
@@ -329,10 +335,10 @@ def __addAdjacentStatement(store, order):
 def __addActivity(statement):
 
     # On récupère la définition et le type de la trace
-    objectType = statement['object']['definition']['type']
+    objectType = __getObjectType(statement)
 
     # On vérifie si l'objet de la trace est une activité
-    if "activities" in objectType:
+    if objectType and "activities" in objectType:
 
         # On ajoute le paramètre "activity" dans la trace
         statement['activity'] = statement['object']

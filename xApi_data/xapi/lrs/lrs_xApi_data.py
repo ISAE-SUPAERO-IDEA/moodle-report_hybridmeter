@@ -51,6 +51,7 @@ class lrs_data:
             des statements sera ecrasé
         """
         exec_time = time.time()
+        params = {'ascending': 'true'}
         # Récupération de tous les statements
         if action == 'all':
             # Suppresion et création de l'index
@@ -59,16 +60,15 @@ class lrs_data:
             db.createIndex_dbName('flat')
 
             # Parémètres de la requête
-            params = {'ascending': 'true'}
+            
 
         # Réupération des statements qui ne sont pas insérés dans le STORE
         elif action == 'update':
             # Récupération du timestamp du dernier statement inséré dans le STORE
             timestamp = db.retrieveLastTimestamp('flat')
             # Paramètres de la requête
-            params = {
-                'since': timestamp
-            }
+            params['since'] = timestamp
+
             print("Continuing from last timestamp {}".format(timestamp))
 
         # Création de l'url avec le endpoint
@@ -92,8 +92,9 @@ class lrs_data:
     def __getStatementsRequest(self, url, params=None):
         # Exécution de la requête
         exec_time = time.time()
+        print("LRS Request: {} {}".format(url, params))
         res = get(url, headers=self.headers, params=params, auth=self.basic_auth)
-        print('\nRequest LRS time: ' + str(time.time() - exec_time))
+        print('Retrieved statements: {} in {}s'.format(url, str(time.time() - exec_time)))
         res.encoding = 'utf-8'
         result = json.loads(res.text)
         return result
@@ -103,6 +104,7 @@ class lrs_data:
     def __insertStatementsBracket(self, db, url, params=None):
         # Récupération des statements
         result = self.__getStatementsRequest(url, params)
+        #print(result["statements"][0]["timestamp"])
 
         # Enregistrement des traces brutes dans le store
         db.saveStatements(result['statements'], 'flat')
@@ -129,7 +131,7 @@ class lrs_data:
             )
             return False
         elif res.status_code == 500:
-            print('Error servor. We cannot test your connexion configuration\n' +
+            print('Server error. We cannot test your connexion configuration\n' +
                   'Please try later'
             )
             return False
