@@ -1,11 +1,10 @@
 from django.shortcuts import render
-import json
 
-from .helpers import Helper
+from .helpers import AdnHelper, LmsHelper
 
 
 def learner(request):
-    helper = Helper(request)
+    helper = AdnHelper(request)
     if helper.error_response:
         return helper.error_response
 
@@ -35,7 +34,7 @@ def learner(request):
 
 
 def resource(request):
-    helper = Helper(request)
+    helper = AdnHelper(request)
     if helper.error_response:
         return helper.error_response
 
@@ -79,6 +78,45 @@ def resource(request):
         "selected": selected,
         "activity_buckets": activity_buckets,
         "ways": ways,
+        "learners": learners,
+        "params": params
+        })
+
+def lms(request):
+    helper = LmsHelper(request)
+    if helper.error_response:
+        return helper.error_response
+
+    activity_buckets = []
+    learners = []
+    ways =[]
+    selected = None
+    # object list
+    choices = helper.aggregate(id_field="object.id.keyword", description_field="object.definition.name.fr.keyword", anonymize=False,size=50)
+    for choice in choices:
+        prefix = ""
+        choice["name"] = "{} - {} - {}".format(prefix, choice["type"], choice["name"] if choice["name"] else choice["key"])
+
+    choices.sort(key=lambda choice: choice["name"])
+
+    params = {}
+
+    params["id"] = request.GET.get('id')
+    if params["id"]:
+        bucket_field = "object.id.keyword"
+        bucket_id = params["id"]
+    else:
+        bucket_field = "context.platform.keyword"
+        bucket_id = "Moodle"
+    activity_buckets = helper.get_activity(bucket_field, bucket_id)
+    hits_buckets = helper.get_activity(bucket_field, bucket_id, interval="1d")
+
+
+    return render(request, 'dash/lms_view.html', {
+        'choices': choices,
+        "selected": selected,
+        "activity_buckets": activity_buckets,
+        "hits_buckets": hits_buckets,
         "learners": learners,
         "params": params
         })

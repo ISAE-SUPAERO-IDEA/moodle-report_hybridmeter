@@ -4,6 +4,7 @@ import pytz
 import json
 import datetime as dt
 from django.conf import settings
+from elasticsearch import Elasticsearch
 import os
 import io
 import math
@@ -124,7 +125,6 @@ def template_from_string(template_string, using=None):
         except TemplateSyntaxError as e:
             chain.append(e)
     raise TemplateSyntaxError(template_string, chain=chain)
-
 verbs_to_phrases = {
     "https://w3id.org/xapi/adl/verbs/logged-in": "{{ t.actor }} {{ t.verb }}",
     "https://w3id.org/xapi/adl/verbs/logged-out": "{{ t.actor }} {{ t.verb }}",
@@ -132,12 +132,11 @@ verbs_to_phrases = {
     "http://adlnet.gov/expapi/verbs/answered": "{{ t.actor }} {{ t.verb }} {{ t.object }} ({{t.score}}/{{t.score_max}})",
     "http://vocab.xapi.fr/verbs/graded": "{{ t.actor }} {{ t.verb }}  {{t.score}}/{{t.score_max}} sur {{ t.object }}"
 }
-
 def timezonize(date):
     date = date.replace(tzinfo=pytz.timezone('UTC'))
     date = date.astimezone(pytz.timezone('Europe/Paris'))
     return date
-
+    
 def timezonize_format(date, format):
     return timezonize(date).strftime(format)
 
@@ -154,7 +153,6 @@ def anonymize_trace(trace):
         del item[paths[i]]
     clear_path("actor.account.name")
     """
-
 
     return anonymize_trace_be(trace)
 
@@ -175,7 +173,6 @@ def anonymize_trace_be(trace):
         raise(Exception("Unknown trace type"))
 
 
-
 # Create your views here.
 def convert_trace(trace):
     res = {}
@@ -192,7 +189,7 @@ def convert_trace(trace):
 
             if val:
                 break
-        
+
         if "translations" in config and val in config["translations"]:
             val = config["translations"][val]
 
@@ -221,18 +218,13 @@ def convert_trace(trace):
 
 
 class Helper():
-    def __init__(self, request):
-        from elasticsearch import Elasticsearch
+    def __init__(self, request, es, index, global_range_start, global_range_end, authorized_users=None):
         self.request = request
-        self.es = Elasticsearch(["idea-db"])
-        self.index = "xapi_adn_enriched"
-        self.global_range_end = 1572566400 * 1000 # 1er novembre 2019
-        #self.global_range_end =  math.floor(dt.datetime.now().timestamp() * 1000)
-        print(self.global_range_end )
-        print(math.floor(dt.datetime.now().timestamp() * 1000))
-        self.global_range_start =  self.global_range_end - 60 * 24 * 60 * 60 * 1000
+        self.es = es
+        self.index = index
+        self.global_range_end = global_range_end
+        self.global_range_start = global_range_start
 
-        
         self.daterangequery = {"timestamp": {
                                 "gte": self.global_range_start,
                                 "lte": self.global_range_end
@@ -255,9 +247,8 @@ class Helper():
         if not request.user.is_authenticated:
             self.error_response = redirect("cas_ng_login")
 
-        elif request.user.username not in settings.AUTHORIZED_USERS:
+        elif authorized_users and request.user.username not in authorized_users:
             self.error_response = render(request, 'dash/error.html', {"error": "Not authorized: {}".format(request.user.username)})
-
 
     def convert_traces(self, traces):
         traces = [anonymize_trace(trace) for trace in traces]
@@ -265,7 +256,7 @@ class Helper():
         return traces
 
     def aggregate(self, id_field, description_field, range="full", filter=None, size=5000, anonymize=True):
-        query = {"range": self.daterangequery} if range=="full" else {"range": self.daterangequery_traces}
+        query = {"range": self.daterangequery} if range == "full" else {"range": self.daterangequery_traces}
         if filter:
             query = {
                 "bool": {
@@ -313,7 +304,7 @@ class Helper():
 
     def get_object_occurences(self, id, size = 1000000):
         obj = self.es.search(index=self.index, size=500, body={
-        "query": {
+            "query": {
                 "bool": {
                     "must": {"range": self.daterangequery_traces},
                     "filter": {
@@ -322,8 +313,8 @@ class Helper():
                         }
                     }
                 }
-        },
-        "sort": {"timestamp": "desc"}})
+            },
+            "sort": {"timestamp": "desc"}})
         obj = obj["hits"]["hits"]
         return obj
 
@@ -335,15 +326,14 @@ class Helper():
             defn["system"] = obj["system"]["id"]
             return defn
 
-
-    def get_activity(self, field, id):
+    def get_activity(self, field, id, interval="3h"):
         activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
             "sort": {"timestamp": "desc"},
             "aggs": {
                 "activity": {
                     "date_histogram": {
                         "field": "timestamp",
-                        "interval": "3h",
+                        "interval": interval,
                         "time_zone": "+02:00"
                     }
                 }
@@ -379,7 +369,6 @@ class Helper():
             activity_buckets = self.get_activity("object.id.keyword", id)
 
         return activity_buckets
-
 
     def get_traces(self, user):
         traces = self.es.search(index=self.index, size=100, filter_path="hits.hits", body={
@@ -440,20 +429,17 @@ class Helper():
                 edges[edge_id]["total_distance"] += adjacent["distance"]
                 edges[edge_id]["hits"] += 1
 
-
                 def add_to_edge_group(adjency, name, edge_id):
                     key = "{}|{}".format(adjency, name)
                     if not key in edge_groups:
                         edge_groups[key] = { "edges": {} }
                     if not edge_id in edge_groups[key]["edges"]:
                         edge_groups[key]["edges"][edge_id] = edges[edge_id]
-                        
 
                 if adjency == "next":
                     add_to_edge_group("from", node_from, edge_id)
                 else:
                     add_to_edge_group("to", node_to, edge_id)
-
 
     def add_node_ways(self, ways, id, previous, next, recursion, cull):
         occurences = self.get_object_occurences(id)
@@ -495,26 +481,23 @@ class Helper():
                     break
             return found
 
-        
         # delete culled nodes
         node_ids = list(ways["nodes"].keys())
         for node_id in node_ids:
             if not (node_has_edge(node_id, "from") or node_has_edge(node_id, "to")):
                 del ways["nodes"][node_id]
 
-
-
-
         if recursion:
             node_ids = list(ways["nodes"].keys())
             for node_id in node_ids:
                 if not ways["nodes"][node_id]["type_link"] == "http://vocab.xapi.fr/activities/system":
-                    self.add_node_ways(ways, node_id,
+                    self.add_node_ways(
+                        ways,
+                        node_id,
                         previous=node_has_edge(node_id, "from"),
                         next=node_has_edge(node_id, "to"),
                         recursion=recursion-1,
                         cull=0.15)
-
 
     def get_ways(self, id, previous=True, next=True, recursion=1, cull=0.1):
         # get all occurences
@@ -525,9 +508,20 @@ class Helper():
             "edge_groups": {}
         }
         self.add_node_ways(ways, id, previous=previous, next=next, recursion=recursion, cull=cull)
-        
-
-        
-        
         return ways
 
+class AdnHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "xapi_adn_enriched"
+        global_range_end = 1572566400 * 1000 # 1er novembre 2019
+        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        super(AdnHelper, self).__init__(request, es, index, global_range_start, global_range_end, authorized_users=settings.AUTHORIZED_USERS)
+
+class LmsHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "xapi_statements"
+        global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
+        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        super(LmsHelper, self).__init__(request, es, index, global_range_start, global_range_end)

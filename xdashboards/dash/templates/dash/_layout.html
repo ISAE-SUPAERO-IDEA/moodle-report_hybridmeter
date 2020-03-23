@@ -1,0 +1,51 @@
+{% extends 'dash/_base.html' %}
+{% load dash %}
+
+{% block body %}
+
+        <div class="top">
+            <div class="container-fluid">
+                {% block nav %}
+                {% endblock %}
+                <a href="{% url 'cas_ng_logout' %}" class="float-right">Déconnexion</a>
+                <div>
+                   <!-- Item selection -->
+                   <select type="" id="selector" class="form-control">
+                        <option value="">Choisissez</option>
+                        {% for choice in choices %}
+                            <option value="{{ choice.key }}" {{ params.id|compare:choice.key|ontrue:"selected" }}> {{ choice.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <hr/>
+                    <script>
+                        // on learner selection
+                        $('#selector').on("change", (e) => {
+                            change_param("id",$('#selector').val());
+                        });
+                    </script>
+                {% block top %}
+                {% endblock %}
+
+ 
+                </div>
+                
+            </div>
+        </div>
+        <div>
+            <div class="container-fluid">
+                
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+
+    <style>
+        .top {
+            position:sticky;
+            top:0px;
+            background-color:#fff;
+            z-index:1000;
+        }
+    </style>
+{% endblock %}  
+</html>
