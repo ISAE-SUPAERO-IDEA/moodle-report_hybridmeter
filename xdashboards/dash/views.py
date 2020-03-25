@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 
 from .helpers import AdnHelper, LmsHelper
 
@@ -89,7 +90,6 @@ def lms(request):
 
     activity_buckets = []
     learners = []
-    ways =[]
     selected = None
     # object list
     choices = helper.aggregate(id_field="object.id.keyword", description_field="object.definition.name.fr.keyword", anonymize=False,size=50)
@@ -102,14 +102,18 @@ def lms(request):
     params = {}
 
     params["id"] = request.GET.get('id')
+    title = "LMS ISAE-SUPAERO"
     if params["id"]:
-        bucket_field = "object.id.keyword"
-        bucket_id = params["id"]
+        filter_field = "object.id.keyword"
+        filter_id = params["id"]
+        object_ = helper.get_object_definition(params["id"])
+        title = object_["definition"]["name"]["fr"]
     else:
-        bucket_field = "context.platform.keyword"
-        bucket_id = "Moodle"
-    activity_buckets = helper.get_activity(bucket_field, bucket_id)
-    hits_buckets = helper.get_activity(bucket_field, bucket_id, interval="1d")
+        filter_field = "context.platform.keyword"
+        filter_id = "Moodle"
+    activity_buckets = helper.get_activity(filter_field, filter_id)
+    hits_buckets = helper.get_activity(filter_field, filter_id, interval="1d")
+    uniques_buckets = helper.get_uniques_activity(filter_field, filter_id, interval="1d")
 
 
     return render(request, 'dash/lms_view.html', {
@@ -117,6 +121,25 @@ def lms(request):
         "selected": selected,
         "activity_buckets": activity_buckets,
         "hits_buckets": hits_buckets,
+        "uniques_buckets": uniques_buckets,
         "learners": learners,
-        "params": params
+        "params": params,
+        "title": title
         })
+
+def api_search_course(request, query=""):
+    helper = LmsHelper(request)
+    if helper.error_response:
+        return helper.error_response
+
+    courses = helper.aggregate(
+        id_field="object.id.keyword",
+        description_field="object.definition.name.fr.keyword",
+        filter=[
+            {"term": {"object.definition.type.keyword": "http://vocab.xapi.fr/activities/course"}},
+            {"match_phrase_prefix": {"object.definition.name.fr": query}}
+        ],
+        range="full",
+        anonymize=False)
+
+    return JsonResponse({ "data": courses})

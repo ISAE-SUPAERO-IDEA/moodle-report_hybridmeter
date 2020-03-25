@@ -6,4 +6,5 @@ urlpatterns = [
     path('learners', views.learner, name='learners'),
     path('resources', views.resource, name='resources'),
     path('lms', views.lms, name='lms'),
+    path('api/courses/search/<query>', views.api_search_course, name='api_search_course')
 ]

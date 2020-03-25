@@ -323,7 +323,8 @@ class Helper():
         if objs:
             obj = objs[0]["_source"]
             defn = obj["object"]
-            defn["system"] = obj["system"]["id"]
+            if "system" in obj:
+                defn["system"] = obj["system"]["id"]
             return defn
 
     def get_activity(self, field, id, interval="3h"):
@@ -353,6 +354,44 @@ class Helper():
         for i, bucket in enumerate(activity_buckets):
             key = activity_buckets[i]["key"]
             activity_buckets[i]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+
+        return activity_buckets
+
+    def get_uniques_activity(self, field, id, interval="3h"):
+        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
+            "sort": {"timestamp": "desc"},
+            "aggs": {
+                "activity": {
+                    "aggs": {
+                        "actor": {
+                            "cardinality": {
+                                "field" : "actor.account.name.keyword"
+                            }
+                        }
+                    },
+                    "date_histogram": {
+                        "field": "timestamp",
+                        "interval": interval,
+                        "time_zone": "+02:00"
+                    }
+                }
+            },
+            "query": {
+                "bool": {
+                    "must": {"range": self.daterangequery},
+                    "filter": {
+                        "term": {
+                            field: id
+                        }
+                    }
+                }
+            }
+        })
+        activity_buckets = activity["aggregations"]["activity"]["buckets"]
+        for i, bucket in enumerate(activity_buckets):
+            key = activity_buckets[i]["key"]
+            activity_buckets[i]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+            activity_buckets[i]["doc_count"] = activity_buckets[i]["actor"]["value"]
 
         return activity_buckets
 

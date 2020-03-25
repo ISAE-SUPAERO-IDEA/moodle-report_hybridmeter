@@ -8,7 +8,22 @@
 {% endblock %}
                 
 {% block top %}
+  <!-- Item selection -->
+   <select type="" id="selector" class="form-control">
+        <option value="">Choisissez</option>
+        {% for choice in choices %}
+            <option value="{{ choice.key }}" {{ params.id|compare:choice.key|ontrue:"selected" }}> {{ choice.name }}</option>
+        {% endfor %}
+    </select>
+    <hr/>
+    <script>
+        // on learner selection
+        $('#selector').on("change", (e) => {
+            change_param("id",$('#selector').val());
+        });
+    </script>
     <div class="float-right">
+
         <!-- Activity select all -->
         <a id="activity_select_all" href="#" onclick="return false;">Tout sélectionner</a>
         <script>

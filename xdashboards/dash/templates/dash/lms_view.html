@@ -4,15 +4,67 @@
 
 
 {% block content %}
+    <!-- Course chooser -->
+     <!-- Item selection -->
+    <label for="course-input">Recherchez un cours</label>
+    <select class="form-control" id="course-input"></select>
+    <hr/>
+    <h1>{{ title }}</h1>
+    
+    <hr/>
+    <script>
+        // on learner selection
+        /*
+        $('#course-input').on("change", (e) => {
+            change_param("id",$('#selector').val());
+        });*/
+        // initialize typeahead
+        $('#course-input').select2({
+          ajax: {
+            delay: 250,
+            url(params) {
+                return `/dash/api/courses/search/${params.term}`;
+            },
+            processResults: function (data) {
+              // Transforms the top-level key of the response object from 'items' to 'results'
+              data.data.forEach(item => {
+                item.id = item.key;
+                item.text = item.name;
+              });
+              console.log(data.data);
+              return {
+                results: data.data
+              };
+            }
+          }
+        });
+        $('#course-input').on('select2:select', function (e) {
+          change_param("id",e.params.data.id);
+        });
+        var color = Chart.helpers.color;
+    </script>
+
+
     <!-- Activity graphic -->
     {% if hits_buckets %}
-    <h4>Evolution de l'activité</h4>
+    <h4>Evolution du nombre d'actions</h4>
     <div id="activity_div">
       <div class="chart-container">
             <canvas id="hits_canvas" height="150"></canvas>
       </div>
       <script>
-            xdash_hits_chart({{ hits_buckets|jsonify }}, "hits_canvas");
+            xdash_hits_chart({{ hits_buckets|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString());
+      </script>
+    </div>
+    {% endif %}
+    {% if uniques_buckets %}
+    <h4>Evolution du nombre d'utilisateurs uniques</h4>
+    <div id="activity_div">
+      <div class="chart-container">
+            <canvas id="uniques_canvas" height="150"></canvas>
+      </div>
+      <script>
+            xdash_hits_chart({{ uniques_buckets|jsonify }}, "uniques_canvas", color(window.chartColors.blue).alpha(0.5).rgbString());
       </script>
     </div>
     {% endif %}
