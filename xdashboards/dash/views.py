@@ -150,7 +150,7 @@ def api_lms_summary(request):
     uniques = [bucket["doc_count"] for bucket in dashboard["uniques_buckets"]]
     hits = [bucket["doc_count"] for bucket in dashboard["hits_buckets"]]
     writer.writerow(["Jour"] + dates)
-    writer.writerow(["Accès uniques"] + uniques)
-    writer.writerow(["Nombre d'accès"] + hits)
+    writer.writerow(["Acces uniques"] + uniques)
+    writer.writerow(["Nombre d'acces"] + hits)
 
     return response
