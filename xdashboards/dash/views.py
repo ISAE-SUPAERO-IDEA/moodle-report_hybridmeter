@@ -141,7 +141,7 @@ def api_lms_summary(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="lms_statistics.csv"'
     response['charset'] = 'utf-8'
-    writer = csv.writer(response)
+    writer = csv.writer(response, delimiter=';')
 
     def timestamp_ss_tring(timestamp):
         return datetime.fromtimestamp(timestamp/1000).strftime("%d/%m/%Y")
