@@ -564,3 +564,23 @@ class LmsHelper(Helper):
         global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
         global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
         super(LmsHelper, self).__init__(request, es, index, global_range_start, global_range_end)
+
+    def dashboard(self, course_id):
+        title = "LMS ISAE-SUPAERO"
+        if course_id:
+            filter_field = "object.id.keyword"
+            filter_id = course_id
+            object_ = self.get_object_definition(course_id)
+            title = object_["definition"]["name"]["fr"]
+        else:
+            filter_field = "context.platform.keyword"
+            filter_id = "Moodle"
+        activity_buckets = self.get_activity(filter_field, filter_id)
+        hits_buckets = self.get_activity(filter_field, filter_id, interval="1d")
+        uniques_buckets = self.get_uniques_activity(filter_field, filter_id, interval="1d")
+        return {
+            "title": title,
+            "activity_buckets": activity_buckets,
+            "hits_buckets": hits_buckets,
+            "uniques_buckets": uniques_buckets,
+        }

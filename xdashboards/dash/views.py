@@ -1,7 +1,10 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+
 
 from .helpers import AdnHelper, LmsHelper
+from datetime import datetime
+import csv
 
 
 def learner(request):
@@ -100,31 +103,15 @@ def lms(request):
     choices.sort(key=lambda choice: choice["name"])
 
     params = {}
-
-    params["id"] = request.GET.get('id')
-    title = "LMS ISAE-SUPAERO"
-    if params["id"]:
-        filter_field = "object.id.keyword"
-        filter_id = params["id"]
-        object_ = helper.get_object_definition(params["id"])
-        title = object_["definition"]["name"]["fr"]
-    else:
-        filter_field = "context.platform.keyword"
-        filter_id = "Moodle"
-    activity_buckets = helper.get_activity(filter_field, filter_id)
-    hits_buckets = helper.get_activity(filter_field, filter_id, interval="1d")
-    uniques_buckets = helper.get_uniques_activity(filter_field, filter_id, interval="1d")
-
-
+    dashboard = helper.dashboard(request.GET.get('id'))
     return render(request, 'dash/lms_view.html', {
         'choices': choices,
         "selected": selected,
         "activity_buckets": activity_buckets,
-        "hits_buckets": hits_buckets,
-        "uniques_buckets": uniques_buckets,
-        "learners": learners,
+        "hits_buckets": dashboard["hits_buckets"],
+        "uniques_buckets": dashboard["uniques_buckets"],
         "params": params,
-        "title": title
+        "title": dashboard["title"]
         })
 
 def api_search_course(request, query=""):
@@ -143,3 +130,27 @@ def api_search_course(request, query=""):
         anonymize=False)
 
     return JsonResponse({ "data": courses})
+
+def api_lms_summary(request):
+    helper = LmsHelper(request)
+    if helper.error_response:
+        return helper.error_response
+
+    dashboard = helper.dashboard(request.GET.get('id'))
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="lms_statistics.csv"'
+    response['charset'] = 'utf-8'
+    writer = csv.writer(response)
+
+    def timestamp_ss_tring(timestamp):
+        return datetime.fromtimestamp(timestamp/1000).strftime("%d/%m/%Y")
+
+    dates = [timestamp_ss_tring(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
+    uniques = [bucket["doc_count"] for bucket in dashboard["uniques_buckets"]]
+    hits = [bucket["doc_count"] for bucket in dashboard["hits_buckets"]]
+    writer.writerow(["Jour"] + dates)
+    writer.writerow(["Accès uniques"] + uniques)
+    writer.writerow(["Nombre d'accès"] + hits)
+
+    return response
