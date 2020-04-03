@@ -107,7 +107,6 @@ def lms(request):
 
     choices.sort(key=lambda choice: choice["name"])
 
-    params = {}
     dashboard = helper.dashboard(request.GET.get('id'))
     return render(request, 'dash/lms_view.html', {
         'choices': choices,
@@ -115,7 +114,6 @@ def lms(request):
         "activity_buckets": dashboard["activity_buckets"],
         "hits_buckets": dashboard["hits_buckets"],
         "uniques_buckets": dashboard["uniques_buckets"],
-        "params": params,
         "title": dashboard["title"]
         })
 
@@ -141,23 +139,43 @@ def api_lms_summary(request):
     if helper.error_response:
         return helper.error_response
 
-    dashboard = helper.dashboard(request.GET.get('id'))
+    course_id = request.GET.get('id')
+    
+    dashboard = helper.dashboard()
+    if course_id:
+        dashboard_pcp = helper.dashboard(course_id)
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="lms_statistics.csv"'
     response['charset'] = 'utf-8'
     writer = csv.writer(response, delimiter=';')
 
-    def timestamp_as_tring(timestamp):
+    def timestamp_as_date(timestamp):
         date = datetime.fromtimestamp(timestamp/1000)
-        date = timezone_convert(date)
+        return timezone_convert(date)
+      
+    def timestamp_as_string(timestamp):
+        date = timestamp_as_date(timestamp)
         return date.strftime("%d/%m/%Y")
 
-    dates = [timestamp_as_tring(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
-    uniques = [bucket["doc_count"] for bucket in dashboard["uniques_buckets"]]
-    hits = [bucket["doc_count"] for bucket in dashboard["hits_buckets"]]
-    writer.writerow(["Jour"] + dates)
-    writer.writerow(["Acces uniques"] + uniques)
-    writer.writerow(["Nombre d'acces"] + hits)
+    dates = [timestamp_as_date(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
+    dates_string = [timestamp_as_string(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
+
+    def writerow(writer, title, buckets):
+        values = ["0" for a in range(len(dates))]
+        for bucket in buckets:
+            index = dates_string.index(timestamp_as_string(bucket["key"]))
+            values[index] = bucket["doc_count"]
+        writer.writerow([title] + values)
+
+
+    writer.writerow(["Jour"] + dates_string)
+    writer.writerow(["LMS"])
+    writerow(writer, " - Nombre d'acces uniques", dashboard["uniques_buckets"])
+    writerow(writer, " - Nombre d'acces", dashboard["hits_buckets"])
+    if course_id:
+        writer.writerow([dashboard_pcp["title"]])
+        writerow(writer, " - Nombre d'acces uniques", dashboard_pcp["uniques_buckets"])
+        writerow(writer, " - Nombre d'acces", dashboard_pcp["hits_buckets"])
 
     return response

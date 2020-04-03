@@ -335,7 +335,7 @@ class Helper():
                     "date_histogram": {
                         "field": "timestamp",
                         "interval": interval,
-                        "time_zone": "+02:00"
+                        "time_zone": "Europe/Paris"
                     }
                 }
             },
@@ -565,7 +565,7 @@ class LmsHelper(Helper):
         global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
         super(LmsHelper, self).__init__(request, es, index, global_range_start, global_range_end)
 
-    def dashboard(self, course_id):
+    def dashboard(self, course_id=None):
         title = "LMS ISAE-SUPAERO"
         if course_id:
             filter_field = "object.id.keyword"

@@ -79,7 +79,8 @@
       </script>
     </div>
     {% endif %}
-    <a href="{% url 'api_lms_summary' %}" class="btn btn-primary">Export</a>
+    
+    <a href="{% url 'api_lms_summary' %}?id={{ request.GET.id | urlencode }}" class="btn btn-primary">Export</a>
     
     <style>
     #activity_div {
