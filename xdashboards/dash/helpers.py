@@ -372,7 +372,7 @@ class Helper():
                     "date_histogram": {
                         "field": "timestamp",
                         "interval": interval,
-                        "time_zone": "+02:00"
+                        "time_zone": "Europe/Paris"
                     }
                 }
             },

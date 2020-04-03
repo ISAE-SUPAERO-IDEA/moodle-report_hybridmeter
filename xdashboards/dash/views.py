@@ -5,6 +5,13 @@ from django.http import JsonResponse, HttpResponse
 from .helpers import AdnHelper, LmsHelper
 from datetime import datetime
 import csv
+import pytz
+
+def timezone_convert(input_dt, current_tz='UTC', target_tz='Europe/Paris'):
+    current_tz = pytz.timezone(current_tz)
+    target_tz = pytz.timezone(target_tz)
+    target_dt = current_tz.localize(input_dt).astimezone(target_tz)
+    return target_tz.normalize(target_dt)
 
 
 def learner(request):
@@ -91,8 +98,6 @@ def lms(request):
     if helper.error_response:
         return helper.error_response
 
-    activity_buckets = []
-    learners = []
     selected = None
     # object list
     choices = helper.aggregate(id_field="object.id.keyword", description_field="object.definition.name.fr.keyword", anonymize=False,size=50)
@@ -143,10 +148,12 @@ def api_lms_summary(request):
     response['charset'] = 'utf-8'
     writer = csv.writer(response, delimiter=';')
 
-    def timestamp_ss_tring(timestamp):
-        return datetime.fromtimestamp(timestamp/1000).strftime("%d/%m/%Y")
+    def timestamp_as_tring(timestamp):
+        date = datetime.fromtimestamp(timestamp/1000)
+        date = timezone_convert(date)
+        return date.strftime("%d/%m/%Y")
 
-    dates = [timestamp_ss_tring(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
+    dates = [timestamp_as_tring(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
     uniques = [bucket["doc_count"] for bucket in dashboard["uniques_buckets"]]
     hits = [bucket["doc_count"] for bucket in dashboard["hits_buckets"]]
     writer.writerow(["Jour"] + dates)
