@@ -218,14 +218,15 @@ def convert_trace(trace):
 
 
 class Helper():
-    def __init__(self, request, es, index, global_range_start, global_range_end, authorized_users=None):
+    def __init__(self, request, es, index, global_range_start, global_range_end, time_field="timestamp", authorized_users=None):
         self.request = request
         self.es = es
         self.index = index
         self.global_range_end = global_range_end
         self.global_range_start = global_range_start
+        self.time_field= time_field
 
-        self.daterangequery = {"timestamp": {
+        self.daterangequery = {self.time_field: {
                                 "gte": self.global_range_start,
                                 "lte": self.global_range_end
                             }
@@ -237,7 +238,7 @@ class Helper():
         else:
             self.traces_range_start = self.global_range_start
             self.traces_range_end = self.global_range_end
-        self.daterangequery_traces = { "timestamp": {
+        self.daterangequery_traces = { self.time_field: {
                         "gte": self.traces_range_start,
                         "lt": self.traces_range_end
                     }
@@ -314,7 +315,7 @@ class Helper():
                     }
                 }
             },
-            "sort": {"timestamp": "desc"}})
+            "sort": {self.time_field: "desc"}})
         obj = obj["hits"]["hits"]
         return obj
 
@@ -329,11 +330,11 @@ class Helper():
 
     def get_activity(self, field, id, interval="3h"):
         activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
-            "sort": {"timestamp": "desc"},
+            "sort": {self.time_field: "desc"},
             "aggs": {
                 "activity": {
                     "date_histogram": {
-                        "field": "timestamp",
+                        "field": self.time_field,
                         "interval": interval,
                         "time_zone": "Europe/Paris"
                     }
@@ -357,9 +358,9 @@ class Helper():
 
         return activity_buckets
 
-    def get_uniques_activity(self, field, id, interval="3h"):
+    def get_uniques(self, field, id, interval="3h"):
         activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
-            "sort": {"timestamp": "desc"},
+            "sort": {self.time_field: "desc"},
             "aggs": {
                 "activity": {
                     "aggs": {
@@ -370,7 +371,7 @@ class Helper():
                         }
                     },
                     "date_histogram": {
-                        "field": "timestamp",
+                        "field": self.time_field,
                         "interval": interval,
                         "time_zone": "Europe/Paris"
                     }
@@ -411,7 +412,7 @@ class Helper():
 
     def get_traces(self, user):
         traces = self.es.search(index=self.index, size=100, filter_path="hits.hits", body={
-            "sort": {"timestamp": "desc"},
+            "sort": {self.time_field: "desc"},
             "script_fields": {
               "timestamp": {
                 "script": "doc[\"timestamp\"].value.toInstant().toEpochMilli();"
@@ -577,10 +578,46 @@ class LmsHelper(Helper):
             filter_id = "Moodle"
         activity_buckets = self.get_activity(filter_field, filter_id)
         hits_buckets = self.get_activity(filter_field, filter_id, interval="1d")
-        uniques_buckets = self.get_uniques_activity(filter_field, filter_id, interval="1d")
+        uniques_buckets = self.get_uniques(filter_field, filter_id, interval="1d")
         return {
             "title": title,
             "activity_buckets": activity_buckets,
             "hits_buckets": hits_buckets,
             "uniques_buckets": uniques_buckets,
+        }
+
+class ZoomHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "zoom_meetings"
+        global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
+        global_range_start = global_range_end - 365 * 24 * 60 * 60 * 1000
+        global_range_end += 365 * 24 * 60 * 60 * 1000
+        super(ZoomHelper, self).__init__(request, es, index, global_range_start, global_range_end, time_field="start_time")
+
+    def dashboard(self, course_id=None):
+        title = "ZOOM"
+        interval = "1d"
+        activity = self.es.search(index=self.index, size=365 * 2, filter_path="aggregations.activity.buckets", body={
+            "sort": {"start_time": "desc"},
+            "aggs": {
+                "activity": {
+                    "date_histogram": {
+                        "field": self.time_field,
+                        "interval": interval,
+                        "time_zone": "Europe/Paris"
+                    }
+                }
+            },
+            "query": {
+                "bool": {
+                    "must": {"range": self.daterangequery},
+                }
+            }
+        })
+        activity_buckets = activity["aggregations"]["activity"]["buckets"]
+
+        return {
+            "title": title,
+            "activity_buckets": activity_buckets,
         }

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 
 
-from .helpers import AdnHelper, LmsHelper
+from .helpers import AdnHelper, LmsHelper, ZoomHelper
 from datetime import datetime
 import csv
 import pytz
@@ -134,14 +134,18 @@ def api_search_course(request, query=""):
 
     return JsonResponse({ "data": courses})
 
+
 def api_lms_summary(request):
     helper = LmsHelper(request)
+    zoom_helper = ZoomHelper(request)
     if helper.error_response:
         return helper.error_response
 
     course_id = request.GET.get('id')
-    
+
+    dashboard_zoom = zoom_helper.dashboard()
     dashboard = helper.dashboard()
+
     if course_id:
         dashboard_pcp = helper.dashboard(course_id)
 
@@ -153,7 +157,7 @@ def api_lms_summary(request):
     def timestamp_as_date(timestamp):
         date = datetime.fromtimestamp(timestamp/1000)
         return timezone_convert(date)
-      
+
     def timestamp_as_string(timestamp):
         date = timestamp_as_date(timestamp)
         return date.strftime("%d/%m/%Y")
@@ -164,8 +168,11 @@ def api_lms_summary(request):
     def writerow(writer, title, buckets):
         values = ["0" for a in range(len(dates))]
         for bucket in buckets:
-            index = dates_string.index(timestamp_as_string(bucket["key"]))
-            values[index] = bucket["doc_count"]
+            try:
+                index = dates_string.index(timestamp_as_string(bucket["key"]))
+                values[index] = bucket["doc_count"]
+            except:
+                pass
         writer.writerow([title] + values)
 
 
@@ -177,5 +184,7 @@ def api_lms_summary(request):
         writer.writerow([dashboard_pcp["title"]])
         writerow(writer, " - Nombre d'acces uniques", dashboard_pcp["uniques_buckets"])
         writerow(writer, " - Nombre d'acces", dashboard_pcp["hits_buckets"])
-
+    writer.writerow([dashboard_zoom["title"]])
+    writerow(writer, " - Nombre de réunions", dashboard_zoom["activity_buckets"])
+    
     return response
