@@ -107,7 +107,7 @@ def lms(request):
     return render(request, 'dash/lms_view.html', {
         'choices': choices,
         "selected": selected,
-        "activity_buckets": activity_buckets,
+        "activity_buckets": dashboard["activity_buckets"],
         "hits_buckets": dashboard["hits_buckets"],
         "uniques_buckets": dashboard["uniques_buckets"],
         "params": params,
