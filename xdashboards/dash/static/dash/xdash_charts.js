@@ -90,7 +90,7 @@ var xdash_activity_chart = function(chart_data, canvas) {
         pointRadius.push(size);
         pointHoverRadius.push(size*1.5);
         pointBackgroundColor.push(chart_data[i].active ? "#ffb0c1" : "#eee");
-        pointBorderColor.push(chart_data[i].active ? "##ffb0c1" : "#999");
+        pointBorderColor.push(chart_data[i].active ? "#ffb0c1" : "#999");
         pointLabel.push(chart_data[i].doc_count)
     }
     for (i=0;i<chart_data.length;i++) {
