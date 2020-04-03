@@ -46,6 +46,7 @@
 
 
     <!-- Activity graphic -->
+
     {% if hits_buckets %}
     <h4>Evolution du nombre d'actions</h4>
     <div id="activity_div">
@@ -57,17 +58,7 @@
       </script>
     </div>
     {% endif %}
-    {% if uniques_buckets %}
-    <h4>Evolution du nombre d'utilisateurs uniques</h4>
-    <div id="activity_div">
-      <div class="chart-container">
-            <canvas id="uniques_canvas" height="150"></canvas>
-      </div>
-      <script>
-            xdash_hits_chart({{ uniques_buckets|jsonify }}, "uniques_canvas", color(window.chartColors.blue).alpha(0.5).rgbString());
-      </script>
-    </div>
-    {% endif %}
+
     {% if activity_buckets %}
     <h4>Décomposition de l'activité par tranche horaire</h4>
     <div id="activity_div">
@@ -76,6 +67,18 @@
       </div>
       <script>
             xdash_activity_chart({{ activity_buckets|jsonify }}, "activity_canvas");
+      </script>
+    </div>
+    {% endif %}
+
+    {% if uniques_buckets %}
+    <h4>Evolution du nombre d'utilisateurs uniques</h4>
+    <div id="activity_div">
+      <div class="chart-container">
+            <canvas id="uniques_canvas" height="150"></canvas>
+      </div>
+      <script>
+            xdash_hits_chart({{ uniques_buckets|jsonify }}, "uniques_canvas", color(window.chartColors.blue).alpha(0.5).rgbString());
       </script>
     </div>
     {% endif %}

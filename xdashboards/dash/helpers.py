@@ -343,6 +343,7 @@ class Helper():
             "query": {
                 "bool": {
                     "must": {"range": self.daterangequery},
+                    "must_not": {"term": {"verb.id.keyword": "http://id.tincanapi.com/verb/defined"}},
                     "filter": {
                         "term": {
                             field: id

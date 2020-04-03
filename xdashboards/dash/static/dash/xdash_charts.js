@@ -89,8 +89,8 @@ var xdash_activity_chart = function(chart_data, canvas) {
         var size = 0 + (chart_data[i].doc_count * 10)/ max_doc_count;
         pointRadius.push(size);
         pointHoverRadius.push(size*1.5);
-        pointBackgroundColor.push(chart_data[i].active ? "#e00" : "#eee");
-        pointBorderColor.push(chart_data[i].active ? "#900" : "#999");
+        pointBackgroundColor.push(chart_data[i].active ? "#ffb0c1" : "#eee");
+        pointBorderColor.push(chart_data[i].active ? "##ffb0c1" : "#999");
         pointLabel.push(chart_data[i].doc_count)
     }
     for (i=0;i<chart_data.length;i++) {
@@ -108,7 +108,7 @@ var xdash_activity_chart = function(chart_data, canvas) {
                 pointHoverRadius,
                 pointBackgroundColor,
                 pointBorderColor,
-                data: chart_data
+                data: chart_data 
             }]
         },
         options: {
