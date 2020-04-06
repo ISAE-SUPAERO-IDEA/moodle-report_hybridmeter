@@ -46,42 +46,62 @@
 
 
     <!-- Activity graphic -->
+    <div class="container-fluid">
 
-    {% if hits_buckets %}
-    <h4>Evolution du nombre d'actions</h4>
-    <div id="activity_div">
-      <div class="chart-container">
-            <canvas id="hits_canvas" height="150"></canvas>
-      </div>
-      <script>
-            xdash_hits_chart({{ hits_buckets|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString());
-      </script>
-    </div>
-    {% endif %}
+      <div class="row">
+        <div class="col-12">
+          {% if hits_buckets %}
+          <h4>Evolution du nombre d'actions</h4>
 
-    {% if activity_buckets %}
-    <h4>Décomposition de l'activité par tranche horaire</h4>
-    <div id="activity_div">
-      <div class="chart-container">
-            <canvas id="activity_canvas" height="300"></canvas>
-      </div>
-      <script>
-            xdash_activity_chart({{ activity_buckets|jsonify }}, "activity_canvas");
-      </script>
-    </div>
-    {% endif %}
+          <div class="float-right">
+            <label for="aggs_select_activity">Regrouper par :</label>
+            <select name="aggs" id="aggs_select_activity" onchange="updateAggs(id, 'hits_canvas', 'chart_number_action')" autocomplete="off">
+              <option selected value="day">Jour</option>
+              <option value="week">Semaine</option>
+            </select>
+          </div>
 
-    {% if uniques_buckets %}
-    <h4>Evolution du nombre d'utilisateurs uniques</h4>
-    <div id="activity_div">
-      <div class="chart-container">
-            <canvas id="uniques_canvas" height="150"></canvas>
+          <div id="activity_div">
+            <div class="chart-container" id="chart_number_action">
+                  <canvas id="hits_canvas" height="150"></canvas>
+            </div>
+            <script>
+                xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString());
+            </script>
+          </div>
+          {% endif %}
+        </div>
       </div>
-      <script>
-            xdash_hits_chart({{ uniques_buckets|jsonify }}, "uniques_canvas", color(window.chartColors.blue).alpha(0.5).rgbString());
-      </script>
+
+      <div class="col-12">
+        {% if activity_buckets %}
+        <h4>Décomposition de l'activité par tranche horaire</h4>
+        <div id="activity_div">
+          <div class="chart-container">
+                <canvas id="activity_canvas" height="300"></canvas>
+          </div>
+          <script>
+                xdash_activity_chart({{ activity_buckets|jsonify }}, "activity_canvas");
+          </script>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-12">
+        {% if uniques_buckets %}
+        <h4>Evolution du nombre d'utilisateurs uniques</h4>
+        <div id="activity_div">
+          <div class="chart-container">
+                <canvas id="uniques_canvas" height="150"></canvas>
+          </div>
+          <script>
+                xdash_hits_chart({{ uniques_buckets|jsonify }}, "uniques_canvas", color(window.chartColors.blue).alpha(0.5).rgbString());
+          </script>
+        </div>
+        {% endif %}
+      </div>
+
     </div>
-    {% endif %}
     
     <a href="{% url 'api_lms_summary' %}?id={{ request.GET.id | urlencode }}" class="btn btn-primary">Export</a>
     
@@ -90,6 +110,36 @@
         background-color:#fff;
     }
     </style>
+
+    <!--SCRIPTS-->
+    <script type="text/javascript">
+      function updateAggs(aggs, id_canvas, id_container, height=150){
+        
+        //Récupère la valeur de l'aggrégation
+        var aggs_value = document.getElementById(aggs).value;
+        
+        //Récupère le canvas et le supprime
+        var canvas = document.getElementById(id_canvas);
+        canvas.remove();
+        
+        //Créé un nouveau canvas avec une taille et un id passé en param
+        var canvas = document.createElement("CANVAS");
+        canvas.id = id_canvas;
+        canvas.height = height;
+
+        //Ajoute ce canvas dans le bloc passé en paramètre
+        var container = document.getElementById(id_container)
+        container.appendChild(canvas);
+
+        if (aggs == "aggs_select_activity" && aggs_value == "week") {
+          xdash_hits_chart({{ hits_buckets.week|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString(), time='week');
+        } else {
+          xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString());
+        }
+
+      }
+    </script>
   
 {% endblock %}
+
 

@@ -1,4 +1,4 @@
-var xdash_hits_chart = function(chart_data, canvas, bar_color) {
+var xdash_hits_chart = function(chart_data, canvas, bar_color, time='day') {
     var ctx = document.getElementById(canvas).getContext('2d');
     chart_data.sort((a, b) => {
         if (a.active == b.active) return 0;
@@ -11,7 +11,12 @@ var xdash_hits_chart = function(chart_data, canvas, bar_color) {
         chart_data[i].x = date;
         chart_data[i].y = chart_data[i].doc_count;
         data.push(chart_data[i].doc_count);
-        labels.push(date);
+        if(time == 'day'){
+            labels.push(date);
+        }else{
+            labels.push(date);
+        }
+        
     }
 
     var scatterChart = new Chart(ctx, {
@@ -41,7 +46,8 @@ var xdash_hits_chart = function(chart_data, canvas, bar_color) {
                     type: 'time',
                     position: 'bottom',
                     time: {
-                        unit: 'day'
+                        unit: time,
+                        isoWeekday: true
                     },
                     gridLines: {
                         color: "rgba(0, 0, 0, 0)",
@@ -49,7 +55,9 @@ var xdash_hits_chart = function(chart_data, canvas, bar_color) {
                 }]
             }
         }
-    });    
+    });
+
+    return scatterChart;    
 }
 
 

@@ -578,12 +578,18 @@ class LmsHelper(Helper):
             filter_field = "context.platform.keyword"
             filter_id = "Moodle"
         activity_buckets = self.get_activity(filter_field, filter_id)
-        hits_buckets = self.get_activity(filter_field, filter_id, interval="1d")
+        hits_buckets = {
+            "day": self.get_activity(filter_field, filter_id, interval="1d"),
+            "week": self.get_activity(filter_field, filter_id, interval="week")
+        }
         uniques_buckets = self.get_uniques(filter_field, filter_id, interval="1d")
         return {
             "title": title,
             "activity_buckets": activity_buckets,
-            "hits_buckets": hits_buckets,
+            "hits_buckets": {
+                "day": hits_buckets["day"],
+                "week": hits_buckets["week"]
+            },
             "uniques_buckets": uniques_buckets,
         }
 
