@@ -328,15 +328,24 @@ class Helper():
                 defn["system"] = obj["system"]["id"]
             return defn
 
-    def get_activity(self, field, id, interval="3h"):
-        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
+    def get_activity(self, field, id, intervalParent="week", intervalChild="3h"):
+        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity_parent.buckets", body={
             "sort": {self.time_field: "desc"},
             "aggs": {
-                "activity": {
+                "activity_parent": {
                     "date_histogram": {
                         "field": self.time_field,
-                        "interval": interval,
+                        "interval": intervalParent,
                         "time_zone": "Europe/Paris"
+                    },
+                    "aggs": {
+                        "activity_child": {
+                            "date_histogram": {
+                                "field": self.time_field,
+                                "interval": intervalChild,
+                                "time_zone": "Europe/Paris"
+                            }
+                        }
                     }
                 }
             },
@@ -352,29 +361,45 @@ class Helper():
                 }
             }
         })
-        activity_buckets = activity["aggregations"]["activity"]["buckets"]
+        activity_buckets = activity["aggregations"]["activity_parent"]["buckets"]
         for i, bucket in enumerate(activity_buckets):
             key = activity_buckets[i]["key"]
             activity_buckets[i]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
 
+            activity_children = activity_buckets[i]["activity_child"]["buckets"]
+            for j, bucket_child in enumerate(activity_children):
+                key = activity_children[j]["key"]
+                activity_children[j]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+
+            activity_buckets[i]["activity_children"] = activity_children
+
         return activity_buckets
 
-    def get_uniques(self, field, id, interval="3h"):
-        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
+    def get_uniques(self, field, id, intervalParent="week", intervalChild="3h"):
+        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity_parent.buckets", body={
             "sort": {self.time_field: "desc"},
             "aggs": {
-                "activity": {
-                    "aggs": {
-                        "actor": {
-                            "cardinality": {
-                                "field" : "actor.account.name.keyword"
-                            }
-                        }
-                    },
+                "activity_parent": {
                     "date_histogram": {
                         "field": self.time_field,
-                        "interval": interval,
+                        "interval": intervalParent,
                         "time_zone": "Europe/Paris"
+                    },
+                    "aggs": {
+                        "activity_child": {
+                            "date_histogram": {
+                                "field": self.time_field,
+                                "interval": intervalChild,
+                                "time_zone": "Europe/Paris"
+                            },
+                            "aggs": {
+                                "actor": {
+                                    "cardinality": {
+                                        "field": "actor.account.name.keyword"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -389,11 +414,17 @@ class Helper():
                 }
             }
         })
-        activity_buckets = activity["aggregations"]["activity"]["buckets"]
+        activity_buckets = activity["aggregations"]["activity_parent"]["buckets"]
         for i, bucket in enumerate(activity_buckets):
             key = activity_buckets[i]["key"]
             activity_buckets[i]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
-            activity_buckets[i]["doc_count"] = activity_buckets[i]["actor"]["value"]
+
+            activity_children = activity_buckets[i]["activity_child"]["buckets"]
+            for j, bucket in enumerate(activity_children):
+                activity_children[j]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+                activity_children[j]["doc_count"] = activity_children[j]["actor"]["value"]
+
+            activity_buckets[i]["activity_children"] = activity_children
 
         return activity_buckets
 
@@ -577,20 +608,33 @@ class LmsHelper(Helper):
         else:
             filter_field = "context.platform.keyword"
             filter_id = "Moodle"
-        activity_buckets = self.get_activity(filter_field, filter_id)
-        hits_buckets = {
-            "day": self.get_activity(filter_field, filter_id, interval="1d"),
-            "week": self.get_activity(filter_field, filter_id, interval="week")
+
+        activity_buckets = {
+            "day": self.get_activity(filter_field, filter_id),
+            "week": self.get_activity(filter_field, filter_id, intervalParent="month")
         }
-        uniques_buckets = self.get_uniques(filter_field, filter_id, interval="1d")
+        hits_buckets = {
+            "day": self.get_activity(filter_field, filter_id, intervalChild="1d"),
+            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week")
+        }
+        uniques_buckets = {
+            "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
+            "week": self.get_uniques(filter_field, filter_id, intervalParent="month", intervalChild="week")
+        }
         return {
             "title": title,
-            "activity_buckets": activity_buckets,
+            "activity_buckets": {
+                "day": activity_buckets["day"],
+                "week": activity_buckets["week"]
+            },
             "hits_buckets": {
                 "day": hits_buckets["day"],
                 "week": hits_buckets["week"]
             },
-            "uniques_buckets": uniques_buckets,
+            "uniques_buckets": {
+                "day": uniques_buckets["day"],
+                "week": uniques_buckets["week"]
+            },
         }
 
 class ZoomHelper(Helper):

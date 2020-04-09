@@ -50,23 +50,27 @@
 
       <div class="row">
         <div class="col-12">
-          {% if hits_buckets %}
-          <h4>Evolution du nombre d'actions</h4>
-
           <div class="float-right">
             <label for="aggs_select_activity">Regrouper par :</label>
-            <select name="aggs" id="aggs_select_activity" onchange="updateAggs(id, 'hits_canvas', 'chart_number_action')" autocomplete="off">
+            <select name="aggs" id="aggs_select_activity" onchange="updateAggs(id)" autocomplete="off">
               <option selected value="day">Jour</option>
               <option value="week">Semaine</option>
             </select>
           </div>
+        </div>
+      </div>
+        
+      <div class="row">
+        <div class="col-12">
+          {% if hits_buckets %}
+          <h4>Evolution du nombre d'actions</h4>
 
           <div id="activity_div">
             <div class="chart-container" id="chart_number_action">
                   <canvas id="hits_canvas" height="150"></canvas>
             </div>
             <script>
-                xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString());
+                xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
             </script>
           </div>
           {% endif %}
@@ -77,11 +81,11 @@
         {% if activity_buckets %}
         <h4>Décomposition de l'activité par tranche horaire</h4>
         <div id="activity_div">
-          <div class="chart-container">
+          <div class="chart-container" id="chart_number_action_hours")>
                 <canvas id="activity_canvas" height="300"></canvas>
           </div>
           <script>
-                xdash_activity_chart({{ activity_buckets|jsonify }}, "activity_canvas");
+                xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
           </script>
         </div>
         {% endif %}
@@ -91,11 +95,11 @@
         {% if uniques_buckets %}
         <h4>Evolution du nombre d'utilisateurs uniques</h4>
         <div id="activity_div">
-          <div class="chart-container">
+          <div class="chart-container" id="chart_uniques_users">
                 <canvas id="uniques_canvas" height="150"></canvas>
           </div>
           <script>
-                xdash_hits_chart({{ uniques_buckets|jsonify }}, "uniques_canvas", color(window.chartColors.blue).alpha(0.5).rgbString());
+                xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
           </script>
         </div>
         {% endif %}
@@ -113,30 +117,52 @@
 
     <!--SCRIPTS-->
     <script type="text/javascript">
-      function updateAggs(aggs, id_canvas, id_container, height=150){
+
+      function updateAggs(aggs){
         
         //Récupère la valeur de l'aggrégation
         var aggs_value = document.getElementById(aggs).value;
-        
-        //Récupère le canvas et le supprime
-        var canvas = document.getElementById(id_canvas);
-        canvas.remove();
-        
-        //Créé un nouveau canvas avec une taille et un id passé en param
-        var canvas = document.createElement("CANVAS");
-        canvas.id = id_canvas;
-        canvas.height = height;
 
-        //Ajoute ce canvas dans le bloc passé en paramètre
-        var container = document.getElementById(id_container)
-        container.appendChild(canvas);
+        
+        
+        //Liste des graphes
+        charts = [
+          {id_container:"chart_number_action", id_canvas: "hits_canvas", height:150},
+          {id_container:"chart_number_action_hours", id_canvas: "activity_canvas", height:300},
+          {id_container:"chart_uniques_users", id_canvas: "uniques_canvas", height:150}
+        ];
 
-        if (aggs == "aggs_select_activity" && aggs_value == "week") {
-          xdash_hits_chart({{ hits_buckets.week|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString(), time='week');
-        } else {
-          xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas", color(window.chartColors.red).alpha(0.5).rgbString());
+        for(i=0;i<charts.length;i++){
+
+          
+
+          //Récupère le canvas et le supprime
+          var canvas = document.getElementById(charts[i].id_canvas);
+          canvas.remove();
+          
+          //Créé un nouveau canvas avec une taille et un id passé en param
+          var canvas = document.createElement("CANVAS");
+          canvas.id = charts[i].id_canvas;
+          canvas.height = charts[i].height;
+
+          //Ajoute ce canvas dans le bloc passé en paramètre
+          var container = document.getElementById(charts[i].id_container);
+          container.appendChild(canvas);
+
         }
 
+        if(aggs_value == "week"){
+          xdash_activity_chart({{ activity_buckets.week|jsonify }}, "activity_canvas", time='week', weeks_data={{ activity_buckets.day|jsonify }} );
+          xdash_hits_chart({{ uniques_buckets.week|jsonify }}, "uniques_canvas", time='week');
+          xdash_hits_chart({{ hits_buckets.week|jsonify }}, "hits_canvas", time='week');
+        } else {
+
+          xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
+          xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
+          xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
+
+        }
+        
       }
     </script>
   
