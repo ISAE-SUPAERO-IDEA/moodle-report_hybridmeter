@@ -107,7 +107,8 @@
 
     </div>
     
-    <a href="{% url 'api_lms_summary' %}?id={{ request.GET.id | urlencode }}" class="btn btn-primary">Export</a>
+    <a id="export_button" 
+      href="javascript:exportLMSData()" class="btn btn-primary">Export</a>
     
     <style>
     #activity_div {
@@ -116,6 +117,16 @@
     </style>
 
     <!--SCRIPTS-->
+
+    <script type="text/javascript">
+      function exportLMSData(){
+        href = "{% url 'api_lms_summary' %}?id={{ request.GET.id | urlencode }}";
+        aggs = document.getElementById("aggs_select_activity").value;
+        href += "&aggs=" + aggs;
+        window.location.assign(href);
+      }
+    </script>
+
     <script type="text/javascript">
 
       function updateAggs(aggs){

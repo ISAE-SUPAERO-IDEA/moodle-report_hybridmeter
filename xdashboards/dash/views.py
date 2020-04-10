@@ -135,13 +135,14 @@ def api_search_course(request, query=""):
     return JsonResponse({ "data": courses})
 
 
-def api_lms_summary(request):
+def api_lms_summary(request,):
     helper = LmsHelper(request)
     zoom_helper = ZoomHelper(request)
     if helper.error_response:
         return helper.error_response
 
     course_id = request.GET.get('id')
+    aggs = request.GET.get('aggs')
 
     dashboard_zoom = zoom_helper.dashboard()
     dashboard = helper.dashboard()
@@ -162,29 +163,48 @@ def api_lms_summary(request):
         date = timestamp_as_date(timestamp)
         return date.strftime("%d/%m/%Y")
 
-    dates = [timestamp_as_date(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
-    dates_string = [timestamp_as_string(bucket["key"]) for bucket in dashboard["uniques_buckets"]]
+    dates = []
+    dates_string = [] 
+    for buckets in dashboard["uniques_buckets"][aggs]:
+        for child in buckets["activity_children"]:
+            dates.append(timestamp_as_date(child["key"]))
+            dates_string.append(timestamp_as_string(child["key"]))
 
-    def writerow(writer, title, buckets):
+
+    def writerow(writer, title, buckets, zoom=False):
         values = ["0" for a in range(len(dates))]
-        for bucket in buckets:
-            try:
-                index = dates_string.index(timestamp_as_string(bucket["key"]))
-                values[index] = bucket["doc_count"]
-            except:
-                pass
+        if(zoom):
+            for bucket in buckets:
+                try:
+                    index = dates_string.index(timestamp_as_string(bucket["key"]))
+                    values[index] = bucket["doc_count"]
+                except:
+                    pass
+        else:
+            for bucket in buckets:
+                for child in bucket["activity_children"]:
+                    try:
+                        index = dates_string.index(timestamp_as_string(child["key"]))
+                        values[index] = child["doc_count"]
+                    except:
+                        pass
+
         writer.writerow([title] + values)
 
 
     writer.writerow(["Jour"] + dates_string)
     writer.writerow(["LMS"])
-    writerow(writer, " - Nombre d'acces uniques", dashboard["uniques_buckets"])
-    writerow(writer, " - Nombre d'acces", dashboard["hits_buckets"])
+
+    writerow(writer, " - Nombre d'acces uniques", dashboard["uniques_buckets"][aggs])
+    writerow(writer, " - Nombre d'acces", dashboard["hits_buckets"][aggs])
+
     if course_id:
         writer.writerow([dashboard_pcp["title"]])
-        writerow(writer, " - Nombre d'acces uniques", dashboard_pcp["uniques_buckets"])
-        writerow(writer, " - Nombre d'acces", dashboard_pcp["hits_buckets"])
+        writerow(writer, " - Nombre d'acces uniques", dashboard_pcp["uniques_buckets"][aggs])
+    
+        writerow(writer, " - Nombre d'acces", dashboard_pcp["hits_buckets"][aggs])
+
     writer.writerow([dashboard_zoom["title"]])
-    writerow(writer, " - Nombre de réunions", dashboard_zoom["activity_buckets"])
+    writerow(writer, " - Nombre de réunions", dashboard_zoom["activity_buckets"], zoom=True)
     
     return response

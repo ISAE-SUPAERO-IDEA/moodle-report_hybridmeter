@@ -152,6 +152,8 @@ var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=n
             
     }
 
+    console.log(data_points);
+
     var scatterChart = new Chart(ctx, {
         type: 'scatter',
               
@@ -180,9 +182,9 @@ var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=n
                         date = data_points[tooltipitems.index].x
                         hour = data_points[tooltipitems.index].y
                         if(time == 'day'){
-                            return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} entre ${hour}h et ${hour+3}h : ${data.doc_count} accès`;
+                            return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} entre ${hour}h et ${hour+3}h : ${data.doc_count} accès`;
                         }else{
-                            return `Semaine du : ${date.getDate()}/${date.getMonth()}/${date.getFullYear()} entre ${hour}h et ${hour+3}h : ${data.doc_count} accès`;
+                            return `Semaine du : ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} entre ${hour}h et ${hour+3}h : ${data.doc_count} accès`;
                         }
                     }
                 }
