@@ -66,7 +66,7 @@ var xdash_hits_chart = function(chart_data, canvas, time='day') {
                     type: 'time',
                     position: 'bottom',
                     time: {
-                        unit: time,
+                        unit: 'week',
                         isoWeekday: true
                     },
                     gridLines: {
@@ -136,7 +136,7 @@ var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=n
             //activity_children[j].x = date;
             //activity_children[j].y = hours;
             data_points.push( {x: date, y: hours, doc_count: activity_children[j].doc_count} );
-            var size = 0 + (activity_children[j].doc_count * 10)/ max_doc_count;
+            var size = Math.sqrt( ( (activity_children[j].doc_count * 100)/ max_doc_count ) /Math.PI);
             pointRadius.push(size);
             pointHoverRadius.push(size*1.5);
             if(time == "week"){
@@ -209,7 +209,7 @@ var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=n
                     type: 'time',
                     position: 'bottom',
                     time: {
-                        unit: time,
+                        unit: 'week',
                         isoWeekday: true
                     },
                     gridLines: {

@@ -22,15 +22,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '301934f@#+)m(*5^#+p3zcya9iwy_8nan#&!bl1yhi!$1w+3*o'
 
-AUTHORIZED_USERS = ["b.ilponse", "c.blondeau", "s.bernard", "l.dairaine", "a.luga", "t.perennou", "e.poquillon"]
+AUTHORIZED_USERS = ["g.hautecoeur","b.ilponse", "c.blondeau", "s.bernard", "l.dairaine", "a.luga", "t.perennou", "e.poquillon"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["local.isae.fr", "xdash.isae.fr"]
+ALLOWED_HOSTS = ["local.isae.fr", "xdash.isae.fr","xstats.isae.fr"]
 
 CAS_SERVER_URL = "https://ssocas.isae.fr/cas/"
-CAS_REDIRECT_URL = "/dash/learners"
+CAS_REDIRECT_URL = "/dash/lms"
 CAS_LOGOUT_COMPLETELY = True
 CAS_PROVIDE_URL_TO_LOGOUT = True
 CAS_AUTO_CREATE_USER = False
@@ -132,3 +132,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'debug_log': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/opt/xStats/xdash/xdashboards/log/debug.log',
+        },
+        'error_log': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': '/opt/xStats/xdash/xdashboards/log/error.log',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['debug_log'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'errors': {
+        	'handlers': ['error_log'],
+        	'level': 'ERROR',
+        	'propagate': False,
+        }
+    },
+}

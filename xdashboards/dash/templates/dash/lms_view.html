@@ -59,50 +59,65 @@
           </div>
         </div>
       </div>
-        
+      
       <div class="row">
-        <div class="col-12">
-          {% if hits_buckets %}
-          <h4>Evolution du nombre d'actions</h4>
 
-          <div id="activity_div">
-            <div class="chart-container" id="chart_number_action">
-                  <canvas id="hits_canvas" height="150"></canvas>
+        <div class="col-6">
+
+          <div class="row">
+
+            <div class="col-12">
+              {% if hits_buckets %}
+              <h4>Evolution du nombre d'actions</h4>
+
+              <div id="activity_div">
+                <div class="chart-container" id="chart_number_action">
+                      <canvas id="hits_canvas" height="150"></canvas>
+                </div>
+                <script>
+                    xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
+                </script>
+              </div>
+              {% endif %}
             </div>
-            <script>
-                xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
-            </script>
           </div>
-          {% endif %}
-        </div>
-      </div>
 
-      <div class="col-12">
-        {% if activity_buckets %}
-        <h4>Décomposition de l'activité par tranche horaire</h4>
-        <div id="activity_div">
-          <div class="chart-container" id="chart_number_action_hours")>
-                <canvas id="activity_canvas" height="300"></canvas>
+          <div class="row">
+            <div class="col-12">
+              {% if uniques_buckets %}
+              <h4>Evolution du nombre d'utilisateurs uniques</h4>
+              <div id="activity_div">
+                <div class="chart-container" id="chart_uniques_users">
+                      <canvas id="uniques_canvas" height="150"></canvas>
+                </div>
+                <script>
+                      xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
+                </script>
+              </div>
+              {% endif %}
+            </div>
           </div>
-          <script>
-                xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
-          </script>
         </div>
-        {% endif %}
-      </div>
 
-      <div class="col-12">
-        {% if uniques_buckets %}
-        <h4>Evolution du nombre d'utilisateurs uniques</h4>
-        <div id="activity_div">
-          <div class="chart-container" id="chart_uniques_users">
-                <canvas id="uniques_canvas" height="150"></canvas>
+        <div class="col-6">
+
+          <div class="row">
+            <div class="col-12">
+              {% if activity_buckets %}
+              <h4>Décomposition de l'activité par tranche horaire</h4>
+              <div id="activity_div">
+                <div class="chart-container" id="chart_number_action_hours")>
+                      <canvas id="activity_canvas" height="300"></canvas>
+                </div>
+                <script>
+                      xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
+                </script>
+              </div>
+              {% endif %}
+            </div>
           </div>
-          <script>
-                xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
-          </script>
         </div>
-        {% endif %}
+
       </div>
 
     </div>
