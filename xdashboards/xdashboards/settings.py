@@ -25,7 +25,7 @@ SECRET_KEY = '301934f@#+)m(*5^#+p3zcya9iwy_8nan#&!bl1yhi!$1w+3*o'
 AUTHORIZED_USERS = ["g.hautecoeur","b.ilponse", "c.blondeau", "s.bernard", "l.dairaine", "a.luga", "t.perennou", "e.poquillon"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["local.isae.fr", "xdash.isae.fr","xstats.isae.fr"]
 

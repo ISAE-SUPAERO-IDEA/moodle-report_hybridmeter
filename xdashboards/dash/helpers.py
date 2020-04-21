@@ -586,9 +586,49 @@ class AdnHelper(Helper):
     def __init__(self, request):
         es = Elasticsearch(["idea-db.isae.fr"])
         index = "xapi_adn_enriched"
-        global_range_end = 1572566400 * 1000 # 1er novembre 2019
+        # global_range_end = 1572566400 * 1000 # 1er novembre 2019
+        global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
         global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
         super(AdnHelper, self).__init__(request, es, index, global_range_start, global_range_end, authorized_users=settings.AUTHORIZED_USERS)
+
+    def dashboard(self, course_id=None):
+        title = "ADN ISAE-SUPAERO"
+        if course_id:
+            filter_field = "object.id.keyword"
+            filter_id = course_id
+            object_ = self.get_object_definition(course_id)
+            title = object_["definition"]["name"]["fr"]
+        else:
+            filter_field = "context.platform.keyword"
+            filter_id = "Moodle"
+
+        activity_buckets = {
+            "day": self.get_activity(filter_field, filter_id),
+            "week": self.get_activity(filter_field, filter_id, intervalParent="month")
+        }
+        hits_buckets = {
+            "day": self.get_activity(filter_field, filter_id, intervalChild="1d"),
+            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week")
+        }
+        uniques_buckets = {
+            "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
+            "week": self.get_uniques(filter_field, filter_id, intervalParent="month", intervalChild="week")
+        }
+        return {
+            "title": title,
+            "activity_buckets": {
+                "day": activity_buckets["day"],
+                "week": activity_buckets["week"]
+            },
+            "hits_buckets": {
+                "day": hits_buckets["day"],
+                "week": hits_buckets["week"]
+            },
+            "uniques_buckets": {
+                "day": uniques_buckets["day"],
+                "week": uniques_buckets["week"]
+            },
+        }
 
 class LmsHelper(Helper):
     def __init__(self, request):

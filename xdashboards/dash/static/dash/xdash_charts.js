@@ -20,6 +20,7 @@ var xdash_hits_chart = function(chart_data, canvas, time='day') {
     labels = [];
     data = [];
     backcolors = [];
+    lastKey = {'position': -1, 'key': ""};
 
     for (i=0;i<chart_data.length;i++) {
         
@@ -27,20 +28,24 @@ var xdash_hits_chart = function(chart_data, canvas, time='day') {
 
         for (j=0;j<activity_children.length;j++) {
             var date = new Date(activity_children[j].key);
-            data.push(activity_children[j].doc_count);
-            labels.push(date);
-            if(i>0 && chart_data[i].key > activity_children[j].key){
-                backcolors.push(colors[i-1%50]);
+            
+            if(activity_children[j].key == lastKey.key){
+                data[lastKey.position] += activity_children[j].doc_count;
             }else{
+                data.push(activity_children[j].doc_count);
+                labels.push(date);
                 backcolors.push(colors[i%50]);
+                lastKey.key = activity_children[j].key;
+                lastKey.position +=1;
             }
+
+            
         }
         
     }
 
-    var scatterChart = new Chart(ctx, {
+    var barChart = new Chart(ctx, {
         type: 'bar',
-        
         data: {
             labels: labels,
             datasets: [{
@@ -74,10 +79,11 @@ var xdash_hits_chart = function(chart_data, canvas, time='day') {
                     }
                 }]
             }
+
         }
     });
 
-    return scatterChart;    
+    return barChart;    
 }
 
 
@@ -151,8 +157,6 @@ var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=n
         }
             
     }
-
-    console.log(data_points);
 
     var scatterChart = new Chart(ctx, {
         type: 'scatter',

@@ -117,8 +117,53 @@ def lms(request):
         "title": dashboard["title"]
         })
 
+def adn(request):
+    helper = AdnHelper(request)
+    if helper.error_response:
+        return helper.error_response
+
+    selected = None
+    # object list
+    choices = helper.aggregate(id_field="object.id.keyword", description_field="object.definition.name.fr.keyword", anonymize=False,size=50)
+    for choice in choices:
+        prefix = ""
+        choice["name"] = "{} - {} - {}".format(prefix, choice["type"], choice["name"] if choice["name"] else choice["key"])
+
+    choices.sort(key=lambda choice: choice["name"])
+
+    dashboard = helper.dashboard(request.GET.get('id'))
+    return render(request, 'dash/adn_view.html', {
+        'choices': choices,
+        "selected": selected,
+        "activity_buckets": dashboard["activity_buckets"],
+        "hits_buckets": dashboard["hits_buckets"],
+        "uniques_buckets": dashboard["uniques_buckets"],
+        "title": dashboard["title"]
+        })
+
+
 def api_search_course(request, query=""):
+
     helper = LmsHelper(request)
+    if helper.error_response:
+        return helper.error_response
+
+    courses = helper.aggregate(
+        id_field="object.id.keyword",
+        description_field="object.definition.name.fr.keyword",
+        filter=[
+            {"term": {"object.definition.type.keyword": "http://vocab.xapi.fr/activities/course"}},
+            {"match_phrase_prefix": {"object.definition.name.fr": query}}
+        ],
+        range="full",
+        anonymize=False)
+
+    return JsonResponse({ "data": courses})
+
+def api_search_course_adn(request, query=""):
+    
+    
+    helper = AdnHelper(request)
     if helper.error_response:
         return helper.error_response
 
