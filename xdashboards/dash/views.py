@@ -113,6 +113,7 @@ def lms(request):
         "selected": selected,
         "activity_buckets": dashboard["activity_buckets"],
         "hits_buckets": dashboard["hits_buckets"],
+        "hits_buckets_hvp": dashboard["hits_buckets_hvp"],
         "uniques_buckets": dashboard["uniques_buckets"],
         "title": dashboard["title"]
         })
@@ -137,6 +138,7 @@ def adn(request):
         "selected": selected,
         "activity_buckets": dashboard["activity_buckets"],
         "hits_buckets": dashboard["hits_buckets"],
+        "hits_buckets_hvp": dashboard["hits_buckets_hvp"],
         "uniques_buckets": dashboard["uniques_buckets"],
         "title": dashboard["title"]
         })

@@ -8,6 +8,7 @@ from elasticsearch import Elasticsearch
 import os
 import io
 import math
+import sys
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -328,7 +329,13 @@ class Helper():
                 defn["system"] = obj["system"]["id"]
             return defn
 
-    def get_activity(self, field, id, intervalParent="week", intervalChild="3h"):
+    def get_activity(self, field, id, intervalParent="week", intervalChild="3h", adn=False):
+
+        adn_query = ".*"
+        if adn :
+            adn_query = "hvp.*"
+
+
         activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity_parent.buckets", body={
             "sort": {self.time_field: "desc"},
             "aggs": {
@@ -351,16 +358,30 @@ class Helper():
             },
             "query": {
                 "bool": {
-                    "must": {"range": self.daterangequery},
+                    "must": [
+                        {
+                            "range": self.daterangequery
+                        },
+                        {
+                            "regexp": {
+                                "object.definition.extensions.http://vocab.xapi.fr/extensions/platform-concept.keyword": {
+                                    "value": adn_query
+                                }
+                            }
+                        }
+                    ],
                     "must_not": {"term": {"verb.id.keyword": "http://id.tincanapi.com/verb/defined"}},
                     "filter": {
                         "term": {
                             field: id
                         }
                     }
+
+                    
                 }
             }
         })
+        print
         activity_buckets = activity["aggregations"]["activity_parent"]["buckets"]
         for i, bucket in enumerate(activity_buckets):
             key = activity_buckets[i]["key"]
@@ -610,6 +631,10 @@ class AdnHelper(Helper):
             "day": self.get_activity(filter_field, filter_id, intervalChild="1d"),
             "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week")
         }
+        hits_buckets_hvp = {
+            "day": self.get_activity(filter_field, filter_id, intervalChild="1d", adn=True),
+            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week", adn=True)
+        }
         uniques_buckets = {
             "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
             "week": self.get_uniques(filter_field, filter_id, intervalParent="month", intervalChild="week")
@@ -627,6 +652,10 @@ class AdnHelper(Helper):
             "uniques_buckets": {
                 "day": uniques_buckets["day"],
                 "week": uniques_buckets["week"]
+            },
+            "hits_buckets_hvp": {
+                "day": hits_buckets_hvp["day"],
+                "week": hits_buckets_hvp["week"]
             },
         }
 
@@ -657,6 +686,10 @@ class LmsHelper(Helper):
             "day": self.get_activity(filter_field, filter_id, intervalChild="1d"),
             "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week")
         }
+        hits_buckets_hvp = {
+            "day": self.get_activity(filter_field, filter_id, intervalChild="1d", adn=True),
+            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week", adn=True)
+        }
         uniques_buckets = {
             "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
             "week": self.get_uniques(filter_field, filter_id, intervalParent="month", intervalChild="week")
@@ -674,6 +707,10 @@ class LmsHelper(Helper):
             "uniques_buckets": {
                 "day": uniques_buckets["day"],
                 "week": uniques_buckets["week"]
+            },
+            "hits_buckets_hvp": {
+                "day": hits_buckets_hvp["day"],
+                "week": hits_buckets_hvp["week"]
             },
         }
 

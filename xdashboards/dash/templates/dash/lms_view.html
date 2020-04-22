@@ -80,8 +80,10 @@
               </div>
               {% endif %}
             </div>
+
           </div>
 
+          <!--CONNEXION UNIQUE BAR CHART-->
           <div class="row">
             <div class="col-12">
               {% if uniques_buckets %}
@@ -97,6 +99,29 @@
               {% endif %}
             </div>
           </div>
+          <!--END CONNEXION UNIQUE BAR CHART-->
+
+          <!--H5P ACTION BAR CHART-->
+          <div class="row">
+
+            <div class="col-12">
+              {% if hits_buckets_hvp %}
+              <h4>Evolution du nombre d'actions sur les activités H5P</h4>
+
+              <div id="activity_div">
+                <div class="chart-container" id="chart_number_action_hvp">
+                      <canvas id="hits_canvas_hvp" height="150"></canvas>
+                </div>
+                <script>
+                    xdash_hits_chart({{ hits_buckets_hvp.day|jsonify }}, "hits_canvas_hvp");
+                </script>
+              </div>
+              {% endif %}
+            </div>
+
+          </div>
+          <!--H5P ACTION BAR CHART-->
+
         </div>
 
         <div class="col-lg-6 col-sm-12 col-md-12">
@@ -104,7 +129,7 @@
           <div class="row">
             <div class="col-12">
               {% if activity_buckets %}
-              <h4>Décomposition de l'activité par tranche horaire</h4>
+              <h4>Décomposition du nombre d'actions par tranche horaire</h4>
               <div id="activity_div">
                 <div class="chart-container" id="chart_number_action_hours")>
                       <canvas id="activity_canvas" height="300"></canvas>
@@ -154,6 +179,7 @@
         //Liste des graphes
         charts = [
           {id_container:"chart_number_action", id_canvas: "hits_canvas", height:150},
+          {id_container:"chart_number_action_hvp", id_canvas: "hits_canvas_hvp", height:150},
           {id_container:"chart_number_action_hours", id_canvas: "activity_canvas", height:300},
           {id_container:"chart_uniques_users", id_canvas: "uniques_canvas", height:150}
         ];
@@ -181,11 +207,13 @@
           xdash_activity_chart({{ activity_buckets.week|jsonify }}, "activity_canvas", time='week', weeks_data={{ activity_buckets.day|jsonify }} );
           xdash_hits_chart({{ uniques_buckets.week|jsonify }}, "uniques_canvas", time='week');
           xdash_hits_chart({{ hits_buckets.week|jsonify }}, "hits_canvas", time='week');
+          xdash_hits_chart({{ hits_buckets_hvp.week|jsonify }}, "hits_canvas_hvp", time='week');
         } else {
 
           xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
           xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
           xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
+          xdash_hits_chart({{ hits_buckets_hvp.day|jsonify }}, "hits_canvas_hvp");
 
         }
         
