@@ -606,7 +606,7 @@ class Helper():
 class AdnHelper(Helper):
     def __init__(self, request):
         es = Elasticsearch(["idea-db.isae.fr"])
-        index = "xapi_adn_enriched"
+        index = "xapi_adn_statements"
         # global_range_end = 1572566400 * 1000 # 1er novembre 2019
         global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
         global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
