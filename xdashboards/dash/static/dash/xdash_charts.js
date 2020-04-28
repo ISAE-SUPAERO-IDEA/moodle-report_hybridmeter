@@ -78,7 +78,23 @@ var xdash_hits_chart = function(chart_data, canvas, time='day') {
                         color: "rgba(0, 0, 0, 0)",
                     }
                 }]
+            },
+            pan: {
+              enabled: true,
+              mode: "x",
+              speed: 100,
+              threshold: 100
+            },
+            zoom: {
+              enabled: true,
+              drag: false,
+              mode: "x",
+              limits: {
+                max: 10,
+                min: 0.5
+              }
             }
+            
 
         }
     });
@@ -220,9 +236,27 @@ var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=n
                         color: "rgba(0, 0, 0, 0)",
                     }
                 }]
+            },
+            pan: {
+              enabled: true,
+              mode: "x",
+              speed: 100,
+              threshold: 100
+            },
+            zoom: {
+              enabled: true,
+              drag: false,
+              mode: "x",
+              limits: {
+                max: 10,
+                min: 0.5
+              }
             }
+            
         }
-    });    
+    });
+
+    return scatterChart;
 }
 
 function weeks_by_hours_data(months_data, weeks_data){
@@ -274,4 +308,10 @@ function weeks_by_hours_data(months_data, weeks_data){
 
     return chart_data;
 
+}
+
+
+/*Remet à zéro le zoom*/
+var resetZoom = function (chart){
+    chart.resetZoom();
 }
