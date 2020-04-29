@@ -6403,3 +6403,128 @@ Traceback (most recent call last):
   File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 850, in _resolve_lookup
     (bit, current))  # missing attribute
 django.template.base.VariableDoesNotExist: Failed lookup for key [id] in <QueryDict: {}>
+(0.002) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."username" IS NULL; args=()
+(0.001) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."username" = 'g.hautecoeur'; args=('g.hautecoeur',)
+(0.000) SELECT (1) AS "a" FROM "django_session" WHERE "django_session"."session_key" = '0cxjrv8sslkpk14h3kl4dfykd92dcb4e'  LIMIT 1; args=('0cxjrv8sslkpk14h3kl4dfykd92dcb4e',)
+(0.000) BEGIN; args=None
+(0.000) INSERT INTO "django_session" ("session_key", "session_data", "expire_date") SELECT '0cxjrv8sslkpk14h3kl4dfykd92dcb4e', 'NGVlZmE1OGQ1NjcwMDI2YTYxMmQyNDVhMTgwMjE5OTY3NmRhMzAxODp7fQ==', '2020-05-13 08:44:44.110379'; args=('0cxjrv8sslkpk14h3kl4dfykd92dcb4e', 'NGVlZmE1OGQ1NjcwMDI2YTYxMmQyNDVhMTgwMjE5OTY3NmRhMzAxODp7fQ==', '2020-05-13 08:44:44.110379')
+(0.000) BEGIN; args=None
+(0.000) UPDATE "auth_user" SET "last_login" = '2020-04-29 08:44:44.129252' WHERE "auth_user"."id" = 1; args=('2020-04-29 08:44:44.129252', 1)
+(0.000) SELECT (1) AS "a" FROM "django_session" WHERE "django_session"."session_key" = '0cxjrv8sslkpk14h3kl4dfykd92dcb4e'  LIMIT 1; args=('0cxjrv8sslkpk14h3kl4dfykd92dcb4e',)
+(0.000) SELECT "django_cas_ng_sessionticket"."id", "django_cas_ng_sessionticket"."session_key", "django_cas_ng_sessionticket"."ticket" FROM "django_cas_ng_sessionticket" WHERE "django_cas_ng_sessionticket"."session_key" = '0cxjrv8sslkpk14h3kl4dfykd92dcb4e'; args=('0cxjrv8sslkpk14h3kl4dfykd92dcb4e',)
+(0.000) BEGIN; args=None
+(0.000) INSERT INTO "django_cas_ng_sessionticket" ("session_key", "ticket") VALUES ('0cxjrv8sslkpk14h3kl4dfykd92dcb4e', 'ST-1202205-Ju5NU1Sf4E2fSL1yakNs-ssocas.isae.fr'); args=['0cxjrv8sslkpk14h3kl4dfykd92dcb4e', 'ST-1202205-Ju5NU1Sf4E2fSL1yakNs-ssocas.isae.fr']
+(0.000) BEGIN; args=None
+(0.000) UPDATE "django_session" SET "session_data" = 'YTNkYzg2YjBlZjc3ODE5Y2IyZjlmMzMzODdkYjBjMTdjNGFjYjZmOTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvX2Nhc19uZy5iYWNrZW5kcy5DQVNCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiN2I2OTY1YWJlMDczNzBiNmUwYjM0NjU5ZGY1ZDM3MWMyN2Y1MTY5YSJ9', "expire_date" = '2020-05-13 08:44:44.137437' WHERE "django_session"."session_key" = '0cxjrv8sslkpk14h3kl4dfykd92dcb4e'; args=('YTNkYzg2YjBlZjc3ODE5Y2IyZjlmMzMzODdkYjBjMTdjNGFjYjZmOTp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvX2Nhc19uZy5iYWNrZW5kcy5DQVNCYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiN2I2OTY1YWJlMDczNzBiNmUwYjM0NjU5ZGY1ZDM3MWMyN2Y1MTY5YSJ9', '2020-05-13 08:44:44.137437', '0cxjrv8sslkpk14h3kl4dfykd92dcb4e')
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2020-04-29 08:44:44.150794' AND "django_session"."session_key" = '0cxjrv8sslkpk14h3kl4dfykd92dcb4e'); args=('2020-04-29 08:44:44.150794', '0cxjrv8sslkpk14h3kl4dfykd92dcb4e')
+(0.000) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1; args=(1,)
+Exception while resolving variable 'id' in template 'dash/lms_view.html'.
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/utils/datastructures.py", line 77, in __getitem__
+    list_ = super().__getitem__(key)
+KeyError: 'id'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 829, in _resolve_lookup
+    current = current[bit]
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/utils/datastructures.py", line 79, in __getitem__
+    raise MultiValueDictKeyError(key)
+django.utils.datastructures.MultiValueDictKeyError: 'id'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 837, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'QueryDict' object has no attribute 'id'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 843, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'id'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 850, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [id] in <QueryDict: {}>
+Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/core/handlers/base.py", line 111, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/urls/resolvers.py", line 520, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'dash.urls' from '/opt/xStats/xdash/xdashboards/dash/urls.py'> (None:None) 'dash/'>], [<URLPattern 'accounts/login' [name='cas_ng_login']>], [<URLPattern 'accounts/logout' [name='cas_ng_logout']>], [<URLPattern ''>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 829, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 837, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 843, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 850, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <URLPattern list> (admin:admin) 'admin/'>
+Exception while resolving variable 'name' in template 'unknown'.
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/core/handlers/base.py", line 111, in _get_response
+    resolver_match = resolver.resolve(request.path_info)
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/urls/resolvers.py", line 520, in resolve
+    raise Resolver404({'tried': tried, 'path': new_path})
+django.urls.exceptions.Resolver404: {'tried': [[<URLResolver <URLPattern list> (admin:admin) 'admin/'>], [<URLResolver <module 'dash.urls' from '/opt/xStats/xdash/xdashboards/dash/urls.py'> (None:None) 'dash/'>], [<URLPattern 'accounts/login' [name='cas_ng_login']>], [<URLPattern 'accounts/logout' [name='cas_ng_logout']>], [<URLPattern ''>]], 'path': 'favicon.ico'}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 829, in _resolve_lookup
+    current = current[bit]
+TypeError: 'URLResolver' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 837, in _resolve_lookup
+    current = getattr(current, bit)
+AttributeError: 'URLResolver' object has no attribute 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 843, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'name'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/xStats/venv/lib64/python3.6/site-packages/django/template/base.py", line 850, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [name] in <URLResolver <module 'dash.urls' from '/opt/xStats/xdash/xdashboards/dash/urls.py'> (None:None) 'dash/'>
+Not Found: /favicon.ico

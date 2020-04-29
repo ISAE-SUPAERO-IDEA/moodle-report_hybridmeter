@@ -244,16 +244,16 @@
         }
 
         if(aggs_value == "week"){
-          xdash_activity_chart({{ activity_buckets.week|jsonify }}, "activity_canvas", time='week', weeks_data={{ activity_buckets.day|jsonify }} );
-          xdash_hits_chart({{ uniques_buckets.week|jsonify }}, "uniques_canvas", time='week');
-          xdash_hits_chart({{ hits_buckets.week|jsonify }}, "hits_canvas", time='week');
-          xdash_hits_chart({{ hits_buckets_hvp.week|jsonify }}, "hits_canvas_hvp", time='week');
+           activity_canvas = xdash_activity_chart({{ activity_buckets.week|jsonify }}, "activity_canvas", time='week', weeks_data={{ activity_buckets.day|jsonify }} );
+          uniques_canvas = xdash_hits_chart({{ uniques_buckets.week|jsonify }}, "uniques_canvas", time='week');
+          hits_buckets = xdash_hits_chart({{ hits_buckets.week|jsonify }}, "hits_canvas", time='week');
+          hits_canvas_hvp = xdash_hits_chart({{ hits_buckets_hvp.week|jsonify }}, "hits_canvas_hvp", time='week');
         } else {
 
-          xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
-          xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
-          xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
-          xdash_hits_chart({{ hits_buckets_hvp.day|jsonify }}, "hits_canvas_hvp");
+          activity_canvas = xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
+          uniques_canvas = xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
+          hits_buckets = xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
+          hits_canvas_hvp = xdash_hits_chart({{ hits_buckets_hvp.day|jsonify }}, "hits_canvas_hvp");
 
         }
         
