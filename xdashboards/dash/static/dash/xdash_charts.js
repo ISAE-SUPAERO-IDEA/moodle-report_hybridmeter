@@ -106,26 +106,33 @@ var xdash_hits_chart = function(chart_data, canvas, time='day') {
 var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=null) {
     var ctx = document.getElementById(canvas).getContext('2d');
     //#document.getElementById('activity_canvas').height = 50;
-    /*
+    
+    var data_keys = [];
+    var i = 0;
+    chart_data.forEach((bucket)=>{
+        bucket.activity_child.buckets.forEach((bucket)=> {
+            data_keys.push(bucket);
+        });
+    })
     document.getElementById('activity_canvas').onclick=function(evt) {
         var activePoints = scatterChart.getElementsAtEvent(evt);
         if (activePoints[0]) {
-            data = chart_data[activePoints[0]._index];
+            data = data_keys[activePoints[0]._index];
             change_param("traces_range", data.key);
         }
         return;
     };
-    */
+    
 
     if(weeks_data != null){
         chart_data = weeks_by_hours_data(chart_data, weeks_data);
     }
-
+/*
     chart_data.sort((a, b) => {
         if (a.active == b.active) return 0;
         return a.active ? 1 : -1;
     })
-
+*/
     
 
     var pointRadius = []
@@ -162,11 +169,11 @@ var xdash_activity_chart = function(chart_data, canvas, time='day', weeks_data=n
             pointRadius.push(size);
             pointHoverRadius.push(size*1.5);
             if(time == "week"){
-                pointBackgroundColor.push(activity_children[j].active ? chart_data[i].color : "#eee");
-                pointBorderColor.push(activity_children[j].active ? chart_data[i].color : "#999");
+                pointBackgroundColor.push(!activity_children[j].active || true? chart_data[i].color : "#eee");
+                pointBorderColor.push(!activity_children[j].active ? chart_data[i].color : "#999");
             }else{
-                pointBackgroundColor.push(activity_children[j].active ? colors[i%50] : "#eee");
-                pointBorderColor.push(activity_children[j].active ? colors[i%50] : "#999");
+                pointBackgroundColor.push(!activity_children[j].active  || true? colors[i%50] : "#eee");
+                pointBorderColor.push(!activity_children[j].active ? colors[i%50] : "#999");
             }
             pointLabel.push(activity_children[j].doc_count);
 

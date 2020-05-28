@@ -225,7 +225,7 @@ class Helper():
         self.index = index
         self.global_range_end = global_range_end
         self.global_range_start = global_range_start
-        self.time_field= time_field
+        self.time_field = time_field
 
         self.daterangequery = {self.time_field: {
                                 "gte": self.global_range_start,
@@ -376,8 +376,6 @@ class Helper():
                             field: id
                         }
                     }
-
-                    
                 }
             }
         })
@@ -490,6 +488,7 @@ class Helper():
         nodes = ways["nodes"]
         edges = ways["edges"]
         edge_groups = ways["edge_groups"]
+        #print(json.dumps(source, sort_keys=True, indent=4, separators=(',', ': ')))
         if adjency in source:
             adjacent = source[adjency]
             node_id = adjacent["object"]["id"]
@@ -594,7 +593,8 @@ class Helper():
 
     def get_ways(self, id, previous=True, next=True, recursion=1, cull=0.1):
         # get all occurences
-        occurences = self.get_object_occurences(id)
+        #occurences = self.get_object_occurences(id)
+        print(id)
         ways = {
             "nodes": {},
             "edges": {},
@@ -603,14 +603,25 @@ class Helper():
         self.add_node_ways(ways, id, previous=previous, next=next, recursion=recursion, cull=cull)
         return ways
 
+
+class UnitHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "xapi_adn_enriched"
+        global_range_end = 1572566400 * 1000 # 1er novembre 2019
+        #global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
+        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        super(UnitHelper, self).__init__(request, es, index, global_range_start, global_range_end, authorized_users=settings.AUTHORIZED_USERS)
+
+
 class AdnHelper(Helper):
     def __init__(self, request):
         es = Elasticsearch(["idea-db.isae.fr"])
-        index = "xapi_adn_statements"
+        index = "xapi_adn_enriched"
         # global_range_end = 1572566400 * 1000 # 1er novembre 2019
         global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
         global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
-        super(AdnHelper, self).__init__(request, es, index, global_range_start, global_range_end, authorized_users=settings.AUTHORIZED_USERS)
+        super(AdnHelper, self).__init__(request, es, index, global_range_start, global_range_end)
 
     def dashboard(self, course_id=None):
         title = "ADN ISAE-SUPAERO"
@@ -618,7 +629,7 @@ class AdnHelper(Helper):
             filter_field = "object.id.keyword"
             filter_id = course_id
             object_ = self.get_object_definition(course_id)
-            title = object_["definition"]["name"]["fr"]
+            title = object_["definition"]["name"]["any"]
         else:
             filter_field = "context.platform.keyword"
             filter_id = "Moodle"
@@ -662,7 +673,7 @@ class AdnHelper(Helper):
 class LmsHelper(Helper):
     def __init__(self, request):
         es = Elasticsearch(["idea-db.isae.fr"])
-        index = "xapi_statements"
+        index = "xapi_enriched"
         global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
         global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
         super(LmsHelper, self).__init__(request, es, index, global_range_start, global_range_end)
@@ -673,7 +684,7 @@ class LmsHelper(Helper):
             filter_field = "object.id.keyword"
             filter_id = course_id
             object_ = self.get_object_definition(course_id)
-            title = object_["definition"]["name"]["fr"]
+            title = object_["definition"]["name"]["any"]
         else:
             filter_field = "context.platform.keyword"
             filter_id = "Moodle"

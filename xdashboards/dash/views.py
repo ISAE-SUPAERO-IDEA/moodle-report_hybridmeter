@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 
 
-from .helpers import AdnHelper, LmsHelper, ZoomHelper
+from .helpers import AdnHelper, LmsHelper, UnitHelper, ZoomHelper
 from datetime import datetime
 import csv
 import pytz
@@ -15,7 +15,7 @@ def timezone_convert(input_dt, current_tz='UTC', target_tz='Europe/Paris'):
 
 
 def learner(request):
-    helper = AdnHelper(request)
+    helper = UnitHelper(request)
     if helper.error_response:
         return helper.error_response
 
@@ -32,7 +32,7 @@ def learner(request):
         # traces ranges
         # activity data
         activity_buckets = helper.get_activity("actor.account.login.keyword", id)
-
+        
         # traces
         traces = helper.get_traces(id)
 
@@ -45,7 +45,7 @@ def learner(request):
 
 
 def resource(request):
-    helper = AdnHelper(request)
+    helper = UnitHelper(request)
     if helper.error_response:
         return helper.error_response
 
@@ -145,41 +145,27 @@ def adn(request):
 
 
 def api_search_course(request, query=""):
+    repository = request.GET.get('repository')
+    if (repository=="adn"):
+      helper = AdnHelper(request)
+    if (repository=="lms"):
+      helper = LmsHelper(request)
 
-    helper = LmsHelper(request)
     if helper.error_response:
         return helper.error_response
 
     courses = helper.aggregate(
         id_field="object.id.keyword",
-        description_field="object.definition.name.fr.keyword",
+        description_field="object.definition.name.any.keyword",
         filter=[
             {"term": {"object.definition.type.keyword": "http://vocab.xapi.fr/activities/course"}},
-            {"match_phrase_prefix": {"object.definition.name.fr": query}}
+            {"match_phrase_prefix": {"object.definition.name.any": query}}
         ],
         range="full",
         anonymize=False)
 
     return JsonResponse({ "data": courses})
 
-def api_search_course_adn(request, query=""):
-    
-    
-    helper = AdnHelper(request)
-    if helper.error_response:
-        return helper.error_response
-
-    courses = helper.aggregate(
-        id_field="object.id.keyword",
-        description_field="object.definition.name.fr.keyword",
-        filter=[
-            {"term": {"object.definition.type.keyword": "http://vocab.xapi.fr/activities/course"}},
-            {"match_phrase_prefix": {"object.definition.name.fr": query}}
-        ],
-        range="full",
-        anonymize=False)
-
-    return JsonResponse({ "data": courses})
 
 
 def api_lms_summary(request,):

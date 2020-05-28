@@ -23,7 +23,7 @@
           ajax: {
             delay: 250,
             url(params) {
-                return `/dash/api/courses/search/${params.term}`;
+                return `/dash/api/courses/search/${params.term}?repository=adn`;
             },
             processResults: function (data) {
               // Transforms the top-level key of the response object from 'items' to 'results'
