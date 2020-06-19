@@ -8,3 +8,4 @@ xdashboards/__init__.py
 xdashboards/settings.py
 xdashboards/urls.py
 xdashboards/wsgi.py
+xdashboards/wsgi_prod.py

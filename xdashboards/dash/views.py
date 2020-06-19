@@ -241,3 +241,45 @@ def api_lms_summary(request,):
     writerow(writer, " - Nombre de réunions", dashboard_zoom["activity_buckets"], zoom=True)
     
     return response
+
+# NINJA: A retirer dès que le port du naas est ouvert
+
+def ninjaproxy(request, path):
+    from urllib.parse import urlencode
+    from urllib.request import urlopen, Request
+    import requests
+    host = "naas.isae.fr"
+    protocol = "http"
+    #server = "http://icampus.isae.fr"
+    url = "%s://%s/%s" % (protocol, host, path)
+    # add get parameters
+    if request.GET:
+        url += '?' + urlencode(request.GET)
+
+    # add headers of the incoming request
+    # see https://docs.djangoproject.com/en/1.7/ref/request-response/#django.http.HttpRequest.META for details about the request.META dict
+    def convert(s):
+        s = s.replace('HTTP_','',1)
+        s = s.replace('_','-')
+        return s
+
+
+    request_headers = dict((convert(k),v) for k,v in request.META.items() if k.startswith('HTTP_'))
+    # add content-type and and content-length
+    content_type = request.META.get('CONTENT-TYPE')
+    if content_type: request_headers['CONTENT-TYPE'] = content_type
+    content_length = request.META.get('CONTENT_LENGTH')
+    if content_length: request_headers['CONTENT-LENGTH'] = content_length
+    request_headers['HOST'] = host
+
+    # get original request payload
+    if request.method == "GET":
+        data = None
+    else:
+        data = request.raw_post_data
+
+    downstream_request = Request(url, data)
+    page = requests.get(url, data, headers=request_headers, allow_redirects=False, verify=False)
+    response = HttpResponse(page)
+    return response
+    # NINJA
