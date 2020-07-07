@@ -329,12 +329,11 @@ class Helper():
                 defn["system"] = obj["system"]["id"]
             return defn
 
-    def get_activity(self, field, id, intervalParent="week", intervalChild="3h", adn=False):
+    def get_activity(self, intervalParent="week", intervalChild="3h", adn=False, filters=False):
 
         adn_query = ".*"
         if adn :
             adn_query = "hvp.*"
-
 
         activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity_parent.buckets", body={
             "sort": {self.time_field: "desc"},
@@ -371,11 +370,7 @@ class Helper():
                         }
                     ],
                     "must_not": {"term": {"verb.id.keyword": "http://id.tincanapi.com/verb/defined"}},
-                    "filter": {
-                        "term": {
-                            field: id
-                        }
-                    }
+                    "filter" : filters
                 }
             }
         })
@@ -453,15 +448,30 @@ class Helper():
         if obj:
             return
         if obj["type"] == "system":
-            activity_buckets = self.get_activity("system.id.keyword", id)
+            activity_buckets = self.get_activity( filters={"term" : {"system.id.keyword" : id} } )
         elif obj["type"] == "course":
-            activity_buckets = self.get_activity("course.id.keyword", id)
+            activity_buckets = self.get_activity( filters={"term" : {"course.id.keyword" : id} } )
         else:
-            activity_buckets = self.get_activity("object.id.keyword", id)
+            activity_buckets = self.get_activity( filters={"term" : {"object.id.keyword" : id} } )
 
         return activity_buckets
 
-    def get_traces(self, user):
+    def get_traces(self, user, course=None):
+
+        filter = []
+        if course is None :
+            filter = { "term": {"actor.account.login.keyword": user }}
+        else:
+            filter = [
+                { "term": {"actor.account.uuid.keyword": user }},
+                { "term":
+                    { 
+                        "course.id.keyword" : course
+                    }
+                }
+            ]
+
+
         traces = self.es.search(index=self.index, size=100, filter_path="hits.hits", body={
             "sort": {self.time_field: "desc"},
             "script_fields": {
@@ -470,16 +480,12 @@ class Helper():
               }
             },
             "_source": {
-                "excludes": ["actor.name", "actor.account.name"]
+                "excludes": ["actor.name", "actor.account.name", "actor.account.login", "acl"]
             },
             "query": {
                 "bool": {
                     "must": {"range": self.daterangequery_traces},
-                    "filter": {
-                        "term": {
-                            "actor.account.login.keyword": user
-                        }
-                    }
+                    "filter": filter
                 },
             }})
         return self.convert_traces(traces["hits"]["hits"])
@@ -635,16 +641,16 @@ class AdnHelper(Helper):
             filter_id = "Moodle"
 
         activity_buckets = {
-            "day": self.get_activity(filter_field, filter_id),
-            "week": self.get_activity(filter_field, filter_id, intervalParent="month")
+            "day": self.get_activity( filters={"term" : {filter_field : filter_id} } ),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month")
         }
         hits_buckets = {
-            "day": self.get_activity(filter_field, filter_id, intervalChild="1d"),
-            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week")
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d"),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week")
         }
         hits_buckets_hvp = {
-            "day": self.get_activity(filter_field, filter_id, intervalChild="1d", adn=True),
-            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week", adn=True)
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d", adn=True),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week", adn=True)
         }
         uniques_buckets = {
             "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
@@ -690,16 +696,16 @@ class LmsHelper(Helper):
             filter_id = "Moodle"
 
         activity_buckets = {
-            "day": self.get_activity(filter_field, filter_id),
-            "week": self.get_activity(filter_field, filter_id, intervalParent="month")
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month")
         }
         hits_buckets = {
-            "day": self.get_activity(filter_field, filter_id, intervalChild="1d"),
-            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week")
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d"),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week")
         }
         hits_buckets_hvp = {
-            "day": self.get_activity(filter_field, filter_id, intervalChild="1d", adn=True),
-            "week": self.get_activity(filter_field, filter_id, intervalParent="month", intervalChild="week", adn=True)
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d", adn=True),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week", adn=True)
         }
         uniques_buckets = {
             "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
@@ -724,6 +730,12 @@ class LmsHelper(Helper):
                 "week": hits_buckets_hvp["week"]
             },
         }
+
+        """
+        def pathViews(self, course_id=None, user_id=None):
+            title = "LMS ISAE-SUPAERO"
+            if course_id && user_id :
+        """
 
 class ZoomHelper(Helper):
     def __init__(self, request):

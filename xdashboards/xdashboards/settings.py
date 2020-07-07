@@ -27,7 +27,7 @@ AUTHORIZED_USERS = ["g.hautecoeur","b.ilponse", "c.blondeau", "s.bernard", "l.da
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["local.isae.fr", "xdash.isae.fr","xstats.isae.fr"]
+ALLOWED_HOSTS = ["xstats.local.isae.fr", "xdash.isae.fr","xstats.isae.fr"]
 
 CAS_SERVER_URL = "https://ssocas.isae.fr/cas/"
 CAS_REDIRECT_URL = "/dash/lms"
