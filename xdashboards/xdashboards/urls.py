@@ -30,9 +30,6 @@ urlpatterns = [
     path('dash/', include('dash.urls')),
     path('accounts/login', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'),
     path('accounts/logout', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
-    path('', root),
-    # NINJA: A retirer dès que le port du naas est ouvert
-    re_path(r'(?P<path>.*)', views.ninjaproxy, name='ninjaproxy')
-    # NINJA
+    path('', root)
 
 ]
