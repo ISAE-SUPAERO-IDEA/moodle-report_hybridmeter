@@ -4,9 +4,11 @@ import pytz
 import json
 import datetime as dt
 from django.conf import settings
+from elasticsearch import Elasticsearch
 import os
 import io
-
+import math
+import sys
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 
@@ -124,7 +126,6 @@ def template_from_string(template_string, using=None):
         except TemplateSyntaxError as e:
             chain.append(e)
     raise TemplateSyntaxError(template_string, chain=chain)
-
 verbs_to_phrases = {
     "https://w3id.org/xapi/adl/verbs/logged-in": "{{ t.actor }} {{ t.verb }}",
     "https://w3id.org/xapi/adl/verbs/logged-out": "{{ t.actor }} {{ t.verb }}",
@@ -132,12 +133,11 @@ verbs_to_phrases = {
     "http://adlnet.gov/expapi/verbs/answered": "{{ t.actor }} {{ t.verb }} {{ t.object }} ({{t.score}}/{{t.score_max}})",
     "http://vocab.xapi.fr/verbs/graded": "{{ t.actor }} {{ t.verb }}  {{t.score}}/{{t.score_max}} sur {{ t.object }}"
 }
-
 def timezonize(date):
     date = date.replace(tzinfo=pytz.timezone('UTC'))
     date = date.astimezone(pytz.timezone('Europe/Paris'))
     return date
-
+    
 def timezonize_format(date, format):
     return timezonize(date).strftime(format)
 
@@ -154,7 +154,6 @@ def anonymize_trace(trace):
         del item[paths[i]]
     clear_path("actor.account.name")
     """
-
 
     return anonymize_trace_be(trace)
 
@@ -175,7 +174,6 @@ def anonymize_trace_be(trace):
         raise(Exception("Unknown trace type"))
 
 
-
 # Create your views here.
 def convert_trace(trace):
     res = {}
@@ -192,7 +190,7 @@ def convert_trace(trace):
 
             if val:
                 break
-        
+
         if "translations" in config and val in config["translations"]:
             val = config["translations"][val]
 
@@ -221,15 +219,15 @@ def convert_trace(trace):
 
 
 class Helper():
-    def __init__(self, request):
-        from elasticsearch import Elasticsearch
+    def __init__(self, request, es, index, global_range_start, global_range_end, time_field="timestamp", authorized_users=None):
         self.request = request
-        self.es = Elasticsearch(["idea-db"])
-        self.index = "xapi_adn_enriched"
-        self.global_range_end =  (dt.datetime.now().timestamp() * 1000) + 24 * 60 * 60 * 1000
-        self.global_range_start =  self.global_range_end - 75 * 24 * 60 * 60 * 1000
+        self.es = es
+        self.index = index
+        self.global_range_end = global_range_end
+        self.global_range_start = global_range_start
+        self.time_field = time_field
 
-        self.daterangequery = {"timestamp": {
+        self.daterangequery = {self.time_field: {
                                 "gte": self.global_range_start,
                                 "lte": self.global_range_end
                             }
@@ -241,18 +239,18 @@ class Helper():
         else:
             self.traces_range_start = self.global_range_start
             self.traces_range_end = self.global_range_end
-        self.daterangequery_traces = { "timestamp": {
+        self.daterangequery_traces = { self.time_field: {
                         "gte": self.traces_range_start,
                         "lt": self.traces_range_end
                     }
                 }
+        print(self.daterangequery_traces)
         self.error_response = None
         if not request.user.is_authenticated:
             self.error_response = redirect("cas_ng_login")
 
-        elif request.user.username not in settings.AUTHORIZED_USERS:
+        elif authorized_users and request.user.username not in authorized_users:
             self.error_response = render(request, 'dash/error.html', {"error": "Not authorized: {}".format(request.user.username)})
-
 
     def convert_traces(self, traces):
         traces = [anonymize_trace(trace) for trace in traces]
@@ -260,7 +258,7 @@ class Helper():
         return traces
 
     def aggregate(self, id_field, description_field, range="full", filter=None, size=5000, anonymize=True):
-        query = {"range": self.daterangequery} if range=="full" else {"range": self.daterangequery_traces}
+        query = {"range": self.daterangequery} if range == "full" else {"range": self.daterangequery_traces}
         if filter:
             query = {
                 "bool": {
@@ -268,6 +266,7 @@ class Helper():
                     "filter": filter
                     }
                 }
+        #query = {'range': {'timestamp': {'gte': 1571927112456.732, 'lte': 1578407112456.732}}}
         choices = self.es.search(index=self.index, size=0, filter_path="aggregations.agg.buckets", body={
             "query": query,
             "aggs": {
@@ -307,7 +306,7 @@ class Helper():
 
     def get_object_occurences(self, id, size = 1000000):
         obj = self.es.search(index=self.index, size=500, body={
-        "query": {
+            "query": {
                 "bool": {
                     "must": {"range": self.daterangequery_traces},
                     "filter": {
@@ -316,8 +315,8 @@ class Helper():
                         }
                     }
                 }
-        },
-        "sort": {"timestamp": "desc"}})
+            },
+            "sort": {self.time_field: "desc"}})
         obj = obj["hits"]["hits"]
         return obj
 
@@ -326,19 +325,95 @@ class Helper():
         if objs:
             obj = objs[0]["_source"]
             defn = obj["object"]
-            defn["system"] = obj["system"]["id"]
+            if "system" in obj:
+                defn["system"] = obj["system"]["id"]
             return defn
 
+    def get_activity(self, intervalParent="week", intervalChild="3h", adn=False, filters=False):
 
-    def get_activity(self, field, id):
-        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity.buckets", body={
-            "sort": {"timestamp": "desc"},
+        adn_query = ".*"
+        if adn :
+            adn_query = "hvp.*"
+
+        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity_parent.buckets", body={
+            "sort": {self.time_field: "desc"},
             "aggs": {
-                "activity": {
+                "activity_parent": {
                     "date_histogram": {
-                        "field": "timestamp",
-                        "interval": "3h",
-                        "time_zone": "+02:00"
+                        "field": self.time_field,
+                        "interval": intervalParent,
+                        "time_zone": "Europe/Paris"
+                    },
+                    "aggs": {
+                        "activity_child": {
+                            "date_histogram": {
+                                "field": self.time_field,
+                                "interval": intervalChild,
+                                "time_zone": "Europe/Paris"
+                            }
+                        }
+                    }
+                }
+            },
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "range": self.daterangequery
+                        },
+                        {
+                            "regexp": {
+                                "object.definition.extensions.http://vocab.xapi.fr/extensions/platform-concept.keyword": {
+                                    "value": adn_query
+                                }
+                            }
+                        }
+                    ],
+                    "must_not": {"term": {"verb.id.keyword": "http://id.tincanapi.com/verb/defined"}},
+                    "filter" : filters
+                }
+            }
+        })
+        print
+        activity_buckets = activity["aggregations"]["activity_parent"]["buckets"]
+        for i, bucket in enumerate(activity_buckets):
+            key = activity_buckets[i]["key"]
+            activity_buckets[i]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+
+            activity_children = activity_buckets[i]["activity_child"]["buckets"]
+            for j, bucket_child in enumerate(activity_children):
+                key = activity_children[j]["key"]
+                activity_children[j]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+
+            activity_buckets[i]["activity_children"] = activity_children
+
+        return activity_buckets
+
+    def get_uniques(self, field, id, intervalParent="week", intervalChild="3h"):
+        activity = self.es.search(index=self.index, size=25, filter_path="aggregations.activity_parent.buckets", body={
+            "sort": {self.time_field: "desc"},
+            "aggs": {
+                "activity_parent": {
+                    "date_histogram": {
+                        "field": self.time_field,
+                        "interval": intervalParent,
+                        "time_zone": "Europe/Paris"
+                    },
+                    "aggs": {
+                        "activity_child": {
+                            "date_histogram": {
+                                "field": self.time_field,
+                                "interval": intervalChild,
+                                "time_zone": "Europe/Paris"
+                            },
+                            "aggs": {
+                                "actor": {
+                                    "cardinality": {
+                                        "field": "actor.account.name.keyword"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -353,10 +428,17 @@ class Helper():
                 }
             }
         })
-        activity_buckets = activity["aggregations"]["activity"]["buckets"]
+        activity_buckets = activity["aggregations"]["activity_parent"]["buckets"]
         for i, bucket in enumerate(activity_buckets):
             key = activity_buckets[i]["key"]
             activity_buckets[i]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+
+            activity_children = activity_buckets[i]["activity_child"]["buckets"]
+            for j, bucket in enumerate(activity_children):
+                activity_children[j]["active"] = True if key >= self.traces_range_start and key < self.traces_range_end else False
+                activity_children[j]["doc_count"] = activity_children[j]["actor"]["value"]
+
+            activity_buckets[i]["activity_children"] = activity_children
 
         return activity_buckets
 
@@ -366,34 +448,44 @@ class Helper():
         if obj:
             return
         if obj["type"] == "system":
-            activity_buckets = self.get_activity("system.id.keyword", id)
+            activity_buckets = self.get_activity( filters={"term" : {"system.id.keyword" : id} } )
         elif obj["type"] == "course":
-            activity_buckets = self.get_activity("course.id.keyword", id)
+            activity_buckets = self.get_activity( filters={"term" : {"course.id.keyword" : id} } )
         else:
-            activity_buckets = self.get_activity("object.id.keyword", id)
+            activity_buckets = self.get_activity( filters={"term" : {"object.id.keyword" : id} } )
 
         return activity_buckets
 
+    def get_traces(self, user, course=None):
 
-    def get_traces(self, user):
+        filter = []
+        if course is None :
+            filter = { "term": {"actor.account.login.keyword": user }}
+        else:
+            filter = [
+                { "term": {"actor.account.uuid.keyword": user }},
+                { "term":
+                    { 
+                        "course.id.keyword" : course
+                    }
+                }
+            ]
+
+
         traces = self.es.search(index=self.index, size=100, filter_path="hits.hits", body={
-            "sort": {"timestamp": "desc"},
+            "sort": {self.time_field: "desc"},
             "script_fields": {
               "timestamp": {
                 "script": "doc[\"timestamp\"].value.toInstant().toEpochMilli();"
               }
             },
             "_source": {
-                "excludes": ["actor.name", "actor.account.name"]
+                "excludes": ["actor.name", "actor.account.name", "actor.account.login", "acl"]
             },
             "query": {
                 "bool": {
                     "must": {"range": self.daterangequery_traces},
-                    "filter": {
-                        "term": {
-                            "actor.account.login.keyword": user
-                        }
-                    }
+                    "filter": filter
                 },
             }})
         return self.convert_traces(traces["hits"]["hits"])
@@ -402,6 +494,7 @@ class Helper():
         nodes = ways["nodes"]
         edges = ways["edges"]
         edge_groups = ways["edge_groups"]
+        #print(json.dumps(source, sort_keys=True, indent=4, separators=(',', ': ')))
         if adjency in source:
             adjacent = source[adjency]
             node_id = adjacent["object"]["id"]
@@ -434,20 +527,17 @@ class Helper():
                 edges[edge_id]["total_distance"] += adjacent["distance"]
                 edges[edge_id]["hits"] += 1
 
-
                 def add_to_edge_group(adjency, name, edge_id):
                     key = "{}|{}".format(adjency, name)
                     if not key in edge_groups:
                         edge_groups[key] = { "edges": {} }
                     if not edge_id in edge_groups[key]["edges"]:
                         edge_groups[key]["edges"][edge_id] = edges[edge_id]
-                        
 
                 if adjency == "next":
                     add_to_edge_group("from", node_from, edge_id)
                 else:
                     add_to_edge_group("to", node_to, edge_id)
-
 
     def add_node_ways(self, ways, id, previous, next, recursion, cull):
         occurences = self.get_object_occurences(id)
@@ -489,39 +579,196 @@ class Helper():
                     break
             return found
 
-        
         # delete culled nodes
         node_ids = list(ways["nodes"].keys())
         for node_id in node_ids:
             if not (node_has_edge(node_id, "from") or node_has_edge(node_id, "to")):
                 del ways["nodes"][node_id]
 
-
-
-
         if recursion:
             node_ids = list(ways["nodes"].keys())
             for node_id in node_ids:
                 if not ways["nodes"][node_id]["type_link"] == "http://vocab.xapi.fr/activities/system":
-                    self.add_node_ways(ways, node_id,
+                    self.add_node_ways(
+                        ways,
+                        node_id,
                         previous=node_has_edge(node_id, "from"),
                         next=node_has_edge(node_id, "to"),
                         recursion=recursion-1,
                         cull=0.15)
 
-
     def get_ways(self, id, previous=True, next=True, recursion=1, cull=0.1):
         # get all occurences
-        occurences = self.get_object_occurences(id)
+        #occurences = self.get_object_occurences(id)
+        print(id)
         ways = {
             "nodes": {},
             "edges": {},
             "edge_groups": {}
         }
         self.add_node_ways(ways, id, previous=previous, next=next, recursion=recursion, cull=cull)
-        
-
-        
-        
         return ways
 
+
+class UnitHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "xapi_adn_enriched"
+        global_range_end = 1572566400 * 1000 # 1er novembre 2019
+        #global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
+        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        super(UnitHelper, self).__init__(request, es, index, global_range_start, global_range_end, authorized_users=settings.AUTHORIZED_USERS)
+
+
+class AdnHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "xapi_adn_enriched"
+        # global_range_end = 1572566400 * 1000 # 1er novembre 2019
+        global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
+        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        super(AdnHelper, self).__init__(request, es, index, global_range_start, global_range_end)
+
+    def dashboard(self, course_id=None):
+        title = "ADN ISAE-SUPAERO"
+        if course_id:
+            filter_field = "object.id.keyword"
+            filter_id = course_id
+            object_ = self.get_object_definition(course_id)
+            title = object_["definition"]["name"]["any"]
+        else:
+            filter_field = "context.platform.keyword"
+            filter_id = "Moodle"
+
+        activity_buckets = {
+            "day": self.get_activity( filters={"term" : {filter_field : filter_id} } ),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month")
+        }
+        hits_buckets = {
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d"),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week")
+        }
+        hits_buckets_hvp = {
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d", adn=True),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week", adn=True)
+        }
+        uniques_buckets = {
+            "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
+            "week": self.get_uniques(filter_field, filter_id, intervalParent="month", intervalChild="week")
+        }
+        return {
+            "title": title,
+            "activity_buckets": {
+                "day": activity_buckets["day"],
+                "week": activity_buckets["week"]
+            },
+            "hits_buckets": {
+                "day": hits_buckets["day"],
+                "week": hits_buckets["week"]
+            },
+            "uniques_buckets": {
+                "day": uniques_buckets["day"],
+                "week": uniques_buckets["week"]
+            },
+            "hits_buckets_hvp": {
+                "day": hits_buckets_hvp["day"],
+                "week": hits_buckets_hvp["week"]
+            },
+        }
+
+class LmsHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "xapi_enriched"
+        global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
+        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        super(LmsHelper, self).__init__(request, es, index, global_range_start, global_range_end)
+
+    def dashboard(self, course_id=None):
+        title = "LMS ISAE-SUPAERO"
+        if course_id:
+            filter_field = "object.id.keyword"
+            filter_id = course_id
+            object_ = self.get_object_definition(course_id)
+            title = object_["definition"]["name"]["any"]
+        else:
+            filter_field = "context.platform.keyword"
+            filter_id = "Moodle"
+
+        activity_buckets = {
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month")
+        }
+        hits_buckets = {
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d"),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week")
+        }
+        hits_buckets_hvp = {
+            "day": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalChild="1d", adn=True),
+            "week": self.get_activity(filters={"term" : {filter_field : filter_id} }, intervalParent="month", intervalChild="week", adn=True)
+        }
+        uniques_buckets = {
+            "day": self.get_uniques(filter_field, filter_id, intervalChild="1d"),
+            "week": self.get_uniques(filter_field, filter_id, intervalParent="month", intervalChild="week")
+        }
+        return {
+            "title": title,
+            "activity_buckets": {
+                "day": activity_buckets["day"],
+                "week": activity_buckets["week"]
+            },
+            "hits_buckets": {
+                "day": hits_buckets["day"],
+                "week": hits_buckets["week"]
+            },
+            "uniques_buckets": {
+                "day": uniques_buckets["day"],
+                "week": uniques_buckets["week"]
+            },
+            "hits_buckets_hvp": {
+                "day": hits_buckets_hvp["day"],
+                "week": hits_buckets_hvp["week"]
+            },
+        }
+
+        """
+        def pathViews(self, course_id=None, user_id=None):
+            title = "LMS ISAE-SUPAERO"
+            if course_id && user_id :
+        """
+
+class ZoomHelper(Helper):
+    def __init__(self, request):
+        es = Elasticsearch(["idea-db.isae.fr"])
+        index = "zoom_meetings"
+        global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
+        global_range_start = global_range_end - 365 * 24 * 60 * 60 * 1000
+        global_range_end += 365 * 24 * 60 * 60 * 1000
+        super(ZoomHelper, self).__init__(request, es, index, global_range_start, global_range_end, time_field="start_time")
+
+    def dashboard(self, course_id=None):
+        title = "ZOOM"
+        interval = "1d"
+        activity = self.es.search(index=self.index, size=365 * 2, filter_path="aggregations.activity.buckets", body={
+            "sort": {"start_time": "desc"},
+            "aggs": {
+                "activity": {
+                    "date_histogram": {
+                        "field": self.time_field,
+                        "interval": interval,
+                        "time_zone": "Europe/Paris"
+                    }
+                }
+            },
+            "query": {
+                "bool": {
+                    "must": {"range": self.daterangequery},
+                }
+            }
+        })
+        activity_buckets = activity["aggregations"]["activity"]["buckets"]
+
+        return {
+            "title": title,
+            "activity_buckets": activity_buckets,
+        }

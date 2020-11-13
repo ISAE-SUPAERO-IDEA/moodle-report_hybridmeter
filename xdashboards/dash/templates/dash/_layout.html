@@ -1,0 +1,38 @@
+{% extends 'dash/_base.html' %}
+{% load dash %}
+
+{% block body %}
+
+        <div class="top">
+            <div class="container-fluid">
+                {% block nav %}
+                {% endblock %}
+                <a href="{% url 'cas_ng_logout' %}" class="float-right">Déconnexion</a>
+                <div>
+ 
+                {% block top %}
+                {% endblock %}
+
+ 
+                </div>
+                
+            </div>
+        </div>
+        <div>
+            <div class="container-fluid">
+                
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+
+    <style>
+        .top {
+            position:sticky;
+            top:0px;
+            background-color:#fff;
+            z-index:1000;
+        }
+    </style>
+{% endblock %}  
+</html>

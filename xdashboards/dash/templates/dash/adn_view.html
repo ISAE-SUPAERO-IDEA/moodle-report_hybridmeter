@@ -1,0 +1,263 @@
+{% extends 'dash/_layout.html' %}
+{% load dash %}
+
+
+
+{% block content %}
+    <!-- Course chooser -->
+     <!-- Item selection -->
+    <label for="course-input">Recherchez un cours</label>
+    <select class="form-control" id="course-input"></select>
+    <hr/>
+    <h1>{{ title }}</h1>
+    
+    <hr/>
+    <script>
+        // on learner selection
+        /*
+        $('#course-input').on("change", (e) => {
+            change_param("id",$('#selector').val());
+        });*/
+        // initialize typeahead
+        $('#course-input').select2({
+          ajax: {
+            delay: 250,
+            url(params) {
+                return `/dash/api/courses/search/${params.term}?repository=adn`;
+            },
+            processResults: function (data) {
+              // Transforms the top-level key of the response object from 'items' to 'results'
+              data.data.forEach(item => {
+                item.id = item.key;
+                item.text = item.name;
+              });
+              console.log(data.data);
+              return {
+                results: data.data
+              };
+            }
+          }
+        });
+        $('#course-input').on('select2:select', function (e) {
+          change_param("id",e.params.data.id);
+        });
+        var color = Chart.helpers.color;
+    </script>
+
+
+    <!-- Activity graphic -->
+    <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-12">
+          <div class="float-right">
+            <label for="aggs_select_activity">Regrouper par :</label>
+            <select name="aggs" id="aggs_select_activity" onchange="updateAggs(id)" autocomplete="off">
+              <option selected value="day">Jour</option>
+              <option value="week">Semaine</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+
+        <div class="col-lg-6 col-sm-12 col-md-12">
+
+          <div class="row">
+
+            <div class="col-12">
+              {% if hits_buckets %}
+              <h4>Evolution du nombre d'actions</h4>
+
+              
+              <button 
+                style= "margin-top: 2%; margin-bottom: 2%;"
+                type="button"
+                class="btn btn-info"
+                onclick="resetZoom(window.hits_buckets)"
+              >
+                Restaurer
+              </button>
+
+
+              <div id="activity_div">
+                <div class="chart-container" id="chart_number_action">
+                      <canvas id="hits_canvas" height="150"></canvas>
+                </div>
+                <script>
+                    hits_buckets = xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
+                </script>
+              </div>
+              {% endif %}
+            </div>
+
+          </div>
+
+          <!--CONNEXION UNIQUE BAR CHART-->
+          <div class="row">
+            <div class="col-12">
+              {% if uniques_buckets %}
+              <h4>Evolution du nombre d'utilisateurs uniques</h4>
+
+              <button 
+                style= "margin-top: 2%; margin-bottom: 2%;"
+                type="button"
+                class="btn btn-info"
+                onclick="resetZoom(window.uniques_canvas)"
+              >
+                Restaurer
+              </button>
+
+              <div id="activity_div">
+                <div class="chart-container" id="chart_uniques_users">
+                      <canvas id="uniques_canvas" height="150"></canvas>
+                </div>
+                <script>
+                      uniques_canvas = xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
+                </script>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <!--END CONNEXION UNIQUE BAR CHART-->
+
+          <!--H5P ACTION BAR CHART-->
+          <div class="row">
+
+            <div class="col-12">
+              {% if hits_buckets_hvp %}
+              <h4>Evolution du nombre d'actions sur les activités H5P</h4>
+
+              <button 
+                style= "margin-top: 2%; margin-bottom: 2%;"
+                type="button"
+                class="btn btn-info"
+                onclick="resetZoom(window.hits_canvas_hvp)"
+              >
+                Restaurer
+              </button>
+
+              <div id="activity_div">
+                <div class="chart-container" id="chart_number_action_hvp">
+                      <canvas id="hits_canvas_hvp" height="150"></canvas>
+                </div>
+                <script>
+                    hits_canvas_hvp = xdash_hits_chart({{ hits_buckets_hvp.day|jsonify }}, "hits_canvas_hvp");
+                </script>
+              </div>
+              {% endif %}
+            </div>
+
+          </div>
+          <!--H5P ACTION BAR CHART-->
+
+        </div>
+
+        <div class="col-lg-6 col-sm-12 col-md-12">
+
+          <div class="row">
+            <div class="col-12">
+              {% if activity_buckets %}
+              <h4>Décomposition du nombre d'actions par tranche horaire</h4>
+
+              <button 
+                style= "margin-top: 2%; margin-bottom: 2%;"
+                type="button"
+                class="btn btn-info"
+                onclick="resetZoom(window.activity_canvas)"
+              >
+                Restaurer
+              </button>
+
+              <div id="activity_div">
+                <div class="chart-container" id="chart_number_action_hours")>
+                      <canvas id="activity_canvas" height="300"></canvas>
+                </div>
+                <script>
+                       activity_canvas = xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
+                </script>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    
+    <a id="export_button" 
+      href="javascript:exportLMSData()" class="btn btn-primary">Export</a>
+    
+    <style>
+    #activity_div {
+        background-color:#fff;
+    }
+    </style>
+
+    <!--SCRIPTS-->
+
+    <script type="text/javascript">
+      function exportLMSData(){
+        href = "{% url 'api_lms_summary' %}?id={{ request.GET.id | urlencode }}";
+        aggs = document.getElementById("aggs_select_activity").value;
+        href += "&aggs=" + aggs;
+        window.location.assign(href);
+      }
+    </script>
+
+    <script type="text/javascript">
+
+      function updateAggs(aggs){
+        
+        //Récupère la valeur de l'aggrégation
+        var aggs_value = document.getElementById(aggs).value;
+
+        
+        
+        //Liste des graphes
+        charts = [
+          {id_container:"chart_number_action", id_canvas: "hits_canvas", height:150},
+          {id_container:"chart_number_action_hvp", id_canvas: "hits_canvas_hvp", height:150},
+          {id_container:"chart_number_action_hours", id_canvas: "activity_canvas", height:300},
+          {id_container:"chart_uniques_users", id_canvas: "uniques_canvas", height:150}
+        ];
+
+        for(i=0;i<charts.length;i++){
+
+          
+
+          //Récupère le canvas et le supprime
+          var canvas = document.getElementById(charts[i].id_canvas);
+          canvas.remove();
+          
+          //Créé un nouveau canvas avec une taille et un id passé en param
+          var canvas = document.createElement("CANVAS");
+          canvas.id = charts[i].id_canvas;
+          canvas.height = charts[i].height;
+
+          //Ajoute ce canvas dans le bloc passé en paramètre
+          var container = document.getElementById(charts[i].id_container);
+          container.appendChild(canvas);
+
+        }
+
+        if(aggs_value == "week"){
+          xdash_activity_chart({{ activity_buckets.week|jsonify }}, "activity_canvas", time='week', weeks_data={{ activity_buckets.day|jsonify }} );
+          xdash_hits_chart({{ uniques_buckets.week|jsonify }}, "uniques_canvas", time='week');
+          xdash_hits_chart({{ hits_buckets.week|jsonify }}, "hits_canvas", time='week');
+          xdash_hits_chart({{ hits_buckets_hvp.week|jsonify }}, "hits_canvas_hvp", time='week');
+        } else {
+
+          xdash_activity_chart({{ activity_buckets.day|jsonify }}, "activity_canvas");
+          xdash_hits_chart({{ uniques_buckets.day|jsonify }}, "uniques_canvas");
+          xdash_hits_chart({{ hits_buckets.day|jsonify }}, "hits_canvas");
+          xdash_hits_chart({{ hits_buckets_hvp.day|jsonify }}, "hits_canvas_hvp");
+
+        }
+        
+      }
+    </script>
+  
+{% endblock %}

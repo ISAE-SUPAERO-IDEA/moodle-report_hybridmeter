@@ -12,6 +12,7 @@ setup(name='xDashboards',
       install_requires=[
           'django==2.1.*',
           'django-cas-ng',
-          'elasticsearch'
+          'elasticsearch',
+          'requests'
         ],
       )

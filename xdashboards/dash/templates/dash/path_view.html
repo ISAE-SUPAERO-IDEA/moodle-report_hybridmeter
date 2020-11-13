@@ -1,0 +1,75 @@
+{% extends 'dash/_layout.html' %}
+{% load dash %}
+
+
+{% block content %}
+
+    <!-- Course selection -->
+    <label for="selectorCourse">Cours</label>
+   <select type="" id="selectorCourse" class="form-control">
+        <option value="">Choisissez un cours</option>
+        {% for course in choices_courses %}
+            <option value="{{ course.key }}" {{ params.course_id|compare:course.key|ontrue:"selected" }}> {{ course.name }}</option>
+        {% endfor %}
+    </select>
+    <hr/>
+    <script>
+        // on learner selection
+        $('#selectorCourse').on("change", (e) => {
+            change_param("courseId",$('#selectorCourse').val());
+        });
+    </script>
+    <!-- End Course Selection-->
+
+    <!--User Selection-->
+    <label for="selectorUser">Utilisateur</label>
+    <select type="" id="selectorUser" class="form-control">
+        <option value="">Choisissez un utilisateur</option>
+        {% for user in user_choices %}
+            <option value="{{ user.key }}" {{ params.user_id|compare:user.key|ontrue:"selected" }}> {{ user.name }}</option>
+        {% endfor %}
+    </select>
+    <hr/>
+    <script>
+        // on learner selection
+        $('#selectorUser').on("change", (e) => {
+            change_param("userId",$('#selectorUser').val());
+        });
+    </script>
+    <!--End User Selection-->
+
+    <h1 class="mt-5">{{ title }}</h1>
+    <hr/>
+
+    <div class="float-right">
+        <!-- Activity toogle -->
+        <button type="button" class="btn btn-secondary-outline dropdown-toggle" id="activity_toogle_button"></button>
+        <script>
+            var activity_visible = true;
+            $(activity_toogle_button).on("click", () => {
+                switch_class("#activity_div", "d-block", "d-none", activity_visible);
+                activity_visible = switch_class("#learning_path_canvas", "learning_path_canvas_small", "learning_path_canvas_big", activity_visible);
+            });
+        </script>
+    </div>
+    <!-- Activity graphic -->
+    {% if activity_buckets %}
+    <h4>Activité</h4>
+      <div class="chart-container">
+         <canvas id="activity_canvas" height="150"></canvas>
+      </div>
+      <script>
+          xdash_activity_chart({{ activity_buckets|jsonify }}, "activity_canvas");
+      </script>
+    {% endif %}
+    
+    <style>
+    #activity_div {
+        background-color:#fff;
+    }
+    </style>
+
+    {% include "dash/includes/path_and_traces.html" %}
+    
+
+{% endblock %}

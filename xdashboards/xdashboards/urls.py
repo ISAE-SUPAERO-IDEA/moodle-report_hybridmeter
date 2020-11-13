@@ -17,6 +17,10 @@ from django.contrib import admin
 from django.urls import include, path
 import django_cas_ng.views
 from django.shortcuts import redirect
+# NINJA: A retirer dès que le port du naas est ouvert
+from django.conf.urls import  re_path
+from dash import views
+# NINJA
 
 def root(request):
     return redirect('/dash/learners')
@@ -26,5 +30,6 @@ urlpatterns = [
     path('dash/', include('dash.urls')),
     path('accounts/login', django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'),
     path('accounts/logout', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
-    path('', root),
+    path('', root)
+
 ]

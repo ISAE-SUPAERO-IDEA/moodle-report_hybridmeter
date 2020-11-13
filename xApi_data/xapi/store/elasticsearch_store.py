@@ -19,7 +19,7 @@ class elastic_search:
     def __init__(self, config):
         logging.getLogger('elasticsearch').setLevel(logging.WARNING)
         self.index_flat = config['index_flat']
-        self.index_enrichment = config['index_enriched']
+        self.index_enrichment = config['index_enrichment']
         connexion = {
             'host': config['host'],
             'port': config['port'],
