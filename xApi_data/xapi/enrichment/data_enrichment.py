@@ -121,8 +121,9 @@ def __addNameUUID(statement):
 
         # Insertion du nom et du login dans le statement
         namelogin = __getNameAndLogin(statement['actor']['account']['uuid'])
-        statement['actor']['account']['name'] = namelogin['name']
-        statement['actor']['account']['login'] = namelogin['login']
+        namelogin_hashed = hashlib.md5(namelogin["login"].encode("utf-8")).hexdigest()
+        statement['actor']['account']['name'] = namelogin_hashed
+        statement['actor']['account']['login'] = namelogin_hashed
     elif 'mbox' in statement['actor']:
         statement['actor']['account'] = {
             'name' : statement['actor']['name'],
@@ -150,7 +151,7 @@ def __getNameAndLogin(uuid):
     
 
     # Création de l'url avec le endpoint
-    urls = [ "https://lms.isae.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=2b8a458c09615e816f571dfc025c3cb9",
+    urls = [ "https://lms.isae.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=5b78a4e3e9bb81a07cf13011b0e96953",
      "https://adn.isae-supaero.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=e54ca4b5543c1bfeefe526d5fb9fbbd7",
      "https://online.isae-supaero.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=8a67e0251440d8752d4cbbb010cccd7b",
     ]    
