@@ -308,7 +308,7 @@ def __addAdjacentStatement(store, order):
 
         # On récupère le temps passé de la trace
         # Si il y a une trace stockée après celle en paramètre
-
+        
         adjacent_statement = store.getNextStatement(statement) if order == "next" else store.getPreviousStatement(statement)
 
         # Si NONE, on ne peut pas savoir le temps passé
@@ -328,7 +328,7 @@ def __addAdjacentStatement(store, order):
                 bulk_list = []
     store.saveStatements(bulk_list, 'enrich')
 
-    print(str(nb_statements) + 'STATEMENTS ENRICHED')
+    print(str(nb_statements) + ' STATEMENTS ENRICHED')
 
 
 # Ajout de l'activité de la trace

@@ -167,6 +167,18 @@ class elastic_search:
             "sort": {"stored": "asc"},
             "docvalue_fields": ["timestamp"]
         }
+        """
+        body = {
+        "query" : {
+            "term": {
+
+                 "id.keyword": { "value": "4e5829b8-990a-3276-99cb-fe5d6a478fde" }
+
+                 }
+        },
+            "docvalue_fields": ["timestamp"]
+        }
+        """
 
         # On requête l'index qui contient les traces brutes
         return helpers.scan(self.es, query=body, index=self.index_enrichment, preserve_order=True)
@@ -183,8 +195,8 @@ class elastic_search:
 
         # On récupère le timestamp de la trace
         # Requête
-        if not statement["_source"]["verb"]["id"] == VERB_NAVIGATED_IN:
-            return None
+        #if not statement["_source"]["verb"]["id"] == VERB_NAVIGATED_IN:
+        #    return None
 
         body = {
             "query": {
@@ -235,7 +247,7 @@ class elastic_search:
                 print ("ruptured:" + statement["id"])
                 break
 
-            # On ignore logegd in et logged out
+            # On ignore logged in et logged out
             if candidate["_source"]["verb"] in [VERB_LOGGED_IN, VERB_LOGGED_OUT]:
                 continue
             
