@@ -152,7 +152,7 @@ def __getNameAndLogin(uuid):
 
     # Création de l'url avec le endpoint
     urls = [ "https://lms.isae.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=5b78a4e3e9bb81a07cf13011b0e96953",
-     "https://adn.isae-supaero.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=e54ca4b5543c1bfeefe526d5fb9fbbd7",
+     "https://adn.isae-supaero.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=434b3693cc8ca5bb3e354829abe9dc53",
      "https://online.isae-supaero.fr/webservice/rest/server.php?moodlewsrestformat=json&wsfunction=logstore_trax_get_actors&wstoken=8a67e0251440d8752d4cbbb010cccd7b",
     ]    
     for url in urls:    
@@ -172,19 +172,23 @@ def __getNameAndLogin(uuid):
         res = s.post(url=url, data=body, timeout=None)
         res.encoding = 'utf-8'
         result = json.loads(res.text)
+        success = False
         try:
             result = json.loads(result[0]['xapi'])
             namelogin = {
                             'name': result['name'],
                             'login': result['account']['name']
                         }
+	    success = True
             break
         except:
-            print("Cannot identify user {}: {}".format(uuid, result))
-            namelogin = {
-                            'name': "?",
-                            'login': "?"
-                        }
+            pass
+    if not success: 
+        print("Cannot identify user {}: {}".format(uuid, result))
+        namelogin = {
+                        'name': "?",
+                        'login': "?"
+                    }
     return namelogin
 
 def __getObjectType(statement):
