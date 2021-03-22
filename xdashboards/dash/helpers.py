@@ -456,21 +456,13 @@ class Helper():
 
         return activity_buckets
 
-    def get_traces(self, user, course=None):
+    def get_traces(self, user_id=None, course_id=None):
 
         filter = []
-        if course is None :
-            filter = { "term": {"actor.account.login.keyword": user }}
-        else:
-            filter = [
-                { "term": {"actor.account.uuid.keyword": user }},
-                { "term":
-                    { 
-                        "course.id.keyword" : course
-                    }
-                }
-            ]
-
+        if user_id:
+            filter.append({ "term": {"actor.account.login.keyword": user_id }})
+        if course_id:
+            filter.append({ "term": {"course.id.keyword" : course_id }})
 
         traces = self.es.search(index=self.index, size=100, filter_path="hits.hits", body={
             "sort": {self.time_field: "desc"},
@@ -489,6 +481,7 @@ class Helper():
                 },
             }})
         return self.convert_traces(traces["hits"]["hits"])
+
 
     def add_way(self, source, adjency, ways):
         nodes = ways["nodes"]
