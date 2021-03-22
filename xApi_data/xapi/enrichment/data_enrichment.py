@@ -179,7 +179,8 @@ def __getNameAndLogin(uuid):
                             'name': result['name'],
                             'login': result['account']['name']
                         }
-	    success = True
+            success = True
+            print("Identified {}".format(uuid))
             break
         except:
             pass
