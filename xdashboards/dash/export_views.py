@@ -125,21 +125,30 @@ def api_lms_merged_traces(request):
     return response
     """
     def process_login(login):
+        def unpack_traces(traces):
+            res = []
+            for trace in traces:
+                trace = trace["_source"]
+                trace["actor"]["account"]["login"] = login
+                res.append(trace)
+            return res
         user_id = hash(login)
         # LMS traces
         for course_id in data.merged_traces_lms_course_ids:
             traces = lms.get_raw_traces(course_id=f"https://lms.isae.fr/xapi/activities/course/{course_id}", user_id=user_id)
+            traces = unpack_traces(traces)
             write_traces(response, traces)
         # ADN traces
         for course_id in data.merged_traces_adn_course_ids:
             traces = adn.get_raw_traces(course_id=f"https://adn.isae-supaero.fr/xapi/activities/course/{course_id}", user_id=user_id)
+            traces = unpack_traces(traces)
             write_traces(response, traces)
 
     for login in data.merged_traces_logins:
         process_login(login)
 
-    for login in data.merged_traces_group_cnamisae["members"]:
-        process_login(login["login"])
+    for member in data.merged_traces_group_cnamisae["members"]:
+        process_login(member["login"])
         
     return response
 
