@@ -12,4 +12,5 @@ urlpatterns = [
     path('api/courses/search/<query>', views.api_search_course, name='api_search_course'),
     path('api/lms/summary', export_views.api_lms_summary, name='api_lms_summary'),
     path('api/lms/traces', export_views.api_lms_traces, name='api_lms_traces'),
+    path('api/lms/merged_traces', export_views.api_lms_merged_traces, name='api_lms_merged_traces'),
 ]
