@@ -244,7 +244,6 @@ class Helper():
                         "lt": self.traces_range_end
                     }
                 }
-        print(self.daterangequery_traces)
         self.error_response = None
         if not request.user.is_authenticated:
             self.error_response = redirect("cas_ng_login")
@@ -374,7 +373,6 @@ class Helper():
                 }
             }
         })
-        print
         activity_buckets = activity["aggregations"]["activity_parent"]["buckets"]
         for i, bucket in enumerate(activity_buckets):
             key = activity_buckets[i]["key"]
@@ -456,7 +454,7 @@ class Helper():
 
         return activity_buckets
 
-    def get_raw_traces(self, user_id=None, course_id=None, system_id=None):
+    def get_raw_traces(self, user_id=None, course_id=None, system_id=None, size=100):
 
         filter = []
         if user_id:
@@ -466,7 +464,7 @@ class Helper():
         if system_id:
             filter.append({ "term": {"system_id.keyword" : system_id }})
 
-        traces = self.es.search(index=self.index, size=100, filter_path="hits.hits", body={
+        traces = self.es.search(index=self.index, size=size, filter_path="hits.hits", body={
             "sort": {self.time_field: "desc"},
             "script_fields": {
               "timestamp": {
@@ -489,7 +487,6 @@ class Helper():
 
     def get_source_traces(self, user_id=None, course_id=None, system_id=None):
         def val(trace):
-            print(trace)
             return trace["_source"]
         return [ val(trace) for trace in self.get_raw_traces(user_id, course_id, system_id)]
 
@@ -603,7 +600,6 @@ class Helper():
     def get_ways(self, id, previous=True, next=True, recursion=1, cull=0.1):
         # get all occurences
         #occurences = self.get_object_occurences(id)
-        print(id)
         ways = {
             "nodes": {},
             "edges": {},
