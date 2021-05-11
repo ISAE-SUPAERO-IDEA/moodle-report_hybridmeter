@@ -149,7 +149,6 @@ def api_lms_merged_traces(request):
         
         # LMS traces
         for course_id in data.merged_traces_lms_course_ids:
-            print(user_id, course_id)
             traces = lms.get_raw_traces(course_id=f"https://lms.isae.fr/xapi/activities/course/{course_id}", user_id=user_id, size=10000)
             traces = unpack_traces(traces)
             write_traces(response, traces)

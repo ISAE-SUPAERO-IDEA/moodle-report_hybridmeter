@@ -467,9 +467,9 @@ class Helper():
         traces = self.es.search(index=self.index, size=size, filter_path="hits.hits", body={
             "sort": {self.time_field: "desc"},
             "script_fields": {
-              "timestamp": {
-                "script": "doc[\"timestamp\"].value.toInstant().toEpochMilli();"
-              }
+                    "timestamp": {
+                    "script": "doc[\"timestamp\"].value.toInstant().toEpochMilli();"
+                }
             },
             "_source": {
                 "excludes": ["actor.name", "actor.account.name", "actor.account.login", "acl"]
@@ -480,6 +480,8 @@ class Helper():
                     "filter": filter
                 },
             }})
+        if len(traces["hits"]["hits"]) > 0:
+            print(len(traces["hits"]["hits"]))
         return traces["hits"]["hits"]
 
     def get_traces(self, user_id=None, course_id=None, system_id=None):
