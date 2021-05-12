@@ -455,7 +455,6 @@ class Helper():
         return activity_buckets
 
     def get_raw_traces(self, user_id=None, course_id=None, system_id=None, size=100):
-
         filter = []
         if user_id:
             filter.append({ "term": {"actor.account.login.keyword": user_id }})

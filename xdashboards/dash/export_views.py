@@ -134,8 +134,8 @@ def api_lms_merged_traces(request):
                 def rmattribute(attrib):
                     if attrib in trace:
                         del trace[attrib]
-                rmattribute("next")
-                rmattribute("previous")
+                #rmattribute("next")
+                #rmattribute("previous")
                 rmattribute("system")
                 rmattribute("hash")
                 rmattribute("context")
