@@ -141,7 +141,7 @@ def api_lms_merged_traces(request):
                 rmattribute("context")
                 rmattribute("version")
                 rmattribute("authority")
-                rmattribute("activity")
+                #rmattribute("activity")
 
                 res.append(trace)
             return res
