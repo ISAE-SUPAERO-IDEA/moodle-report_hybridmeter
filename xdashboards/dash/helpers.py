@@ -369,7 +369,7 @@ class Helper():
                         }
                     ],
                     "must_not": {"term": {"verb.id.keyword": "http://id.tincanapi.com/verb/defined"}},
-                    "filter" : filters
+                    "filter": filters
                 }
             }
         })
@@ -480,7 +480,7 @@ class Helper():
                 },
             }})
         if len(traces["hits"]["hits"]) > 0:
-            print(len(traces["hits"]["hits"]))
+            print(user_id, course_id, len(traces["hits"]["hits"]))
         return traces["hits"]["hits"]
 
     def get_traces(self, user_id=None, course_id=None, system_id=None):

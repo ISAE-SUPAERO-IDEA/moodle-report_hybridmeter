@@ -152,7 +152,7 @@ def api_lms_merged_traces(request):
             traces = lms.get_raw_traces(course_id=f"https://lms.isae.fr/xapi/activities/course/{course_id}", user_id=user_id, size=10000)
             traces = unpack_traces(traces)
             write_traces(response, traces)
-            break
+            
         # ADN traces
         for course_id in data.merged_traces_adn_course_ids:
             traces = adn.get_raw_traces(course_id=f"https://adn.isae-supaero.fr/xapi/activities/course/{course_id}", user_id=user_id)
