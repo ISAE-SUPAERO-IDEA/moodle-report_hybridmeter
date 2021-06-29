@@ -626,7 +626,7 @@ class AdnHelper(Helper):
         index = "xapi_adn_enriched"
         # global_range_end = 1572566400 * 1000 # 1er novembre 2019
         global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
-        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        global_range_start = global_range_end - 120 * 24 * 60 * 60 * 1000 # 120 days
         super(AdnHelper, self).__init__(request, es, index, global_range_start, global_range_end)
 
     def dashboard(self, course_id=None):
@@ -681,7 +681,7 @@ class LmsHelper(Helper):
         es = Elasticsearch(["idea-db.isae.fr"])
         index = "xapi_enriched"
         global_range_end = math.floor(dt.datetime.now().timestamp() * 1000)
-        global_range_start = global_range_end - 60 * 24 * 60 * 60 * 1000
+        global_range_start = global_range_end - 120 * 24 * 60 * 60 * 1000 # 120 days
         super(LmsHelper, self).__init__(request, es, index, global_range_start, global_range_end)
 
     def dashboard(self, course_id=None):
