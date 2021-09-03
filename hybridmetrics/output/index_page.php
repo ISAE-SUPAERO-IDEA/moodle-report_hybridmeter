@@ -1,6 +1,6 @@
 <?php
 
-namespace report_hybridation\output;                                                                                                         
+namespace report_hybridmetrics\output;                                                                                                         
  
 use renderable;                                                                                                                     
 use renderer_base;                                                                                                                  

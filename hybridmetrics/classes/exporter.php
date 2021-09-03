@@ -1,6 +1,6 @@
 <?php
 
-namespace report_hybridation\classes;
+namespace report_hybridmetrics\classes;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/csvlib.class.php');
@@ -69,10 +69,11 @@ class exporter {
             $this->csv->add_data($row);
         }
     }
-
+    
+    
     //affiche le CSV sur la page
-    public function print_csv_data(){
-        $this->csv->print_csv_data();
+    public function print_csv_data($return=false){
+        return $this->csv->print_csv_data($return);
     }
 
     //pour télécharger le csv

@@ -1,6 +1,6 @@
 <?php
 
-namespace report_hybridation\classes;
+namespace report_hybridmetrics\classes;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -13,14 +13,10 @@ class formatter {
 	//Les données brutes
 	protected $data;
 
-	//La blacklist
-	protected $blacklist;
-
-	public function __construct($blacklist,$lambda){
+	public function __construct($data, $blacklist,$lambda){
 		$this->array = array();
-		$this->blacklist = $blacklist;
-		$this->data=new \report_hybridation\classes\data();
-		$this->import_objects_array($lambda($this->data, $this->blacklist));
+		$this->data=$data;
+		$this->import_objects_array($lambda($this->data, $blacklist));
 	}
 
 	//Structureur de données, structure les données de data dans array
@@ -29,20 +25,8 @@ class formatter {
 			$this->array[$key]=$this->object_to_array($object);
 		}
 	}
-
-	public function add_to_blacklist(int $id){
-		array_push($this->blacklist, $id);
-	}
-
-	public function get_blacklist(){
-		return $this->blacklist;
-	}
-
-	public function add_list_to_blacklist(array $idarray){
-		array_push($this->blacklist, ...$idarray);
-	}
 	
-	protected function object_to_array(Object $object){
+	protected function object_to_array($object){
 		$array=array();
 		foreach ($object as $key => $value){
 			$array[$key]=$value;

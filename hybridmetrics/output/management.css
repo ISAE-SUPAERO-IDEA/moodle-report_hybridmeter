@@ -1,0 +1,54 @@
+.blacklist-button>a[data-accurate="1"], .whitelist-button>a[data-accurate="1"]{ 
+	display:inline;
+}
+
+.blacklist-button>a[data-accurate="0"], .whitelist-button>a[data-accurate="0"] {
+	display:none;
+}
+
+#blacklist-management ul[aria-disabled="true"] .blacklist-button>a{ 
+	display:none !important;
+}
+
+#blacklist-management ul[aria-disabled="true"] .whitelist-button>a {
+	display:inline !important;
+}
+
+#blacklist-management ul[aria-disabled="true"] .blacklist-button>a, #blacklist-management ul[aria-disabled="true"] .whitelist-button>a {
+	color : #404040;
+	pointer-events: none;
+}
+
+#blacklist-management ul[aria-disabled="true"] {
+	opacity : 0.7;
+	cursor: not-allowed;
+}
+
+#blacklist-management ul[aria-hidden="true"] {
+	display:none;
+}
+
+#blacklist-management ul[aria-hidden="false"] {
+	display:block;
+}
+
+#blacklist-management ul[role="tree"] {
+	border-left:6px solid #5bc0de;
+}
+
+#blacklist-management ul[role="group"] {
+	margin-top : 10px;
+}
+
+
+#blacklist-management .category-recap {
+	width : 100%;
+}
+
+#blacklist-management .category-recap .right-actions {
+	float: right;
+}
+
+#blacklist-management .course-recap .right-actions {
+	float: right;
+}
