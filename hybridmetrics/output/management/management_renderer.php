@@ -73,6 +73,8 @@ class management_renderer extends plugin_renderer_base {
     // TODO: Il y a sûrement beaucoup mieux pour intégrer notre html et notre vuejs (P2)
         $html = file_get_contents($CFG->wwwroot . '/report/hybridmetrics/assets/management.html');;
         $html = str_replace('$$www_root$$', $CFG->wwwroot, $html); 
+        $url = new moodle_url('/report/hybridmetrics/index.php');
+        $html .= html_writer::link($url, get_string('pluginname', 'report_hybridmetrics'), array('class' => 'row m-1 mb-1'));
         return $html;
     }
 

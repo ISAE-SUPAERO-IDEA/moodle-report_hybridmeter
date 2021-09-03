@@ -7,13 +7,13 @@ Vue.component('category', {
   template: ` 
     <div>
       <div v-for="category in tree.categories" :key="category.id" class="category_item">
-        <i class="icon fa fa-fw " :class="class_eye_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
+        <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
         <i class="icon fa fa-fw " :class="caret" @click="expanded = !expanded"></i>
         {{category.name}}
         <category :id="category.id"  :global_blacklist="category.blacklisted" v-if="expanded"></category>
       </div>
       <div v-for="course in tree.courses" :key="course.id" class="category_item" >
-        <i class="icon fa fa-fw " :class="class_eye_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+        <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
         {{course.fullname}}
       </div>
     </div>
@@ -57,7 +57,14 @@ Vue.component('category', {
         this.tree = Object.assign({}, this.tree);
       }
     },
-    class_eye_blacklist(item) {
+    class_eye_category_blacklist(item) {
+      var blacklisted = item.blacklisted;
+      return {
+        "fa-eye": !blacklisted,
+        "fa-eye-slash": blacklisted,
+      }
+    },
+    class_eye_course_blacklist(item) {
       var blacklisted = item.blacklisted || this.global_blacklist == true;
       return {
         "fa-eye": !blacklisted,
@@ -79,7 +86,7 @@ Vue.component('category', {
 Vue.component('configurator', {
   template: ` 
     <div>
-    <!-- TODO: Widget date input -->
+       <!-- TODO: Widget date input -->
       <div class="form-item row" id="admin-naas_endpoint">
         <div class="form-label col-sm-3 text-sm-right">
           <label for="id_s_naas_naas_endpoint">
@@ -110,6 +117,9 @@ Vue.component('configurator', {
           <button type="submit" class="btn btn-primary" @click="save">Enregistrer les modifications</button>
         </div>
       </div>
+      <hr/>
+      <h3 class="main">Configuration des poids</h3>
+      <span>Coming soon</span>
     </div>
     `,
   data() {
@@ -134,7 +144,6 @@ Vue.component('configurator', {
   async created() {
     // TODO: Utiliser encodeURI() 
     this.config = await this.get(`configuration_handler.php`);
-    console.log(this.config);
   },
   methods: {
     // TODO: Utiliser un mixin pour les fonctions de bases get et post
