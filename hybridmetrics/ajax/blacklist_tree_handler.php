@@ -1,8 +1,10 @@
 <?php 
-	require_once("../../config.php");
-    require_once(dirname(__FILE__).'/classes/data.php');
+	require_once("../../../config.php");
+    require_once("../classes/data.php");
 	$data = new \report_hybridmetrics\classes\data();
 
+	// TODO: Utiliser des requêtes POST et les idioms moodle
+    // TODO: Gérer les droits d'accès (P2)
 	$task  = $_GET['task'];
 	// List category children
 	if ($task == "category_children") {

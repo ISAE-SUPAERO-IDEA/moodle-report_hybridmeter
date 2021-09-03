@@ -6,6 +6,7 @@ require_once(dirname(__FILE__).'/../classes/exporter.php');
 require_once(dirname(__FILE__).'/../classes/data.php');
 require_once(dirname(__FILE__).'/../classes/formatter.php');
 
+// TODO: utiliser la future classe ../traitement.php
 class traitement extends \core\task\scheduled_task {
 	protected $data;
 	protected $formatter;

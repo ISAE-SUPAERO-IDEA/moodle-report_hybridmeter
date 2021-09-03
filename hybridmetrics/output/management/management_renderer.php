@@ -13,10 +13,11 @@ use action_menu;
 use action_menu_link;
 use pix_icon;
 
+// TODO: Retirer les fonctions inutiles
+// TODO: Mettre tous les renderer au même niveau
 class management_renderer extends plugin_renderer_base {
 
     public function enhance_management_interface() {
-        $this->page->requires->yui_module('moodle-report_hybridmetrics-management', 'M.report_hybridmetrics.management.init');
         $this->page->requires->strings_for_js(
             array(
                 'show',
@@ -65,13 +66,12 @@ class management_renderer extends plugin_renderer_base {
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
         $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'action', 'value' => 'bulkaction'));
 
-        $html = file_get_contents($CFG->wwwroot . '/report/hybridmetrics/assets/tree.html');;
-
         return $html;
     }
     public function render() {
         global $CFG;
-        $html = file_get_contents($CFG->wwwroot . '/report/hybridmetrics/assets/tree.html');;
+    // TODO: Il y a sûrement beaucoup mieux pour intégrer notre html et notre vuejs (P2)
+        $html = file_get_contents($CFG->wwwroot . '/report/hybridmetrics/assets/management.html');;
         $html = str_replace('$$www_root$$', $CFG->wwwroot, $html); 
         return $html;
     }

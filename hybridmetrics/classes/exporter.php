@@ -1,10 +1,10 @@
 <?php
 
 namespace report_hybridmetrics\classes;
-
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/csvlib.class.php');
 
+// TODO: Expliquer ce que cette classe exporte et vers quoi
 class exporter {
     //Le caractère de délimitation
     protected $delimiter;

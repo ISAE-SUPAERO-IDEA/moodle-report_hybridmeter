@@ -1,0 +1,29 @@
+
+
+<!-- TODO: Utiliser des versions locales des scripts (P2) -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script type="text/javascript" src="https://unpkg.com/vue-simple-suggest"></script>
+
+
+
+<input type=hidden id="www_root" value="$$www_root$$"/>
+
+<div id="app" >
+    <div>
+      <category :id="0"></category>
+      <hr/>
+      <configurator></configurator>
+    </div>
+</div>
+<br>
+<style>
+.category_item {
+  border:  1px solid rgba(0,0,0,0.125);
+  padding: 10px;
+}
+</style>
+
+<script type="module" src="assets/management.js"></script>
+

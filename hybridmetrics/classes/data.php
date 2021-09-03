@@ -6,6 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/utils.php');
 
+// TODO: refactoriser cette classe (Séparer fonctions de blacklist des fonctions de calcul)
 class data {
 	public function __construct(){
 	}

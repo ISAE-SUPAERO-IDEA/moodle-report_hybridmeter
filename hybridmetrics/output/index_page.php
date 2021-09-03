@@ -6,7 +6,7 @@ use renderable;
 use renderer_base;                                                                                                                  
 use templatable;                                                                                                                    
 use stdClass;                                                                                                                       
- 
+ // TODO: voir utilité de cette classe
 class index_page implements renderable, templatable {
 
     var $buttontext = null;

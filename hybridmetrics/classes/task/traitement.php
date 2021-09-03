@@ -8,6 +8,7 @@ require_once(dirname(__FILE__).'/../../constants.php');
 require_once(dirname(__FILE__).'/../data.php');
 require_once(dirname(__FILE__).'/../formatter.php');
 
+// TODO: utiliser la future classe ../traitement.php
 class traitement extends \core\task\adhoc_task {
     public function execute() {
     	$data=new \report_hybridmetrics\classes\data();

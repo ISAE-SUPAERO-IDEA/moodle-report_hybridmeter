@@ -18,6 +18,8 @@ admin_externalpage_setup('report_hybridmetrics');
 $download = optional_param('download', 'nocalc', PARAM_TEXT);
 $calculate = optional_param('calculate', 'nocalc', PARAM_TEXT);
 
+// TODO: gestion erreur si pas encore de données sérialisées
+// TODO: Déplacer dans une classe gérant le fichier sérialisé
 $data_unserialized = unserialize(file_get_contents(dirname(__FILE__).'/records/serialized_data'));
 $date_record = new \DateTime();
 $date_record->setTimestamp($data_unserialized['timestamp']);
@@ -51,7 +53,7 @@ $output = $PAGE->get_renderer('report_hybridmetrics');
 echo $output->header();
 echo $output->heading($pagetitle);
 echo $output->index_links();
-echo $output->is_task_planned($data->count_adhoc_tasks(), $data->is_task_running());
+echo $output->is_task_planned($date_format, $data->count_adhoc_tasks(), $data->is_task_running());
 echo $output->last_calculation($date_format);
 
 echo $output->footer();

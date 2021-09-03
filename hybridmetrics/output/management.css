@@ -1,3 +1,4 @@
+// Voir si ce CSS est toujours utile
 .blacklist-button>a[data-accurate="1"], .whitelist-button>a[data-accurate="1"]{ 
 	display:inline;
 }
