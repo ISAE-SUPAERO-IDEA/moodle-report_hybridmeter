@@ -37,7 +37,7 @@ $renderer->enhance_management_interface();
 echo $renderer->header();
 echo $renderer->heading($pagetitle);
 
-echo $renderer->render();
+echo $renderer->include_vue();
 /*
 echo $renderer->management_form_start();
 

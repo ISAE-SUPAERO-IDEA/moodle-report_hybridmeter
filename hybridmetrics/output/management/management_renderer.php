@@ -68,7 +68,7 @@ class management_renderer extends plugin_renderer_base {
 
         return $html;
     }
-    public function render() {
+    public function include_vue() {
         global $CFG;
     // TODO: Il y a sûrement beaucoup mieux pour intégrer notre html et notre vuejs (P2)
         $html = file_get_contents($CFG->wwwroot . '/report/hybridmetrics/assets/management.html');;

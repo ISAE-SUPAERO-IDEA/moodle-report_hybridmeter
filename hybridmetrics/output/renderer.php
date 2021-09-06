@@ -13,21 +13,21 @@ class renderer extends plugin_renderer_base {
 
         $html ="";
 
-        $html .= html_writer::start_div(array('class' => 'container-fluid'));
+       $html .= html_writer::start_div('container-fluid');
         $url = new moodle_url('/report/hybridmetrics/index.php', array("task" => "download"));
         $html .= html_writer::link($url, get_string('download_csv', 'report_hybridmetrics'), array('class' => 'row m-1 btn btn-secondary'));
         $html .= html_writer::end_div();
 
         $html .= html_writer::tag("hr","");
 
-        $html .= html_writer::start_div(array('class' => 'container-fluid'));
+        $html .= html_writer::start_div('container-fluid');
         $url = new moodle_url('/report/hybridmetrics/management.php');
         $html .= html_writer::link($url, get_string('blacklistmanagement', 'report_hybridmetrics'), array('class' => 'row m-1 mb-1'));
         $html .= html_writer::end_div();
 
         $html .= html_writer::tag("hr","");
         
-        $html .= html_writer::start_div(array('class' => 'container-fluid'));
+        $html .= html_writer::start_div('container-fluid');
         $html .= html_writer::end_div();
 
         
@@ -35,7 +35,7 @@ class renderer extends plugin_renderer_base {
     }
 
     public function is_task_planned(int $count_pending, int $is_running){
-        $html = html_writer::start_div(array('class' => 'container-fluid'));
+        $html = html_writer::start_div('container-fluid');
         if($is_running==1){
             $html .= html_writer::span(get_string('task_running', 'report_hybridmetrics'), array('class' => 'row m-1 btn btn-secondary'));
         }
@@ -51,11 +51,11 @@ class renderer extends plugin_renderer_base {
     }
 
     public function last_calculation($date){
-        $html = html_writer::start_div(array('class' => 'container-fluid'));
+        $html = html_writer::start_div('container-fluid');
 
         $content = sprintf(get_string('last_updated', 'report_hybridmetrics'), $date);
 
-        $html .= html_writer::span($content, array('class' => 'row m-1 btn btn-secondary'));
+        $html .= html_writer::span($content);
         $url = new moodle_url('/report/hybridmetrics/index.php', array("task" => "calculate"));
         $html .= html_writer::link($url, get_string('recalculate', 'report_hybridmetrics'), array('class' => 'row m-1 btn btn-secondary'));
 

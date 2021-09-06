@@ -1,58 +1,9 @@
 <?php
+require_once(__DIR__.'/constants.php');
 defined('MOODLE_INTERNAL') || die();
 
-define("SEUIL_ACTIF", 5);
-const COEFF_STATIQUES=[
-	MODULE_ASSIGN => 1,
-	MODULE_ASSIGNMENT => 4,
-	MODULE_BOOK => 7,
-	MODULE_CHAT => 4,
-	MODULE_CHOICE => 4,
-	MODULE_DATA => 6,
-	MODULE_FEEDBACK => 6,
-	MODULE_FOLDER => 0,
-	MODULE_FORUM => 5,
-	MODULE_GLOSSARY => 4,
-	MODULE_H5P => 7,
-	MODULE_IMSCP => 7,
-	MODULE_LABEL => 1,
-	MODULE_LESSON => 7, 
-	MODULE_LTI => 7,
-	MODULE_PAGE => 2,
-	MODULE_QUIZ => 8,
-	MODULE_RESOURCE => 2,
-	MODULE_SCORM => 7,
-	MODULE_SURVEY => 6,
-	MODULE_URL => 2,
-	MODULE_WIKI => 6,
-	MODULE_WORKSHOP => 8,
-];
+//define("SEUIL_ACTIF", 5);
 
-const COEFF_DYNAMIQUES=[
-	MODULE_ASSIGN => 1,
-	MODULE_ASSIGNMENT => 4,
-	MODULE_BOOK => 7,
-	MODULE_CHAT => 4,
-	MODULE_CHOICE => 4,
-	MODULE_DATA => 6,
-	MODULE_FEEDBACK => 6,
-	MODULE_FOLDER => 0,
-	MODULE_FORUM => 5,
-	MODULE_GLOSSARY => 4,
-	MODULE_H5P => 7,
-	MODULE_IMSCP => 7,
-	MODULE_LABEL => 1,
-	MODULE_LESSON => 7, 
-	MODULE_LTI => 7,
-	MODULE_PAGE => 2,
-	MODULE_QUIZ => 8,
-	MODULE_RESOURCE => 2,
-	MODULE_SCORM => 7,
-	MODULE_SURVEY => 6,
-	MODULE_URL => 2,
-	MODULE_WIKI => 6,
-	MODULE_WORKSHOP => 8,
-];
 
 //Fonction lambda utilisée pour calculer les indicateurs statiques
 function hybridation_statique($object,$data,$parameters){
