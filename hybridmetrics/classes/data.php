@@ -4,7 +4,12 @@ namespace report_hybridmetrics\classes;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once(dirname(__FILE__).'/configurator.php');
 require_once(dirname(__FILE__).'/utils.php');
+
+require_once(__DIR__.'/configurator.php');
+
+
 
 // TODO: refactoriser cette classe (Séparer fonctions de blacklist des fonctions de calcul)
 class data {
@@ -135,6 +140,25 @@ class data {
 			$params);
 		return $record->c;
 	}
+	//récupère les cours actifs visibles sans la blacklist
+	public function get_whitelisted_courses(){
+		global $DB;
+		$config = new configurator();
+		$data = $config->get_data();
+		$blacklisted_courses = array_keys($data["blacklisted_courses"]);
+		$blacklisted_categories = array_keys($data["blacklisted_categories"]);
+		$query = "select * from ".$DB->get_prefix()."course where true";
+		if (count($blacklisted_courses)>0) {
+			$query.= " and id not in (".implode($blacklisted_courses,",").")";
+		}
+		if (count($blacklisted_categories)>0) {
+			$query.= " and category not in (".implode($blacklisted_categories,",").")";
+		}
+
+		$records=$DB->get_records_sql($query);
+
+		return $records;
+	}
 
 	//récupère les cours actifs visibles sans la blacklist
 	public function get_courses_sanitized($blacklist = array()){
@@ -183,7 +207,6 @@ class data {
 	public function set_course_blacklisted($id, $value){
 		global $DB;
 		$entry = $DB->get_record("report_hybridmetrics_blcours", array('id_course'=> $id));
-		error_log($value);
 		if (!$entry) {
 			$entry = [
 				"id_course" => $id,

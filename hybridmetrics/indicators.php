@@ -1,7 +1,5 @@
 <?php
-error_log("b");
 defined('MOODLE_INTERNAL') || die();
-error_log("b");
 
 define("SEUIL_ACTIF", 5);
 const COEFF_STATIQUES=[

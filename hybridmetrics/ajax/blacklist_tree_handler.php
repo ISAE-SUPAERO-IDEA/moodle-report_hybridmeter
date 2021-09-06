@@ -1,7 +1,8 @@
 <?php 
 	require_once("../../../config.php");
-    require_once("../classes/data.php");
-	$data = new \report_hybridmetrics\classes\data();
+    //require_once("../classes/data.php");
+    require_once("../classes/configurator.php");
+	$configurator = new \report_hybridmetrics\classes\configurator();
 
 	// TODO: Utiliser des requêtes POST et les idioms moodle
     // TODO: Gérer les droits d'accès (P2)
@@ -31,7 +32,7 @@
 				}
 			}
 		}
-		$res = [ 
+		$output = [ 
 		  "categories" => $categories,
 		  "courses" => $courses ];
 	}
@@ -40,15 +41,9 @@
 		$type = $_GET['type'];
 		$value = $_GET['value'] == "true" ? 1 : 0;
 		$id = $_GET['id'];
-		if ($type=="category") {
-			$data->set_category_blacklisted($id, $value);
-			$res = [ "blacklisted" => $value ];
-		}
-		if ($type=="course") {
-			$data->set_course_blacklisted($id, $value);
-			$res = [ "blacklisted" => $value ];
-		}	
+		$configurator->set_blacklisted($type, $id, $value);
+		$output = [ "blacklisted" => $value ];
 	}
-	echo json_encode($res);
+	echo json_encode($output);
 
 ?>

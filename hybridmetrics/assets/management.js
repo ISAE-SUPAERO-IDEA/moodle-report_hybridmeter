@@ -3,18 +3,20 @@ var url_root = document.getElementById('www_root').value;
 
 // Blacklist tree
 Vue.component('category', {
-  props: ['id', 'global_blacklist'],
+  props: ['id', 'global_blacklist', 'expanded'],
   template: ` 
     <div>
-      <div v-for="category in tree.categories" :key="category.id" class="category_item">
-        <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
-        <i class="icon fa fa-fw " :class="caret" @click="expanded = !expanded"></i>
-        {{category.name}}
-        <category :id="category.id"  :global_blacklist="category.blacklisted" v-if="expanded"></category>
-      </div>
-      <div v-for="course in tree.courses" :key="course.id" class="category_item" >
-        <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
-        {{course.fullname}}
+      <div v-if="expanded">
+        <div v-for="category in tree.categories" :key="category.id" class="category_item">
+          <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
+          <i class="icon fa fa-fw " :class="category_caret(category)" @click="category.expanded = !category.expanded"></i>
+          {{category.name}}
+          <category :id="category.id"  :global_blacklist="category.blacklisted" :expanded="category.expanded"></category>
+        </div>
+        <div v-for="course in tree.courses" :key="course.id" class="category_item" >
+          <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+          {{course.fullname}}
+        </div>
       </div>
     </div>
     `,
@@ -24,12 +26,34 @@ Vue.component('category', {
         categories:[],
         courses:[]
       },
-      expanded: false
+      config: {}
     }
   },
   async created() {
     // TODO: Utiliser encodeURI() 
-    this.tree = await this.get(`blacklist_tree_handler.php?task=category_children&id=${this.id}`);
+    this.config = await this.get(`configuration_handler.php`);
+    this.tree = await this.get(`blacklist_tree_handler.php?task=category_children&id=${this.id}`).then(data => {
+      // TODO: fonction générique
+      for (var i in data.categories) {
+        data.categories[i].expanded = false;
+        if (this.config.blacklisted_categories) {
+          if (Object.keys(this.config.blacklisted_categories).includes(data.categories[i].id)) {
+            data.categories[i].blacklisted = true;
+          }
+        }
+      }
+      if (this.config.blacklisted_courses) {
+        for (var i in data.courses) {
+          if (Object.keys(this.config.blacklisted_courses).includes(data.courses[i].id)) {
+            data.courses[i].blacklisted = true;
+          }
+        }
+      }
+      
+      return data;
+
+    });
+
     console.log(this.tree);
   },
   methods: {
@@ -41,19 +65,17 @@ Vue.component('category', {
       this.expanded = !this.expanded;
     },
     async manage_category_blacklist(category) {
-      if (!this.global_blacklist) {
-        var value = !category.blacklisted;
-        // TODO: Utiliser encodeURI() 
-        category.blacklisted = (await this.get(`blacklist_tree_handler.php?task=manage_blacklist&type=category&id=${category.id}&value=${value}`)).blacklisted;
-        this.tree = Object.assign({}, this.tree);
-        console.log(this.tree);
-      }
+      var value = !category.blacklisted;
+      // TODO: Utiliser encodeURI() 
+      category.blacklisted = (await this.get(`blacklist_tree_handler.php?task=manage_blacklist&type=categories&id=${category.id}&value=${value}`)).blacklisted;
+      this.tree = Object.assign({}, this.tree);
+      console.log(this.tree);
     },
     async manage_course_blacklist(course) {
       if (!this.global_blacklist) {
         var value = !course.blacklisted;
         // TODO: Utiliser encodeURI() 
-        course.blacklisted = (await this.get(`blacklist_tree_handler.php?task=manage_blacklist&type=course&id=${course.id}&value=${value}`)).blacklisted;
+        course.blacklisted = (await this.get(`blacklist_tree_handler.php?task=manage_blacklist&type=courses&id=${course.id}&value=${value}`)).blacklisted;
         this.tree = Object.assign({}, this.tree);
       }
     },
@@ -70,17 +92,14 @@ Vue.component('category', {
         "fa-eye": !blacklisted,
         "fa-eye-slash": blacklisted,
       }
-    }
-  },
-  computed: {
-    caret() {
-      var val = this.expanded ? "up": "down";
+    },
+    category_caret(category) {
       return { 
-        "fa-caret-up": this.expanded,
-        "fa-caret-down": !this.expanded
+        "fa-caret-up": category.expanded,
+        "fa-caret-down": !category.expanded
       };
     }
-  }
+  },
 });
 // Configurator
 Vue.component('configurator', {

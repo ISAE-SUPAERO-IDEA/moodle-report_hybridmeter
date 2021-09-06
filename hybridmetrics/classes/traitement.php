@@ -15,8 +15,10 @@ function traitement() {
 
 	$timestamp = strtotime('NOW');
 	$data->set_as_running($timestamp);
-
-	$formatter=new \report_hybridmetrics\classes\formatter($data, $data->get_ids_blacklist(), function($data, $blacklist){return $data->get_courses_sanitized($blacklist);});
+	$courses = $data->get_whitelisted_courses();
+	error_log(print_r($courses, 1));
+	
+	$formatter=new \report_hybridmetrics\classes\formatter($data, $data->get_ids_blacklist(), function($data, $blacklist){return $data->get_whitelisted_courses();});
 	$exporter=new \report_hybridmetrics\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
 
 	//$file=fopen("/var/www/html/moodle/report/hybridmetrics/gacooo.txt", "w");
@@ -41,7 +43,7 @@ function traitement() {
 		"data" => $data_out
 	));
 	fwrite($file_exporter, $s);
-	error_log(dirname(__FILE__)."/../records/serialized_data");
+	//error_log(dirname(__FILE__)."/../records/serialized_data");
 
 	$date = new \DateTime();
 	$date->setTimestamp($timestamp);
