@@ -16,7 +16,6 @@ function traitement() {
 	$timestamp = strtotime('NOW');
 	$data->set_as_running($timestamp);
 	$courses = $data->get_whitelisted_courses();
-	error_log(print_r($courses, 1));
 	
 	$formatter=new \report_hybridmetrics\classes\formatter($data, $data->get_ids_blacklist(), function($data, $blacklist){return $data->get_whitelisted_courses();});
 	$exporter=new \report_hybridmetrics\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));

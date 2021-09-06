@@ -14,7 +14,7 @@ class renderer extends plugin_renderer_base {
         $html ="";
 
         $html .= html_writer::start_div(array('class' => 'container-fluid'));
-        $url = new moodle_url('/report/hybridmetrics/index.php', array("download" => "go"));
+        $url = new moodle_url('/report/hybridmetrics/index.php', array("task" => "download"));
         $html .= html_writer::link($url, get_string('download_csv', 'report_hybridmetrics'), array('class' => 'row m-1 btn btn-secondary'));
         $html .= html_writer::end_div();
 
@@ -28,8 +28,6 @@ class renderer extends plugin_renderer_base {
         $html .= html_writer::tag("hr","");
         
         $html .= html_writer::start_div(array('class' => 'container-fluid'));
-        $url = new moodle_url('/report/hybridmetrics/index.php', array("calculate" => "go"));
-        $html .= html_writer::link($url, get_string('recalculate', 'report_hybridmetrics'), array('class' => 'row m-1 btn btn-secondary'));
         $html .= html_writer::end_div();
 
         
@@ -58,6 +56,8 @@ class renderer extends plugin_renderer_base {
         $content = sprintf(get_string('last_updated', 'report_hybridmetrics'), $date);
 
         $html .= html_writer::span($content, array('class' => 'row m-1 btn btn-secondary'));
+        $url = new moodle_url('/report/hybridmetrics/index.php', array("task" => "calculate"));
+        $html .= html_writer::link($url, get_string('recalculate', 'report_hybridmetrics'), array('class' => 'row m-1 btn btn-secondary'));
 
         $html .= html_writer::end_div();
 

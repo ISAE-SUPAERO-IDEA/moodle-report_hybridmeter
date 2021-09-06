@@ -15,8 +15,7 @@ admin_externalpage_setup('report_hybridmetrics');
 
 
 //On récupère les paramètres passés (en POST dans notre cas, mais si on passe en GET ça détectera aussi) pour coder les commandes
-$download = optional_param('download', 'nocalc', PARAM_TEXT);
-$calculate = optional_param('calculate', 'nocalc', PARAM_TEXT);
+$task = optional_param('task', array(), PARAM_TEXT);
 
 // TODO: gestion erreur si pas encore de données sérialisées
 // TODO: Déplacer dans une classe gérant le fichier sérialisé
@@ -25,7 +24,7 @@ $date_record = new \DateTime();
 $date_record->setTimestamp($data_unserialized['timestamp']);
 $date_format = $date_record->format('Y-m-d\_H:i:s');
 
-if ($download!='nocalc'){
+if ($task=='download'){
 	$exporter= new \report_hybridmetrics\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
 	$exporter->set_data($data_unserialized['data']);
 	$exporter->create_csv($SITE->fullname."-".$date_format);
@@ -34,8 +33,7 @@ if ($download!='nocalc'){
 
 $data = new \report_hybridmetrics\classes\data();
 
-if ($calculate!='nocalc'){
-	$data->clear_adhoc_tasks();
+if ($task!='calculate'){
 	$traitement = new \report_hybridmetrics\task\traitement();
 	\core\task\manager::queue_adhoc_task($traitement);
 }
@@ -53,7 +51,7 @@ $output = $PAGE->get_renderer('report_hybridmetrics');
 echo $output->header();
 echo $output->heading($pagetitle);
 echo $output->index_links();
-echo $output->is_task_planned($date_format, $data->count_adhoc_tasks(), $data->is_task_running());
+//echo $output->is_task_planned($date_format, $data->count_adhoc_tasks(), $data->is_task_running());
 echo $output->last_calculation($date_format);
 
 echo $output->footer();
