@@ -19,7 +19,7 @@ $task = optional_param('task', array(), PARAM_TEXT);
 
 // TODO: gestion erreur si pas encore de données sérialisées
 // TODO: Déplacer dans une classe gérant le fichier sérialisé
-$data_unserialized = unserialize(file_get_contents(dirname(__FILE__).'/records/serialized_data'));
+$data_unserialized = unserialize(file_get_contents($CFG->dataroot."/hybridmetrics/records/serialized_data"));
 $date_record = new \DateTime();
 $date_record->setTimestamp($data_unserialized['timestamp']);
 $date_format = $date_record->format('Y-m-d\_H:i:s');

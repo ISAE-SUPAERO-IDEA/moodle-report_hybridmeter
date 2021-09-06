@@ -49,7 +49,7 @@ function traitement() {
 	$date->setTimestamp($timestamp);
 	$date_format = $date->format('Y-m-d\TH:i:s');
 
-	$filename = dirname(__FILE__)."/../records/backup/record_".$date_format.".csv";
+	$filename = $CFG->dataroot."/hybridmetrics/records/backup/record_".$date_format.".csv";
 
 	$backup=fopen($filename,"w");
     fwrite($backup, $exporter->print_csv_data(true));

@@ -12,6 +12,7 @@ function make_dir($dir) {
 function make_dirs() {
     make_dir("/hybridmetrics");
     make_dir("/hybridmetrics/records");
+    make_dir("/hybridmetrics/records/backup");
 }
 /**
  * Post-install script
