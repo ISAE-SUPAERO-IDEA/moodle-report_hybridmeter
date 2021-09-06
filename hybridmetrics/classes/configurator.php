@@ -16,7 +16,8 @@ class configurator {
 	protected $end_date;
 
 	public function __construct(){
-		$this->path=__DIR__."/../records/config.json";
+		global $CFG;
+		$this->path=$CFG->dataroot."/hybridmetrics/hybridmetrics.json";
 		$this->data = file_get_contents($this->path);
 		if ($this->data == false) {
 			$this->data = [];

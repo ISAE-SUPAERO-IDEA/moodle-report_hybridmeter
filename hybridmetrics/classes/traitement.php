@@ -11,8 +11,9 @@ require_once(__DIR__.'/formatter.php');
 
 // TODO: Transformer en classe (P2)
 function traitement() {
+	global $CFG;
+	global $SITE;
 	$data=new \report_hybridmetrics\classes\data();
-
 	$timestamp = strtotime('NOW');
 	$data->set_as_running($timestamp);
 	$courses = $data->get_whitelisted_courses();
@@ -36,7 +37,7 @@ function traitement() {
 	$exporter->create_csv($SITE->fullname);
 
 	
-	$file_exporter = fopen(dirname(__FILE__)."/../records/serialized_data","w");
+	$file_exporter = fopen($CFG->dataroot."/hybridmetrics/records/serialized_data","w");
 	$s = serialize(array(
 		"timestamp" => strtotime('NOW'),
 		"data" => $data_out

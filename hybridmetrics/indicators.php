@@ -7,12 +7,14 @@ defined('MOODLE_INTERNAL') || die();
 
 //Fonction lambda utilisée pour calculer les indicateurs statiques
 function hybridation_statique($object,$data,$parameters){
-	fwrite($file, print_r(array($count, $parameters, $object), true));
-
 	$count=$data->count_modules_types_id($object['id']);
 	$indicator=0;
 	foreach ($count as $key => $value){
-		$indicator+=COEFF_STATIQUES[$key]*$value;
+		$coeff = 1;
+		if (array_key_exists($key, COEFF_STATIQUES)) {
+			$coeff = COEFF_STATIQUES[$key]*$value;
+		}
+		$indicator+= $coeff;
 	}
 
 	return ($indicator/$parameters['nb_cours']);
