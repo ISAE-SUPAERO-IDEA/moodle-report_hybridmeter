@@ -2,8 +2,6 @@
 require_once(__DIR__.'/constants.php');
 defined('MOODLE_INTERNAL') || die();
 
-//define("SEUIL_ACTIF", 5);
-
 
 //Fonction lambda utilisée pour calculer les indicateurs statiques
 function hybridation_statique($object,$data,$parameters){

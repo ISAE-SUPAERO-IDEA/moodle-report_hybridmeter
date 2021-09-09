@@ -44,20 +44,8 @@ switch($action){
 		$outcome->error=!$controller->whitelistcategory($id);
 		$outcome->outcome = true;
 		break;
-	case 'getsubcategorieshtml' :
-		$renderer = $PAGE->get_renderer('report_hybridmetrics', 'management');
-		$outcome->html = $renderer->categories_list_from_root($data->get_courses_categories_tree(1,$id), false);
-		$outcome->outcome = true;
-		break;
-	case 'expandcategory' :
-		/*$coursecat=$data->get_courses_categories_tree(1,$id);
-		$controller->record_expanded_category($coursecat);*/
-		$outcome->outcome=true;
-		break;
-	case 'collapsecategory' :
-		/*$coursecat=$data->get_courses_categories_tree(1,$id);
-		$controller->record_expanded_category($coursecat, false);*/
-		$outcome->outcome=true;
+	default :
+		$outcome->error=true;
 		break;
 }
 

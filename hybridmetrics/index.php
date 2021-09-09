@@ -42,7 +42,6 @@ $title = get_string('pluginname', 'report_hybridmetrics');
 $pagetitle = $title;
 $url = new \moodle_url("$CFG->wwwroot/report/hybridmetrics/index.php");
 $PAGE->set_url($url);
-//$PAGE->set_context($context);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 

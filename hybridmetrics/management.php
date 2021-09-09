@@ -27,7 +27,6 @@ $title = get_string('pluginname', 'report_hybridmetrics');
 $pagetitle = get_string('config', 'report_hybridmetrics');
 $url = new \moodle_url("$CFG->wwwroot/report/hybridmetrics/index.php");
 $PAGE->set_url($url);
-//$PAGE->set_context($context);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
@@ -38,11 +37,5 @@ echo $renderer->header();
 echo $renderer->heading($pagetitle);
 
 echo $renderer->include_vue();
-/*
-echo $renderer->management_form_start();
 
-echo $renderer->categories_list_from_root($data->get_courses_categories_tree(1));
-
-echo $renderer->management_form_end();
-*/
 echo $renderer->footer();

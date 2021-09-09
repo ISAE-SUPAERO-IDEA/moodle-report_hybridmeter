@@ -4,7 +4,16 @@ namespace report_hybridmetrics\classes;
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/csvlib.class.php');
 
-// TODO: Expliquer ce que cette classe exporte et vers quoi
+/**
+ * Cette classe permet le transcodage sous forme de CSV des données calculées
+ * et donne la possibilité de l'afficher sur une page web, de le transférer sur un
+ * fichier local, ou de le mettre à disposition en tant que téléchargement sur navigateur web
+ * 
+ * 
+ * @package    report_hybridmetrics
+ * @since      Moodle 3.7
+ * @copyright  2021 Bruno Ilponse Nassim Bennouar
+ */
 class exporter {
     //Le caractère de délimitation
     protected $delimiter;
@@ -26,7 +35,6 @@ class exporter {
 
     //Récupère les champs de la première entrée et les définit en champs du fichier sortant
     public function auto_fields(){
-        //print_r($this->raw_data);
         $this->fields=array();
 
         if(!is_array($this->raw_data) || sizeof($this->raw_data)==0)
@@ -70,8 +78,11 @@ class exporter {
         }
     }
     
-    
-    //affiche le CSV sur la page
+    /*  
+        Si $return vaut false, le CSV sera affiché sur la page php qui execute la fonction
+        Si $return vaut true, le CSV sera retourné sous forme d'une chaîne de caractère
+        (utile pour enregistrer le CSV sur un fichier local)
+    */
     public function print_csv_data($return=false){
         return $this->csv->print_csv_data($return);
     }

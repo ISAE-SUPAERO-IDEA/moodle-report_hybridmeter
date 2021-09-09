@@ -71,8 +71,18 @@ class management_renderer extends plugin_renderer_base {
     public function include_vue() {
         global $CFG;
     // TODO: Il y a sûrement beaucoup mieux pour intégrer notre html et notre vuejs (P2)
-        $html = file_get_contents($CFG->wwwroot . '/report/hybridmetrics/assets/management.html');;
-        $html = str_replace('$$www_root$$', $CFG->wwwroot, $html); 
+
+        $params = array(
+            "vue" => "https://cdn.jsdelivr.net/npm/vue@2.6.0",
+            "axios" => "https://unpkg.com/axios/dist/axios.min.js",
+            "labelblacklist" => "A REMPLIR",
+            "labelperiod" => "A REMPLIR",
+            "www-root" => $CFG->wwwroot
+        );
+
+        $html = $OUTPUT->render_from_template("report_hybridmetrics/management", $params);
+        //$html = file_get_contents($CFG->wwwroot . '/report/hybridmetrics/assets/management.html');;
+        //$html = str_replace('$$www_root$$', $CFG->wwwroot, $html); 
         $url = new moodle_url('/report/hybridmetrics/index.php');
         $html .= html_writer::link($url, get_string('pluginname', 'report_hybridmetrics'), array('class' => 'row m-1 mb-1'));
         return $html;
@@ -121,11 +131,6 @@ class management_renderer extends plugin_renderer_base {
                 'data-type' => 'course'
         );
         $html .= html_writer::empty_tag('input', $bcourseinput);
-        /*$html .= html_writer::tag('label', '', array(
-            'aria-label' => "test",
-            'class' => 'custom-control-label ml-1',
-            'for' => 'courselistitem' . $course["id"]
-        ));*/
  
         $html .= $courseicon;
 
@@ -219,11 +224,6 @@ class management_renderer extends plugin_renderer_base {
         $html .= html_writer::start_div('category-recap');
         $html .= html_writer::start_span('mr-2');//div('custom-control custom-checkbox mr-1 ');
         $html .= html_writer::empty_tag('input', $bcatinput);
-        /*$html .= html_writer::tag('label', '', array(
-            'aria-label' => "testtesttesttesttesttesttesttesttesttesttestetstetzeyueyereyrereghreherhreghreghreghregh",
-            'class' => 'custom-control-label',
-            'for' => 'categorylistitem' . $category["id"]
-        ));*/
         $html .= $icon;
 
         $html .= html_writer::span(
@@ -267,8 +267,6 @@ class management_renderer extends plugin_renderer_base {
         
         $action_target = ($item["type"] === HYBRIDATION_COURS_TYPE_NAME) ?
         "course" : "category";
-        //$action_root = ($isblacklisted) ? "whitelist" : "blacklist";
-        //$action = $action_root.$action_target;
 
         $whitelist=get_string('whitelist', 'report_hybridmetrics');
         $icon_whitelist=new pix_icon('t/show',
@@ -324,32 +322,6 @@ class management_renderer extends plugin_renderer_base {
         $html .= html_writer::end_span();
 
         return $html;
-
-        /*
-        $menu->add(new action_menu_link(
-            new moodle_url('management.php',
-                array("action" => "blacklistcategory",
-                        "categoryid" => $item['id'])),
-            $icon,
-            "bz ta mere",
-            $whitelist,
-            array('data-action' => "show", 'class' => 'action-show')
-        ));
-        $blacklist=get_string('blacklist', 'report_hybridmetrics');
-        $icon=new pix_icon('t/hide',
-                $blacklist
-            );
-        $menu->add(new action_menu_link(
-            new moodle_url('management.php',
-                array("action" => "whitelistcategory",
-                        "categoryid" => $item->id)),
-            $icon,
-            "bz ta mere",
-            $blacklist,
-            array('data-action' => "hide", 'class' => 'action-hide')
-        ));
-        
-        return $this->render($menu);*/
     }
 
     /**

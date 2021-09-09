@@ -15,11 +15,6 @@ require_once(__DIR__.'/configurator.php');
 class data {
 	public function __construct(){
 	}
-	//compte le nombre de quiz en fonction du cours
-	public function count_quiz_id(int $id){
-		global $DB;
-		return $DB->count_records('quiz', array('course'=>$id));
-	}
 
 	//compte le nombre d'activités par type en fonction du cours
 	public function count_modules_types_id(int $id){
@@ -227,86 +222,7 @@ class data {
 			array('%'.mb_strtoupper($query).'%')
 		);
 	}
-/*
-	public function get_courses_categories_tree(int $depth=-1, $categoryid=0){
-		global $DB;
-		$thisobject =& $this;
-		$output=array();
 
-	
-		$children_categories_ids = array_values(
-			array_map(function($obj) use ($thisobject){
-				return $obj->id;
-			},
-			$DB->get_records("course_categories", array("parent" => $categoryid)))
-		);
-
-		$output["nb_children_categories"]=count($children_categories_ids);
-
-		if(count($children_categories_ids)===0 || ($depth===0 && $depth!==-1)){
-			$output["children_categories"]=null;
-		}
-		else {
-			$children_categories=array();
-			foreach($children_categories_ids as $child){
-				array_push($children_categories, $this->get_courses_categories_tree($depth-1, $child));
-			}
-			$output["children_categories"]=$children_categories;
-		}
-		
-
-		if($categoryid==0){
-			$output["type"]=HYBRIDATION_CATEGORY_TYPE_NAME;
-			$output["id"]=0;
-			$output["nb_children_courses"]=0;
-			$output["children_courses"]=null;
-			return $output;
-		}
-
-		$category_data=$DB->get_record_sql(
-			"select * from ".$DB->get_prefix()."course_categories as cats
-			left outer join ".$DB->get_prefix()."report_hybridmetrics_blcat as blcat
-			on cats.id = blcat.id_category where cats.id = ?",
-			[$categoryid]
-		);
-
-		$output["type"] = HYBRIDATION_CATEGORY_TYPE_NAME;
-		$output["id"] = $categoryid;
-		$output["name"] = $category_data->name;
-		$output["obj"] = $category_data;
-		if(!$category_data->blacklisted){
-			$output["blacklisted"] = 0;
-		}
-		else{
-			$output["blacklisted"] = 1;
-		}
-		
-		$children_courses=array_values(
-			array_map(function($obj){
-				return array(
-					"type" => HYBRIDATION_COURSE_TYPE_NAME,
-					"id" => $obj->id,
-					"fullname" => $obj->fullname,
-					"blacklisted" => ($output["blacklisted"]===1) ? 1 : $obj->blacklisted,
-					"object" => $obj
-				);
-			},
-			$DB->get_records_sql("select * from ".$DB->get_prefix()."course left outer join ".$DB->get_prefix()."report_hybridmetrics_blcours using(id) where category=?", [$categoryid]))
-		);
-
-		$output["nb_children_courses"]=count($children_courses);
-
-		if(count($children_courses)===0 || depth===0){
-			$output["children_courses"] = null;
-		}
-		else{
-			$output["children_courses"] = $children_courses;
-		}
-
-
-		return $output;
-	}
-*/
 	public function count_adhoc_tasks(){
 		global $DB;
 		return $DB->count_records(
