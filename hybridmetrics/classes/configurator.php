@@ -68,7 +68,7 @@ class configurator {
 	}
 	// Get a coefficient $key for a given $type
 	public function get_coeff($key, $item) {
-		if (array_key_exists($item, $this->data[$type])) {
+		if (array_key_exists($item, $this->data[$key])) {
 			return $this->data[$key][$item];
 		}
 		return 1;
