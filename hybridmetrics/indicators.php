@@ -14,7 +14,9 @@ function hybridation_statique($object,$data,$parameters){
 		$total+=$value;
 		$indicator += \report_hybridmetrics\classes\configurator::getInstance()->get_static_coeff($key)*$value;
 	}
-
+	if($total === 0){
+		$total=1;
+	}
 	return ($indicator/$total);
 }
 
@@ -30,6 +32,9 @@ function hybridation_dynamique($object,$data,$parameters){
 		$count=$data->count_hits_by_module_type($object['id'],$key);
 		$indicator+=$value*($count/$active);
 		$total+=$value;
+	}
+	if($total === 0){
+		$total=1;
 	}
 	return ($indicator/$total);
 }
