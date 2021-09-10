@@ -75,7 +75,7 @@ class data {
 			inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
 			inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
 			where role.shortname='student'
-			and eventname='\\core\\event\\course_viewed'
+			and eventname='\\\\core\\\\event\\\\course_viewed'
 			and courseid=?
 			and context.instanceid=?
 			and context.contextlevel=?
