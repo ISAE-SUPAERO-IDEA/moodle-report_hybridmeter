@@ -6,10 +6,11 @@ require_once(dirname(__FILE__).'/../traitement.php');
 
 class traitement extends \core\task\adhoc_task {
 	public function get_name() {
-		// TODO: use strings
-        return "Hybrid metrics";
+        return get_string('pluginname', 'report_hybridmetrics');
     }
+    
     public function execute() {
-    	\report_hybridmetrics\classes\traitement();
+    	$traitement = new report_hybridmetrics\classes\traitement();
+        $traitement->launch();
     }
 }

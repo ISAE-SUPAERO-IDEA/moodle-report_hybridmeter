@@ -28,6 +28,8 @@ define("MODULE_URL","url");
 define("MODULE_WIKI","wiki");
 define("MODULE_WORKSHOP","workshop");
 
+define("NA", "N/A");
+
 define("NOW",strtotime("now"));
 
 define("SEUIL_ACTIF", 5);

@@ -18,4 +18,6 @@ $string['task_pending'] = "Une tâche est prête à être lancée";
 $string['no_task_pending'] = "Il n'y a pas de tâche prête à être lancée";
 $string['task_running'] = "Un traitement est en cours d'exécution";
 $string['last_updated'] = "Dernier calcul : %s";
+$string['nb_cours_hybrides_statiques'] = "remplir : ";
+$string['nb_cours_hybrides_dynamiques'] = "remplir : ";
 //on peut accéder à ces variables avec la fonction get_string('indice','report_hybridation');

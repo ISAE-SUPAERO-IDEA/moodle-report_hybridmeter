@@ -4,6 +4,8 @@ namespace report_hybridmetrics\output;
 
 defined('MOODLE_INTERNAL') || die;
  
+require_once(dirname(__FILE__).'/../constants.php');
+
 use plugin_renderer_base;
 use html_writer;
 use moodle_url;
@@ -60,6 +62,19 @@ class renderer extends plugin_renderer_base {
         $html .= html_writer::link($url, get_string('recalculate', 'report_hybridmetrics'), array('class' => 'row m-1 btn btn-secondary'));
 
         $html .= html_writer::end_div();
+
+        $html .= html_writer::tag("hr","");
+
+        return $html;
+    }
+
+    public function general_indicators($data_available, $generaldata){
+        $html = html_writer::start_tag('ul');
+        $nb_cours_hybrides_statiques = ($data_available) ? $generaldata['nb_cours_hybrides_statiques'] : NA;
+        $html .= html_writer::tag('li', get_string('report_hybridation', 'nb_cours_hybrides_statiques').$nb_cours_hybrides_statiques);
+        $nb_cours_hybrides_dynamiques = ($data_available) ? $generaldata['nb_cours_hybrides_dynamiques'] : NA;
+        $html .= html_writer::tag('li', get_string('report_hybridation', 'nb_cours_hybrides_dynamiques').$nb_cours_hybrides_dynamiques);
+        $html .= html_writer::end_tag('ul');
 
         return $html;
     }

@@ -10,7 +10,7 @@ Vue.component('category', {
         <div v-for="category in tree.categories" :key="category.id" class="category_item">
           <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
           <i class="icon fa fa-fw " :class="category_caret(category)" @click="category.expanded = !category.expanded"></i>
-          {{category.name}}
+          <span style="font-weight: bold">{{category.name}}</span>
           <category :id="category.id"  :global_blacklist="category.blacklisted" :expanded="category.expanded"></category>
         </div>
         <div v-for="course in tree.courses" :key="course.id" class="category_item" >
@@ -32,7 +32,11 @@ Vue.component('category', {
   async created() {
     // TODO: Utiliser encodeURI() 
     this.config = await this.get(`configuration_handler.php`);
-    this.tree = await this.get(`blacklist_tree_handler.php?task=category_children&id=${this.id}`).then(data => {
+    var data = new FormData();
+    data.append('task', 'category_children');
+    data.append('id', this.id);
+    this.tree = await this.post('blacklist_tree_handler.php',data).then(data => {
+    //this.tree = await this.get(`blacklist_tree_handler.php?task=category_children&id=${this.id}`).then(data => {
       // TODO: fonction générique
       for (var i in data.categories) {
         data.categories[i].expanded = false;
@@ -60,6 +64,10 @@ Vue.component('category', {
     get: function (urlRequest){
       const myaxios = axios.create({ baseURL: `${url_root}/report/hybridmetrics/ajax/` });
       return myaxios.get(urlRequest).then(response => response.data)
+    },
+    post: function(url, data){
+      const myaxios = axios.create({ baseURL: `${url_root}/report/hybridmetrics/ajax/`});
+      return myaxios.post(url, data).then(response => response.data)
     },
     switch: function() {
       this.expanded = !this.expanded;
@@ -95,8 +103,8 @@ Vue.component('category', {
     },
     category_caret(category) {
       return { 
-        "fa-caret-up": category.expanded,
-        "fa-caret-down": !category.expanded
+        "fa-caret-down": category.expanded,
+        "fa-caret-right": !category.expanded
       };
     }
   },
