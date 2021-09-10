@@ -44,9 +44,9 @@
 	}
 	// manage blacklist of a category or course
 	else if ($task == "manage_blacklist") {
-		$type = $_GET['type'];
-		$value = $_GET['value'] == "true" ? 1 : 0;
-		$id = $_GET['id'];
+		$type = required_param('type', PARAM_ALPHAEXT);
+		$value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
+		$id = required_param('id', PARAM_INT);
 		$configurator->set_blacklisted($type, $id, $value);
 		$output = [ "blacklisted" => $value ];
 	}

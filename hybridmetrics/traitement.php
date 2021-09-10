@@ -5,6 +5,8 @@ require_once('classes/traitement.php');
 
 
 $traitement = new report_hybridmetrics\classes\traitement();
-$traitement->launch();
+$data = $traitement->launch();
+
+echo json_encode($data);
 
 ?>

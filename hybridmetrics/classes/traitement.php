@@ -11,6 +11,7 @@ require_once(__DIR__.'/formatter.php');
 
 // TODO: Transformer en classe (P2)
 
+
 class traitement{
 
 	protected $data;
@@ -93,7 +94,7 @@ class traitement{
 		$recap[0]["nb_concernes_actifs"]="Nombre d'étudiants ayant été actifs dans au moins un cours hybride durant la période de mesure";
 		$recap[1]["nb_concernes_actifs"]=$nb_etudiants_concernes_actifs;*/
 
-		//Export des données détaillées
+		//Export des données
 		
 		$this->exporter->set_data($data_out);
 		$this->exporter->create_csv($SITE->fullname);
@@ -119,6 +120,8 @@ class traitement{
 
 	    $this->data->add_log_entry($timestamp, $filename);
 	    $this->data->clear_running_tasks();
+
+	    return $data_out;
 	}
 }
 

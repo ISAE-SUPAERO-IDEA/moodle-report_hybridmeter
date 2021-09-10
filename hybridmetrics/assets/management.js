@@ -74,16 +74,26 @@ Vue.component('category', {
     },
     async manage_category_blacklist(category) {
       var value = !category.blacklisted;
-      // TODO: Utiliser encodeURI() 
-      category.blacklisted = (await this.get(`blacklist_tree_handler.php?task=manage_blacklist&type=categories&id=${category.id}&value=${value}`)).blacklisted;
+      // TODO: Utiliser encodeURI()
+      var data = new FormData();
+      data.append('task', 'manage_blacklist');
+      data.append('id', category.id);
+      data.append('type', 'categories');
+      data.append('value', value);
+      category.blacklisted = (await this.post('blacklist_tree_handler.php',data)).blacklisted;
       this.tree = Object.assign({}, this.tree);
       console.log(this.tree);
     },
     async manage_course_blacklist(course) {
       if (!this.global_blacklist) {
         var value = !course.blacklisted;
-        // TODO: Utiliser encodeURI() 
-        course.blacklisted = (await this.get(`blacklist_tree_handler.php?task=manage_blacklist&type=courses&id=${course.id}&value=${value}`)).blacklisted;
+        // TODO: Utiliser encodeURI()
+        var data = new FormData();
+        data.append('task', 'manage_blacklist');
+        data.append('id', course.id);
+        data.append('type', 'courses');
+        data.append('value', value);
+        course.blacklisted = (await this.post('blacklist_tree_handler.php',data)).blacklisted;
         this.tree = Object.assign({}, this.tree);
       }
     },
