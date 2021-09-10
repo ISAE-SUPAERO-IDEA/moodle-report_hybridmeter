@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__.'/constants.php');
+require_once(__DIR__.'/classes/configurator.php');
 defined('MOODLE_INTERNAL') || die();
 
 //define("SEUIL_ACTIF", 5);
@@ -7,14 +8,11 @@ defined('MOODLE_INTERNAL') || die();
 
 //Fonction lambda utilisée pour calculer les indicateurs statiques
 function hybridation_statique($object,$data,$parameters){
+	$configurator = \report_hybridmetrics\classes\configurator::getInstance();
 	$count=$data->count_modules_types_id($object['id']);
 	$indicator=0;
 	foreach ($count as $key => $value){
-		$coeff = 1;
-		if (array_key_exists($key, COEFF_STATIQUES)) {
-			$coeff = COEFF_STATIQUES[$key]*$value;
-		}
-		$indicator+= $coeff;
+		$indicator += \report_hybridmetrics\classes\configurator::getInstance()->get_static_coeff($key);
 	}
 
 	return ($indicator/$parameters['nb_cours']);
@@ -23,10 +21,11 @@ function hybridation_statique($object,$data,$parameters){
 
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object,$data,$parameters){
+	$configurator = \report_hybridmetrics\classes\configurator::getInstance();
 	$active=$data->count_active_single_users($object['id']);
 	$indicator=0;
 	if($active==0) return 0;
-	foreach (COEFF_DYNAMIQUES as $key => $value){
+	foreach ($configurator->get_data()["dynamic_coeffs"] as $key => $value){
 		$count=$data->count_hits_by_module_type($object['id'],$key);
 		$indicator+=$value*($count/$active);
 	}

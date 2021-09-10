@@ -15,15 +15,11 @@ function traitement() {
 	global $SITE;
 	$data=new \report_hybridmetrics\classes\data();
 	$timestamp = strtotime('NOW');
-	$data->set_as_running($timestamp);
 	$courses = $data->get_whitelisted_courses();
 	
+	# Compute raw data
 	$formatter=new \report_hybridmetrics\classes\formatter($data, $data->get_ids_blacklist(), function($data, $blacklist){return $data->get_whitelisted_courses();});
-	$exporter=new \report_hybridmetrics\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
 
-	//$file=fopen("/var/www/html/moodle/report/hybridmetrics/gacooo.txt", "w");
-
-	//fwrite($file, print_r(array("hohohoooohehihohoho"), true));
     $formatter->calculate_new_indicator("hybridation_statique", 'statique', array("nb_cours"=> $formatter->get_length_array()));
 	$formatter->calculate_new_indicator("hybridation_dynamique", 'dynamique', array("nb_cours"=> $formatter->get_length_array()));
 	$formatter->calculate_new_indicator("is_course_active_last_month", 'cours_actif');
@@ -33,17 +29,19 @@ function traitement() {
 	$data_out = $formatter->get_array();
 
 	
-	$exporter->set_data($data_out);
-	$exporter->create_csv($SITE->fullname);
-
-	
-	$file_exporter = fopen($CFG->dataroot."/hybridmetrics/records/serialized_data","w");
+	$serialized_data_file = fopen($CFG->dataroot."/hybridmetrics/records/serialized_data","w");
 	$s = serialize(array(
 		"timestamp" => strtotime('NOW'),
 		"data" => $data_out
 	));
-	fwrite($file_exporter, $s);
+	fwrite($serialized_data_file, $s);
 	//error_log(dirname(__FILE__)."/../records/serialized_data");
+
+	# Export
+	$exporter=new \report_hybridmetrics\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
+	
+	$exporter->set_data($data_out);
+	$exporter->create_csv($SITE->fullname);
 
 	$date = new \DateTime();
 	$date->setTimestamp($timestamp);
@@ -54,8 +52,7 @@ function traitement() {
 	$backup=fopen($filename,"w");
     fwrite($backup, $exporter->print_csv_data(true));
 
-    $data->add_log_entry($timestamp, $filename);
-    $data->clear_running_tasks();
+    return $data_out;
 }
 
 ?>

@@ -56,7 +56,6 @@ class exporter {
 
     //pour créer le csv
     public function create_csv($filename) {
-        //print_r($this->fields);
         $this->csv->set_filename($filename);
         $fields = $this->fields;
         $this->csv->add_data($fields);
