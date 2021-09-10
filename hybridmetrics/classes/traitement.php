@@ -69,12 +69,12 @@ class traitement{
 		$generaldata['id_hybrides_statiques']=array_map(function($cours){
 				return $cours["id"];
 			}
-		, $cours_hybrides_statiques);
+		, $generaldata['cours_hybrides_dynamiques']);
 
 		$generaldata['id_hybrides_dynamiques']=array_map(function($cours){
 				return $cours["id"];
 			}
-		, $cours_hybrides_dynamiques);
+		, $generaldata['cours_hybrides_dynamiques']);
 
 		$generaldata['nb_cours_hybrides_statiques']=count($generaldata['cours_hybrides_statiques']);
 		$generaldata['nb_cours_hybrides_dynamiques']=count($generaldata['cours_hybrides_dynamiques']);
@@ -118,7 +118,7 @@ class traitement{
 
 		//Gestion des logs et des tâches
 
-	    $this->data->add_log_entry($timestamp, $filename);
+	    $this->data->add_log_entry($this->date->getTimestamp(), $filename);
 	    $this->data->clear_running_tasks();
 
 	    return $data_out;

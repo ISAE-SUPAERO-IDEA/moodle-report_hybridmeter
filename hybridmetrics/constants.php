@@ -34,6 +34,9 @@ define("NOW",strtotime("now"));
 
 define("SEUIL_ACTIF", 5);
 
+define("SEUIL_STATIQUE", 5);
+define("SEUIL_DYNAMIQUE", 5);
+
 const COEFF_STATIQUES=[
 	MODULE_ASSIGN => 1,
 	MODULE_ASSIGNMENT => 4,
