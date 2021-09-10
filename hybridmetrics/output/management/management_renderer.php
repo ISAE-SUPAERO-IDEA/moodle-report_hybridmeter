@@ -70,14 +70,17 @@ class management_renderer extends plugin_renderer_base {
     }
     public function include_vue() {
         global $CFG;
+        global $OUTPUT;
     // TODO: Il y a sûrement beaucoup mieux pour intégrer notre html et notre vuejs (P2)
 
         $params = array(
-            "vue" => "https://cdn.jsdelivr.net/npm/vue@2.6.0",
-            "axios" => "https://unpkg.com/axios/dist/axios.min.js",
+            "vue" => "libraries/vue@2.6.0.js",
+            "axios" => "libraries/axios.min.js",
+            "vuesuggest" => "libraries/vue-simple-suggest.js",
+            "fontawesome" => "libraries/font-awesome-4.7.0/css/font-awesome.min.css",
             "labelblacklist" => "A REMPLIR",
             "labelperiod" => "A REMPLIR",
-            "www-root" => $CFG->wwwroot
+            "www_root" => $CFG->wwwroot
         );
 
         $html = $OUTPUT->render_from_template("report_hybridmetrics/management", $params);

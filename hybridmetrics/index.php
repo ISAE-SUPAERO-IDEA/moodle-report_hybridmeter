@@ -19,10 +19,20 @@ $task = optional_param('task', array(), PARAM_TEXT);
 
 // TODO: gestion erreur si pas encore de données sérialisées
 // TODO: Déplacer dans une classe gérant le fichier sérialisé
-$data_unserialized = unserialize(file_get_contents($CFG->dataroot."/hybridmetrics/records/serialized_data"));
-$date_record = new \DateTime();
-$date_record->setTimestamp($data_unserialized['timestamp']);
-$date_format = $date_record->format('Y-m-d\_H:i:s');
+$path_serialized_data = $CFG->dataroot."/hybridmetrics/records/serialized_data";
+if(file_exists($path_serialized_data)){
+	$data_available = true;
+	$data_unserialized = unserialize(file_get_contents($path_serialized_data));
+	$generaldata = $data_unserialized['generaldata'];
+	$date_record = new \DateTime();
+	$date_record->setTimestamp($data_unserialized['timestamp']);
+	$date_format = $date_record->format('Y-m-d\_H:i:s');
+}
+else{
+	$data_available = false;
+	$date_format = NA;
+	$generaldata = null;
+}
 
 if ($task=='download'){
 	$exporter= new \report_hybridmetrics\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
@@ -52,5 +62,7 @@ echo $output->heading($pagetitle);
 echo $output->index_links();
 //echo $output->is_task_planned($date_format, $data->count_adhoc_tasks(), $data->is_task_running());
 echo $output->last_calculation($date_format);
+
+echo $output->general_indicators($data_available, $generaldata);
 
 echo $output->footer();
