@@ -69,12 +69,15 @@ class renderer extends plugin_renderer_base {
     }
 
     public function general_indicators($data_available, $generaldata){
+        html_writer::tag('h3', 'blabla');
         $html = html_writer::start_tag('ul');
         $nb_cours_hybrides_statiques = ($data_available) ? $generaldata['nb_cours_hybrides_statiques'] : NA;
-        $html .= html_writer::tag('li', get_string('report_hybridation', 'nb_cours_hybrides_statiques').$nb_cours_hybrides_statiques);
+        $html .= html_writer::tag('li', get_string('nb_cours_hybrides_statiques', 'report_hybridmetrics').$nb_cours_hybrides_statiques);
         $nb_cours_hybrides_dynamiques = ($data_available) ? $generaldata['nb_cours_hybrides_dynamiques'] : NA;
-        $html .= html_writer::tag('li', get_string('report_hybridation', 'nb_cours_hybrides_dynamiques').$nb_cours_hybrides_dynamiques);
+        $html .= html_writer::tag('li', get_string('nb_cours_hybrides_dynamiques', 'report_hybridmetrics').$nb_cours_hybrides_dynamiques);
         $html .= html_writer::end_tag('ul');
+        $html .= html_writer::tag("hr","");
+
 
         return $html;
     }

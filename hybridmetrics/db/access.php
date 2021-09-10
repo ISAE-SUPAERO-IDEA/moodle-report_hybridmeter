@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+/*$capabilities = array(
 	'report/hybridmetrics:view' => array(
 		'riskbitmask' => RISK_PERSONAL,
 		'captype' => 'read',
@@ -22,6 +22,17 @@ $capabilities = array(
 	'report/hybridmetrics:set_up' => array(
 		'riskbitmask' => RISK_SPAM,
 		'captype' => 'write',
+		'archetypes' => array(
+			'manager' => CAP_ALLOW
+		),
+		'contextlevel' => CONTEXT_MODULE
+	)
+);*/
+
+$capabilities = array(
+	'report/hybridmetrics:all' => array(
+		'riskbitmask' => RISK_PERSONAL,
+		'captype' => 'read',
 		'archetypes' => array(
 			'manager' => CAP_ALLOW
 		),

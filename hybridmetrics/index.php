@@ -11,8 +11,10 @@ require_once(dirname(__FILE__).'/constants.php');
 require_once(dirname(__FILE__).'/classes/utils.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-admin_externalpage_setup('report_hybridmetrics');
+$context = $PAGE->context;
+has_capability('report/hybridmetrics:all', $context) || die();
 
+admin_externalpage_setup('report_hybridmetrics');
 
 //On récupère les paramètres passés (en POST dans notre cas, mais si on passe en GET ça détectera aussi) pour coder les commandes
 $task = optional_param('task', array(), PARAM_TEXT);
@@ -59,10 +61,9 @@ $output = $PAGE->get_renderer('report_hybridmetrics');
 
 echo $output->header();
 echo $output->heading($pagetitle);
+echo $output->general_indicators($data_available, $generaldata);
 echo $output->index_links();
 //echo $output->is_task_planned($date_format, $data->count_adhoc_tasks(), $data->is_task_running());
 echo $output->last_calculation($date_format);
-
-echo $output->general_indicators($data_available, $generaldata);
 
 echo $output->footer();

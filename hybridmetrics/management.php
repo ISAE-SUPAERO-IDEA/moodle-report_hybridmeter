@@ -7,6 +7,8 @@ require_once(dirname(__FILE__).'/output/management/management_renderer.php');
 require_once(dirname(__FILE__).'/constants.php');
 require_once($CFG->libdir.'/adminlib.php');
 
+$context = $PAGE->context;
+has_capability('report/hybridmetrics:all', $context) || die();
 
 admin_externalpage_setup('report_hybridmetrics');
 

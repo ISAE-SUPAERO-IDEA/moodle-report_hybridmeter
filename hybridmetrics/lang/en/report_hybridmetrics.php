@@ -18,6 +18,6 @@ $string['task_pending'] = "A task is pending";
 $string['no_task_pending'] = "No task is pending";
 $string['task_running'] = "A task is running";
 $string['last_updated'] = "Last calculation : %s";
-$string['nb_cours_hybrides_statiques'] = "remplir : ";
-$string['nb_cours_hybrides_dynamiques'] = "remplir : ";
+$string['nb_cours_hybrides_statiques'] = "Nombre de cours catégorisés comme hybrides selon les critères statiques : ";
+$string['nb_cours_hybrides_dynamiques'] = "Nombre de cours catégorisés comme hybrides selon les critères dynamiques : ";
 //on peut accéder à ces variables avec la fonction get_string('indice','report_hybridation');
