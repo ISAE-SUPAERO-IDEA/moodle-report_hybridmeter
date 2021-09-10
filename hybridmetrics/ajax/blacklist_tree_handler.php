@@ -1,6 +1,12 @@
 <?php 
 	require_once("../../../config.php");
     require_once("../classes/configurator.php");
+
+	require_login();
+	$context = context_system::instance();
+	$PAGE->set_context($context);
+	has_capability('report/hybridmetrics:all', $context) || die();
+
 	$configurator = new \report_hybridmetrics\classes\configurator();
     // TODO: Gérer les droits d'accès (P2)
     if ($_SERVER['REQUEST_METHOD'] == "POST") {

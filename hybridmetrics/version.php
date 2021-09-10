@@ -1,4 +1,4 @@
 <?php
 
 $plugin->component="report_hybridmetrics";
-$plugin->version=2021391000;
+$plugin->version=2021391001;
