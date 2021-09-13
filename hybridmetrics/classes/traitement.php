@@ -41,11 +41,51 @@ class traitement{
 
 		//Calcul des indicateurs détaillés
 
-	    $this->formatter->calculate_new_indicator("hybridation_statique", 'statique', array("nb_cours"=> $this->formatter->get_length_array()));
-		$this->formatter->calculate_new_indicator("hybridation_dynamique", 'dynamique', array("nb_cours"=> $this->formatter->get_length_array()));
-		$this->formatter->calculate_new_indicator("is_course_active_last_month", 'cours_actif');
-		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_single_users_course_viewed($object['id'],$this->configurator->get_begin_timestamp(),$this->configurator->get_end_timestamp()); }, 'nb_utilisateurs_actifs');
-		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_registered_users($object['id']); }, 'nb_inscrits');
+	    $this->formatter->calculate_new_indicator(
+	    	"hybridation_statique",
+	    	'statique',
+	    	array(
+	    		"nb_cours" => $this->formatter->get_length_array()
+	    	)
+	    );
+
+		$this->formatter->calculate_new_indicator(
+			"hybridation_dynamique",
+			'dynamique',
+			array(
+				"nb_cours" => $this->formatter->get_length_array()
+			)
+		);
+
+		$this->formatter->calculate_new_indicator(
+			"is_course_active_last_month",
+			'cours_actif',
+			array (
+				"begin_date" => $this->configurator->get_begin_timestamp(),
+				"end_date" => $this->configurator->get_end_timestamp()
+			);
+
+		$this->formatter->calculate_new_indicator(
+			function ($object, $data, $parameters) {
+				return $data->count_single_users_course_viewed(
+					$object['id'],
+					$parameters["begin_date"],
+					$parameters["end_date"]
+				);
+			},
+			'nb_utilisateurs_actifs',
+			array(
+				"begin_date" => $this->configurator->get_begin_timestamp(),
+				"end_date" => $this->configurator->get_end_timestamp()
+			)
+		);
+
+		$this->formatter->calculate_new_indicator(
+			function ($object, $data, $parameters) {
+				return $data->count_registered_users($object['id']);
+			},
+			'nb_inscrits'
+		);
 
 		$data_out = $this->formatter->get_array();
 

@@ -79,9 +79,14 @@ class data {
             if($length === 0)
             	return 0;
 
-            $where_courseid = "and enrol.courseid in (?";
+            if(!is_numeric($ids[0]))
+            	return -1;
+
+            $where_courseid = "and enrol.courseid in (".$ids[0];
             for($i = 1; $i < $length; $i++){
-            	$where_courseid .= ", ?";
+            	if(!is_numeric($ids[$i]))
+            		return -1;
+            	$where_courseid .= ", ".$ids[$i];
             }
             $where_courseid .= ")";
 
@@ -91,11 +96,11 @@ class data {
 			    inner join ".$DB->get_prefix()."enrol as enrol on user_enrol.enrolid=enrol.id
 			    inner join ".$DB->get_prefix()."role as role on role.id=enrol.roleid
 			    where role.shortname = 'student'
-			    and eventname like'%course_viewed'
+			    and eventname like '%course_viewed'
 			    ".$where_courseid."
 			    and logs.timecreated between ? and ?";
 
-			$params = array_merge($ids, array($begin_date, $end_date));
+			$params = array($begin_date, $end_date);
 
             $record=$DB->get_record_sql($query, $params);
             return $record->c;

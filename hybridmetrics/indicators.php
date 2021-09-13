@@ -24,7 +24,7 @@ function hybridation_statique($object,$data,$parameters){
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object,$data,$parameters){
 	$configurator = \report_hybridmetrics\classes\configurator::getInstance();
-	$active=$data->count_single_users_course_viewed($object['id']);
+	$active=$data->count_single_users_course_viewed($object['id'], $parameters['begin_date'], $parameters['end_date']);
 	$indicator=0;
 	$total=0;
 	if($active==0) return 0;
@@ -41,7 +41,7 @@ function hybridation_dynamique($object,$data,$parameters){
 
 //Fonction lambda utilisée pour définir si le cours est actif
 function is_course_active_last_month($object, $data, $parameters){
-	$count=$data->count_single_users_course_viewed($object['id'],strtotime("-1 month"),strtotime("now"));
+	$count=$data->count_single_users_course_viewed($object['id'], $parameters['begin_date'], $parameters['end_date']);
 	if ($count >= SEUIL_ACTIF)
 		return 1;
 	else
