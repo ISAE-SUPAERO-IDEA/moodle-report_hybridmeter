@@ -74,7 +74,7 @@ class data {
             	$ids=array($ids);
             }
 
-            $length = count($id);
+            $length = count($ids);
 
             if($length === 0)
             	return 0;
