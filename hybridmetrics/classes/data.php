@@ -67,8 +67,24 @@ class data {
 	}
 
 	//compte le nombre d'utilisateurs uniques en fonction du cours et de la période choisie
-    public function count_single_users_course_viewed(int $id, int $begin_date=0, int $end_date=NOW){
+    public function count_single_users_course_viewed($ids, int $begin_date=0, int $end_date=NOW){
             global $DB;
+
+            if(!is_array($ids)){
+            	$ids=array($ids);
+            }
+
+            $length = count($id);
+
+            if($length === 0)
+            	return 0;
+
+            $where_courseid = "and enrol.courseid in (?";
+            for($i = 1; $i < $length; $i++){
+            	$where_courseid .= ", ?";
+            }
+            $where_courseid .= ")";
+
             $query="select count(distinct logs.userid) as c
 			    from ".$DB->get_prefix()."logstore_standard_log as logs
 			    inner join ".$DB->get_prefix()."user_enrolments as user_enrol on user_enrol.userid=logs.userid
@@ -76,9 +92,12 @@ class data {
 			    inner join ".$DB->get_prefix()."role as role on role.id=enrol.roleid
 			    where role.shortname = 'student'
 			    and eventname like'%course_viewed'
-			    and enrol.courseid=?
+			    ".$where_courseid."
 			    and logs.timecreated between ? and ?";
-            $record=$DB->get_record_sql($query, array($id,$begin_date, $end_date));
+
+			$params = array_merge($ids, array($begin_date, $end_date));
+
+            $record=$DB->get_record_sql($query, $params);
             return $record->c;
     }
 
@@ -96,20 +115,29 @@ class data {
 		return $record->c;
 	}
 
-	//compte le nombre d'utilisateurs actifs en fonction du cours et de la période choisie
-	public function count_active_single_users(int $id, int $begin_date=0, int $end_date=NOW){
+	public function count_distinct_students($ids, int $begin_date=0, int $end_date=NOW){
 		global $DB;
-		$record=$DB->get_record_sql("select count(distinct logs.userid) as c
-			from ".$DB->get_prefix()."logstore_standard_log as logs
-			inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
+
+		$length = count($ids);
+
+		if(count($ids) === 0)
+			return 0;
+
+		$where_courseid = "and courseid in (? ";
+		for ($i = 1; $i < $length; $id++){
+			$where_courseid .= " or courseid = ?";
+		}
+
+		$record = $DB->get_record_sql("select count(distinct logs.userid) as c
+			from ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
 			inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
 			inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
 			where role.shortname='student'
-			and courseid=?
-			and context.instanceid=?
-			and context.contextlevel=?
-			and timecreated between ? and ?",
-			array($id, $id, CONTEXT_COURSE, $begin_date, $end_date));
+			context.contextlevel=?
+			".$where_courseid,
+			array_merge(array(CONTEXT_COURSE),$ids)
+		);
+
 		return $record->c;
 	}
 

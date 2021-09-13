@@ -20,4 +20,8 @@ $string['task_running'] = "Un traitement est en cours d'exécution";
 $string['last_updated'] = "Dernier calcul : %s";
 $string['nb_cours_hybrides_statiques'] = "Nombre de cours catégorisés comme hybrides selon les critères statiques : ";
 $string['nb_cours_hybrides_dynamiques'] = "Nombre de cours catégorisés comme hybrides selon les critères dynamiques : ";
+$string['nb_etudiants_concernes_statiques'] = "Nombre d'étudiants inscrits dans au moins un cours catégorisé comme hybride selon les critères statiques : ";
+$string['nb_etudiants_concernes_statiques_actifs'] = "Nombre d'étudiants actifs dans la période de capture dans au moins un cours catégorisé comme hybride selon les critères statiques : ";
+$string['nb_etudiants_concernes_dynamiques'] = "Nombre d'étudiants inscrits dans au moins un cours catégorisé comme hybride selon les critères dynamiques : ";
+$string['nb_etudiants_concernes_dynamiques_actifs'] = "Nombre d'étudiants actifs dans la période de capture dans au moins un cours catégorisé comme hybride selon les critères dynamiques : ";
 //on peut accéder à ces variables avec la fonction get_string('indice','report_hybridation');

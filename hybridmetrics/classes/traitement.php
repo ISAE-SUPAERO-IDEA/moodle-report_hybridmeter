@@ -44,7 +44,7 @@ class traitement{
 	    $this->formatter->calculate_new_indicator("hybridation_statique", 'statique', array("nb_cours"=> $this->formatter->get_length_array()));
 		$this->formatter->calculate_new_indicator("hybridation_dynamique", 'dynamique', array("nb_cours"=> $this->formatter->get_length_array()));
 		$this->formatter->calculate_new_indicator("is_course_active_last_month", 'cours_actif');
-		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_single_users_course_viewed($object['id'],$this->configurator->get_begin_date()->getTimestamp(),$this->configurator->get_end_date()->getTimestamp()); }, 'nb_utilisateurs_actifs');
+		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_single_users_course_viewed($object['id'],$this->configurator->get_begin_timestamp(),$this->configurator->get_end_timestamp()); }, 'nb_utilisateurs_actifs');
 		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_registered_users($object['id']); }, 'nb_inscrits');
 
 		$data_out = $this->formatter->get_array();
@@ -82,20 +82,14 @@ class traitement{
 		$generaldata['nb_cours_hybrides_statiques']=count($generaldata['cours_hybrides_statiques']);
 		$generaldata['nb_cours_hybrides_dynamiques']=count($generaldata['cours_hybrides_dynamiques']);
 
-		/*$etudiants_concernes_statiques=$this->data->count_distinct_student($id_hybrides_statiques);
-		$nb_etudiants_concernes_statiques=count($etudiants_concernes_statiques);
+		$generaldata['etudiants_concernes_statiques']=$this->data->count_distinct_students($generaldata['id_hybrides_statiques']);
+		$generaldata['nb_etudiants_concernes_statiques']=count($generaldata['etudiants_concernes_statiques']);
 
-		$etudiants_concernes_actifs=$this->data->liste_etudiants_cours($id_hybrides,strtotime("-1 month"),strtotime("now"));
-		$nb_etudiants_concernes_actifs=count($etudiants_concernes_actifs);
+		$generaldata['nb_etudiants_concernes_statiques_actifs']=$this->data->count_single_users_course_viewed($generaldata['id_hybrides_statiques'],$this->configurator->get_begin_timestamp(),$this->configurator->get_end_timestamp());
 		
-
-		$recap=array(array(),array());
-		$recap[0]["nb_cours_hybrides"]="Nombre de cours hybrides";
-		$recap[1]["nb_cours_hybrides"]=count($cours_hybrides);
-		$recap[0]["nb_concernes_alltime"]="Nombre d'étudiants inscrits dans au moins un cours hybride";
-		$recap[1]["nb_concernes_alltime"]=$nb_etudiants_concernes;
-		$recap[0]["nb_concernes_actifs"]="Nombre d'étudiants ayant été actifs dans au moins un cours hybride durant la période de mesure";
-		$recap[1]["nb_concernes_actifs"]=$nb_etudiants_concernes_actifs;*/
+		$generaldata['nb_etudiants_concernes_dynamiques']=$this->data->count_distinct_students($generaldata['id_hybrides_dynamiques']);
+		
+		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$this->data->count_single_users_course_viewed($generaldata['cours_hybrides_dynamiques'],$this->configurator->get_begin_timestamp(),$this->configurator->get_end_timestamp());
 
 		//Export des données
 		

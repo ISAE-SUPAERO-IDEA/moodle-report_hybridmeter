@@ -116,6 +116,15 @@ class configurator {
 		$output->setTimestamp($this->data['end_date']);
 		return $output;
 	}
+
+	public function get_begin_timestamp(){
+		return $this->get_begin_date()->getTimestamp();
+	}
+
+	public function get_end_timestamp(){
+		return $this->get_end_date()->getTimestamp();
+	}
+
 	// Returns raw configuration data
 	public function get_data() {
 		return $this->data;

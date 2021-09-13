@@ -24,7 +24,7 @@ function hybridation_statique($object,$data,$parameters){
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object,$data,$parameters){
 	$configurator = \report_hybridmetrics\classes\configurator::getInstance();
-	$active=$data->count_active_single_users($object['id']);
+	$active=$data->count_single_users_course_viewed($object['id']);
 	$indicator=0;
 	$total=0;
 	if($active==0) return 0;

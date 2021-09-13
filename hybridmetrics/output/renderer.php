@@ -71,10 +71,25 @@ class renderer extends plugin_renderer_base {
     public function general_indicators($data_available, $generaldata){
         html_writer::tag('h3', 'blabla');
         $html = html_writer::start_tag('ul');
-        $nb_cours_hybrides_statiques = ($data_available) ? $generaldata['nb_cours_hybrides_statiques'] : NA;
+
+        $nb_cours_hybrides_statiques = ($data_available && isset($generaldata['nb_cours_hybrides_statiques'])) ? $generaldata['nb_cours_hybrides_statiques'] : NA;
         $html .= html_writer::tag('li', get_string('nb_cours_hybrides_statiques', 'report_hybridmetrics').$nb_cours_hybrides_statiques);
-        $nb_cours_hybrides_dynamiques = ($data_available) ? $generaldata['nb_cours_hybrides_dynamiques'] : NA;
+
+        $nb_cours_hybrides_dynamiques = ($data_available && isset($generaldata['nb_cours_hybrides_dynamiques'])) ? $generaldata['nb_cours_hybrides_dynamiques'] : NA;
         $html .= html_writer::tag('li', get_string('nb_cours_hybrides_dynamiques', 'report_hybridmetrics').$nb_cours_hybrides_dynamiques);
+
+        $nb_etudiants_concernes_statiques = ($data_available && isset($generaldata['nb_etudiants_concernes_statiques'])) ? $generaldata['nb_etudiants_concernes_statiques'] : NA;
+        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_statiques', 'report_hybridmetrics').$nb_etudiants_concernes_statiques);
+
+        $nb_etudiants_concernes_statiques_actifs = ($data_available && isset($generaldata['nb_etudiants_concernes_statiques_actifs'])) ? $generaldata['nb_etudiants_concernes_statiques_actifs'] : NA;
+        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_statiques_actifs', 'report_hybridmetrics').$nb_etudiants_concernes_statiques_actifs);
+
+        $nb_etudiants_concernes_dynamiques = ($data_available && isset($generaldata['nb_etudiants_concernes_dynamiques'])) ? $generaldata['nb_etudiants_concernes_dynamiques'] : NA;
+        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_dynamiques', 'report_hybridmetrics').$nb_etudiants_concernes_dynamiques);
+
+        $nb_etudiants_concernes_dynamiques_actifs = ($data_available && isset($generaldata['nb_etudiants_concernes_dynamiques_actifs'])) ? $generaldata['nb_etudiants_concernes_dynamiques_actifs'] : NA;
+        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_dynamiques_actifs', 'report_hybridmetrics').$nb_etudiants_concernes_dynamiques_actifs);
+
         $html .= html_writer::end_tag('ul');
         $html .= html_writer::tag("hr","");
 
