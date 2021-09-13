@@ -67,22 +67,21 @@ class data {
 	}
 
 	//compte le nombre d'utilisateurs uniques en fonction du cours et de la période choisie
-	public function count_single_users_course_viewed(int $id, int $begin_date=0, int $end_date=NOW){
-		global $DB;
-		$record=$DB->get_record_sql("select count(distinct logs.userid) as c
-			from ".$DB->get_prefix()."logstore_standard_log as logs
-			inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
-			inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
-			inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
-			where role.shortname='student'
-			and eventname='\\core\\event\\course_viewed'
-			and courseid=?
-			and context.instanceid=?
-			and context.contextlevel=?
-			and timecreated between ? and ?",
-			array($id, $id, CONTEXT_COURSE, $begin_date, $end_date));
-		return $record->c;
-	}
+    public function count_single_users_course_viewed(int $id, int $begin_date=0, int $end_date=NOW){
+            global $DB;
+            $query="select count(distinct logs.userid) as c
+			    from ".$DB->get_prefix()."logstore_standard_log as logs
+			    inner join ".$DB->get_prefix()."user_enrolments as user_enrol on user_enrol.userid=logs.userid
+			    inner join ".$DB->get_prefix()."enrol as enrol on user_enrol.enrolid=enrol.id
+			    inner join ".$DB->get_prefix()."role as role on role.id=enrol.roleid
+			    where role.shortname = 'student'
+			    and eventname='\\\\core\\\\event\\\\course_viewed'
+			    and enrol.courseid=?
+			    and logs.timecreated between ? and ?";
+            $record=$DB->get_record_sql($query, array($id,$begin_date, $end_date));
+            return $record->c;
+    }
+
 
 	//compte le nombre d'inscrits en fonction du cours
 	public function count_registered_users(int $id){
