@@ -17,6 +17,7 @@ class traitement{
 	protected $data;
 	protected $formatter;
 	protected $exporter;
+	protected $configurator;
 	protected $date;
 
 	function __construct(){
@@ -30,6 +31,8 @@ class traitement{
 
 		$this->date = new \DateTime();
 		$this->date->setTimestamp($timestamp);
+
+		$this->configurator = new \report_hybridmetrics\classes\configurator();
 	}
 
 	function launch() {
@@ -41,7 +44,7 @@ class traitement{
 	    $this->formatter->calculate_new_indicator("hybridation_statique", 'statique', array("nb_cours"=> $this->formatter->get_length_array()));
 		$this->formatter->calculate_new_indicator("hybridation_dynamique", 'dynamique', array("nb_cours"=> $this->formatter->get_length_array()));
 		$this->formatter->calculate_new_indicator("is_course_active_last_month", 'cours_actif');
-		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_single_users_course_viewed($object['id'],strtotime("-1 month"),strtotime("now")); }, 'nb_utilisateurs_actifs');
+		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_single_users_course_viewed($object['id'],$this->configurator->get_begin_date()->getTimestamp(),$this->configurator->get_end_date()->getTimestamp()); }, 'nb_utilisateurs_actifs');
 		$this->formatter->calculate_new_indicator(function ($object, $data) { return $data->count_registered_users($object['id']); }, 'nb_inscrits');
 
 		$data_out = $this->formatter->get_array();

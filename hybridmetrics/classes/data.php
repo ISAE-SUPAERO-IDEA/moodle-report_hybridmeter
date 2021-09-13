@@ -75,13 +75,12 @@ class data {
 			    inner join ".$DB->get_prefix()."enrol as enrol on user_enrol.enrolid=enrol.id
 			    inner join ".$DB->get_prefix()."role as role on role.id=enrol.roleid
 			    where role.shortname = 'student'
-			    and eventname='\\\\core\\\\event\\\\course_viewed'
+			    and eventname like'%course_viewed'
 			    and enrol.courseid=?
 			    and logs.timecreated between ? and ?";
             $record=$DB->get_record_sql($query, array($id,$begin_date, $end_date));
             return $record->c;
     }
-
 
 	//compte le nombre d'inscrits en fonction du cours
 	public function count_registered_users(int $id){

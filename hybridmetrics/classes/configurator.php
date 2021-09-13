@@ -105,12 +105,16 @@ class configurator {
 
 	// Get begin date in DateTime format
 	public function get_begin_date() {
-		return new \DateTime($this->data['begin_date']);
+		$output = new \DateTime();
+		$output->setTimestamp($this->data['begin_date']);
+		return $output;
 	}
 
 	// Get end date in DateTime format
 	public function get_end_date(){
-		return new \DateTime($this->data['end_date']);
+		$output = new \DateTime();
+		$output->setTimestamp($this->data['end_date']);
+		return $output;
 	}
 	// Returns raw configuration data
 	public function get_data() {
