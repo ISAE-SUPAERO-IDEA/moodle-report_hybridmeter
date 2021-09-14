@@ -53,7 +53,9 @@ class traitement{
 			"hybridation_dynamique",
 			'dynamique',
 			array(
-				"nb_cours" => $this->formatter->get_length_array()
+				"nb_cours" => $this->formatter->get_length_array(),
+				"begin_date" => $this->configurator->get_begin_timestamp(),
+				"end_date" => $this->configurator->get_end_timestamp()
 			)
 		);
 
@@ -63,7 +65,8 @@ class traitement{
 			array (
 				"begin_date" => $this->configurator->get_begin_timestamp(),
 				"end_date" => $this->configurator->get_end_timestamp()
-			);
+			)
+		);
 
 		$this->formatter->calculate_new_indicator(
 			function ($object, $data, $parameters) {
