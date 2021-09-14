@@ -125,13 +125,29 @@ class traitement{
 		$generaldata['nb_cours_hybrides_statiques']=count($generaldata['cours_hybrides_statiques']);
 		$generaldata['nb_cours_hybrides_dynamiques']=count($generaldata['cours_hybrides_dynamiques']);
 
-		$generaldata['nb_etudiants_concernes_statiques']=$this->data->count_distinct_students($generaldata['id_hybrides_statiques']);
+		$generaldata['nb_etudiants_concernes_statiques']=$this->data->count_distinct_students(
+			$generaldata['id_hybrides_statiques'],
+			$this->configurator->get_begin_timestamp(),
+			$this->configurator->get_end_timestamp()
+		);
 
-		$generaldata['nb_etudiants_concernes_statiques_actifs']=$this->data->count_single_users_course_viewed($generaldata['id_hybrides_statiques'],$this->configurator->get_begin_timestamp(),$this->configurator->get_end_timestamp());
+		$generaldata['nb_etudiants_concernes_statiques_actifs']=$this->data->count_single_users_course_viewed(
+			$generaldata['id_hybrides_statiques'],
+			$this->configurator->get_begin_timestamp(),
+			$this->configurator->get_end_timestamp()
+		);
 		
-		$generaldata['nb_etudiants_concernes_dynamiques']=$this->data->count_distinct_students($generaldata['id_hybrides_dynamiques']);
+		$generaldata['nb_etudiants_concernes_dynamiques']=$this->data->count_distinct_students(
+			$generaldata['id_hybrides_dynamiques'],
+			$this->configurator->get_begin_timestamp(),
+			$this->configurator->get_end_timestamp()
+		);
 		
-		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$this->data->count_single_users_course_viewed($generaldata['cours_hybrides_dynamiques'],$this->configurator->get_begin_timestamp(),$this->configurator->get_end_timestamp());
+		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$this->data->count_single_users_course_viewed(
+			$generaldata['cours_hybrides_dynamiques'],
+			$this->configurator->get_begin_timestamp(),
+			$this->configurator->get_end_timestamp()
+		);
 
 		//Export des données
 		

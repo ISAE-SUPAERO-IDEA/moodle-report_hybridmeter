@@ -128,10 +128,19 @@ class data {
 		if(count($ids) === 0)
 			return 0;
 
-		$where_courseid = "and courseid in (? ";
-		for ($i = 1; $i < $length; $id++){
-			$where_courseid .= " or courseid = ?";
-		}
+        if($length === 0)
+            return 0;
+
+		if(!is_numeric($ids[0]))
+            return -1;
+
+        $where_courseid = "and enrol.courseid in (".$ids[0];
+        for($i = 1; $i < $length; $i++){
+        	if(!is_numeric($ids[$i]))
+        		return -1;
+        	$where_courseid .= ", ".$ids[$i];
+        }
+        $where_courseid .= ")";
 
 		$record = $DB->get_record_sql("select count(distinct logs.userid) as c
 			from ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
