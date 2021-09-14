@@ -99,7 +99,7 @@ class traitement{
 		$generaldata['cours_hybrides_statiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["statique"] > SEUIL_STATIQUE;
+					return $cours["statique"] >= SEUIL_STATIQUE;
 				}
 			)
 		);
@@ -107,7 +107,7 @@ class traitement{
 		$generaldata['cours_hybrides_dynamiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["dynamique"] > SEUIL_DYNAMIQUE;
+					return $cours["dynamique"] >= SEUIL_DYNAMIQUE;
 				}
 			)
 		);
@@ -115,7 +115,7 @@ class traitement{
 		$generaldata['id_hybrides_statiques']=array_map(function($cours){
 				return $cours["id"];
 			}
-		, $generaldata['cours_hybrides_dynamiques']);
+		, $generaldata['cours_hybrides_statiques']);
 
 		$generaldata['id_hybrides_dynamiques']=array_map(function($cours){
 				return $cours["id"];
@@ -125,10 +125,9 @@ class traitement{
 		$generaldata['nb_cours_hybrides_statiques']=count($generaldata['cours_hybrides_statiques']);
 		$generaldata['nb_cours_hybrides_dynamiques']=count($generaldata['cours_hybrides_dynamiques']);
 
+
 		$generaldata['nb_etudiants_concernes_statiques']=$this->data->count_distinct_students(
-			$generaldata['id_hybrides_statiques'],
-			$this->configurator->get_begin_timestamp(),
-			$this->configurator->get_end_timestamp()
+			$generaldata['id_hybrides_statiques']
 		);
 
 		$generaldata['nb_etudiants_concernes_statiques_actifs']=$this->data->count_single_users_course_viewed(
@@ -137,14 +136,14 @@ class traitement{
 			$this->configurator->get_end_timestamp()
 		);
 		
+		
+
 		$generaldata['nb_etudiants_concernes_dynamiques']=$this->data->count_distinct_students(
-			$generaldata['id_hybrides_dynamiques'],
-			$this->configurator->get_begin_timestamp(),
-			$this->configurator->get_end_timestamp()
+			$generaldata['id_hybrides_dynamiques']
 		);
 		
 		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$this->data->count_single_users_course_viewed(
-			$generaldata['cours_hybrides_dynamiques'],
+			$generaldata['id_hybrides_dynamiques'],
 			$this->configurator->get_begin_timestamp(),
 			$this->configurator->get_end_timestamp()
 		);
