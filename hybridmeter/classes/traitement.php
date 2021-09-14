@@ -1,6 +1,6 @@
 <?php
 
-namespace report_hybridmetrics\classes;
+namespace report_hybridmeter\classes;
 
 require_once(__DIR__.'/exporter.php');
 require_once(__DIR__.'/../indicators.php');
@@ -21,23 +21,26 @@ class traitement{
 	protected $date;
 
 	function __construct(){
-		$this->data=new \report_hybridmetrics\classes\data();
+		$this->data=new \report_hybridmeter\classes\data();
 		$timestamp = strtotime('NOW');
-		$this->data->set_as_running($timestamp);
-		
-		$this->formatter=new \report_hybridmetrics\classes\formatter($this->data, array(), function($data, $blacklist){return $data->get_whitelisted_courses();});
 
-		$this->exporter=new \report_hybridmetrics\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
+		$this->data->clear_adhoc_tasks();
+		
+		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, array(), function($data, $blacklist){return $data->get_whitelisted_courses();});
+
+		$this->exporter=new \report_hybridmeter\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
 
 		$this->date = new \DateTime();
 		$this->date->setTimestamp($timestamp);
 
-		$this->configurator = new \report_hybridmetrics\classes\configurator();
+		$this->configurator = new \report_hybridmeter\classes\configurator();
 	}
 
 	function launch() {
 		global $CFG;
 		global $SITE;
+
+		$this->configurator->set_as_running($timestamp);
 
 		//Calcul des indicateurs détaillés
 
@@ -154,7 +157,7 @@ class traitement{
 		$this->exporter->create_csv($SITE->fullname);
 
 		
-		$file_exporter = fopen($CFG->dataroot."/hybridmetrics/records/serialized_data","w");
+		$file_exporter = fopen($CFG->dataroot."/hybridmeter/records/serialized_data","w");
 		$s = serialize(array(
 			"timestamp" => strtotime('NOW'),
 			"data" => $data_out,
@@ -165,15 +168,14 @@ class traitement{
 
 		$date_format = $this->date->format('Y-m-d H:i:s');
 
-		$filename = $CFG->dataroot."/hybridmetrics/records/backup/record_".$date_format.".csv";
+		$filename = $CFG->dataroot."/hybridmeter/records/backup/record_".$date_format.".csv";
 
 		$backup=fopen($filename,"w");
 	    fwrite($backup, $this->exporter->print_csv_data(true));
 
 		//Gestion des logs et des tâches
 
-	    $this->data->add_log_entry($this->date->getTimestamp(), $filename);
-	    $this->data->clear_running_tasks();
+	    $this->configurator->unset_as_running();
 
 	    return $data_out;
 	}

@@ -1,0 +1,25 @@
+<script src="{{vue}}"></script>
+<script src="{{axios}}"></script>
+
+<link href="{{fontawesome}}" rel="stylesheet">
+
+<input type=hidden id="www_root" value="{{www_root}}"/>
+<div id="app" >
+    <div>
+      <hr/>
+      <h3 class="main">{{labelblacklist}}</h3>
+      <category :id="0" :expanded="true"></category>
+      <hr/>
+      <h3 class="main">{{labelwhitelist}}</h3>
+      <configurator></configurator>
+    </div>
+</div>
+<br>
+<style>
+.category_item {
+  border:  1px solid rgba(0,0,0,0.125);
+  padding: 10px;
+}
+</style>
+
+<script type="module" src="assets/management.js"></script>
