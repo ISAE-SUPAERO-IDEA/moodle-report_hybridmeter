@@ -12,15 +12,13 @@ class configurator {
 
 	protected $data;
 
-	protected $data_provider;
-
 	protected $begin_date;
 
 	protected $end_date;
 
 	protected static $instance = null;
 
-	public function __construct($data_provider){
+	public function __construct(){
 		global $CFG;
 
 		$this->path=$CFG->dataroot."/hybridmeter/config.json";
