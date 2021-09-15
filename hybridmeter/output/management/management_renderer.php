@@ -58,8 +58,8 @@ class management_renderer extends plugin_renderer_base {
             "axios" => "libraries/axios.min.js",
             "vuesuggest" => "libraries/vue-simple-suggest.js",
             "fontawesome" => "libraries/font-awesome-4.7.0/css/font-awesome.min.css",
-            "labelblacklist" => "A REMPLIR",
-            "labelperiod" => "A REMPLIR",
+            "labelblacklist" => "Sélection des cours/catégories",
+            "labelperiod" => "Sélection des cours/catégories",
             "www_root" => $CFG->wwwroot
         );
 
