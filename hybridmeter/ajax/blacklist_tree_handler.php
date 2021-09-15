@@ -24,7 +24,9 @@
 		$id = required_param('id', PARAM_INT);
 		$categories = $DB->get_records('course_categories', array("parent" => $id));
 
-		$courses = $DB->get_records('course', array("category" =>$id));
+		if($id != 0){
+			$courses = $DB->get_records('course', array("category" =>$id));
+		}
 		
 		$output = [ 
 		  "categories" => $categories,

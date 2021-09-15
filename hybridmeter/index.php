@@ -40,7 +40,7 @@ else{
 }
 
 if ($task=='download'){
-	$exporter= new \report_hybridmeter\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
+	$exporter= new \report_hybridmeter\classes\exporter(array('id', 'fullname', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
 	$exporter->set_data($data_unserialized['data']);
 	$exporter->create_csv($SITE->fullname."-".$date_format);
 	$exporter->download_file();

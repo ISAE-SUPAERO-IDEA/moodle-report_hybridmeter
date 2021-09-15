@@ -28,7 +28,7 @@ class traitement{
 		
 		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, array(), function($data, $blacklist){return $data->get_whitelisted_courses();});
 
-		$this->exporter=new \report_hybridmeter\classes\exporter(array('id','fullname','dynamique', 'statique','cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
+		$this->exporter=new \report_hybridmeter\classes\exporter(array('id', 'fullname', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
 
 		$this->date = new \DateTime();
 		$this->date->setTimestamp($timestamp);
@@ -46,7 +46,7 @@ class traitement{
 
 	    $this->formatter->calculate_new_indicator(
 	    	"hybridation_statique",
-	    	'statique',
+	    	'niveau_de_digitalisation',
 	    	array(
 	    		"nb_cours" => $this->formatter->get_length_array()
 	    	)
@@ -54,7 +54,7 @@ class traitement{
 
 		$this->formatter->calculate_new_indicator(
 			"hybridation_dynamique",
-			'dynamique',
+			'niveau_d_utilisation',
 			array(
 				"nb_cours" => $this->formatter->get_length_array(),
 				"begin_date" => $this->configurator->get_begin_timestamp(),

@@ -20,7 +20,7 @@ class renderer extends plugin_renderer_base {
         $html .= html_writer::link(
             $url,
             get_string('download_csv', 'report_hybridmeter'),
-            array('class' => 'row m-1 btn btn-secondary')
+            array('class' => 'row m-1 btn btn-primary')
         );
         $html .= html_writer::end_div();
 

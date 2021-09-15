@@ -121,12 +121,16 @@ Vue.component('category', {
 });
 // Configurator
 Vue.component('configurator', {
+  props: ['boxok', 'boxnotok'],
   template: ` 
     <div>
        <!-- TODO: Widget date input -->
-      <div class="form-item row" id="admin-naas_endpoint">
+      <div v-if="ok" v-html="boxok">
+        
+      </div>
+      <div class="form-item row">
         <div class="form-label col-sm-3 text-sm-right">
-          <label for="id_s_naas_naas_endpoint">
+          <label>
             Date de début
           </label>
         </div>
@@ -136,9 +140,9 @@ Vue.component('configurator', {
           </div>
         </div>
       </div>
-      <div class="form-item row" id="admin-naas_endpoint">
+      <div class="form-item row">
         <div class="form-label col-sm-3 text-sm-right">
-          <label for="id_s_naas_naas_endpoint">
+          <label>
             Date de fin
           </label>
         </div>
@@ -148,22 +152,23 @@ Vue.component('configurator', {
           </div>
         </div>
       </div>
-      <div class="form-item row" id="admin-naas_endpoint">
+      <div class="form-item row">
         <div class="form-label col-sm-3 text-sm-right"></div>
         <div class="form-setting col-sm-9">
           <button type="submit" class="btn btn-primary" @click="save">Enregistrer les modifications</button>
         </div>
       </div>
-      <hr/>
+      <!--<hr/>
       <h3 class="main">Configuration des poids</h3>
-      <span>Coming soon</span>
+      <span>Coming soon</span>-->
     </div>
     `,
   data() {
     return {
       config: {},
       begin_date:undefined,
-      end_date:undefined
+      end_date:undefined,
+      ok:false
     }
   },
   watch: {
@@ -214,11 +219,12 @@ Vue.component('configurator', {
       data.append('begin_date', this.config.begin_date);
       data.append('end_date', this.config.end_date);
       await this.post(`configuration_handler.php`, data);
+      this.ok=true;
     }
   }
 });
 
 // Deploy ap
 var app = new Vue({
-  el: '#app',
+  el: '#app'
 });

@@ -60,6 +60,8 @@ class management_renderer extends plugin_renderer_base {
             "fontawesome" => "libraries/font-awesome-4.7.0/css/font-awesome.min.css",
             "labelblacklist" => "Sélection des cours/catégories",
             "labelperiod" => "Sélection des cours/catégories",
+            "boxok" => $OUTPUT->box("La période de capture a été changée avec succès", 'notice'),
+            "boxnotok" => $OUTPUT->box("Le changement de période n'a pas fonctionné", 'errorbox'),
             "www_root" => $CFG->wwwroot
         );
 
@@ -67,7 +69,14 @@ class management_renderer extends plugin_renderer_base {
         //$html = file_get_contents($CFG->wwwroot . '/report/hybridmeter/assets/management.html');;
         //$html = str_replace('$$www_root$$', $CFG->wwwroot, $html); 
         $url = new moodle_url('/report/hybridmeter/index.php');
-        $html .= html_writer::link($url, get_string('pluginname', 'report_hybridmeter'), array('class' => 'row m-1 mb-1'));
+        $html .= html_writer::tag("hr","");
+        $html .= html_writer::link($url,
+            "Retour au plugin",
+            array(
+                'class' => 'row btn btn-primary',
+                'style' => 'margin-left: 5px; margin-top: 20px;'
+            )
+        );
         return $html;
     }
 
