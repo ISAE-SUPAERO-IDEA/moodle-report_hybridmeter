@@ -31,7 +31,7 @@ class renderer extends plugin_renderer_base {
         $html .= html_writer::link($url,
             get_string('blacklistmanagement', 'report_hybridmeter'),
             array(
-                'class' => 'row mt-2 m-1 mb-1 btn btn-secondary',
+                'class' => 'row m-1 mb-1 btn btn-secondary',
                 'style' => 'margin-bottom : 10px; margin-top : 10px'
             ));
         $html .= html_writer::end_div();
