@@ -7,6 +7,7 @@ require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
 require_once(__DIR__.'/data.php');
 require_once(__DIR__.'/formatter.php');
+require_once(__DIR__.'/configurator.php');
 
 
 // TODO: Transformer en classe (P2)
@@ -33,7 +34,7 @@ class traitement{
 		$this->date = new \DateTime();
 		$this->date->setTimestamp($timestamp);
 
-		$this->configurator = new \report_hybridmeter\classes\configurator();
+		$this->configurator = new \report_hybridmeter\classes\configurator($this->data);
 	}
 
 	function launch() {
@@ -48,7 +49,8 @@ class traitement{
 	    	"hybridation_statique",
 	    	'niveau_de_digitalisation',
 	    	array(
-	    		"nb_cours" => $this->formatter->get_length_array()
+	    		"nb_cours" => $this->formatter->get_length_array(),
+	    		"configurator" => $this->configurator
 	    	)
 	    );
 
@@ -57,8 +59,7 @@ class traitement{
 			'niveau_d_utilisation',
 			array(
 				"nb_cours" => $this->formatter->get_length_array(),
-				"begin_date" => $this->configurator->get_begin_timestamp(),
-				"end_date" => $this->configurator->get_end_timestamp()
+				"configurator" => $this->configurator
 			)
 		);
 
@@ -66,8 +67,7 @@ class traitement{
 			"is_course_active_last_month",
 			'cours_actif',
 			array (
-				"begin_date" => $this->configurator->get_begin_timestamp(),
-				"end_date" => $this->configurator->get_end_timestamp()
+				"configurator" => $this->configurator
 			)
 		);
 

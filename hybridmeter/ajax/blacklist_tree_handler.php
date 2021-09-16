@@ -1,5 +1,6 @@
 <?php 
 	require_once("../../../config.php");
+	require_once("../classes/data.php");
     require_once("../classes/configurator.php");
 
 	require_login();
@@ -7,7 +8,8 @@
 	$PAGE->set_context($context);
 	has_capability('report/hybridmeter:all', $context) || die();
 
-	$configurator = new \report_hybridmeter\classes\configurator();
+	$data = new \report_hybridmeter\classes\data();
+	$configurator = new \report_hybridmeter\classes\configurator($data);
 	
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
 		$task  = required_param('task', PARAM_ALPHAEXT);
@@ -30,7 +32,8 @@
 		
 		$output = [ 
 		  "categories" => $categories,
-		  "courses" => $courses ];
+		  "courses" => $courses
+		];
 	}
 	// manage blacklist of a category or course
 	else if ($task == "manage_blacklist") {

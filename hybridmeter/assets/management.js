@@ -30,37 +30,45 @@ Vue.component('category', {
     }
   },
   async created() {
-    // TODO: Utiliser encodeURI() 
-    this.config = await this.get(`configuration_handler.php`);
-    var data = new FormData();
-    data.append('task', 'category_children');
-    data.append('id', this.id);
-    this.tree = await this.post('blacklist_tree_handler.php',data).then(data => {
-    //this.tree = await this.get(`blacklist_tree_handler.php?task=category_children&id=${this.id}`).then(data => {
-      // TODO: fonction générique
-      for (var i in data.categories) {
-        data.categories[i].expanded = false;
-        if (this.config.blacklisted_categories) {
-          if (Object.keys(this.config.blacklisted_categories).includes(data.categories[i].id)) {
-            data.categories[i].blacklisted = true;
-          }
-        }
-      }
-      if (this.config.blacklisted_courses) {
-        for (var i in data.courses) {
-          if (Object.keys(this.config.blacklisted_courses).includes(data.courses[i].id)) {
-            data.courses[i].blacklisted = true;
-          }
-        }
-      }
-      
-      return data;
-
-    });
-
-    console.log(this.tree);
+    this.load();
+  },
+  watch: {
+    global_blacklist: function(){
+      this.load();
+    }
   },
   methods: {
+    load: async function(){
+      // TODO: Utiliser encodeURI() 
+      this.config = await this.get(`configuration_handler.php`);
+      var data = new FormData();
+      data.append('task', 'category_children');
+      data.append('id', this.id);
+      this.tree = await this.post('blacklist_tree_handler.php',data).then(data => {
+        //this.tree = await this.get(`blacklist_tree_handler.php?task=category_children&id=${this.id}`).then(data => {
+        // TODO: fonction générique
+        for (var i in data.categories) {
+          data.categories[i].expanded = false;
+          if (this.config.blacklisted_categories) {
+            if (Object.keys(this.config.blacklisted_categories).includes(data.categories[i].id)) {
+              data.categories[i].blacklisted = true;
+            }
+          }
+        }
+        if (this.config.blacklisted_courses) {
+          for (var i in data.courses) {
+            if (Object.keys(this.config.blacklisted_courses).includes(data.courses[i].id)) {
+              data.courses[i].blacklisted = true;
+            }
+          }
+        }
+
+        return data;
+
+      });
+
+      console.log(this.tree);
+    },
     get: function (urlRequest){
       const myaxios = axios.create({ baseURL: `${url_root}/report/hybridmeter/ajax/` });
       return myaxios.get(urlRequest).then(response => response.data)

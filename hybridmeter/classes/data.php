@@ -16,6 +16,22 @@ class data {
     public function __construct(){
     }
 
+    public function get_subcategories_id(int $id){
+        global $DB;
+
+        return array_values(
+            array_map(
+                function($category){
+                    return $category->id;
+                },
+                $DB->get_records(
+                    "course_categories",
+                    array("parent"=>$id)
+                )
+            )
+        );
+    }
+
     //compte le nombre d'activités par type en fonction du cours
     public function count_modules_types_id(int $id){
         global $DB;
@@ -179,9 +195,10 @@ class data {
     //récupère les cours actifs visibles sans la blacklist
     public function get_whitelisted_courses(){
         global $DB;
-        $config = new configurator();
+        $config = new configurator($this);
         $data = $config->get_data();
         $blacklisted_courses = array_keys($data["blacklisted_courses"]);
+        array_push($blacklisted_courses, 1);
         $blacklisted_categories = array_keys($data["blacklisted_categories"]);
         $query = "select * from ".$DB->get_prefix()."course where true";
         if (count($blacklisted_courses)>0) {

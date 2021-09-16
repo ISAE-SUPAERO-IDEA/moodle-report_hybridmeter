@@ -6,13 +6,13 @@ defined('MOODLE_INTERNAL') || die();
 
 //Fonction lambda utilisée pour calculer les indicateurs statiques
 function hybridation_statique($object,$data,$parameters){
-	$configurator = \report_hybridmeter\classes\configurator::getInstance();
+	$configurator = $parameters["configurator"];
 	$count=$data->count_modules_types_id($object['id']);
 	$total=0;
 	$indicator=0;
 	foreach ($count as $key => $value){
 		$total+=$value;
-		$indicator += \report_hybridmeter\classes\configurator::getInstance()->get_static_coeff($key)*$value;
+		$indicator += $configurator->get_static_coeff($key)*$value;
 	}
 	if($total === 0){
 		$total=1;
@@ -23,8 +23,12 @@ function hybridation_statique($object,$data,$parameters){
 
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object,$data,$parameters){
-	$configurator = \report_hybridmeter\classes\configurator::getInstance();
-	$active=$data->count_single_users_course_viewed($object['id'], $parameters['begin_date'], $parameters['end_date']);
+	$configurator = $parameters["configurator"];
+	$active=$data->count_single_users_course_viewed(
+		$object['id'],
+		$configurator->get_begin_timestamp(),
+		$configurator->get_end_timestamp()
+	);
 	$indicator=0;
 	$total=0;
 	if($active==0) return 0;
@@ -41,7 +45,14 @@ function hybridation_dynamique($object,$data,$parameters){
 
 //Fonction lambda utilisée pour définir si le cours est actif
 function is_course_active_last_month($object, $data, $parameters){
-	$count=$data->count_single_users_course_viewed($object['id'], $parameters['begin_date'], $parameters['end_date']);
+	$configurator=$parameters["configurator"];
+
+	$count=$data->count_single_users_course_viewed(
+		$object['id'], 
+		$configurator->get_begin_timestamp(),
+		$configurator->get_end_timestamp()
+	);
+
 	if ($count >= SEUIL_ACTIF)
 		return 1;
 	else

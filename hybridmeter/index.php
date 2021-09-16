@@ -65,7 +65,7 @@ $output = $PAGE->get_renderer('report_hybridmeter');
 echo $output->header();
 echo $output->heading($pagetitle);
 echo $output->general_indicators($data_available, $generaldata);
-echo $output->index_links();
+echo $output->index_links($data_available);
 //echo $output->is_task_planned($date_format, $data->count_adhoc_tasks(), $data->is_task_running());
 //echo $output->last_calculation($data_available, $date_format);
 

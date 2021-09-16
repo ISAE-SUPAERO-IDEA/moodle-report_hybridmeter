@@ -2,6 +2,7 @@
 
 namespace report_hybridmeter\classes;
 require_once(__DIR__."/../constants.php");
+require_once(dirname(__FILE__).'/data.php');
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -12,14 +13,18 @@ class configurator {
 
 	protected $data;
 
+	protected $data_provider;
+
 	protected $begin_date;
 
 	protected $end_date;
 
 	protected static $instance = null;
 
-	public function __construct(){
+	public function __construct($data_provider){
 		global $CFG;
+
+		$this->data_provider=$data_provider;
 
 		$this->path=$CFG->dataroot."/hybridmeter/config.json";
 		// Initialize empty data if no configuration file exists 
@@ -49,7 +54,7 @@ class configurator {
 	// Get the singleton configuration instance
 	public static function getInstance() {
 		if (self::$instance == null) {
-			self::$instance = new configurator();
+			self::$instance = new configurator(new \report_hybridmeter\classes\data());
 		}
         return self::$instance;
     }
@@ -119,8 +124,16 @@ class configurator {
 		else {
 			unset($array[$id]);
 		}
-		$this->save();
 
+		if($type=="categories"){
+			$id_categories=$this->data_provider->get_subcategories_id($id);
+
+			foreach($id_categories as $id_cat){
+				$this->set_blacklisted($type, $id_cat, $value);
+			}
+		}
+
+		$this->save();
 	}
 
 	public function set_as_running($timestamp) {

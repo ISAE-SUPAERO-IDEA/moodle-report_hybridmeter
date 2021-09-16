@@ -11,16 +11,17 @@ use html_writer;
 use moodle_url;
 
 class renderer extends plugin_renderer_base {
-    public function index_links() {
+    public function index_links($data_available) {
 
         $html ="";
 
-       $html .= html_writer::start_div('container-fluid');
+        $html .= html_writer::start_div('container-fluid');
+        $disabled = ($data_available) ? "" : "disabled";
         $url = new moodle_url('/report/hybridmeter/index.php', array("task" => "download"));
         $html .= html_writer::link(
             $url,
             get_string('download_csv', 'report_hybridmeter'),
-            array('class' => 'row m-1 btn btn-primary')
+            array('class' => 'row m-1 btn btn-primary '.$disabled)
         );
         $html .= html_writer::end_div();
 
