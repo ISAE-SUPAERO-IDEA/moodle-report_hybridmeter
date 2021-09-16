@@ -175,6 +175,50 @@ class configurator {
 		return $this->data;
 	}
 
+	public function get_coeffs_grid($key) {
+		$columns = array("Nom du module", "Coefficient");
+		if(!isset($this->data[$key])){
+			return json_encode(
+				array(
+					"columns" => $columns,
+					"rows" => array()
+				)
+			);
+		}
+
+		$rows = array();
+		$i=0;
+		foreach ($this->data[$key] as $key => $value){
+			$rows[$i][$columns[0]]=$key;
+			$rows[$i][$columns[1]]=$value;
+			$i++;
+		}
+
+		return array(
+			"columns" => $columns,
+			"rows" => $rows
+		);
+	}
+
+	public function get_seuils_grid(){
+		$columns = array("Nom du seuil", "Valeur du seuil");
+		$rows = array(
+			array(
+				$columns[0] => "Seuil d'hybridation selon le niveau de digitalisation",
+				$columns[1] => $this->data["seuil_statique"]
+			),
+			array(
+				$columns[0] => "Seuil d'hybridation selon le niveau d'utilisation",
+				$columns[1] => $this->data["seuil_dynamique"]
+			)
+		);
+
+		return array(
+			"columns" => $columns,
+			"rows" => $rows
+		);
+	}
+
 	// Saves the data in the configuration file
 	protected function save(){
 		$fichier = fopen($this->path, 'w');
