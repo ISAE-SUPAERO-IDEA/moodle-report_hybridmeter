@@ -2,6 +2,7 @@
 
 namespace report_hybridmeter\classes;
 
+require_once(dirname(__FILE__).'/../../../config.php');
 require_once(__DIR__.'/exporter.php');
 require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
@@ -29,7 +30,7 @@ class traitement{
 		
 		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, array(), function($data, $blacklist){return $data->get_whitelisted_courses();});
 
-		$this->exporter=new \report_hybridmeter\classes\exporter(array('id', 'fullname', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits'));
+		$this->exporter=new \report_hybridmeter\classes\exporter(array('id', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
 
 		$this->date = new \DateTime();
 		$this->date->setTimestamp($timestamp);
@@ -44,6 +45,14 @@ class traitement{
 		$this->configurator->set_as_running($timestamp);
 
 		//Calcul des indicateurs détaillés
+
+		$this->formatter->calculate_new_indicator(
+			function($object, $data, $parameters){
+				return $parameters["www_root"]."/course/view.php?id=".$object['id'];
+			},
+			"url",
+			array("www_root" => $CFG->wwwroot)
+		);
 
 	    $this->formatter->calculate_new_indicator(
 	    	"hybridation_statique",
@@ -91,6 +100,35 @@ class traitement{
 				return $data->count_registered_users($object['id']);
 			},
 			'nb_inscrits'
+		);
+
+		$date_debut = new \DateTime();
+		$date_debut->setTimestamp($this->configurator->get_begin_timestamp());
+		$date_debut = $date_debut->format('Y-m-d H:i:s');
+
+
+		$this->formatter->calculate_new_indicator(
+			function ($object, $data, $parameters) {
+				return $parameters['date_debut'];
+			},
+			'date_debut_capture',
+			array(
+				"date_debut" => $date_debut
+			)
+		);
+
+		$date_fin = new \DateTime();
+		$date_fin->setTimestamp($this->configurator->get_end_timestamp());
+		$date_fin = $date_fin->format('Y-m-d H:i:s');
+
+		$this->formatter->calculate_new_indicator(
+			function ($object, $data, $parameters) {
+				return $parameters['date_fin'];
+			},
+			'date_fin_capture',
+			array(
+				"date_fin" => $date_fin
+			)
 		);
 
 		$data_out = $this->formatter->get_array();

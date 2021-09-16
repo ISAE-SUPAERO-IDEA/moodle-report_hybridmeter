@@ -17,7 +17,7 @@ function hybridation_statique($object,$data,$parameters){
 	if($total === 0){
 		$total=1;
 	}
-	return ($indicator/$total);
+	return round(($indicator/$total),2);
 }
 
 
@@ -40,7 +40,7 @@ function hybridation_dynamique($object,$data,$parameters){
 	if($total === 0){
 		$total=1;
 	}
-	return ($indicator/$total);
+	return round(($indicator/$total),2);
 }
 
 //Fonction lambda utilisée pour définir si le cours est actif
