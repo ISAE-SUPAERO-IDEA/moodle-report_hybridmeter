@@ -110,30 +110,41 @@ class renderer extends plugin_renderer_base {
     }
 
     public function general_indicators($data_available, $generaldata){
-        html_writer::tag('h3', 'blabla');
-        $html = html_writer::start_tag('ul');
+        global $OUTPUT;
 
         $nb_cours_hybrides_statiques = ($data_available && isset($generaldata['nb_cours_hybrides_statiques'])) ? $generaldata['nb_cours_hybrides_statiques'] : NA;
-        $html .= html_writer::tag('li', get_string('nb_cours_hybrides_statiques', 'report_hybridmeter').$nb_cours_hybrides_statiques);
 
         $nb_cours_hybrides_dynamiques = ($data_available && isset($generaldata['nb_cours_hybrides_dynamiques'])) ? $generaldata['nb_cours_hybrides_dynamiques'] : NA;
-        $html .= html_writer::tag('li', get_string('nb_cours_hybrides_dynamiques', 'report_hybridmeter').$nb_cours_hybrides_dynamiques);
 
         $nb_etudiants_concernes_statiques = ($data_available && isset($generaldata['nb_etudiants_concernes_statiques'])) ? $generaldata['nb_etudiants_concernes_statiques'] : NA;
-        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_statiques', 'report_hybridmeter').$nb_etudiants_concernes_statiques);
 
         $nb_etudiants_concernes_statiques_actifs = ($data_available && isset($generaldata['nb_etudiants_concernes_statiques_actifs'])) ? $generaldata['nb_etudiants_concernes_statiques_actifs'] : NA;
-        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_statiques_actifs', 'report_hybridmeter').$nb_etudiants_concernes_statiques_actifs);
 
         $nb_etudiants_concernes_dynamiques = ($data_available && isset($generaldata['nb_etudiants_concernes_dynamiques'])) ? $generaldata['nb_etudiants_concernes_dynamiques'] : NA;
-        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_dynamiques', 'report_hybridmeter').$nb_etudiants_concernes_dynamiques);
 
         $nb_etudiants_concernes_dynamiques_actifs = ($data_available && isset($generaldata['nb_etudiants_concernes_dynamiques_actifs'])) ? $generaldata['nb_etudiants_concernes_dynamiques_actifs'] : NA;
-        $html .= html_writer::tag('li', get_string('nb_etudiants_concernes_dynamiques_actifs', 'report_hybridmeter').$nb_etudiants_concernes_dynamiques_actifs);
 
-        $html .= html_writer::end_tag('ul');
+        $params=array(
+            "title" => "Résultats du dernier traitement",
+            "namecolumnname" => "Nom de l'indicateur",
+            "valuecolumnname" => "Nombre",
+            "namecoursstatique" => get_string('nb_cours_hybrides_statiques', 'report_hybridmeter'),
+            "valuecoursstatique" => $nb_cours_hybrides_statiques,
+            "namecoursdynamique" => get_string('nb_cours_hybrides_dynamiques', 'report_hybridmeter'),
+            "valuecoursdynamique" => $nb_cours_hybrides_dynamiques,
+            "nameetudiantsinscritsstatiques" => get_string('nb_etudiants_concernes_statiques', 'report_hybridmeter'),
+            "valueetudiantsinscritsstatiques" => $nb_etudiants_concernes_statiques,
+            "nameetudiantsactifsstatiques" => get_string('nb_etudiants_concernes_statiques_actifs', 'report_hybridmeter'),
+            "valueetudiantsactifsstatiques" => $nb_etudiants_concernes_statiques_actifs,
+            "nameetudiantsinscritsdynamiques" => get_string('nb_etudiants_concernes_dynamiques', 'report_hybridmeter'),
+            "valueetudiantsinscritsdynamiques" => $nb_etudiants_concernes_dynamiques,
+            "nameetudiantsactifsdynamiques" => get_string('nb_etudiants_concernes_dynamiques_actifs', 'report_hybridmeter'),
+            "valueetudiantsactifsdynamiques" => $nb_etudiants_concernes_dynamiques_actifs
+        );
+
+        $html = $OUTPUT->render_from_template("report_hybridmeter/tableau_indicateurs", $params);
+
         $html .= html_writer::tag("hr","");
-
 
         return $html;
     }
