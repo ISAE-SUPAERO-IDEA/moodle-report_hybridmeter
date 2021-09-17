@@ -29,6 +29,8 @@
 		if($id != 0){
 			$courses = $DB->get_records('course', array("category" =>$id));
 		}
+
+		$courses = array();
 		
 		$output = [ 
 		  "categories" => $categories,
