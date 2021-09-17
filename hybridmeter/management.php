@@ -15,6 +15,8 @@ has_capability('report/hybridmeter:all', $context) || die();
 admin_externalpage_setup('report_hybridmeter');
 
 $PAGE->requires->css('/report/hybridmeter/output/management.css');
+$url = new \moodle_url("$CFG->wwwroot/report/hybridmeter/management.php");
+$PAGE->set_url($url);
 
 $categoryid = optional_param('categoryid', null, PARAM_INT);
 $selectedcategoryid = optional_param('selectedcategoryid', null, PARAM_INT);

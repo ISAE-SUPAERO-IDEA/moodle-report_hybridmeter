@@ -10,7 +10,7 @@ class traitement extends \core\task\adhoc_task {
     }
     
     public function execute() {
-    	$traitement = new report_hybridmeter\classes\traitement();
+    	$traitement = new \report_hybridmeter\classes\traitement();
         $traitement->launch();
     }
 }

@@ -30,7 +30,11 @@ if(file_exists($path_serialized_data)){
 	$data_unserialized = unserialize(file_get_contents($path_serialized_data));
 	$generaldata = $data_unserialized['generaldata'];
 	$date_record = new \DateTime();
-	$date_record->setTimestamp($data_unserialized['timestamp']);
+	$date_record->setTimestamp($data_unserialized['time']['timestamp_debut']);
+	
+	$temps_traitement = new \DateInterval("PT".$data_unserialized['time']['diff']."S");
+
+	$intervalle_format = $temps_traitement->format("%d jours %h heures %m minutes %s secondes");
 	$date_format = $date_record->format('Y-m-d H:i:s');
 }
 else{
@@ -40,17 +44,22 @@ else{
 }
 
 if ($task=='download'){
-	$exporter= new \report_hybridmeter\classes\exporter(array('id', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
+	$exporter= new \report_hybridmeter\classes\exporter(array('id_moodle', 'idnumber', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
 	$exporter->set_data($data_unserialized['data']);
 	$exporter->create_csv($SITE->fullname."-".$date_format);
 	$exporter->download_file();
 }
 
 $data = new \report_hybridmeter\classes\data();
+$configurator = new \report_hybridmeter\classes\configurator($data);
 
 if ($task=='calculate'){
+	$data->clear_adhoc_tasks();
 	$traitement = new \report_hybridmeter\task\traitement();
 	\core\task\manager::queue_adhoc_task($traitement);
+}
+else if ($task == "cleartasks"){
+	$data->clear_adhoc_tasks();
 }
 
 $title = get_string('pluginname', 'report_hybridmeter');
@@ -62,11 +71,18 @@ $PAGE->set_heading($title);
 
 $output = $PAGE->get_renderer('report_hybridmeter');
 
+$debug = optional_param('debug', 0, PARAM_INTEGER);
+
 echo $output->header();
 echo $output->heading($pagetitle);
 echo $output->general_indicators($data_available, $generaldata);
 echo $output->index_links($data_available);
-//echo $output->is_task_planned($date_format, $data->count_adhoc_tasks(), $data->is_task_running());
-//echo $output->last_calculation($data_available, $date_format);
+
+if($debug != 0){
+	$count_adhoc = $data->count_adhoc_tasks();
+	$is_running=$configurator->get_running();
+	echo $output->is_task_planned($count_adhoc, $is_running);
+	echo $output->last_calculation($data_available, $date_format, $intervalle_format);
+}
 
 echo $output->footer();

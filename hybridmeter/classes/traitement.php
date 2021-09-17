@@ -20,7 +20,8 @@ class traitement{
 	protected $formatter;
 	protected $exporter;
 	protected $configurator;
-	protected $date;
+	protected $date_debut;
+	protected $date_fin;
 
 	function __construct(){
 		$this->data=new \report_hybridmeter\classes\data();
@@ -30,10 +31,12 @@ class traitement{
 		
 		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, array(), function($data, $blacklist){return $data->get_whitelisted_courses();});
 
-		$this->exporter=new \report_hybridmeter\classes\exporter(array('id', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
+		$this->exporter=new \report_hybridmeter\classes\exporter(array('id_moodle', 'idnumber', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
 
-		$this->date = new \DateTime();
-		$this->date->setTimestamp($timestamp);
+		$this->date_debut = new \DateTime();
+		$this->date_debut->setTimestamp($timestamp);
+
+		$this->date_fin = new \DateTime();
 
 		$this->configurator = new \report_hybridmeter\classes\configurator($this->data);
 	}
@@ -42,9 +45,17 @@ class traitement{
 		global $CFG;
 		global $SITE;
 
-		$this->configurator->set_as_running($timestamp);
+		$this->configurator->set_as_running($this->date_debut->getTimestamp());
 
 		//Calcul des indicateurs détaillés
+
+		$this->formatter->calculate_new_indicator(
+			function($object, $data, $parameters){
+				return $object['id'];
+			},
+			"id_moodle"
+		);
+
 
 		$this->formatter->calculate_new_indicator(
 			function($object, $data, $parameters){
@@ -140,7 +151,7 @@ class traitement{
 		$generaldata['cours_hybrides_statiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["statique"] >= SEUIL_STATIQUE;
+					return $cours["niveau_de_digitalisation"] >= SEUIL_STATIQUE;
 				}
 			)
 		);
@@ -148,7 +159,7 @@ class traitement{
 		$generaldata['cours_hybrides_dynamiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["dynamique"] >= SEUIL_DYNAMIQUE;
+					return $cours["niveau_d_utilisation"] >= SEUIL_DYNAMIQUE;
 				}
 			)
 		);
@@ -189,22 +200,39 @@ class traitement{
 			$this->configurator->get_end_timestamp()
 		);
 
+		$generaldata["timestamp_debut_capture"] = $this->configurator->get_begin_timestamp();
+		$generaldata["timestamp_fin_capture"] = $this->configurator->get_end_timestamp();
+
 		//Export des données
 		
 		$this->exporter->set_data($data_out);
 		$this->exporter->create_csv($SITE->fullname);
 
+
+		$this->date_fin->setTimestamp(strtotime('NOW'));
+
+		$interval = $this->date_debut->getTimestamp()-$this->date_fin->getTimestamp();
+
+		$time = array(
+			"timestamp_debut" => $this->date_debut->getTimestamp(),
+			"timestamp_fin" => $this->date_fin->getTimestamp(),
+			"diff" => $interval
+		);
 		
+		error_log($this->date_debut->getTimestamp());
+		error_log($this->date_fin->getTimestamp());
+		error_log($interval);
+
 		$file_exporter = fopen($CFG->dataroot."/hybridmeter/records/serialized_data","w");
 		$s = serialize(array(
-			"timestamp" => strtotime('NOW'),
+			"time" => $time,
 			"data" => $data_out,
 			"generaldata" => $generaldata
 		));
 		fwrite($file_exporter, $s);
 		//error_log(dirname(__FILE__)."/../records/serialized_data");
 
-		$date_format = $this->date->format('Y-m-d H:i:s');
+		$date_format = $this->date_debut->format('Y-m-d H:i:s');
 
 		$filename = $CFG->dataroot."/hybridmeter/records/backup/record_".$date_format.".csv";
 

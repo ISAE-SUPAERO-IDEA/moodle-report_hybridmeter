@@ -44,6 +44,7 @@ class configurator {
 		$this->set_default_value("blacklisted_categories", []);
 		$this->set_default_value("seuil_dynamique", SEUIL_DYNAMIQUE);
 		$this->set_default_value("seuil_statique", SEUIL_STATIQUE);
+		$this->set_default_value("seuil_actif", SEUIL_ACTIF);
 		$this->set_default_value("running", NON_RUNNING);
 
 		$this->update_coeffs("dynamic_coeffs", COEFF_DYNAMIQUES);
@@ -210,6 +211,10 @@ class configurator {
 			array(
 				$columns[0] => "Seuil d'hybridation selon le niveau d'utilisation",
 				$columns[1] => $this->data["seuil_dynamique"]
+			),
+			array(
+				$columns[0] => "Nombre d'étudiants actifs minimum pour catégoriser un cours comme actif",
+				$columns[1] => $this->data["seuil_actif"]
 			)
 		);
 

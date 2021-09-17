@@ -8,13 +8,15 @@
     <div>
       <hr/>
       <h3 class="main">{{labelblacklist}}</h3>
-      <category :id="0" :expanded="true"></category>
+      <div id="categories" class="management-module">
+        <category :id="0" :expanded="true" :root="true"></category>
+      </div>
       <hr/>
       <h3 class="main">{{labelwhitelist}}</h3>
       <configurator :boxok="'{{boxok}}'"></configurator>
       <hr/>
       <h3 class="main">Valeur des coefficients</h3>
-      <div id="coeffs">
+      <div id="coeffs" class="management-module">
         <div class="coeff-cat">
           <h4 class="main">Coefficients de digitalisation</h4>
           <test-grid :task="'get_static_coeffs'" :url="'configuration_handler.php'"></test-grid>
@@ -26,7 +28,7 @@
       </div>
       <hr/>
       <h3 class="main">Valeur des seuils</h3>
-      <div id="seuils">
+      <div id="seuils" class="management-module">
         <test-grid :task="'get_seuils'" :url="'configuration_handler.php'"></test-grid>
       </div>
     </div>
@@ -48,12 +50,7 @@
   display: flex;
   margin-left:auto;
   margin-right:auto;
-  margin-top: 20px;
   text-align : center;
-}
-
-#seuils{
-  margin-top: 20px;
 }
 
 .coeff-cat {
@@ -121,6 +118,49 @@ th.active .arrow {
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
   border-top: 4px solid #fff;
+}
+
+@-webkit-keyframes v-pulseStretchDelay
+{
+    0%,
+    80%
+    {
+        -webkit-transform: scale(1);
+                transform: scale(1);
+        -webkit-opacity: 1;             
+                opacity: 1;
+    }
+    45%
+    {
+        -webkit-transform: scale(0.1);
+                transform: scale(0.1);
+        -webkit-opacity: 0.7;             
+                opacity: 0.7;
+    }
+}
+
+@keyframes v-pulseStretchDelay
+{
+    0%,
+    80%
+    {
+        -webkit-transform: scale(1);
+                transform: scale(1);
+        -webkit-opacity: 1;             
+                opacity: 1;
+    }
+    45%
+    {
+        -webkit-transform: scale(0.1);
+                transform: scale(0.1);
+        -webkit-opacity: 0.7;             
+                opacity: 0.7;
+    }
+}
+
+.management-module {
+  margin-top: 17px;
+  padding-bottom: 5px;
 }
 
 </style>

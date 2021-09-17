@@ -48,8 +48,25 @@ class renderer extends plugin_renderer_base {
     }
 
     public function is_task_planned(int $count_pending, int $is_running){
-        $html = html_writer::start_div('container-fluid');
-        if($is_running==1){
+        $html = html_writer::tag("hr","");
+        $html .= html_writer::start_div('container-fluid');
+
+        $url = new moodle_url('/report/hybridmeter/index.php',
+            array(
+                "task" => "cleartasks",
+                "debug" => 1
+            )
+        );
+
+        $html .= html_writer::link($url,
+            "Clear tasks",
+            array(
+                'class' => 'row m-1 btn btn-secondary',
+                "style" => 'margin-right : 10px;'
+            )
+        );
+
+        if($is_running != NON_RUNNING){
             $html .= html_writer::span(get_string('task_running', 'report_hybridmeter'), array('class' => 'row m-1 btn btn-secondary'));
         }
         else if($count_pending > 0){
@@ -63,10 +80,14 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
-    public function last_calculation($data_available, $date){
+    public function last_calculation($data_available, $date, $interval){
         $html = html_writer::start_div('container-fluid');
 
-        $url = new moodle_url('/report/hybridmeter/index.php', array("task" => "calculate"));
+        $url = new moodle_url('/report/hybridmeter/index.php',
+            array(
+                "task" => "calculate",
+                "debug" => 1
+            ));
 
         $html .= html_writer::link($url,
             get_string('recalculate', 'report_hybridmeter'),
@@ -77,7 +98,7 @@ class renderer extends plugin_renderer_base {
         );
 
         $date = ($data_available && isset($date)) ? $date : NA;
-        $content = sprintf(get_string('last_updated', 'report_hybridmeter'), $date);
+        $content = sprintf(get_string('last_updated', 'report_hybridmeter'), $date, $interval);
 
         $html .= html_writer::span($content);
 

@@ -1,36 +1,116 @@
 // Retrieve strings or file roots (TODO: improve P2)
 var url_root = document.getElementById('www_root').value;
 
+//Loading bar, author : github @greyby project : Vue Spinner
+Vue.component('PulseLoader',{
+  template: `<div class="v-spinner" v-show="loading">
+      <div class="v-pulse v-pulse1" v-bind:style="[spinnerStyle,spinnerDelay1]">
+      </div><div class="v-pulse v-pulse2" v-bind:style="[spinnerStyle,spinnerDelay2]">
+      </div><div class="v-pulse v-pulse3" v-bind:style="[spinnerStyle,spinnerDelay3]">
+      </div>
+    </div>`,
+  props: {
+    loading: {
+      type: Boolean,
+      default: true
+    },
+    color: { 
+      type: String,
+      default: '#5dc596'
+    },
+    size: {
+      type: String,
+      default: '15px'
+    },
+    margin: {
+      type: String,
+      default: '2px'
+    },
+    radius: {
+      type: String,
+      default: '100%'
+    }
+  },
+  data() {
+    return {
+      spinnerStyle: {
+        backgroundColor: this.color,
+        width: this.size,
+        height: this.size,
+        margin: this.margin,
+        borderRadius: this.radius,
+        display: 'inline-block',
+        animationName: 'v-pulseStretchDelay',
+        animationDuration: '0.75s',
+        animationIterationCount: 'infinite',
+        animationTimingFunction: 'cubic-bezier(.2,.68,.18,1.08)',
+        animationFillMode: 'both'
+      },
+      spinnerDelay1: {
+        animationDelay: '0.12s'
+      },
+      spinnerDelay2: {
+        animationDelay: '0.24s'
+      },
+      spinnerDelay3: {
+        animationDelay: '0.36s'
+      }
+    }
+  }
+});
+
 // Blacklist tree
 Vue.component('category', {
-  props: ['id', 'global_blacklist', 'expanded'],
   template: ` 
     <div>
-      <div v-if="expanded">
-        <div v-for="category in tree.categories" :key="category.id" class="category_item">
-          <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
-          <i class="icon fa fa-fw " :class="category_caret(category)" @click="category.expanded = !category.expanded"></i>
-          <span style="font-weight: bold">{{category.name}}</span>
-          <category :id="category.id"  :global_blacklist="category.blacklisted" :expanded="category.expanded"></category>
-        </div>
-        <div v-for="course in tree.courses" :key="course.id" class="category_item" >
-          <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
-          {{course.fullname}}
+      <div v-if="loading && root">
+        <PulseLoader :color="'#00acdf'"></PulseLoader>
+      </div>
+      <div v-else>
+        <div v-if="expanded">
+          <div v-for="category in tree.categories" :key="category.id" class="category_item">
+            <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
+            <i class="icon fa fa-fw " :class="category_caret(category)" @click="category.expanded = !category.expanded"></i>
+            <span style="font-weight: bold">{{category.name}}</span>
+            <category :id="category.id"  :global_blacklist="category.blacklisted" :expanded="category.expanded"></category>
+          </div>
+          <div v-for="course in tree.courses" :key="course.id" class="category_item" >
+            <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+            {{course.fullname}}
+          </div>
         </div>
       </div>
     </div>
     `,
+  props: {
+    id: {
+      type: Number
+    },
+    global_blacklist : {
+      type: Boolean,
+      default : false
+    },
+    expanded : {
+      type : Boolean
+    },
+    root : {
+      type : Boolean,
+      default : false
+    }
+  },
   data() {
     return {
       tree: {
         categories:[],
         courses:[]
       },
-      config: {}
+      config: {},
+      loading : true
     }
   },
   async created() {
     this.load();
+    this.loading = false;
   },
   watch: {
     global_blacklist: function(){
@@ -136,34 +216,37 @@ Vue.component('configurator', {
       <div v-if="ok" v-html="boxok">
         
       </div>
-      <div class="form-item row">
-        <div class="form-label col-sm-3 text-sm-right">
-          <label>
-            Date de début
-          </label>
-        </div>
-        <div class="form-setting col-sm-9">
-          <div class="form-text defaultsnext">
-            <input type="date"  v-model="begin_date">
+      <h3 class="main">Valeur des coefficients</h3>
+      <div id="plage" class="management-module">
+        <div class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right">
+            <label>
+              Date de début
+            </label>
+          </div>
+          <div class="form-setting col-sm-9">
+            <div class="form-text defaultsnext">
+              <input type="date"  v-model="begin_date">
+            </div>
           </div>
         </div>
-      </div>
-      <div class="form-item row">
-        <div class="form-label col-sm-3 text-sm-right">
-          <label>
-            Date de fin
-          </label>
-        </div>
-        <div class="form-setting col-sm-9">
-          <div class="form-text defaultsnext">
-            <input type="date"  v-model="end_date">
+        <div class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right">
+            <label>
+              Date de fin
+            </label>
+          </div>
+          <div class="form-setting col-sm-9">
+            <div class="form-text defaultsnext">
+              <input type="date"  v-model="end_date">
+            </div>
           </div>
         </div>
-      </div>
-      <div class="form-item row">
-        <div class="form-label col-sm-3 text-sm-right"></div>
-        <div class="form-setting col-sm-9">
-          <button type="submit" class="btn btn-primary" @click="save">Enregistrer les modifications</button>
+        <div class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right"></div>
+          <div class="form-setting col-sm-9">
+            <button type="submit" class="btn btn-primary" @click="save">Enregistrer les modifications</button>
+          </div>
         </div>
       </div>
       <!--<hr/>
