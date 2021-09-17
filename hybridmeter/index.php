@@ -31,10 +31,20 @@ if(file_exists($path_serialized_data)){
 	$generaldata = $data_unserialized['generaldata'];
 	$date_record = new \DateTime();
 	$date_record->setTimestamp($data_unserialized['time']['timestamp_debut']);
-	
-	$temps_traitement = new \DateInterval("PT".$data_unserialized['time']['diff']."S");
 
-	$intervalle_format = $temps_traitement->format("%d jours %h heures %m minutes %s secondes");
+	function modulo_fixed($x,$n){
+		$r = $x % $n;
+		if ($r < 0)
+		{
+		    $r += abs($n);
+		}
+		return $r;
+	}
+
+	$t=$data_unserialized['time']['diff'];
+
+    $intervalle_format = sprintf('%d jours %02d heures %02d minutes %02d secondes', ($t/86400), modulo_fixed(($t/3600),24), modulo_fixed(($t/60),60), modulo_fixed($t,60));
+
 	$date_format = $date_record->format('Y-m-d H:i:s');
 }
 else{

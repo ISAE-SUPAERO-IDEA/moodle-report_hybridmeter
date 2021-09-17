@@ -211,7 +211,7 @@ class traitement{
 
 		$this->date_fin->setTimestamp(strtotime('NOW'));
 
-		$interval = $this->date_debut->getTimestamp()-$this->date_fin->getTimestamp();
+		$interval = $this->date_fin->getTimestamp()-$this->date_debut->getTimestamp();
 
 		$time = array(
 			"timestamp_debut" => $this->date_debut->getTimestamp(),
