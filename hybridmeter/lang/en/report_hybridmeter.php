@@ -24,4 +24,7 @@ $string['nb_etudiants_concernes_statiques'] = "Étudiants actuellement inscrits 
 $string['nb_etudiants_concernes_statiques_actifs'] = "Etudiants actifs sur la periode de capture dans au moins un cours hybride selon son niveau de digitalisation";
 $string['nb_etudiants_concernes_dynamiques'] = "Étudiants actuellement inscrits dans au moins un cours hybride selon son niveau d'utilisation";
 $string['nb_etudiants_concernes_dynamiques_actifs'] = "Etudiants actifs sur la periode de capture dans au moins un cours hybride selon son niveau d'utilisation";
+$string['periode_mesure'] = "Période de mesure : du %s au %s.";
+$string['fin_traitement'] = "Traitement terminé le %s.";
+$string['duree_traitement'] = "Le traitement a duré %s."; 
 //on peut accéder à ces variables avec la fonction get_string('indice','report_hybridmeter');

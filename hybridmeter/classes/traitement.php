@@ -218,10 +218,6 @@ class traitement{
 			"timestamp_fin" => $this->date_fin->getTimestamp(),
 			"diff" => $interval
 		);
-		
-		error_log($this->date_debut->getTimestamp());
-		error_log($this->date_fin->getTimestamp());
-		error_log($interval);
 
 		$file_exporter = fopen($CFG->dataroot."/hybridmeter/records/serialized_data","w");
 		$s = serialize(array(
@@ -230,7 +226,6 @@ class traitement{
 			"generaldata" => $generaldata
 		));
 		fwrite($file_exporter, $s);
-		//error_log(dirname(__FILE__)."/../records/serialized_data");
 
 		$date_format = $this->date_debut->format('Y-m-d H:i:s');
 

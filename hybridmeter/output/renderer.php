@@ -67,13 +67,13 @@ class renderer extends plugin_renderer_base {
         );
 
         if($is_running != NON_RUNNING){
-            $html .= html_writer::span(get_string('task_running', 'report_hybridmeter'), array('class' => 'row m-1 btn btn-secondary'));
+            $html .= html_writer::span(get_string('task_running', 'report_hybridmeter'), '');
         }
         else if($count_pending > 0){
-            $html .= html_writer::span(get_string('task_pending', 'report_hybridmeter'), array('class' => 'row m-1 btn btn-secondary'));
+            $html .= html_writer::span(get_string('task_pending', 'report_hybridmeter'), '');
         }
         else{
-            $html .= html_writer::span(get_string('no_task_pending', 'report_hybridmeter'), array('class' => 'row m-1 btn btn-secondary'));
+            $html .= html_writer::span(get_string('no_task_pending', 'report_hybridmeter'), '');
         }
         $html .= html_writer::end_div();
 
@@ -81,6 +81,7 @@ class renderer extends plugin_renderer_base {
     }
 
     public function last_calculation($data_available, $date, $interval){
+
         $html = html_writer::start_div('container-fluid');
 
         $url = new moodle_url('/report/hybridmeter/index.php',
@@ -109,7 +110,7 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
-    public function general_indicators($data_available, $generaldata){
+    public function general_indicators($data_available, $generaldata, $timestamp_begin, $timestamp_end, $fin_traitement, $duree_traitement){
         global $OUTPUT;
 
         $nb_cours_hybrides_statiques = ($data_available && isset($generaldata['nb_cours_hybrides_statiques'])) ? $generaldata['nb_cours_hybrides_statiques'] : NA;
@@ -124,8 +125,51 @@ class renderer extends plugin_renderer_base {
 
         $nb_etudiants_concernes_dynamiques_actifs = ($data_available && isset($generaldata['nb_etudiants_concernes_dynamiques_actifs'])) ? $generaldata['nb_etudiants_concernes_dynamiques_actifs'] : NA;
 
+        
+        if($data_available && isset($timestamp_begin) && isset($timestamp_end)) {
+            $datetime_begin = new \DateTime();
+            $datetime_end = new \DateTime();
+
+            $datetime_begin->setTimestamp($timestamp_begin);
+            $datetime_end->setTimestamp($timestamp_end);
+
+            $format = "d/m/Y";
+
+            $string_periode_mesure = sprintf(
+                get_string('periode_mesure','report_hybridmeter'),
+                $datetime_begin->format($format),
+                $datetime_end->format($format)
+            );
+        }
+        else{
+            $string_periode_mesure = NA;
+        }
+
+        if($data_available && isset($fin_traitement)){
+            $string_fin_traitement = sprintf(
+                get_string('fin_traitement','report_hybridmeter'),
+                $fin_traitement
+            );
+        }
+        else {
+            $string_fin_traitement = NA;
+        }
+
+        if($data_available && isset($duree_traitement)){
+            $string_duree_traitement = sprintf(
+                get_string('duree_traitement','report_hybridmeter'),
+                $duree_traitement
+            );
+        }
+        else {
+            $string_duree_traitement = NA;
+        }
+
         $params=array(
             "title" => "Résultats du dernier traitement",
+            "periode_mesure" => $string_periode_mesure,
+            "fin_traitement" => $string_fin_traitement,
+            "duree_traitement" => $string_duree_traitement,
             "namecolumnname" => "Nom de l'indicateur",
             "valuecolumnname" => "Nombre",
             "namecoursstatique" => get_string('nb_cours_hybrides_statiques', 'report_hybridmeter'),

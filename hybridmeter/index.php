@@ -28,9 +28,14 @@ $path_serialized_data = $CFG->dataroot."/hybridmeter/records/serialized_data";
 if(file_exists($path_serialized_data)){
 	$data_available = true;
 	$data_unserialized = unserialize(file_get_contents($path_serialized_data));
+
+	$time = $data_unserialized['time'];
+
 	$generaldata = $data_unserialized['generaldata'];
+	
 	$date_record = new \DateTime();
-	$date_record->setTimestamp($data_unserialized['time']['timestamp_debut']);
+	$date_record->setTimestamp($time['timestamp_debut']);
+
 
 	function modulo_fixed($x,$n){
 		$r = $x % $n;
@@ -53,12 +58,13 @@ if(file_exists($path_serialized_data)){
     	$intervalle_format = sprintf('%02d heures %02d minutes %02d secondes', ($t/3600), modulo_fixed(($t/60),60), modulo_fixed($t,60));
     }
     
-	$date_format = $date_record->format('Y-m-d H:i:s');
+	$date_format = $date_record->format('d/m/Y à H:i:s');
 }
 else{
 	$data_available = false;
 	$date_format = NA;
 	$generaldata = null;
+	$time = null;
 }
 
 if ($task=='download'){
@@ -93,7 +99,14 @@ $debug = optional_param('debug', 0, PARAM_INTEGER);
 
 echo $output->header();
 echo $output->heading($pagetitle);
-echo $output->general_indicators($data_available, $generaldata);
+echo $output->general_indicators(
+	$data_available,
+	$generaldata,
+	$configurator->get_begin_timestamp(),
+	$configurator->get_end_timestamp(),
+	$date_format,
+	$intervalle_format
+);
 echo $output->index_links($data_available);
 
 if($debug != 0){

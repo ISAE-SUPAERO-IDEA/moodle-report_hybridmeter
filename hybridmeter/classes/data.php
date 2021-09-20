@@ -72,13 +72,10 @@ class data {
             from ".$DB->get_prefix()."logstore_standard_log as logs
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
-            inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
             where role.shortname='student'
             and courseid=?
-            and context.instanceid=?
-            and context.contextlevel=?
             and timecreated between ? and ?",
-            array($id, $id, CONTEXT_COURSE, $begin_date, $end_date));
+            array($id, $begin_date, $end_date));
         return $record->c;
     }
 
