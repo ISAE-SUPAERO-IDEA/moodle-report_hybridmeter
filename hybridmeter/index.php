@@ -43,8 +43,16 @@ if(file_exists($path_serialized_data)){
 
 	$t=$data_unserialized['time']['diff'];
 
-    $intervalle_format = sprintf('%d jours %02d heures %02d minutes %02d secondes', ($t/86400), modulo_fixed(($t/3600),24), modulo_fixed(($t/60),60), modulo_fixed($t,60));
-
+	if($t<60){
+		$intervalle_format = sprintf('%02d secondes', $t);
+	}
+	else if ($t<3600){
+		$intervalle_format = sprintf('%02d minutes %02d secondes', ($t/60), modulo_fixed($t,60));
+	}
+	else{
+    	$intervalle_format = sprintf('%02d heures %02d minutes %02d secondes', ($t/3600), modulo_fixed(($t/60),60), modulo_fixed($t,60));
+    }
+    
 	$date_format = $date_record->format('Y-m-d H:i:s');
 }
 else{
