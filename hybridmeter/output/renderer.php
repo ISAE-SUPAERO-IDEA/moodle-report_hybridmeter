@@ -125,6 +125,7 @@ class renderer extends plugin_renderer_base {
 
         $nb_etudiants_concernes_dynamiques_actifs = ($data_available && isset($generaldata['nb_etudiants_concernes_dynamiques_actifs'])) ? $generaldata['nb_etudiants_concernes_dynamiques_actifs'] : NA;
 
+        $nb_cours_analyses = ($data_available && isset($generaldata['nb_cours_analyses'])) ? $generaldata['nb_cours_analyses'] : NA;
         
         if($data_available && isset($timestamp_begin) && isset($timestamp_end)) {
             $datetime_begin = new \DateTime();
@@ -183,7 +184,9 @@ class renderer extends plugin_renderer_base {
             "nameetudiantsinscritsdynamiques" => get_string('nb_etudiants_concernes_dynamiques', 'report_hybridmeter'),
             "valueetudiantsinscritsdynamiques" => $nb_etudiants_concernes_dynamiques,
             "nameetudiantsactifsdynamiques" => get_string('nb_etudiants_concernes_dynamiques_actifs', 'report_hybridmeter'),
-            "valueetudiantsactifsdynamiques" => $nb_etudiants_concernes_dynamiques_actifs
+            "valueetudiantsactifsdynamiques" => $nb_etudiants_concernes_dynamiques_actifs,
+            "namenbcoursanalyses" => get_string('nb_cours_analyses', 'report_hybridmeter'),
+            "valuenbcoursanalyses" => $nb_cours_analyses
         );
 
         $html = $OUTPUT->render_from_template("report_hybridmeter/tableau_indicateurs", $params);

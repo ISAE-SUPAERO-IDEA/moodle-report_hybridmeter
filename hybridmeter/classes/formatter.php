@@ -7,6 +7,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/data.php');
 
 // TODO: Expliquer ce que cette classe formatte
+// TODO : Refactoriser (P3)
 class formatter {
 	//Le tableau structuré
 	protected $array;

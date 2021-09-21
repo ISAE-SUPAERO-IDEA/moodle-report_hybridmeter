@@ -16,21 +16,7 @@ class data {
     public function __construct(){
     }
 
-    public function get_subcategories_id(int $id){
-        global $DB;
-
-        return array_values(
-            array_map(
-                function($category){
-                    return $category->id;
-                },
-                $DB->get_records(
-                    "course_categories",
-                    array("parent"=>$id)
-                )
-            )
-        );
-    }
+    /*Fonctions qui permettent de calculer les indicateurs*/
 
     //compte le nombre d'activités par type en fonction du cours
     public function count_modules_types_id(int $id){
@@ -189,12 +175,36 @@ class data {
             $params);
         return $record->c;
     }
+
+
+    /*Fonctions utilitaires*/
+
+
+    public function get_subcategories_id(int $id){
+        global $DB;
+
+        return array_values(
+            array_map(
+                function($category){
+                    return $category->id;
+                },
+                $DB->get_records(
+                    "course_categories",
+                    array("parent"=>$id)
+                )
+            )
+        );
+    }
+
     //récupère les cours actifs visibles sans la blacklist
     public function get_whitelisted_courses(){
         global $DB;
+        // TODO : singleton
         $config = new configurator($this);
         $data = $config->get_data();
         $blacklisted_courses = array_keys($data["blacklisted_courses"]);
+        
+        //le cours qui correspond au site est blacklisté par défaut
         array_push($blacklisted_courses, 1);
         $blacklisted_categories = array_keys($data["blacklisted_categories"]);
         $query = "select * from ".$DB->get_prefix()."course where true";
@@ -210,14 +220,7 @@ class data {
         return $records;
     }
 
-    public function search_course($query){
-        return $DB->get_records_sql("select id, fullname, blacklisted from ".$DB->get_prefix()."course
-            inner join ".$DB->get_prefix()."hybridmeter_blacklist
-            where id <> 1
-            and upper(fullname) like ?",
-            array('%'.mb_strtoupper($query).'%')
-        );
-    }
+    /*Fonctions de gestion des tâches adhoc*/
 
     public function count_adhoc_tasks(){
         global $DB;

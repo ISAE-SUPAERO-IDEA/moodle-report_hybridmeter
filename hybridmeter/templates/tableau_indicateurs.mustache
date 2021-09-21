@@ -1,8 +1,6 @@
 <div id="indicateurs">
 	<h3 class="main">{{title}}</h3>
 	<p>{{periode_mesure}}</p>
-	<p>{{fin_traitement}}</p>
-	<p>{{duree_traitement}}</p>
 	<table>
 	    <thead>
 	      <tr>
@@ -35,8 +33,14 @@
 	      	<td>{{nameetudiantsactifsdynamiques}}</td>
 	      	<td>{{valueetudiantsactifsdynamiques}}</td>
 	      </tr>
+	      <tr>
+	      	<td>{{namenbcoursanalyses}}</td>
+	      	<td>{{valuenbcoursanalyses}}</td>
+	      </tr>
 	    </tbody>
 	</table>
+	<p>{{fin_traitement}}<br/>
+	{{duree_traitement}}</p>
 </div>
 
 <style>
@@ -54,6 +58,7 @@ table {
   background-color: #fff;
   margin-left: auto;
   margin-right : auto;
+  margin-bottom : 10px;
 }
 
 th {

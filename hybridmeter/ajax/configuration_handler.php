@@ -1,7 +1,13 @@
-<?php 
+<?php
+	/*
+	AJAX endpoint to manage HybridMeter configuration data
+
+	*/ 
 	require_once("../../../config.php");
     require_once("../classes/configurator.php");
     require_once("../classes/data.php");
+
+    //Vérification des autorisations (rôle admin obligatoire)
 
 	require_login();
 	$context = context_system::instance();
@@ -20,6 +26,8 @@
 			"end_date" => $end_date
 		]);
 	} else  {
+		/*TODO : Un seul echo*/
+		
 		$task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 	// Lecture
 		if ($task == "get_dynamic_coeffs"){

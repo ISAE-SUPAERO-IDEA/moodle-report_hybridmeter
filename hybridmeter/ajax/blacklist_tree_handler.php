@@ -1,7 +1,13 @@
 <?php 
+	/*
+	AJAX endpoint to manage HybridMeter blacklist configuration data
+
+	*/ 
 	require_once("../../../config.php");
 	require_once("../classes/data.php");
     require_once("../classes/configurator.php");
+
+    //Vérification des autorisations (rôle admin obligatoire)
 
 	require_login();
 	$context = context_system::instance();
@@ -25,6 +31,8 @@
 	if ($task == "category_children") {
 		$id = required_param('id', PARAM_INT);
 		$categories = $DB->get_records('course_categories', array("parent" => $id));
+
+		//Dans le cas où l'id de la catégorie est 0, on ne renvoie pas le cours enfant qui correpond au site
 
 		if($id != 0){
 			$courses = $DB->get_records('course', array("category" =>$id));
@@ -52,6 +60,9 @@
 			"message" => "Tâche inconnue"
 		);
 	}
+
+	//Renvoie de la réponse
+
 	echo json_encode($output);
 
 ?>

@@ -1,4 +1,4 @@
-// Retrieve strings or file roots (TODO: improve P2)
+// Retrieve strings or file roots, passer www_root en props (TODO: improve P2)
 var url_root = document.getElementById('www_root').value;
 
 //Loading bar, author : github @greyby project : Vue Spinner
@@ -111,6 +111,7 @@ Vue.component('category', {
     this.loading = false;
   },
   watch: {
+    //reload every component recursively in case of blacklisted state change
     global_blacklist: function(){
       this.load();
     }
@@ -118,13 +119,14 @@ Vue.component('category', {
   methods: {
     load: async function(){
       // TODO: Utiliser encodeURI() 
+      //Load config
       this.config = await this.get(`configuration_handler.php`);
       var data = new FormData();
       data.append('task', 'category_children');
       data.append('id', this.id);
+      //Load category tree
       this.tree = await this.post('blacklist_tree_handler.php',data).then(data => {
-        //this.tree = await this.get(`blacklist_tree_handler.php?task=category_children&id=${this.id}`).then(data => {
-        // TODO: fonction générique
+        //Apply blacklisted status on loaded categories
         for (var i in data.categories) {
           data.categories[i].expanded = false;
           if (this.config.blacklisted_categories) {
@@ -133,6 +135,7 @@ Vue.component('category', {
             }
           }
         }
+        //Apply blacklisted status on loaded courses
         if (this.config.blacklisted_courses) {
           for (var i in data.courses) {
             if (Object.keys(this.config.blacklisted_courses).includes(data.courses[i].id)) {
@@ -144,9 +147,8 @@ Vue.component('category', {
         return data;
 
       });
-
-      console.log(this.tree);
     },
+    //TODO : utiliser mixin
     get: function (urlRequest){
       const myaxios = axios.create({ baseURL: `${url_root}/report/hybridmeter/ajax/` });
       return myaxios.get(urlRequest).then(response => response.data)
@@ -158,9 +160,9 @@ Vue.component('category', {
     switch: function() {
       this.expanded = !this.expanded;
     },
+    /*TODO : Généraliser ces deux fonctions VVVV*/
     async manage_category_blacklist(category) {
       var value = !category.blacklisted;
-      // TODO: Utiliser encodeURI()
       var data = new FormData();
       data.append('task', 'manage_blacklist');
       data.append('id', category.id);
@@ -183,6 +185,7 @@ Vue.component('category', {
         this.tree = Object.assign({}, this.tree);
       }
     },
+    //Utilitaries functions
     class_eye_category_blacklist(item) {
       var blacklisted = item.blacklisted;
       return {
@@ -206,15 +209,16 @@ Vue.component('category', {
   },
 });
 // Configurator
+/*TODO : Envoyer string traduits par moodle*/
 Vue.component('configurator', {
-  props: ['boxok', 'boxnotok'],
+  props: ['boxok'],
   template: ` 
     <div>
        <!-- TODO: Widget date input -->
       <div v-if="ok" v-html="boxok">
         
       </div>
-      <h3 class="main">Valeur des coefficients</h3>
+      <h3 class="main">Période de mesure</h3>
       <div id="plage" class="management-module">
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right">
@@ -247,9 +251,6 @@ Vue.component('configurator', {
           </div>
         </div>
       </div>
-      <!--<hr/>
-      <h3 class="main">Configuration des poids</h3>
-      <span>Coming soon</span>-->
     </div>
     `,
   data() {
@@ -273,7 +274,6 @@ Vue.component('configurator', {
     }
   },
   async created() {
-    // TODO: Utiliser encodeURI() 
     this.config = await this.get(`configuration_handler.php`);
   },
   methods: {
@@ -313,8 +313,7 @@ Vue.component('configurator', {
   }
 });
 
-console.log("check");
-
+//Table component
 Vue.component("test-grid", {
   template: `
     <div>
@@ -370,6 +369,8 @@ Vue.component("test-grid", {
       var filterKey = this.filterKey && this.filterKey.toLowerCase();
       var order = this.sortOrders[sortKey] || 1;
       var rows = this.rows;
+
+      //Filtrage
       if (filterKey) {
         rows = rows.filter(function(row) {
           return Object.keys(row).some(function(key) {
@@ -381,6 +382,8 @@ Vue.component("test-grid", {
           });
         });
       }
+
+      //tri
       if (sortKey) {
         rows = rows.slice().sort(function(a, b) {
           a = a[sortKey];
@@ -388,7 +391,7 @@ Vue.component("test-grid", {
           return (a === b ? 0 : a > b ? 1 : -1) * order;
         });
       }
-      console.log(rows);
+      
       return rows;
     }
   },
@@ -398,6 +401,7 @@ Vue.component("test-grid", {
     }
   },
   methods: {
+    //TODO : mixin
     get_data: function(url, task){
       const myaxios = axios.create({ baseURL: `${url_root}/report/hybridmeter/ajax/` });
       return myaxios.get(`${url}?task=${task}`).then(response => response.data)
@@ -409,7 +413,7 @@ Vue.component("test-grid", {
   }
 });
 
-// Deploy ap
+// Deploy app
 var app = new Vue({
   el: '#app'
 });

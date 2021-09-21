@@ -7,7 +7,7 @@ require_once(dirname(__FILE__).'/data.php');
 defined('MOODLE_INTERNAL') || die();
 
 
-// TODO: Gérer la configuration en base de données en utilisant les settings moodle (P2)
+// Manage hybridmeter's configuration file
 class configurator {
 	protected $path;
 
@@ -20,6 +20,8 @@ class configurator {
 	protected $end_date;
 
 	protected static $instance = null;
+
+	// TODO : Voir si c'est nécessaire de passer data_provider
 
 	public function __construct($data_provider){
 		global $CFG;

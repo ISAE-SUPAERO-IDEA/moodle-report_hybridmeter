@@ -18,13 +18,13 @@ class exporter {
     //Le caractère de délimitation
     protected $delimiter;
 
-    //Le tableau contenant les champs que l'on souhaite voir dans le CSV
+    //Les chaînes de caractères de ce tableau correspondent aux attributs de $raw_data dont les valeurs seront exportés
     protected $fields;
 
-    //Le tableau de données
+    //Le tableau de données en entrée, tableau à deux dimensions
     protected $raw_data;
 
-    //L'objet csv_export_writer
+    //L'objet csv_export_writer de moodle core
     protected $csv;
 
     public function __construct(array $fields=array(), array $raw_data=array(), $delimiter = 'comma'){
@@ -49,6 +49,7 @@ class exporter {
         $this->fields=$fields;
     }
 
+    //ajoute une entrée au tableau
     public function add_data(array $data){
         array_push($this->raw_data, $data);
     }
@@ -61,6 +62,8 @@ class exporter {
     public function set_delimiter($delimiter){
         $this->delimiter=$delimiter;
     }
+
+    /*TODO : améliorer le workflow */
 
     //pour créer le csv
     public function create_csv($filename) {

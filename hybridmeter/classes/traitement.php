@@ -11,8 +11,6 @@ require_once(__DIR__.'/formatter.php');
 require_once(__DIR__.'/configurator.php');
 
 
-// TODO: Transformer en classe (P2)
-
 
 class traitement{
 
@@ -202,6 +200,8 @@ class traitement{
 
 		$generaldata["timestamp_debut_capture"] = $this->configurator->get_begin_timestamp();
 		$generaldata["timestamp_fin_capture"] = $this->configurator->get_end_timestamp();
+
+		$generaldata["nb_cours_analyses"] = $this->formatter->get_length_array();
 
 		//Export des données
 		
