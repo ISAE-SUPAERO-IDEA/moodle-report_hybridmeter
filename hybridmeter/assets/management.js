@@ -63,21 +63,19 @@ Vue.component('PulseLoader',{
 Vue.component('category', {
   template: ` 
     <div>
-      <div v-if="loading && root">
+      <div v-bind:aria-hidden="[!loading || !root]" class="loader">
         <PulseLoader :color="'#00acdf'"></PulseLoader>
       </div>
-      <div v-else>
-        <div v-if="expanded">
-          <div v-for="category in tree.categories" :key="category.id" class="category_item">
-            <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
-            <i class="icon fa fa-fw " :class="category_caret(category)" @click="category.expanded = !category.expanded"></i>
-            <span style="font-weight: bold">{{category.name}}</span>
-            <category :id="category.id"  :global_blacklist="category.blacklisted" :expanded="category.expanded"></category>
-          </div>
-          <div v-for="course in tree.courses" :key="course.id" class="category_item" >
-            <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
-            {{course.fullname}}
-          </div>
+      <div v-if="expanded">
+        <div v-for="category in tree.categories" :key="category.id" class="category_item">
+          <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
+          <i class="icon fa fa-fw " :class="category_caret(category)" @click="category.expanded = !category.expanded"></i>
+          <span style="font-weight: bold">{{category.name}}</span>
+          <category :id="category.id"  :global_blacklist="category.blacklisted" :expanded="category.expanded"></category>
+        </div>
+        <div v-for="course in tree.courses" :key="course.id" class="category_item" >
+          <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+          {{course.fullname}}
         </div>
       </div>
     </div>
@@ -109,7 +107,7 @@ Vue.component('category', {
     }
   },
   async created() {
-    this.load();
+    await this.load();
     this.loading = false;
   },
   watch: {
@@ -318,7 +316,12 @@ Vue.component('configurator', {
 console.log("check");
 
 Vue.component("test-grid", {
-  template: `<table>
+  template: `
+    <div>
+      <div v-bind:aria-hidden="[!loading]" class="loader">
+        <PulseLoader :color="'#00acdf'"></PulseLoader>
+      </div>
+      <table>
         <thead>
           <tr>
             <th v-for="key in columns"
@@ -337,18 +340,19 @@ Vue.component("test-grid", {
             </td>
           </tr>
         </tbody>
-      </table>`,
+      </table>
+    </div>`,
   props: ['task', 'sortKey', 'url'],
   data() {
     return {
       columns : undefined,
       rows : undefined,
-      sortOrders: {}
+      sortOrders: {},
+      loading: true
     }
   },
   async created(){
     var data = await this.get_data(this.url, this.task);
-    console.log("gaco "+data.columns[0]);;
     
     var sortOrders = {};
     data.columns.forEach(function(key) {
@@ -358,6 +362,7 @@ Vue.component("test-grid", {
     this.sortOrders = sortOrders;
     this.columns = data.columns;
     this.rows = data.rows;
+    this.loading=false;
   },
   computed: {
     filteredElements: function() {
