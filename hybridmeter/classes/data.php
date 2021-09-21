@@ -83,25 +83,27 @@ class data {
             return -1;
 
 
-        $where_courseid = "and enrol.courseid in (".$ids[0];
+        $where_compil = "(".$ids[0];
         for($i = 1; $i < $length; $i++){
             if(!is_numeric($ids[$i]))
                 return -1;
-            $where_courseid .= ", ".$ids[$i];
+            $where_compil .= ", ".$ids[$i];
         }
-        $where_courseid .= ")";
+        $where_compil .= ")";
 
         $query="select count(distinct logs.userid) as c
             from ".$DB->get_prefix()."logstore_standard_log as logs
-            inner join ".$DB->get_prefix()."user_enrolments as user_enrol on user_enrol.userid=logs.userid
-            inner join ".$DB->get_prefix()."enrol as enrol on user_enrol.enrolid=enrol.id
-            inner join ".$DB->get_prefix()."role as role on role.id=enrol.roleid
+            inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
+            inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
+            inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
             where role.shortname = 'student'
             and eventname like '%course_viewed'
-            ".$where_courseid."
+            and context.contextlevel = ?
+            and context.instanceid in ".$where_compil."
+            and logs.courseid in ".$where_compil."
             and logs.timecreated between ? and ?";
 
-        $params = array($begin_date, $end_date);
+        $params = array(CONTEXT_COURSE, $begin_date, $end_date);
 
         $record=$DB->get_record_sql($query, $params);
         return $record->c;
