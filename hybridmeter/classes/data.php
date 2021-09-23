@@ -34,7 +34,7 @@ class data {
     }
 
     //compte le nombre de course viewed en fonction du cours et de la période choisie
-    public function count_hits_course_viewed(int $id, int $begin_date=0, int $end_date=NOW){
+    public function count_hits_course_viewed(int $id, int $begin_date, int $end_date){
         global $DB;
         $record=$DB->get_record_sql("select count(*) as c
             from ".$DB->get_prefix()."logstore_standard_log as logs
@@ -52,7 +52,7 @@ class data {
     }
 
     //compte le nombre de hits toute nature confondue en fonction du cours et de la période choisie
-    public function count_hits(int $id, int $begin_date=0, int $end_date=NOW){
+    public function count_hits(int $id, int $begin_date, int $end_date){
         global $DB;
         $record=$DB->get_record_sql("select count(*) as c
             from ".$DB->get_prefix()."logstore_standard_log as logs
@@ -66,7 +66,7 @@ class data {
     }
 
     //compte le nombre d'utilisateurs uniques en fonction du cours et de la période choisie
-    public function count_single_users_course_viewed($ids, int $begin_date=0, int $end_date=NOW){
+    public function count_single_users_course_viewed($ids, int $begin_date, int $end_date){
         global $DB;
 
         if(!is_array($ids)){
@@ -158,11 +158,11 @@ class data {
     }
 
     //compte le nombre de hits en fonction du type d'activité visée, du cours et de la période choisie
-    public function count_hits_by_module_type(int $id, $module_type, int $begin_date=0, int $end_date=NOW){
+    public function count_hits_by_module_type(int $id, int $begin_date, int $end_date){
         global $DB;
-        $params=array($id, $module_type, $id, CONTEXT_COURSE, $begin_date, $end_date);
+        $params=array($id, $id, CONTEXT_COURSE, $begin_date, $end_date);
 
-        $record=$DB->get_record_sql("select count(*) as c
+        $records = $DB->get_records_sql("select logs.objecttable as module, count(*) as c
             from ".$DB->get_prefix()."logstore_standard_log as logs
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
@@ -170,12 +170,12 @@ class data {
             where role.shortname='student'
             and courseid=?
             and logs.target='course_module'
-            and logs.objecttable=?
             and context.instanceid=?
             and context.contextlevel=?
-            and timecreated between ? and ?",
+            and timecreated between ? and ?
+            group by logs.objecttable",
             $params);
-        return $record->c;
+        return $records;
     }
 
 

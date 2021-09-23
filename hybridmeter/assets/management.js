@@ -220,6 +220,7 @@ Vue.component('configurator', {
       </div>
       <h3 class="main">Période de mesure</h3>
       <div id="plage" class="management-module">
+      <!-- Date de début -->
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right">
             <label>
@@ -232,6 +233,7 @@ Vue.component('configurator', {
             </div>
           </div>
         </div>
+        <!-- Date de fin -->
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right">
             <label>
@@ -243,6 +245,18 @@ Vue.component('configurator', {
               <input type="date"  v-model="end_date">
             </div>
           </div>
+        <!-- Debug -->
+          <div class="form-label col-sm-3 text-sm-right">
+            <label>
+              Loggeur
+            </label>
+          </div>
+          <div class="form-setting col-sm-9">
+            <div class="form-text defaultsnext">
+              <input type="checkbox" v-model="config.debug">
+              <label for="checkbox">{{  }}</label>
+            </div>
+          </div>
         </div>
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right"></div>
@@ -250,6 +264,7 @@ Vue.component('configurator', {
             <button type="submit" class="btn btn-primary" @click="save">Enregistrer les modifications</button>
           </div>
         </div>
+
       </div>
     </div>
     `,
@@ -265,6 +280,7 @@ Vue.component('configurator', {
     config(config) {
       this.begin_date = this.timestamp_to_ui(config.begin_date);
       this.end_date = this.timestamp_to_ui(config.end_date);
+      this.debug = config.debug;
     },
     begin_date(date) {
       this.config.begin_date = this.ui_to_timestamp(date);
@@ -307,6 +323,7 @@ Vue.component('configurator', {
       var data = new FormData();
       data.append('begin_date', this.config.begin_date);
       data.append('end_date', this.config.end_date);
+      data.append('debug', this.config.debug);
       await this.post(`configuration_handler.php`, data);
       this.ok=true;
     }

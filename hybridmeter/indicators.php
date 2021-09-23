@@ -24,18 +24,19 @@ function hybridation_statique($object,$data,$parameters){
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object,$data,$parameters){
 	$configurator = $parameters["configurator"];
-	$active=$data->count_single_users_course_viewed(
-		$object['id'],
-		$configurator->get_begin_timestamp(),
-		$configurator->get_end_timestamp()
-	);
+	$coeffs = $configurator->get_data()["dynamic_coeffs"];
 	$indicator=0;
 	$total=0;
-	if($active==0) return 0;
-	foreach ($configurator->get_data()["dynamic_coeffs"] as $key => $value){
-		$count=$data->count_hits_by_module_type($object['id'],$key);
-		$indicator+=$value*($count/$active);
-		$total+=$value;
+	$info=$data->count_hits_by_module_type($object['id'], 
+		$configurator->get_begin_timestamp(),
+		$configurator->get_end_timestamp());
+	
+		
+	foreach ($info as $key => $value){
+		if (array_key_exists($key, $coeffs)) {
+			$indicator += $value * $coeffs[$key];
+			$total += $value;	
+		}
 	}
 	if($total === 0){
 		$total=1;

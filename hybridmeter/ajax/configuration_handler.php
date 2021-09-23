@@ -21,9 +21,11 @@
 	if ($_SERVER['REQUEST_METHOD'] == "POST") {
 		$begin_date = optional_param('begin_date', null, PARAM_INT);
 		$end_date = optional_param('end_date', null, PARAM_INT);
+		$debug = optional_param('debug', null, PARAM_BOOL);
 		$configurator->update([
 			"begin_date" => $begin_date, 
-			"end_date" => $end_date
+			"end_date" => $end_date,
+			"debug" => $debug
 		]);
 	} else  {
 		/*TODO : Un seul echo*/

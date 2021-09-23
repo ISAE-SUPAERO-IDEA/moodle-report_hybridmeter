@@ -95,6 +95,7 @@ class configurator {
 	}
 	// Get a dynamic coefficient far a $key
 	public function update($data){
+		error_log(print_r($data, 1));
 		$this->data = array_merge($this->data, $data);
 		$this->save();
 	}
@@ -163,6 +164,10 @@ class configurator {
 		$output = new \DateTime();
 		$output->setTimestamp($this->data['end_date']);
 		return $output;
+	}
+	// Get debug status
+	public function get_debug(){
+		return $this->data['debug'];
 	}
 
 	public function get_begin_timestamp(){

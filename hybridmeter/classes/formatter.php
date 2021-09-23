@@ -5,6 +5,7 @@ namespace report_hybridmeter\classes;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/data.php');
+require_once(dirname(__FILE__).'/logger.php');
 
 // TODO: Expliquer ce que cette classe formatte
 // TODO : Refactoriser (P3)
@@ -38,8 +39,11 @@ class formatter {
 
 	//ajout d'un nouvel indicateur définit par une fonctoin lambda qui prend en paramètres
 	public function calculate_new_indicator($lambda, String $indicator_name, $parameters=array()){
+		$i = 0;
 		foreach($this->array as $key => $value){
+			logger::log($indicator_name." ". $i."/".count($this->array));
 			$this->array[$key][$indicator_name]=$lambda($value,$this->data,$parameters);
+			$i++;
 		}
 	}
 
