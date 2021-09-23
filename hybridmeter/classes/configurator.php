@@ -40,8 +40,10 @@ class configurator {
 		}
 		// Sanitize data
 		$now = new \DateTime("now");
-		$this->set_default_value("begin_date", 0);
+		$before = strtotime("-1 months");
+		$this->set_default_value("begin_date", $before);
 		$this->set_default_value("end_date", $now->getTimestamp());
+		$this->set_default_value("debug", 0);
 		$this->set_default_value("blacklisted_courses", []);
 		$this->set_default_value("blacklisted_categories", []);
 		$this->set_default_value("seuil_dynamique", SEUIL_DYNAMIQUE);

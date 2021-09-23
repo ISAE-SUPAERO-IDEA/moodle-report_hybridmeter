@@ -39,7 +39,7 @@ class formatter {
 
 	//ajout d'un nouvel indicateur définit par une fonctoin lambda qui prend en paramètres
 	public function calculate_new_indicator($lambda, String $indicator_name, $parameters=array()){
-		$i = 0;
+		$i = 1;
 		foreach($this->array as $key => $value){
 			logger::log($indicator_name." ". $i."/".count($this->array));
 			$this->array[$key][$indicator_name]=$lambda($value,$this->data,$parameters);
