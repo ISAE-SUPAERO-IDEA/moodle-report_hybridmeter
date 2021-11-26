@@ -4,8 +4,8 @@ require_once(__DIR__.'/classes/configurator.php');
 defined('MOODLE_INTERNAL') || die();
 
 
-const HYBRIDMETER_COURSE_DEVIATOR = 2;
-const HYBRIDMETER_ACTIVITY_DEVIATOR = 2;
+const HYBRIDMETER_COURSE_DEVIATOR = 1;
+const HYBRIDMETER_ACTIVITY_DEVIATOR = 1;
 
 # https://app.clickup.com/t/1h2ad7h
 function hybridation_calculus($type, $activity_data){
@@ -14,8 +14,8 @@ function hybridation_calculus($type, $activity_data){
 	$sigmaPk = 0; // Sum of activity weights
 	$sigmaPkVk = 0; // Sum of activity weight multiplicated by their hybridation value
 	foreach ($activity_data as $k => $Nk) {
-		if ($Nk > 0) {
-			$Vk = \report_hybridmeter\classes\configurator::getInstance()->get_coeff($type, $k); // Activity hybridation value
+		$Vk = \report_hybridmeter\classes\configurator::getInstance()->get_coeff($type, $k); // Activity hybridation value
+		if ($Nk > 0 && $Vk > 0) {
 			$C ++; 
 			$Pk = $Nk / ($Nk + HYBRIDMETER_ACTIVITY_DEVIATOR); // Activity weight
 			$sigmaPk += $Pk;
