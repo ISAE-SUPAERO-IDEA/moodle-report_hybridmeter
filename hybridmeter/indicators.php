@@ -4,20 +4,37 @@ require_once(__DIR__.'/classes/configurator.php');
 defined('MOODLE_INTERNAL') || die();
 
 
-//Fonction lambda utilisée pour calculer les indicateurs statiques
+const HYBRIDMETER_COURSE_DEVIATOR = 2;
+const HYBRIDMETER_ACTIVITY_DEVIATOR = 2;
+
+# https://app.clickup.com/t/1h2ad7h
+function hybridation_calculus($type, $activity_data){
+	$H = 0; // Hybridation value
+	$C = 0; // Number of activity types
+	$sigmaPk = 0; // Sum of activity weights
+	$sigmaPkVk = 0; // Sum of activity weight multiplicated by their hybridation value
+	foreach ($activity_data as $k => $Nk) {
+		if ($Nk > 0) {
+			$Vk = \report_hybridmeter\classes\configurator::getInstance()->get_coeff($type, $k); // Activity hybridation value
+			$C ++; 
+			$Pk = $Nk / ($Nk + HYBRIDMETER_ACTIVITY_DEVIATOR); // Activity weight
+			$sigmaPk += $Pk;
+			$sigmaPkVk += $Pk * $Vk;
+		}
+	}
+	if($sigmaPk != 0){
+		$P = $C / ($C + HYBRIDMETER_COURSE_DEVIATOR); // Course weight
+		$H = $P * $sigmaPkVk / $sigmaPk;
+	}
+	return round($H, 2);
+}
+
 function hybridation_statique($object,$data,$parameters){
 	$configurator = $parameters["configurator"];
-	$count=$data->count_modules_types_id($object['id']);
-	$total=0;
-	$indicator=0;
-	foreach ($count as $key => $value){
-		$total+=$value;
-		$indicator += $configurator->get_static_coeff($key)*$value;
-	}
-	if($total === 0){
-		$total=1;
-	}
-	return round(($indicator/$total),2);
+	$activity_data = $data->count_modules_types_id($object['id']);
+	return hybridation_calculus("static_coeffs", $activity_data);
+	
+
 }
 
 
@@ -27,21 +44,10 @@ function hybridation_dynamique($object,$data,$parameters){
 	$coeffs = $configurator->get_data()["dynamic_coeffs"];
 	$indicator=0;
 	$total=0;
-	$info=$data->count_hits_by_module_type($object['id'], 
+	$activity_data=$data->count_hits_by_module_type($object['id'], 
 		$configurator->get_begin_timestamp(),
 		$configurator->get_end_timestamp());
-	
-		
-	foreach ($info as $key => $value){
-		if (array_key_exists($key, $coeffs)) {
-			$indicator += $value * $coeffs[$key];
-			$total += $value;	
-		}
-	}
-	if($total === 0){
-		$total=1;
-	}
-	return round(($indicator/$total),2);
+	return hybridation_calculus("static_coeffs", $activity_data);
 }
 
 //Fonction lambda utilisée pour définir si le cours est actif

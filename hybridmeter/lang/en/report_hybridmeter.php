@@ -1,5 +1,9 @@
 <?php
 
+$string["hybridmeter_settings"] = "Hybridmeter settings";
+$string["hybridmeter_settings_help"] = "There are no settings for the hybridmeter plugin";
+$string["hybridmeter_settings_link"] = "Go to the hybridmeter plugin page";
+
 $string['blacklistheader'] = 'Courses blacklist';
 $string['pluginname'] = 'HybridMeter';
 $string['courses'] = 'Courses';

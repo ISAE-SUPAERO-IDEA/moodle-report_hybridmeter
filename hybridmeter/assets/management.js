@@ -246,6 +246,7 @@ Vue.component('configurator', {
             </div>
           </div>
         <!-- Debug -->
+        <!--
           <div class="form-label col-sm-3 text-sm-right">
             <label>
               Loggeur
@@ -257,6 +258,7 @@ Vue.component('configurator', {
               <label for="checkbox">{{  }}</label>
             </div>
           </div>
+          -->
         </div>
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right"></div>
