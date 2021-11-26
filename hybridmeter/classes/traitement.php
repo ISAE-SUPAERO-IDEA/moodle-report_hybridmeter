@@ -29,7 +29,7 @@ class traitement{
 		
 		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, array(), function($data, $blacklist){return $data->get_whitelisted_courses();});
 
-		$this->exporter=new \report_hybridmeter\classes\exporter(array('id_moodle', 'idnumber', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
+		$this->exporter=new \report_hybridmeter\classes\exporter(array('id_moodle', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
 
 		$this->date_debut = new \DateTime();
 		$this->date_debut->setTimestamp($timestamp);
@@ -80,6 +80,7 @@ class traitement{
 				"configurator" => $this->configurator
 			)
 		);
+
 
 		$this->formatter->calculate_new_indicator(
 			"is_course_active_last_month",
@@ -137,6 +138,15 @@ class traitement{
 			'date_fin_capture',
 			array(
 				"date_fin" => $date_fin
+			)
+		);
+
+		$this->formatter->calculate_new_indicator(
+			'raw_data',
+			'raw_data',
+			array(
+				"nb_cours" => $this->formatter->get_length_array(),
+				"configurator" => $this->configurator
 			)
 		);
 

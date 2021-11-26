@@ -6,6 +6,7 @@
 	require_once("../../../config.php");
     require_once("../classes/configurator.php");
     require_once("../classes/data.php");
+    header('Content-Type: text/json');
 
     //Vérification des autorisations (rôle admin obligatoire)
 

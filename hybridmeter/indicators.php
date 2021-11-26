@@ -33,8 +33,9 @@ function hybridation_statique($object,$data,$parameters){
 	$configurator = $parameters["configurator"];
 	$activity_data = $data->count_modules_types_id($object['id']);
 	return hybridation_calculus("static_coeffs", $activity_data);
-	
-
+}
+function raw_data($object,$data,$parameters) {
+	return $data->count_modules_types_id($object['id']);
 }
 
 
