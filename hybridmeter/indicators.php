@@ -4,27 +4,30 @@ require_once(__DIR__.'/classes/configurator.php');
 defined('MOODLE_INTERNAL') || die();
 
 
-const HYBRIDMETER_COURSE_DEVIATOR = 1;
-const HYBRIDMETER_ACTIVITY_DEVIATOR = 1;
 
 # https://app.clickup.com/t/1h2ad7h
 function hybridation_calculus($type, $activity_data){
 	$H = 0; // Hybridation value
 	$C = 0; // Number of activity types
+	$N = 0; // Nombre total d'activités
 	$sigmaPk = 0; // Sum of activity weights
 	$sigmaPkVk = 0; // Sum of activity weight multiplicated by their hybridation value
+	$sigmaPkVk = 0; // Sum of activity weight multiplicated by their hybridation value
+	$M = 1; // Malus
 	foreach ($activity_data as $k => $Nk) {
 		$Vk = \report_hybridmeter\classes\configurator::getInstance()->get_coeff($type, $k); // Activity hybridation value
 		if ($Nk > 0 && $Vk > 0) {
 			$C ++; 
-			$Pk = $Nk / ($Nk + HYBRIDMETER_ACTIVITY_DEVIATOR); // Activity weight
+			$N += $Nk;
+			$Pk = $Nk / ($Nk + HYBRIDMETER_ACTIVITY_INSTANCES_DEVIATOR_CONSTANT); // Activity weight
 			$sigmaPk += $Pk;
 			$sigmaPkVk += $Pk * $Vk;
 		}
 	}
+	if ($N <= 2) $M = 0.25;
 	if($sigmaPk != 0){
-		$P = $C / ($C + HYBRIDMETER_COURSE_DEVIATOR); // Course weight
-		$H = $P * $sigmaPkVk / $sigmaPk;
+		$P = $C / ($C + HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT); // Course weight
+		$H = $M * $P * $sigmaPkVk / $sigmaPk;
 	}
 	return round($H, 2);
 }
