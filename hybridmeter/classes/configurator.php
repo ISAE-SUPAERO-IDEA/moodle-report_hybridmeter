@@ -46,16 +46,20 @@ class configurator {
 		$this->set_default_value("debug", 0);
 		$this->set_default_value("blacklisted_courses", []);
 		$this->set_default_value("blacklisted_categories", []);
-		$this->set_default_value("seuil_actif", SEUIL_ACTIF);
 		$this->set_default_value("running", NON_RUNNING);
 		/*
+		$this->set_default_value("seuil_actif", SEUIL_ACTIF);
+		$this->set_default_value("seuil_dynamique", SEUIL_DYNAMIQUE);
+		$this->set_default_value("seuil_statique", SEUIL_STATIQUE);
 		$this->update_coeffs("dynamic_coeffs", COEFF_DYNAMIQUES);
 		$this->update_coeffs("static_coeffs", COEFF_STATIQUES);
 		*/
+		$this->data["seuil_actif"] = SEUIL_ACTIF;
+		$this->data["seuil_dynamique"] = SEUIL_DYNAMIQUE;
+		$this->data["seuil_statique"] = SEUIL_STATIQUE;
 		$this->data["dynamic_coeffs"] = COEFF_DYNAMIQUES;
 		$this->data["static_coeffs"] = COEFF_STATIQUES;
 		// Should save only if changes have been made
-		error_log(print_r(COEFF_STATIQUES, 1));
 		$this->save();
 	}
 	// Get the singleton configuration instance

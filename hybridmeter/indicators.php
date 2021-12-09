@@ -63,8 +63,7 @@ function is_course_active_last_month($object, $data, $parameters){
 		$configurator->get_begin_timestamp(),
 		$configurator->get_end_timestamp()
 	);
-
-	if ($count >= SEUIL_ACTIF)
+	if ($count >= $configurator->get_data()["seuil_actif"])
 		return 1;
 	else
 		return 0;

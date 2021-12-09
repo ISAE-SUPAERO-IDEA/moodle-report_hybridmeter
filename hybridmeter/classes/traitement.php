@@ -159,7 +159,7 @@ class traitement{
 		$generaldata['cours_hybrides_statiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["niveau_de_digitalisation"] >= SEUIL_STATIQUE;
+					return $cours["niveau_de_digitalisation"] >= $this->configurator->get_data()["seuil_statique"];
 				}
 			)
 		);
@@ -167,7 +167,7 @@ class traitement{
 		$generaldata['cours_hybrides_dynamiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["niveau_d_utilisation"] >= SEUIL_DYNAMIQUE;
+					return $cours["niveau_d_utilisation"] >= $this->configurator->get_data()["seuil_dynamique"];
 				}
 			)
 		);
