@@ -209,7 +209,7 @@ class data {
         //le cours qui correspond au site est blacklisté par défaut
         array_push($blacklisted_courses, 1);
         $blacklisted_categories = array_keys($data["blacklisted_categories"]);
-        $query = "select id, fullname from ".$DB->get_prefix()."course where true";
+        $query = "select id, fullname, idnumber from ".$DB->get_prefix()."course where true";
         if (count($blacklisted_courses)>0) {
             $query.= " and id not in (".implode($blacklisted_courses,",").")";
         }
