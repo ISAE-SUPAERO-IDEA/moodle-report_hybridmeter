@@ -32,4 +32,6 @@ $string['nb_cours_analyses'] = "Cours analysés";
 $string['periode_mesure'] = "Période de mesure : du %s au %s.";
 $string['fin_traitement'] = "Traitement terminé le %s.";
 $string['duree_traitement'] = "Le traitement a duré %s."; 
+$string['documentation'] = "Documentation";
+$string['changelog'] = "Change log";
 //on peut accéder à ces variables avec la fonction get_string('indice','report_hybridation');
