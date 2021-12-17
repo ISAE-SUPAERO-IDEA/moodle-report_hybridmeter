@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__.'/classes/admin_setting_link.php');
+//require_once(__DIR__.'/classes/admin_setting_link.php');
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -15,6 +15,6 @@ if ($hassiteconfig) {
         get_string('hybridmeter_settings_help', 'report_hybridmeter')
     ));
     $url = new moodle_url("/report/hybridmeter/index.php");
-    $settings->add(new \mod_naas\admin_setting_link('hybridmeter_settings_link', $url, get_string('hybridmeter_settings_link', 'report_hybridmeter')));
+    //$settings->add(new \mod_naas\admin_setting_link('hybridmeter_settings_link', $url, get_string('hybridmeter_settings_link', 'report_hybridmeter')));
 }
 
