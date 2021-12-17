@@ -32,8 +32,10 @@ class traitement{
 				function($course) {
 					return $course->id;
 				},
-				$data->get_whitelistes_courses()
+				$data->get_whitelisted_courses()
 			);
+
+			$configurator = new configurator($this->data);
 
 			$filtered = $data->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
 

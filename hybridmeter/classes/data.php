@@ -211,10 +211,10 @@ class data {
         $blacklisted_categories = array_keys($data["blacklisted_categories"]);
         $query = "select id, fullname from ".$DB->get_prefix()."course where true";
         if (count($blacklisted_courses)>0) {
-            $query.= " and id not in (".implode($blacklisted_courses,",").")";
+            $query .= " and id not in (".implode($blacklisted_courses,",").")";
         }
         if (count($blacklisted_categories)>0) {
-            $query.= " and category not in (".implode($blacklisted_categories,",").")";
+            $query .= " and category not in (".implode($blacklisted_categories,",").")";
         }
 
         $records=$DB->get_records_sql($query);
@@ -228,11 +228,16 @@ class data {
         if(count($courses) == 0)
             return array();
 
-        $query = "select id, fullname from ".$DB->get_prefix();"logstore_standard_log as logs
-        where timecreated between ? and ? and eventname = '\\core\\event\\course_viewed'
-        and courseid in (".implode($courses);")";
+        $query = "select distinct course.id, course.fullname from ".$DB->get_prefix()."course as course
+        inner join ".$DB->get_prefix()."logstore_standard_log as logs on course.id=logs.courseid
+        inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
+        inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
+        where role.shortname = 'student'
+        and logs.timecreated between ? and ?
+        and logs.eventname like '%course_viewed'
+        and course.id in (".implode($courses,",").")";
 
-        $records = $DB->get_records_sql($query);
+        $records = $DB->get_records_sql($query, array($begin_timestamp, $end_timestamp));
         
         return $records;
     }
