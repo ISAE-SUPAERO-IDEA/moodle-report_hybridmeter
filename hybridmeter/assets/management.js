@@ -286,9 +286,10 @@ Vue.component('configurator', {
     },
     begin_date(date) {
       this.config.begin_date = this.ui_to_timestamp(date);
+      console.log(this.config.begin_date);
     },
     end_date(date) {
-      this.config.end_date = this.ui_to_timestamp(date);
+      this.config.end_date = this.ui_to_timestamp(date, true);
     }
   },
   async created() {
@@ -317,7 +318,10 @@ Vue.component('configurator', {
 
       return formattedTime;
     },
-    ui_to_timestamp(text) {
+    ui_to_timestamp(text, is_end_date = false) {
+      if(is_end_date){
+        text = text+' 23:59:59';
+      }
       var date = new Date(text);
       return date.getTime() / 1000;
     },
