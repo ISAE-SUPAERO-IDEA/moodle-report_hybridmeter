@@ -16,10 +16,10 @@ class formatter {
 	//Les données brutes
 	protected $data;
 
-	public function __construct($data, $blacklist,$lambda){
+	public function __construct($data, $lambda){
 		$this->array = array();
 		$this->data=$data;
-		$this->import_objects_array($lambda($this->data, $blacklist));
+		$this->import_objects_array($lambda($this->data));
 	}
 
 	//Structureur de données, structure les données de data dans array

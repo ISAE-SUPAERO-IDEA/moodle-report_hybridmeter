@@ -27,9 +27,20 @@ class traitement{
 
 		$this->data->clear_adhoc_tasks();
 		
-		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, array(), function($data, $blacklist){return $data->get_whitelisted_courses();});
+		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, function($data){
+			$whitelist_ids = array_map(
+				function($course) {
+					return $course->id;
+				},
+				$data->get_whitelistes_courses()
+			);
 
-		$this->exporter=new \report_hybridmeter\classes\exporter(array('id_moodle', 'idnumber', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
+			$filtered = $data->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
+
+			return $filtered;
+		});
+
+		$this->exporter=new \report_hybridmeter\classes\exporter(array('id_moodle', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
 
 		$this->date_debut = new \DateTime();
 		$this->date_debut->setTimestamp($timestamp);
@@ -53,6 +64,7 @@ class traitement{
 			},
 			"id_moodle"
 		);
+
 
 		$this->formatter->calculate_new_indicator(
 			function($object, $data, $parameters){

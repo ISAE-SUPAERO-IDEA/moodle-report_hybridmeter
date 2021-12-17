@@ -209,7 +209,7 @@ class data {
         //le cours qui correspond au site est blacklisté par défaut
         array_push($blacklisted_courses, 1);
         $blacklisted_categories = array_keys($data["blacklisted_categories"]);
-        $query = "select id, fullname, idnumber from ".$DB->get_prefix()."course where true";
+        $query = "select id, fullname from ".$DB->get_prefix()."course where true";
         if (count($blacklisted_courses)>0) {
             $query.= " and id not in (".implode($blacklisted_courses,",").")";
         }
@@ -219,6 +219,21 @@ class data {
 
         $records=$DB->get_records_sql($query);
 
+        return $records;
+    }
+
+    public function filter_living_courses_period($courses, $begin_timestamp, $end_timestamp){
+        global $DB;
+
+        if(count($courses) == 0)
+            return array();
+
+        $query = "select id, fullname from ".$DB->get_prefix();"logstore_standard_log as logs
+        where timecreated between ? and ? and eventname = '\\core\\event\\course_viewed'
+        and courseid in (".implode($courses);")";
+
+        $records = $DB->get_records_sql($query);
+        
         return $records;
     }
 
