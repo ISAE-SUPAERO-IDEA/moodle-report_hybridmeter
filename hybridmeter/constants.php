@@ -44,6 +44,33 @@ define("HYBRIDMETER_ACTIVITY_INSTANCES_DEVIATOR_CONSTANT", 2);
 define("HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT", 3);
 define("HYBRIDMETER_ACTIVITY_TOTAL_INSTANCES_DEVIATOR_CONSTANT", 4);
 
+const FIELDS = [
+	'id_moodle',
+	'idnumber',
+	'fullname',
+	'url',
+	'niveau_de_digitalisation',
+	'niveau_d_utilisation',
+	'cours_actif',
+	'nb_utilisateurs_actifs',
+	'nb_inscrits',
+	'date_debut_capture',
+	'date_fin_capture'
+];
+
+const ALIASES = [
+	'idnumber' => 'Identifiant du cours',
+	'fullname' => 'Nom du cours',
+	'url' => 'URL du cours',
+	'niveau_de_digitalisation' => 'ND',
+	'niveau_d_utilisation' => 'NU',
+	'cours_actif' => 'Cours actif durant la période mesurée',
+	'nb_utilisateurs_actifs' => 'Nombre d\'apprenants actifs',
+	'nb_inscrits' => 'Nombre d\'inscrits actuellement',
+	'date_debut_capture' => 'Debut de la période de capture',
+	'date_fin_capture' => 'Fin de la période de capture'
+];
+
 const COEFF_STATIQUES = [
 	MODULE_ASSIGN => 4,
 	MODULE_ASSIGNMENT => 4,

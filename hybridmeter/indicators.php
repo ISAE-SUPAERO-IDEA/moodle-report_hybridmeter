@@ -3,7 +3,8 @@ require_once(__DIR__.'/constants.php');
 require_once(__DIR__.'/classes/configurator.php');
 defined('MOODLE_INTERNAL') || die();
 
-
+use \report_hybridmeter\classes\configurator as configurator;
+use \report_hybridmeter\classes\data as data;
 
 # https://app.clickup.com/t/1h2ad7h
 function hybridation_calculus($type, $activity_data){
@@ -15,7 +16,7 @@ function hybridation_calculus($type, $activity_data){
 	$sigmaPkVk = 0; // Sum of activity weight multiplicated by their hybridation value
 	$M = 1; // Malus
 	foreach ($activity_data as $k => $Nk) {
-		$Vk = \report_hybridmeter\classes\configurator::getInstance()->get_coeff($type, $k); // Activity hybridation value
+		$Vk = configurator::getInstance()->get_coeff($type, $k); // Activity hybridation value
 		if ($Nk > 0 && $Vk > 0) {
 			$C ++; 
 			$N += $Nk;
@@ -32,19 +33,20 @@ function hybridation_calculus($type, $activity_data){
 	return round($H, 2);
 }
 
-function hybridation_statique($object,$data,$parameters){
-	$configurator = $parameters["configurator"];
-	$activity_data = $data->count_modules_types_id($object['id']);
+function hybridation_statique($object, $parameters){
+	$activity_data = data::getInstance()->count_modules_types_id($object['id']);
 	return hybridation_calculus("static_coeffs", $activity_data);
 }
-function raw_data($object,$data,$parameters) {
-	return $data->count_modules_types_id($object['id']);
+
+function raw_data($object, $parameters) {
+	return data::getInstance()->count_modules_types_id($object['id']);
 }
 
 
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
-function hybridation_dynamique($object,$data,$parameters){
-	$configurator = $parameters["configurator"];
+function hybridation_dynamique($object, $parameters){
+	$configurator = configurator::getInstance();
+	$data = data::getInstance();
 	$coeffs = $configurator->get_data()["dynamic_coeffs"];
 	$indicator=0;
 	$total=0;
@@ -55,8 +57,9 @@ function hybridation_dynamique($object,$data,$parameters){
 }
 
 //Fonction lambda utilisée pour définir si le cours est actif
-function is_course_active_last_month($object, $data, $parameters){
-	$configurator=$parameters["configurator"];
+function is_course_active_last_month($object, $parameters){
+	$configurator = configurator::getInstance();
+	$data = data::getinstance();
 
 	$count=$data->count_single_users_course_viewed(
 		$object['id'], 

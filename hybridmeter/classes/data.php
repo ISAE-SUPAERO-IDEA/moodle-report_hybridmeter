@@ -12,8 +12,20 @@ require_once(__DIR__.'/configurator.php');
 
 
 // TODO: refactoriser cette classe (Séparer fonctions de blacklist des fonctions de calcul)
+//data_provider + blacklist_manager
 class data {
+
+    protected static $instance = null;
+
     public function __construct(){
+    }
+
+    public static function getInstance() {
+        if (self::$instance == null){
+            self::$instance = new data();
+        }
+
+        return self::$instance;
     }
 
     /*Fonctions qui permettent de calculer les indicateurs*/

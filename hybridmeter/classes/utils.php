@@ -18,4 +18,9 @@ class utils{
 			return $obj->id;
 		}, $array));
 	}
+
+	static function tomorrow_midnight() {
+		$tomorrow_midnight = strtotime("tomorrow 00:00");
+		return $tomorrow_midnight;
+	}
 }

@@ -9,8 +9,101 @@ require_once(dirname(__FILE__).'/../constants.php');
 use plugin_renderer_base;
 use html_writer;
 use moodle_url;
+use \report_hybridmeter\classes\data as data;
+use \report_hybridmeter\classes\configurator as configurator;
 
 class renderer extends plugin_renderer_base {
+
+    public function next_schedule($is_scheduled, $timestamp_scheduled, $unscheduled_action) {
+        $html = "";
+
+        $date_scheduled = new \DateTime();
+        $date_scheduled->setTimestamp($timestamp_scheduled);
+        
+        error_log(print_r(array("wsh",$unscheduled_action),1));
+        error_log(print_r(func_get_args(),1));
+
+        if($unscheduled_action == 1){
+            $html .= html_writer::start_div('container-fluid');
+            
+            $html .= html_writer::span(get_string('successfully_unscheduled', 'report_hybridmeter'));
+
+            $html .= html_writer::end_div();
+        }
+
+        $html .= html_writer::start_div('container-fluid');
+
+        if($is_scheduled == 1){
+            $schedule_message = sprintf(
+                get_string('next_schedule', 'report_hybridmeter'),
+                $date_scheduled->format('d/m/Y'),
+                $date_scheduled->format('H:i')
+            );
+            $html .= html_writer::span($schedule_message, '');
+        }
+        else{
+            $html .= html_writer::span(get_string('no_schedule', 'report_hybridmeter'));
+        }
+
+        $html .= html_writer::end_div();
+
+        $html .= html_writer::start_div(
+            'container-fluid',
+            array(
+                "style" => "margin-top : 5px;"
+            )
+        );
+        $html .= html_writer::start_span('');
+
+        $url_schedule = new moodle_url('/report/hybridmeter/management.php#schedule');
+        $url_unschedule = new moodle_url('/report/hybridmeter/index.php?unschedule=1');
+
+        if($is_scheduled == 1){
+            $html .= html_writer::start_span('');
+
+            $html .= html_writer::link(
+                $url_schedule,
+                get_string('reschedule', 'report_hybridmeter'),
+                array(
+                    'class' => 'row m-1 btn btn-secondary',
+                    "style" => 'margin-right : 20px;'
+                )
+            );
+
+            $html .= html_writer::end_span('');
+
+            $html .= html_writer::start_span('');
+
+            $html .= html_writer::link(
+                $url_unschedule,
+                get_string('unschedule', 'report_hybridmeter'),
+                array(
+                    'class' => 'row m-1 btn btn-secondary',
+                    "style" => 'margin-right : 10px;'
+                )
+            );
+
+            $html .= html_writer::end_span('');
+        }
+        else{
+            $html .= html_writer::link(
+                $url_schedule,
+                get_string('schedule', 'report_hybridmeter'),
+                array(
+                    'class' => 'row m-1 btn btn-secondary',
+                    "style" => 'margin-right : 0px;'
+                )
+            );
+        }
+
+        $html .= html_writer::end_span();
+        $html .= html_writer::end_div();
+
+        $html .= html_writer::tag("hr","");
+
+        return $html;
+    }
+
     public function index_links($data_available) {
 
         // Bouton télécharger

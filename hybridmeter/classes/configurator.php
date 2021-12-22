@@ -6,6 +6,8 @@ require_once(dirname(__FILE__).'/data.php');
 
 defined('MOODLE_INTERNAL') || die();
 
+use \report_hybridmeter\classes\data as data;
+use \report_hybridmeter\classes\utils as utils;
 
 // Manage hybridmeter's configuration file
 class configurator {
@@ -13,20 +15,14 @@ class configurator {
 
 	protected $data;
 
-	protected $data_provider;
-
 	protected $begin_date;
 
 	protected $end_date;
 
 	protected static $instance = null;
 
-	// TODO : Voir si c'est nécessaire de passer data_provider
-
-	public function __construct($data_provider){
+	public function __construct(){
 		global $CFG;
-
-		$this->data_provider=$data_provider;
 
 		$this->path=$CFG->dataroot."/hybridmeter/config.json";
 		// Initialize empty data if no configuration file exists 
@@ -47,6 +43,10 @@ class configurator {
 		$this->set_default_value("blacklisted_courses", []);
 		$this->set_default_value("blacklisted_categories", []);
 		$this->set_default_value("running", NON_RUNNING);
+
+		$this->set_default_value("has_scheduled_calculation", 1);
+		$tomorrow_midnight = utils::tomorrow_midnight();
+		$this->set_default_value("scheduled_date", $tomorrow_midnight);
 		/*
 		$this->set_default_value("seuil_actif", SEUIL_ACTIF);
 		$this->set_default_value("seuil_dynamique", SEUIL_DYNAMIQUE);
@@ -65,7 +65,7 @@ class configurator {
 	// Get the singleton configuration instance
 	public static function getInstance() {
 		if (self::$instance == null) {
-			self::$instance = new configurator(new \report_hybridmeter\classes\data());
+			self::$instance = new configurator(data::getInstance());
 		}
         return self::$instance;
     }
@@ -75,6 +75,21 @@ class configurator {
 			$this->data[$key] = $value;
 		}
 	}
+
+	public function has_scheduled_calculation(){
+		return $this->data["has_scheduled_calculation"];
+	}
+
+	public function get_scheduled_date(){
+		return $this->data["scheduled_date"];
+	}
+
+	public function unschedule_calculation(){
+		$this->update_key("has_scheduled_calculation", 0);
+	}
+
+
+
 	// Update coefficients for a given $type (dynamic or static)
 	public function update_coeffs($key, $default_coeffs){
 		global $DB;
@@ -86,6 +101,7 @@ class configurator {
 			}
 		}
 	}
+
 	// Get a coefficient $key for a given $type
 	public function get_coeff($key, $item) {
 		if (array_key_exists($item, $this->data[$key])) {
@@ -124,6 +140,8 @@ class configurator {
 
 	// Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
 	public function set_blacklisted($type, $id, $value) {
+		$data_provider = data::getInstance();
+
 		$array_key = "blacklisted_".$type;
 		if (!array_key_exists($array_key, $this->data)) {
 			$this->data[$array_key] = [];
@@ -137,7 +155,7 @@ class configurator {
 		}
 
 		if($type=="categories"){
-			$id_categories=$this->data_provider->get_subcategories_id($id);
+			$id_categories=$data_provider->get_subcategories_id($id);
 
 			foreach($id_categories as $id_cat){
 				$this->set_blacklisted($type, $id_cat, $value);

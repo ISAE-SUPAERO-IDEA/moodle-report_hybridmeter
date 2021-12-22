@@ -215,7 +215,7 @@ Vue.component('configurator', {
   template: ` 
     <div>
        <!-- TODO: Widget date input -->
-      <div v-if="ok" v-html="boxok">
+      <div v-if="okmesure" v-html="boxok">
         
       </div>
       <h3 class="main">Période de mesure</h3>
@@ -263,10 +263,59 @@ Vue.component('configurator', {
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right"></div>
           <div class="form-setting col-sm-9">
-            <button type="submit" class="btn btn-primary" @click="save">Enregistrer les modifications</button>
+            <button type="submit" class="btn btn-primary" @click="saveMesure">Enregistrer les modifications</button>
           </div>
         </div>
 
+      </div>
+      <hr/>
+      <div v-if="oklancement" v-html="boxok">
+        
+      </div>
+      <div v-if="okclosed" v-html="boxok">
+        
+      </div>
+      <h3 class="main">Prochain lancement</h3>
+      <div id="schedule" class="management-module">
+        <div style="display:flex; flex-direction:row;">
+          <div>
+            <button @click="set_tomorrow_midnight">Cette nuit</button>
+          </div>
+          <div>
+            <button @click="set_saturday_midnight">Ce week-end</button>
+          </div>
+        </div>
+        <div class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right">
+            <label>
+              Date de lancement
+            </label>
+          </div>
+          <div class="form-setting col-sm-9">
+            <div class="form-text defaultsnext">
+              <input type="date" v-model="scheduled_date">
+            </div>
+          </div>
+        </div>
+        <div class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right">
+            <label>
+              Heure de lancement
+            </label>
+          </div>
+          <div class="form-setting col-sm-9">
+            <div class="form-text defaultsnext">
+              <input type="time"  v-model="scheduled_time">
+            </div>
+          </div>
+        </div>
+        <div class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right"></div>
+          <div style="display:flex; flex-direction:row;" class="form-setting col-sm-9">
+            <button type="submit" class="btn btn-primary" @click="saveLancement">Enregistrer les modifications</button>
+            <button type="submit" class="btn btn-secondary" @click="closeLancement">Déprogrammer le lancement</button>
+          </div>
+        </div>
       </div>
     </div>
     `,
@@ -275,7 +324,15 @@ Vue.component('configurator', {
       config: {},
       begin_date:undefined,
       end_date:undefined,
-      ok:false
+      scheduled_date:undefined,
+      scheduled_time:undefined,
+      today:undefined,
+      tomorrow:undefined,
+      saturday:undefined,
+      okmesure:false,
+      oklancement:false,
+      okclosed:false,
+      action:undefined
     }
   },
   watch: {
@@ -292,6 +349,13 @@ Vue.component('configurator', {
     }
   },
   async created() {
+    this.today = new Date();
+    console.log(this.today);
+    this.tomorrow = new Date(this.today);
+    this.tomorrow.setDate(this.today.getDate() + 1);
+    console.log(this.tomorrow);
+    this.scheduled_date = this.tomorrow.getFullYear() + "-" + (this.tomorrow.getMonth()+1) + "-" + this.tomorrow.getDate();
+    this.scheduled_time = "00:00";
     this.config = await this.get(`configuration_handler.php`);
   },
   methods: {
@@ -303,6 +367,19 @@ Vue.component('configurator', {
     post: function (urlRequest, data){
       const myaxios = axios.create({ baseURL: `${url_root}/report/hybridmeter/ajax/` });
       return myaxios.post(urlRequest, data).then(response => response.data)
+    },
+    set_tomorrow_midnight(){
+      this.scheduled_date = this.tomorrow.getFullYear() + "-" + (this.tomorrow.getMonth()+1) + "-" + this.tomorrow.getDate();
+      this.scheduled_time = "00:00";
+    },
+    set_saturday_midnight(){
+      if(this.saturday == undefined){
+        let delta = 6 - this.today.getDay();
+        this.saturday = new Date();
+        this.saturday.setDate(this.today.getDate() + delta);
+      }
+      this.scheduled_date = this.saturday.getFullYear() + "-" + (this.saturday.getMonth()+1) + "-" + this.saturday.getDate();
+      this.scheduled_time = "00:00";
     },
     timestamp_to_ui(timestamp) {
       // Create a new JavaScript Date object based on the timestamp
@@ -321,13 +398,35 @@ Vue.component('configurator', {
       var date = new Date(text);
       return date.getTime() / 1000;
     },
-    async save() {
+    async saveMesure() {
+      this.action="periode_mesure";
       var data = new FormData();
+      data.append('action', this.action);
       data.append('begin_date', this.config.begin_date);
       data.append('end_date', this.config.end_date);
       data.append('debug', this.config.debug);
       await this.post(`configuration_handler.php`, data);
-      this.ok=true;
+      this.okmesure=true;
+    },
+    async saveLancement() {
+      this.action="schedule";
+      var data = new FormData();
+      let timestamp = Date.parse(this.scheduled_date+' '+this.scheduled_time) / 1000;
+      data.append('action', this.action);
+      data.append('scheduled_timestamp', timestamp);
+      data.append('debug', this.config.debug);
+      await this.post(`configuration_handler.php`, data);
+      this.oklancement=true;
+    },
+    async closeLancement() {
+      this.action="unschedule";
+      var data = new FormData();
+      data.append('action', this.action);
+      data.append('debug', this.config.debug);
+      this.scheduled_date = undefined;
+      this.scheduled_time = undefined;
+      await this.post(`configuration_handler.php`, data);
+      this.okclosed=true;
     }
   }
 });

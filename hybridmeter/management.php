@@ -7,6 +7,8 @@ require_once(dirname(__FILE__).'/output/management/management_renderer.php');
 require_once(dirname(__FILE__).'/constants.php');
 require_once($CFG->libdir.'/adminlib.php');
 
+use \report_hybridmeter\classes\data as data;
+
 require_login();
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -27,7 +29,7 @@ $search = optional_param('search', '', PARAM_RAW);
 
 $systemcontext = $context = context_system::instance();
 
-$data = new \report_hybridmeter\classes\data();
+$data = data::getInstance();
 
 $title = get_string('pluginname', 'report_hybridmeter');
 $pagetitle = get_string('config', 'report_hybridmeter');

@@ -10,24 +10,28 @@ require_once(__DIR__.'/data.php');
 require_once(__DIR__.'/formatter.php');
 require_once(__DIR__.'/configurator.php');
 
-
+use \report_hybridmeter\classes\data as data;
+use \report_hybridmeter\classes\configurator as configurator;
+use \report_hybridmeter\classes\exporter as exporter;
 
 class traitement{
 
-	protected $data;
 	protected $formatter;
 	protected $exporter;
-	protected $configurator;
 	protected $date_debut;
 	protected $date_fin;
 
 	function __construct(){
-		$this->data=new \report_hybridmeter\classes\data();
 		$timestamp = strtotime('NOW');
 
-		$this->data->clear_adhoc_tasks();
+		$data = data::getInstance();
+
+		$data->clear_adhoc_tasks();
 		
-		$this->formatter=new \report_hybridmeter\classes\formatter($this->data, function($data){
+		$this->formatter=new \report_hybridmeter\classes\formatter(function(){
+			$data = data::getInstance();
+			$configurator = configurator::getInstance();
+			
 			$whitelist_ids = array_map(
 				function($course) {
 					return $course->id;
@@ -35,41 +39,48 @@ class traitement{
 				$data->get_whitelisted_courses()
 			);
 
-			$configurator = new configurator($this->data);
-
 			$filtered = $data->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
 
 			return $filtered;
 		});
 
-		$this->exporter=new \report_hybridmeter\classes\exporter(array('id_moodle', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
+		$this->exporter=new exporter(FIELDS);
+		
 
 		$this->date_debut = new \DateTime();
 		$this->date_debut->setTimestamp($timestamp);
 
 		$this->date_fin = new \DateTime();
-
-		$this->configurator = new \report_hybridmeter\classes\configurator($this->data);
 	}
 
 	function launch() {
 		global $CFG;
 		global $SITE;
 
-		$this->configurator->set_as_running($this->date_debut->getTimestamp());
+		$configurator = configurator::getInstance();
+		$data = data::getInstance();
+
+		$configurator->set_as_running($this->date_debut->getTimestamp());
 
 		//Calcul des indicateurs détaillés
 
 		$this->formatter->calculate_new_indicator(
-			function($object, $data, $parameters){
+			function($object, $parameters){
 				return $object['id'];
 			},
 			"id_moodle"
 		);
 
+		$this->formatter->calculate_new_indicator(
+			function($object, $parameters){
+				return $object['idnumber'];
+			},
+			"id_number"
+		);
+
 
 		$this->formatter->calculate_new_indicator(
-			function($object, $data, $parameters){
+			function($object, $parameters){
 				return $parameters["www_root"]."/course/view.php?id=".$object['id'];
 			},
 			"url",
@@ -81,7 +92,7 @@ class traitement{
 	    	'niveau_de_digitalisation',
 	    	array(
 	    		"nb_cours" => $this->formatter->get_length_array(),
-	    		"configurator" => $this->configurator
+	    		"configurator" => $configurator
 	    	)
 	    );
 
@@ -90,7 +101,7 @@ class traitement{
 			'niveau_d_utilisation',
 			array(
 				"nb_cours" => $this->formatter->get_length_array(),
-				"configurator" => $this->configurator
+				"configurator" => $configurator
 			)
 		);
 
@@ -99,39 +110,36 @@ class traitement{
 			"is_course_active_last_month",
 			'cours_actif',
 			array (
-				"configurator" => $this->configurator
+				"configurator" => $configurator
 			)
 		);
 
 		$this->formatter->calculate_new_indicator(
-			function ($object, $data, $parameters) {
-				return $data->count_single_users_course_viewed(
+			function ($object, $parameters) {
+				$configurator = configurator::getInstance();
+				return data::getInstance()->count_single_users_course_viewed(
 					$object['id'],
-					$parameters["begin_date"],
-					$parameters["end_date"]
+					$configurator->get_begin_timestamp(),
+					$configurator->get_end_timestamp()
 				);
 			},
-			'nb_utilisateurs_actifs',
-			array(
-				"begin_date" => $this->configurator->get_begin_timestamp(),
-				"end_date" => $this->configurator->get_end_timestamp()
-			)
+			'nb_utilisateurs_actifs'
 		);
 
 		$this->formatter->calculate_new_indicator(
-			function ($object, $data, $parameters) {
-				return $data->count_registered_users($object['id']);
+			function ($object, $parameters) {
+				return data::getInstance()->count_registered_users($object['id']);
 			},
 			'nb_inscrits'
 		);
 
 		$date_debut = new \DateTime();
-		$date_debut->setTimestamp($this->configurator->get_begin_timestamp());
-		$date_debut = $date_debut->format('Y-m-d H:i:s');
+		$date_debut->setTimestamp($configurator->get_begin_timestamp());
+		$date_debut = $date_debut->format('d/m/Y');
 
 
 		$this->formatter->calculate_new_indicator(
-			function ($object, $data, $parameters) {
+			function ($object, $parameters) {
 				return $parameters['date_debut'];
 			},
 			'date_debut_capture',
@@ -141,11 +149,12 @@ class traitement{
 		);
 
 		$date_fin = new \DateTime();
-		$date_fin->setTimestamp($this->configurator->get_end_timestamp());
-		$date_fin = $date_fin->format('Y-m-d H:i:s');
+		$date_fin->setTimestamp($configurator->get_end_timestamp());
+		$date_fin = $date_fin->format('d/m/Y');
 
 		$this->formatter->calculate_new_indicator(
-			function ($object, $data, $parameters) {
+			function ($object, $parameters) {
+				error_log(print_r(array("lolhahaoho", $parameters),1));
 				return $parameters['date_fin'];
 			},
 			'date_fin_capture',
@@ -156,11 +165,7 @@ class traitement{
 
 		$this->formatter->calculate_new_indicator(
 			'raw_data',
-			'raw_data',
-			array(
-				"nb_cours" => $this->formatter->get_length_array(),
-				"configurator" => $this->configurator
-			)
+			'raw_data'
 		);
 
 		$data_out = $this->formatter->get_array();
@@ -172,7 +177,7 @@ class traitement{
 		$generaldata['cours_hybrides_statiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["niveau_de_digitalisation"] >= $this->configurator->get_data()["seuil_statique"];
+					return $cours["niveau_de_digitalisation"] >= configurator::getInstance()->get_data()["seuil_statique"];
 				}
 			)
 		);
@@ -180,7 +185,7 @@ class traitement{
 		$generaldata['cours_hybrides_dynamiques']=array_values(
 			array_filter($data_out,
 				function($cours){
-					return $cours["niveau_d_utilisation"] >= $this->configurator->get_data()["seuil_dynamique"];
+					return $cours["niveau_d_utilisation"] >= configurator::getInstance()->get_data()["seuil_dynamique"];
 				}
 			)
 		);
@@ -198,31 +203,30 @@ class traitement{
 		$generaldata['nb_cours_hybrides_statiques']=count($generaldata['cours_hybrides_statiques']);
 		$generaldata['nb_cours_hybrides_dynamiques']=count($generaldata['cours_hybrides_dynamiques']);
 
-
-		$generaldata['nb_etudiants_concernes_statiques']=$this->data->count_distinct_students(
+		$generaldata['nb_etudiants_concernes_statiques']=$data->count_distinct_students(
 			$generaldata['id_hybrides_statiques']
 		);
 
-		$generaldata['nb_etudiants_concernes_statiques_actifs']=$this->data->count_single_users_course_viewed(
+		$generaldata['nb_etudiants_concernes_statiques_actifs']=$data->count_single_users_course_viewed(
 			$generaldata['id_hybrides_statiques'],
-			$this->configurator->get_begin_timestamp(),
-			$this->configurator->get_end_timestamp()
+			$configurator->get_begin_timestamp(),
+			$configurator->get_end_timestamp()
 		);
 		
 		
 
-		$generaldata['nb_etudiants_concernes_dynamiques']=$this->data->count_distinct_students(
+		$generaldata['nb_etudiants_concernes_dynamiques']=$data->count_distinct_students(
 			$generaldata['id_hybrides_dynamiques']
 		);
 		
-		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$this->data->count_single_users_course_viewed(
+		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$data->count_single_users_course_viewed(
 			$generaldata['id_hybrides_dynamiques'],
-			$this->configurator->get_begin_timestamp(),
-			$this->configurator->get_end_timestamp()
+			$configurator->get_begin_timestamp(),
+			$configurator->get_end_timestamp()
 		);
 
-		$generaldata["timestamp_debut_capture"] = $this->configurator->get_begin_timestamp();
-		$generaldata["timestamp_fin_capture"] = $this->configurator->get_end_timestamp();
+		$generaldata["timestamp_debut_capture"] = $configurator->get_begin_timestamp();
+		$generaldata["timestamp_fin_capture"] = $configurator->get_end_timestamp();
 
 		$generaldata["nb_cours_analyses"] = $this->formatter->get_length_array();
 
@@ -242,6 +246,10 @@ class traitement{
 			"diff" => $interval
 		);
 
+		if (!file_exists($CFG->dataroot."/hybridmeter/records")) {
+			mkdir($CFG->dataroot."/hybridmeter/records", 0700, true);
+		}
+
 		$file_exporter = fopen($CFG->dataroot."/hybridmeter/records/serialized_data","w");
 		$s = serialize(array(
 			"time" => $time,
@@ -252,14 +260,16 @@ class traitement{
 
 		$date_format = $this->date_debut->format('Y-m-d H:i:s');
 
+		/*Nous avons desactivé l'historisation des CSV pour des raisons de RGPD (il faut renégocier les conditions avec le DPO pour les inclure)
+		
 		$filename = $CFG->dataroot."/hybridmeter/records/backup/record_".$date_format.".csv";
 
 		$backup=fopen($filename,"w");
-	    fwrite($backup, $this->exporter->print_csv_data(true));
+	    fwrite($backup, $this->exporter->print_csv_data(true));*/
 
 		//Gestion des logs et des tâches
 
-	    $this->configurator->unset_as_running();
+	    $configurator->unset_as_running();
 
 	    return $data_out;
 	}

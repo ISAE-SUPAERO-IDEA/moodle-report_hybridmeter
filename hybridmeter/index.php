@@ -13,14 +13,14 @@ require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 
+use \report_hybridmeter\classes\configurator as configurator;
+use \report_hybridmeter\classes\data as data;
+
 $context = context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
 admin_externalpage_setup('report_hybridmeter');
-
-//On récupère les paramètres passés (en POST dans notre cas, mais si on passe en GET ça détectera aussi) pour coder les commandes
-$task = optional_param('task', array(), PARAM_TEXT);
 
 // TODO: gestion erreur si pas encore de données sérialisées
 // TODO: Déplacer dans une classe gérant le fichier sérialisé
@@ -67,18 +67,19 @@ else{
 	$time = null;
 }
 
+$task = optional_param('task', array(), PARAM_TEXT);
+
 if ($task=='download'){
-	$exporter= new \report_hybridmeter\classes\exporter(array('id_moodle', 'idnumber', 'fullname', 'url', 'niveau_de_digitalisation', 'niveau_d_utilisation', 'cours_actif', 'nb_utilisateurs_actifs', 'nb_inscrits', 'date_debut_capture', 'date_fin_capture'));
+	$exporter = new \report_hybridmeter\classes\exporter(FIELDS, ALIASES);
 	$exporter->set_data($data_unserialized['data']);
 	$exporter->create_csv($SITE->fullname."-".$date_format);
 	$exporter->download_file();
 }
 
-$data = new \report_hybridmeter\classes\data();
-$configurator = new \report_hybridmeter\classes\configurator($data);
+$configurator = configurator::getInstance();
 
 if ($task=='calculate'){
-	$data->clear_adhoc_tasks();
+	data::getInstance()->clear_adhoc_tasks();
 	$traitement = new \report_hybridmeter\task\traitement();
 	\core\task\manager::queue_adhoc_task($traitement);
 }
@@ -96,6 +97,12 @@ $PAGE->set_heading($title);
 $output = $PAGE->get_renderer('report_hybridmeter');
 
 $debug = optional_param('debug', 0, PARAM_INTEGER);
+$unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
+
+if($unschedule == 1){
+	$configurator->unschedule_calculation();
+	$lol = 1;
+}
 
 echo $output->header();
 echo $output->heading($pagetitle);
@@ -106,6 +113,11 @@ echo $output->general_indicators(
 	$configurator->get_end_timestamp(),
 	$date_format,
 	$intervalle_format
+);
+echo $output->next_schedule(
+	$configurator->has_scheduled_calculation(),
+	$configurator->get_scheduled_date(),
+	$lol
 );
 echo $output->index_links($data_available);
 

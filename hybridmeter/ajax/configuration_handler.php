@@ -6,6 +6,10 @@
 	require_once("../../../config.php");
     require_once("../classes/configurator.php");
     require_once("../classes/data.php");
+
+	use \report_hybridmeter\classes\configurator as configurator;
+	use \report_hybridmeter\classes\data as data;
+
     header('Content-Type: text/json');
 
     //Vérification des autorisations (rôle admin obligatoire)
@@ -15,19 +19,37 @@
 	$PAGE->set_context($context);
 	has_capability('report/hybridmeter:all', $context) || die();
 
-	$data = new \report_hybridmeter\classes\data();
-	$configurator = new \report_hybridmeter\classes\configurator($data);
+	$data = data::getInstance();
+	$configurator = configurator::getInstance();
 
  	// Sauvegarde
 	if ($_SERVER['REQUEST_METHOD'] == "POST") {
-		$begin_date = optional_param('begin_date', null, PARAM_INT);
-		$end_date = optional_param('end_date', null, PARAM_INT);
+		$action = optional_param('action', 'nothing', PARAM_ALPHAEXT);
 		$debug = optional_param('debug', null, PARAM_BOOL);
-		$configurator->update([
-			"begin_date" => $begin_date, 
-			"end_date" => $end_date,
-			"debug" => $debug
-		]);
+
+		if($action == "periode_mesure"){
+			$begin_date = required_param('begin_date', PARAM_INT);
+			$end_date = required_param('end_date', PARAM_INT);
+			$configurator->update([
+				"begin_date" => $begin_date, 
+				"end_date" => $end_date,
+				"debug" => $debug
+			]);
+		}
+		else if ($action == "schedule"){
+			$scheduled_timestamp = required_param('scheduled_timestamp', PARAM_INT);
+			$configurator->update([
+				"scheduled_date" => $scheduled_timestamp,
+				"has_scheduled_calculation" => 1,
+				"debug" => $debug
+			]);
+		}
+		else if ($action == "unschedule"){
+			$configurator->update([
+				"has_scheduled_calculation" => 0,
+				"debug" => $debug
+			]);
+		}
 	} else  {
 		/*TODO : Un seul echo*/
 		

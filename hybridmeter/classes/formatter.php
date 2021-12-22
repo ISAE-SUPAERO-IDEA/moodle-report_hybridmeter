@@ -4,7 +4,6 @@ namespace report_hybridmeter\classes;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/data.php');
 require_once(dirname(__FILE__).'/logger.php');
 
 // TODO: Expliquer ce que cette classe formatte
@@ -13,16 +12,11 @@ class formatter {
 	//Le tableau structuré
 	protected $array;
 
-	//Les données brutes
-	protected $data;
-
-	public function __construct($data, $lambda){
+	public function __construct($lambda){
 		$this->array = array();
-		$this->data=$data;
-		$this->import_objects_array($lambda($this->data));
+		$this->import_objects_array($lambda());
 	}
-
-	//Structureur de données, structure les données de data dans array
+	
 	protected function import_objects_array(Array $objectarr){
 		foreach($objectarr as $key => $object){
 			$this->array[$key]=$this->object_to_array($object);
@@ -42,7 +36,7 @@ class formatter {
 		$i = 1;
 		foreach($this->array as $key => $value){
 			logger::log($indicator_name." id=". $key." (".$i."/".count($this->array).")");
-			$this->array[$key][$indicator_name]=$lambda($value,$this->data,$parameters);
+			$this->array[$key][$indicator_name]=$lambda($value,$parameters);
 			$i++;
 		}
 	}

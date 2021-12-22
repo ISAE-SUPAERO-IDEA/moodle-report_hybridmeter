@@ -27,8 +27,9 @@ class exporter {
     //L'objet csv_export_writer de moodle core
     protected $csv;
 
-    public function __construct(array $fields=array(), array $raw_data=array(), $delimiter = 'comma'){
+    public function __construct(array $fields=array(), array $aliases = array(), array $raw_data=array(), $delimiter = 'comma'){
         $this->fields=$fields;
+        $this->aliases=$aliases;
         $this->delimiter=$delimiter;
         $this->csv=new \csv_export_writer($this->delimiter);
     }
@@ -63,13 +64,31 @@ class exporter {
         $this->delimiter=$delimiter;
     }
 
+    public function set_aliases (array $aliases){
+        $this->aliases=$aliases;
+    }
+
+    public function construct_fields_name(){
+        $output=array();
+
+        foreach ($this->fields as $field){
+            if(array_key_exists($field,$this->aliases))
+                $value = $this->aliases[$field];
+            else
+                $value = $field;
+
+            array_push($output, $value);
+        }
+
+        return $output;
+    }
+
     /*TODO : améliorer le workflow */
 
     //pour créer le csv
     public function create_csv($filename) {
         $this->csv->set_filename($filename);
-        $fields = $this->fields;
-        $this->csv->add_data($fields);
+        $this->csv->add_data($this->construct_fields_name());
 
         foreach ($this->raw_data as $key => $record) {
             $row = array();
