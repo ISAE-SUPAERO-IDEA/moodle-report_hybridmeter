@@ -87,10 +87,18 @@ class configurator {
 	}
 
 	public function unschedule_calculation(){
+		data_provider::getInstance()->clear_adhoc_tasks();
 		$this->update_key("has_scheduled_calculation", 0);
 	}
 
-
+	public function schedule_calculation($timestamp){
+		data_provider::getInstance()->clear_adhoc_tasks();
+		$configurator->update([
+			"scheduled_date" => $timestamp,
+			"has_scheduled_calculation" => 1,
+		]);
+		data_provider::getInstance()->schedule_adhoc_task($timestamp);
+	}
 
 	// Update coefficients for a given $type (dynamic or static)
 	public function update_coeffs($key, $default_coeffs){

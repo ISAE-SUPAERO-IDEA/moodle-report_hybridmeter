@@ -3,6 +3,8 @@
 namespace report_hybridmeter\classes;
 
 require_once(__DIR__."/configurator.php");
+require(dirname(__FILE__).'/../../config.php');
+require_once(dirname(__FILE__).'/classes/task/traitement.php');
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -283,5 +285,11 @@ class data_provider {
                 )
             )
         );
+    }
+
+    public function schedule_adhoc_task($timestamp){
+        $task = new \report_hybridmeter\task\traitement();
+        $task->set_next_run_time($timestamp);
+        \core\task\manager::queue_adhoc_task($task);
     }
 }

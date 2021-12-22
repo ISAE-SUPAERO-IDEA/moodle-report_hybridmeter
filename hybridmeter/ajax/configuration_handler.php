@@ -34,11 +34,7 @@
 		}
 		else if ($action == "schedule"){
 			$scheduled_timestamp = required_param('scheduled_timestamp', PARAM_INT);
-			$configurator->update([
-				"scheduled_date" => $scheduled_timestamp,
-				"has_scheduled_calculation" => 1,
-				"debug" => $debug
-			]);
+			$configurator->schedule_calculation($scheduled_timestamp);
 		}
 		else if ($action == "unschedule"){
 			$configurator->update([
