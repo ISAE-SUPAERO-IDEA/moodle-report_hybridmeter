@@ -1,11 +1,12 @@
 <?php 
 	/*
-	AJAX endpoint to manage HybridMeter blacklist configuration data
+	AJAX endpoint to manage HybridMeter blacklist configuration
 
-	*/ 
+	*/
 	require_once("../../../config.php");
-	require_once("../classes/data.php");
-    require_once("../classes/configurator.php");
+	require_once(__DIR__."/../classes/configurator.php");
+	use \report_hybridmeter\classes\configurator as configurator;
+
     header('Content-Type: text/json');
 
     //Vérification des autorisations (rôle admin obligatoire)
@@ -15,8 +16,7 @@
 	$PAGE->set_context($context);
 	has_capability('report/hybridmeter:all', $context) || die();
 
-	$data = new \report_hybridmeter\classes\data();
-	$configurator = new \report_hybridmeter\classes\configurator($data);
+	$configurator = configurator::getInstance();
 	
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
 		$task  = required_param('task', PARAM_ALPHAEXT);

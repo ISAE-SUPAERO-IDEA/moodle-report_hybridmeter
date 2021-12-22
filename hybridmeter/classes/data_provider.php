@@ -2,18 +2,13 @@
 
 namespace report_hybridmeter\classes;
 
+require_once(__DIR__."/configurator.php");
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/configurator.php');
-require_once(dirname(__FILE__).'/utils.php');
+use \report_hybridmeter\classes\configurator as configurator;
 
-require_once(__DIR__.'/configurator.php');
-
-
-
-// TODO: refactoriser cette classe (Séparer fonctions de blacklist des fonctions de calcul)
-//data_provider + blacklist_manager
-class data {
+class data_provider {
 
     protected static $instance = null;
 
@@ -22,7 +17,7 @@ class data {
 
     public static function getInstance() {
         if (self::$instance == null){
-            self::$instance = new data();
+            self::$instance = new data_provider();
         }
 
         return self::$instance;
@@ -213,8 +208,8 @@ class data {
     //récupère les cours actifs visibles sans la blacklist
     public function get_whitelisted_courses(){
         global $DB;
-        // TODO : singleton
-        $config = new configurator($this);
+
+        $config = configurator::getInstance();
         $data = $config->get_data();
         $blacklisted_courses = array_keys($data["blacklisted_courses"]);
         

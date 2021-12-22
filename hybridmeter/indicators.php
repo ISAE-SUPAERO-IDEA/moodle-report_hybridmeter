@@ -1,10 +1,11 @@
 <?php
 require_once(__DIR__.'/constants.php');
 require_once(__DIR__.'/classes/configurator.php');
+require_once(__DIR__.'/classes/data_provider.php');
 defined('MOODLE_INTERNAL') || die();
 
 use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\data as data;
+use \report_hybridmeter\classes\data_provider as data_provider;
 
 # https://app.clickup.com/t/1h2ad7h
 function hybridation_calculus($type, $activity_data){
@@ -34,23 +35,23 @@ function hybridation_calculus($type, $activity_data){
 }
 
 function hybridation_statique($object, $parameters){
-	$activity_data = data::getInstance()->count_modules_types_id($object['id']);
+	$activity_data = data_provider::getInstance()->count_modules_types_id($object['id']);
 	return hybridation_calculus("static_coeffs", $activity_data);
 }
 
 function raw_data($object, $parameters) {
-	return data::getInstance()->count_modules_types_id($object['id']);
+	return data_provider::getInstance()->count_modules_types_id($object['id']);
 }
 
 
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object, $parameters){
 	$configurator = configurator::getInstance();
-	$data = data::getInstance();
+	$data_provider = data_provider::getInstance();
 	$coeffs = $configurator->get_data()["dynamic_coeffs"];
 	$indicator=0;
 	$total=0;
-	$activity_data=$data->count_hits_by_module_type($object['id'], 
+	$activity_data=$data_provider->count_hits_by_module_type($object['id'], 
 		$configurator->get_begin_timestamp(),
 		$configurator->get_end_timestamp());
 	return hybridation_calculus("static_coeffs", $activity_data);
@@ -59,9 +60,9 @@ function hybridation_dynamique($object, $parameters){
 //Fonction lambda utilisée pour définir si le cours est actif
 function is_course_active_last_month($object, $parameters){
 	$configurator = configurator::getInstance();
-	$data = data::getinstance();
+	$data_provider = data_provider::getinstance();
 
-	$count=$data->count_single_users_course_viewed(
+	$count=$data_provider->count_single_users_course_viewed(
 		$object['id'], 
 		$configurator->get_begin_timestamp(),
 		$configurator->get_end_timestamp()

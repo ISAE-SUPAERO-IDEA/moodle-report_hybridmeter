@@ -9,8 +9,6 @@ require_once(dirname(__FILE__).'/../constants.php');
 use plugin_renderer_base;
 use html_writer;
 use moodle_url;
-use \report_hybridmeter\classes\data as data;
-use \report_hybridmeter\classes\configurator as configurator;
 
 class renderer extends plugin_renderer_base {
 

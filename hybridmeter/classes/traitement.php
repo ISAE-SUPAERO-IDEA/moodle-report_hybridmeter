@@ -3,16 +3,17 @@
 namespace report_hybridmeter\classes;
 
 require_once(dirname(__FILE__).'/../../../config.php');
-require_once(__DIR__.'/exporter.php');
 require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
-require_once(__DIR__.'/data.php');
-require_once(__DIR__.'/formatter.php');
-require_once(__DIR__.'/configurator.php');
+require_once(__DIR__."/configurator.php");
+require_once(__DIR__."/data_provider.php");
+require_once(__DIR__."/exporter.php");
+require_once(__DIR__."/formatter.php");
 
-use \report_hybridmeter\classes\data as data;
+use \report_hybridmeter\classes\data_provider as data_provider;
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\classes\exporter as exporter;
+use \report_hybridmeter\classes\formatter as formatter;
 
 class traitement{
 
@@ -24,22 +25,22 @@ class traitement{
 	function __construct(){
 		$timestamp = strtotime('NOW');
 
-		$data = data::getInstance();
+		$data_provider = data_provider::getInstance();
 
-		$data->clear_adhoc_tasks();
+		$data_provider->clear_adhoc_tasks();
 		
-		$this->formatter=new \report_hybridmeter\classes\formatter(function(){
-			$data = data::getInstance();
+		$this->formatter=new formatter(function(){
+			$data_provider = data_provider::getInstance();
 			$configurator = configurator::getInstance();
 			
 			$whitelist_ids = array_map(
 				function($course) {
 					return $course->id;
 				},
-				$data->get_whitelisted_courses()
+				$data_provider->get_whitelisted_courses()
 			);
 
-			$filtered = $data->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
+			$filtered = $data_provider->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
 
 			return $filtered;
 		});
@@ -58,7 +59,7 @@ class traitement{
 		global $SITE;
 
 		$configurator = configurator::getInstance();
-		$data = data::getInstance();
+		$data_provider = data_provider::getInstance();
 
 		$configurator->set_as_running($this->date_debut->getTimestamp());
 
@@ -117,7 +118,7 @@ class traitement{
 		$this->formatter->calculate_new_indicator(
 			function ($object, $parameters) {
 				$configurator = configurator::getInstance();
-				return data::getInstance()->count_single_users_course_viewed(
+				return data_provider::getInstance()->count_single_users_course_viewed(
 					$object['id'],
 					$configurator->get_begin_timestamp(),
 					$configurator->get_end_timestamp()
@@ -128,7 +129,7 @@ class traitement{
 
 		$this->formatter->calculate_new_indicator(
 			function ($object, $parameters) {
-				return data::getInstance()->count_registered_users($object['id']);
+				return data_provider::getInstance()->count_registered_users($object['id']);
 			},
 			'nb_inscrits'
 		);
@@ -203,11 +204,11 @@ class traitement{
 		$generaldata['nb_cours_hybrides_statiques']=count($generaldata['cours_hybrides_statiques']);
 		$generaldata['nb_cours_hybrides_dynamiques']=count($generaldata['cours_hybrides_dynamiques']);
 
-		$generaldata['nb_etudiants_concernes_statiques']=$data->count_distinct_students(
+		$generaldata['nb_etudiants_concernes_statiques']=$data_provider->count_distinct_students(
 			$generaldata['id_hybrides_statiques']
 		);
 
-		$generaldata['nb_etudiants_concernes_statiques_actifs']=$data->count_single_users_course_viewed(
+		$generaldata['nb_etudiants_concernes_statiques_actifs']=$data_provider->count_single_users_course_viewed(
 			$generaldata['id_hybrides_statiques'],
 			$configurator->get_begin_timestamp(),
 			$configurator->get_end_timestamp()
@@ -215,11 +216,11 @@ class traitement{
 		
 		
 
-		$generaldata['nb_etudiants_concernes_dynamiques']=$data->count_distinct_students(
+		$generaldata['nb_etudiants_concernes_dynamiques']=$data_provider->count_distinct_students(
 			$generaldata['id_hybrides_dynamiques']
 		);
 		
-		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$data->count_single_users_course_viewed(
+		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$data_provider->count_single_users_course_viewed(
 			$generaldata['id_hybrides_dynamiques'],
 			$configurator->get_begin_timestamp(),
 			$configurator->get_end_timestamp()

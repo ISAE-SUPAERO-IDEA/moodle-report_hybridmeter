@@ -1,12 +1,14 @@
 <?php
 
 namespace report_hybridmeter\classes;
+
 require_once(__DIR__."/../constants.php");
-require_once(dirname(__FILE__).'/data.php');
+require_once(__DIR__."/utils.php");
+require_once(__DIR__."/data_provider.php");
 
 defined('MOODLE_INTERNAL') || die();
 
-use \report_hybridmeter\classes\data as data;
+use \report_hybridmeter\classes\data_provider as data_provider;
 use \report_hybridmeter\classes\utils as utils;
 
 // Manage hybridmeter's configuration file
@@ -65,7 +67,7 @@ class configurator {
 	// Get the singleton configuration instance
 	public static function getInstance() {
 		if (self::$instance == null) {
-			self::$instance = new configurator(data::getInstance());
+			self::$instance = new configurator();
 		}
         return self::$instance;
     }
@@ -140,7 +142,7 @@ class configurator {
 
 	// Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
 	public function set_blacklisted($type, $id, $value) {
-		$data_provider = data::getInstance();
+		$data_provider = data_provider::getInstance();
 
 		$array_key = "blacklisted_".$type;
 		if (!array_key_exists($array_key, $this->data)) {

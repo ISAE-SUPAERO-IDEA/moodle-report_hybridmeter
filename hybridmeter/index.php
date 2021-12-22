@@ -2,19 +2,23 @@
 
 require(dirname(__FILE__).'/../../config.php');
 require_once(dirname(__FILE__).'/classes/task/traitement.php');
-require_once(dirname(__FILE__).'/classes/exporter.php');
-require_once(dirname(__FILE__).'/classes/data.php');
-require_once(dirname(__FILE__).'/classes/formatter.php');
 require_once(dirname(__FILE__).'/output/renderer.php');
 require_once(dirname(__FILE__).'/indicators.php');
 require_once(dirname(__FILE__).'/constants.php');
 require_once(dirname(__FILE__).'/classes/utils.php');
+require_once(dirname(__FILE__).'/classes/formatter.php');
+require_once(dirname(__FILE__).'/classes/exporter.php');
+require_once(dirname(__FILE__).'/classes/configurator.php');
+require_once(dirname(__FILE__).'/classes/data_provider.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 
+use \report_hybridmeter\classes\utils as utils;
+use \report_hybridmeter\classes\formatter as formatter;
+use \report_hybridmeter\classes\exporter as exporter;
 use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\data as data;
+use \report_hybridmeter\classes\data_provider as data_provider;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -70,7 +74,7 @@ else{
 $task = optional_param('task', array(), PARAM_TEXT);
 
 if ($task=='download'){
-	$exporter = new \report_hybridmeter\classes\exporter(FIELDS, ALIASES);
+	$exporter = new exporter(FIELDS, ALIASES);
 	$exporter->set_data($data_unserialized['data']);
 	$exporter->create_csv($SITE->fullname."-".$date_format);
 	$exporter->download_file();
@@ -79,12 +83,12 @@ if ($task=='download'){
 $configurator = configurator::getInstance();
 
 if ($task=='calculate'){
-	data::getInstance()->clear_adhoc_tasks();
+	data_provider::getInstance()->clear_adhoc_tasks();
 	$traitement = new \report_hybridmeter\task\traitement();
 	\core\task\manager::queue_adhoc_task($traitement);
 }
 else if ($task == "cleartasks"){
-	$data->clear_adhoc_tasks();
+	data_provider::getInstance()->clear_adhoc_tasks();
 }
 
 $title = get_string('pluginname', 'report_hybridmeter');
@@ -122,7 +126,7 @@ echo $output->next_schedule(
 echo $output->index_links($data_available);
 
 if($debug != 0){
-	$count_adhoc = $data->count_adhoc_tasks();
+	$count_adhoc = data_provider::getInstance()->count_adhoc_tasks();
 	$is_running=$configurator->get_running();
 	echo $output->is_task_planned($count_adhoc, $is_running);
 	echo $output->last_calculation($data_available, $date_format, $intervalle_format);
