@@ -2,6 +2,7 @@
 
 namespace report_hybridmeter\classes;
 
+require_once(dirname(__FILE__)."/../../../config.php");
 require_once(__DIR__."/../constants.php");
 require_once(__DIR__."/utils.php");
 require_once(__DIR__."/data_provider.php");

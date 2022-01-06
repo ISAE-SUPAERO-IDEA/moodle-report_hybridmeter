@@ -3,8 +3,8 @@
 namespace report_hybridmeter\classes;
 
 require_once(__DIR__."/configurator.php");
-require(dirname(__FILE__).'/../../config.php');
-require_once(dirname(__FILE__).'/classes/task/traitement.php');
+require_once(dirname(__FILE__).'/../../../config.php');
+require_once(dirname(__FILE__).'/task/traitement.php');
 
 defined('MOODLE_INTERNAL') || die();
 

@@ -354,8 +354,7 @@ Vue.component('configurator', {
     console.log(this.today);
     this.tomorrow = new Date(this.today);
     this.tomorrow.setDate(this.today.getDate() + 1);
-    console.log(this.tomorrow);
-    this.scheduled_date = this.tomorrow.getFullYear() + "-" + (this.tomorrow.getMonth()+1) + "-" + this.tomorrow.getDate();
+    this.scheduled_date = this.date_to_ui(this.tomorrow);
     this.scheduled_time = "00:00";
     this.config = await this.get(`configuration_handler.php`);
   },
@@ -370,8 +369,10 @@ Vue.component('configurator', {
       return myaxios.post(urlRequest, data).then(response => response.data)
     },
     set_tomorrow_midnight(){
-      this.scheduled_date = this.tomorrow.getFullYear() + "-" + (this.tomorrow.getMonth()+1) + "-" + this.tomorrow.getDate();
+      console.log(this.scheduled_date);
+      this.scheduled_date = this.date_to_ui(this.tomorrow);
       this.scheduled_time = "00:00";
+      console.log(this.scheduled_date);
     },
     set_saturday_midnight(){
       if(this.saturday == undefined){
@@ -379,8 +380,20 @@ Vue.component('configurator', {
         this.saturday = new Date();
         this.saturday.setDate(this.today.getDate() + delta);
       }
-      this.scheduled_date = this.saturday.getFullYear() + "-" + (this.saturday.getMonth()+1) + "-" + this.saturday.getDate();
+      this.scheduled_date = this.date_to_ui(this.saturday);
       this.scheduled_time = "00:00";
+    },
+    date_to_ui(date){
+      let year = date.getFullYear();
+      let month = (date.getMonth()+1).toLocaleString('fr-FR', {
+        minimumIntegerDigits : 2,
+        useGrouping: false
+      });
+      let day = (date.getDate()).toLocaleString('fr-FR', {
+        minimumIntegerDigits : 2,
+        useGrouping: false
+      });
+      return `${year}-${month}-${day}`;
     },
     timestamp_to_ui(timestamp) {
       // Create a new JavaScript Date object based on the timestamp

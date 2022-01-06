@@ -3,7 +3,7 @@
 	AJAX endpoint to manage HybridMeter configuration
 
 	*/
-	require_once("../../../config.php");
+	require_once(dirname(__FILE__)."/../../../config.php");
 	require_once(__DIR__."/../classes/configurator.php");
 	use \report_hybridmeter\classes\configurator as configurator;
 
@@ -11,12 +11,21 @@
 
     //Vérification des autorisations (rôle admin obligatoire)
 
+	error_log("mdr");
+
 	require_login();
-	$context = context_system::instance();
+
+	error_log("oh");
+
+	$context = \context_system::instance();
 	$PAGE->set_context($context);
 	has_capability('report/hybridmeter:all', $context) || die();
 
+	error_log("lol");
+
 	$configurator = configurator::getInstance();
+
+	error_log("haha");
 
  	// Sauvegarde
 	if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -44,6 +53,7 @@
 		}
 	} else  {	
 		$task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
+
 	// Lecture
 		if ($task == "get_dynamic_coeffs"){
 			$output = json_encode($configurator->get_coeffs_grid("dynamic_coeffs"));
@@ -60,3 +70,5 @@
 
 		echo $output;
 	}
+
+	error_log("wtf");
