@@ -94,7 +94,7 @@ class configurator {
 
 	public function schedule_calculation($timestamp){
 		data_provider::getInstance()->clear_adhoc_tasks();
-		$configurator->update([
+		$this->update([
 			"scheduled_date" => $timestamp,
 			"has_scheduled_calculation" => 1,
 		]);

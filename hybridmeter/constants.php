@@ -28,6 +28,7 @@ define("MODULE_URL","url");
 define("MODULE_WIKI","wiki");
 define("MODULE_WORKSHOP","workshop");
 define("MODULE_QUESTIONNAIRE","questionnaire");
+define("MODULE_NUGGET", "naas");
 
 define("NA", "N/A");
 
@@ -96,6 +97,7 @@ const COEFF_STATIQUES = [
 	MODULE_WIKI => 5,
 	MODULE_WORKSHOP => 5,
 	MODULE_QUESTIONNAIRE => 3,
+	MODULE_NUGGET => 0
 ];
 
 const COEFF_DYNAMIQUES = [
@@ -123,4 +125,5 @@ const COEFF_DYNAMIQUES = [
 	MODULE_WIKI => 5,
 	MODULE_WORKSHOP => 5,
 	MODULE_QUESTIONNAIRE => 3,
+	MODULE_NUGGET => 5
 ];

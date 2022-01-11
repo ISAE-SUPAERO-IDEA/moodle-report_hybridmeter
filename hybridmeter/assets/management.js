@@ -269,20 +269,22 @@ Vue.component('configurator', {
 
       </div>
       <hr/>
-      <div v-if="oklancement" v-html="boxok">
-        
+      <div v-if="oklancement">
+        <p>La date de lancement a été paramétrée avec succès</p>
       </div>
-      <div v-if="okclosed" v-html="boxok">
-        
+      <div v-if="okclosed">
+        <p>Le lancement a été déprogrammé avec succès</p>
       </div>
       <h3 class="main">Prochain lancement</h3>
       <div id="schedule" class="management-module">
-        <div style="display:flex; flex-direction:row;">
-          <div>
-            <button @click="set_tomorrow_midnight">Cette nuit</button>
+        <div style="margin-bottom : 10px;" class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right">
           </div>
-          <div>
-            <button @click="set_saturday_midnight">Ce week-end</button>
+          <div class="form-setting col-sm-9">
+            <span>
+                <button style="" @click="del_messages(); set_tomorrow_midnight();">Cette nuit</button>
+                <button style=""  @click="del_messages(); set_saturday_midnight();">Ce week-end</button>
+            </span>
           </div>
         </div>
         <div class="form-item row">
@@ -293,7 +295,7 @@ Vue.component('configurator', {
           </div>
           <div class="form-setting col-sm-9">
             <div class="form-text defaultsnext">
-              <input type="date" v-model="scheduled_date">
+              <input type="date" v-model="scheduled_date" @change="del_messages()">
             </div>
           </div>
         </div>
@@ -305,16 +307,16 @@ Vue.component('configurator', {
           </div>
           <div class="form-setting col-sm-9">
             <div class="form-text defaultsnext">
-              <input type="time"  v-model="scheduled_time">
+              <input type="time"  v-model="scheduled_time" @change="del_messages()">
             </div>
           </div>
         </div>
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right"></div>
-          <div style="display:flex; flex-direction:row;" class="form-setting col-sm-9">
+          <span class="form-setting col-sm-9">
             <button type="submit" class="btn btn-primary" @click="saveLancement">Enregistrer les modifications</button>
-            <button type="submit" class="btn btn-secondary" @click="closeLancement">Déprogrammer le lancement</button>
-          </div>
+            <button type="submit" style="vertical-align: bottom;" class="btn btn-secondary" @click="closeLancement">Déprogrammer le lancement</button>
+          </span>
         </div>
       </div>
     </div>
@@ -332,7 +334,7 @@ Vue.component('configurator', {
       okmesure:false,
       oklancement:false,
       okclosed:false,
-      action:undefined
+      action:undefined 
     }
   },
   watch: {
@@ -355,7 +357,7 @@ Vue.component('configurator', {
     this.tomorrow = new Date(this.today);
     this.tomorrow.setDate(this.today.getDate() + 1);
     this.scheduled_date = this.date_to_ui(this.tomorrow);
-    this.scheduled_time = "00:00";
+    this.scheduled_time = "00:00";  
     this.config = await this.get(`configuration_handler.php`);
   },
   methods: {
@@ -395,6 +397,10 @@ Vue.component('configurator', {
       });
       return `${year}-${month}-${day}`;
     },
+    del_messages(){
+      this.okclosed = false;
+      this.oklancement = false;
+    },
     timestamp_to_ui(timestamp) {
       // Create a new JavaScript Date object based on the timestamp
       // multiplied by 1000 so that the argument is in milliseconds, not seconds.
@@ -433,7 +439,9 @@ Vue.component('configurator', {
       data.append('scheduled_timestamp', timestamp);
       data.append('debug', this.config.debug);
       await this.post(`configuration_handler.php`, data);
+      console.log("mdr");
       this.oklancement=true;
+      this.okclosed=false;
     },
     async closeLancement() {
       this.action="unschedule";
@@ -443,6 +451,7 @@ Vue.component('configurator', {
       this.scheduled_date = undefined;
       this.scheduled_time = undefined;
       await this.post(`configuration_handler.php`, data);
+      this.oklancement=false;
       this.okclosed=true;
     }
   }

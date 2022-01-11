@@ -2,6 +2,9 @@
 
 namespace report_hybridmeter\classes;
 defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__)."/../../../config.php");
+global $CFG;
+require_once($CFG->libdir . '/csvlib.class.php');
 
 /**
  * Cette classe permet le transcodage sous forme de CSV des données calculées
