@@ -20,62 +20,78 @@ class exporter {
     //Le caractère de délimitation
     protected $delimiter;
 
-    //Les chaînes de caractères de ce tableau correspondent aux attributs de $raw_data dont les valeurs seront exportés
+    //Les chaînes de caractères de ce tableau correspondent aux attributs de $data dont les valeurs seront exportés
     protected $fields;
 
+    //Tableau d'alias sur le CSV
+    protected $alias;
+
     //Le tableau de données en entrée, tableau à deux dimensions
-    protected $raw_data;
+    protected $data;
 
     //L'objet csv_export_writer de moodle core
     protected $csv;
 
-    public function __construct(array $fields=array(), array $aliases = array(), array $raw_data=array(), $delimiter = 'comma'){
-        $this->fields=$fields;
-        $this->aliases=$aliases;
-        $this->delimiter=$delimiter;
-        $this->csv=new \csv_export_writer($this->delimiter);
+    public function __construct(array $fields=array(), array $alias = array(), array $data=array(), $delimiter = 'comma'){
+        $this->set_data($fields);
+        if(empty($fields) && !empty($this->data))
+            $this->auto_fields();
+        else
+            $this->set_fields($fields);
+        $this->set_alias($alias);
+        $this->set_delimiter($delimiter);
     }
 
-    //Récupère les champs de la première entrée et les définit en champs du fichier sortant
+    //Récupère les fields de la première entrée et les définit en fields du fichier sortant
     public function auto_fields(){
         $this->fields=array();
 
-        if(!is_array($this->raw_data) || sizeof($this->raw_data)==0)
-            throw new Exception("On ne peut pas calculer automatiquement les champs s'il n'y a pas de données");
+        if(!is_array($this->data) || sizeof($this->data)==0)
+            throw new Exception("On ne peut pas calculer automatiquement les fields s'il n'y a pas de données");
 
-        foreach ($this->raw_data[array_keys($this->raw_data)[0]] as $key => $value){
+        foreach ($this->data[array_keys($this->data)[0]] as $key => $value){
             array_push($this->fields, $key);
         }
     }
 
     public function set_fields (array $fields){
+        $precondition_array = array_map($fields, 'is_string');
+        if(in_array(false, $precondition_array)){
+            throw new Exception("fields doit etre un tableau de chaînes de caractères");
+        }
+
         $this->fields=$fields;
     }
 
     //ajoute une entrée au tableau
     public function add_data(array $data){
-        array_push($this->raw_data, $data);
+        array_push($this->data, $data);
     }
 
     public function set_data(array $data){
-        //print_r($data);
-        $this->raw_data=$data;
+        $precondition_array = array_map($data, 'is_array');
+        if(in_array(false, $precondition_array)){
+            throw new Exception("Les données doivent être passées à l'exporter sous forme de tableau de tableaux");
+        }
+
+        $this->data = $data;
     }
 
     public function set_delimiter($delimiter){
         $this->delimiter=$delimiter;
+        $this->csv=new \csv_export_writer($this->delimiter);
     }
 
-    public function set_aliases (array $aliases){
-        $this->aliases=$aliases;
+    public function set_alias(array $alias){
+        $this->alias=$alias;
     }
 
-    public function construct_fields_name(){
+    private function construct_fields_name(){
         $output=array();
 
         foreach ($this->fields as $field){
-            if(array_key_exists($field,$this->aliases))
-                $value = $this->aliases[$field];
+            if(array_key_exists($field,$this->alias))
+                $value = $this->alias[$field];
             else
                 $value = $field;
 
@@ -92,7 +108,7 @@ class exporter {
         $this->csv->set_filename($filename);
         $this->csv->add_data($this->construct_fields_name());
 
-        foreach ($this->raw_data as $key => $record) {
+        foreach ($this->data as $key => $record) {
             $row = array();
             foreach ($this->fields as $key => $field) {
                 array_push($row, $record[$field]);
@@ -101,13 +117,12 @@ class exporter {
         }
     }
     
-    /*  
-        Si $return vaut false, le CSV sera affiché sur la page php qui execute la fonction
-        Si $return vaut true, le CSV sera retourné sous forme d'une chaîne de caractère
-        (utile pour enregistrer le CSV sur un fichier local)
-    */
-    public function print_csv_data($return=false){
-        return $this->csv->print_csv_data($return);
+    public function print_csv_data_standard(){
+        return $this->csv->print_csv_data(false);
+    }
+
+    public function csv_data_to_string(){
+        return $this->csv->print_csv_data(true);
     }
 
     //pour télécharger le csv

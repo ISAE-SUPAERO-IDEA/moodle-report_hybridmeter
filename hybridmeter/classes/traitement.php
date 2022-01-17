@@ -45,7 +45,7 @@ class traitement{
 			return $filtered;
 		});
 
-		$this->exporter=new exporter(FIELDS);
+		$this->exporter=new exporter(FIELDS, ALIAS);
 		
 
 		$this->date_debut = new \DateTime();
@@ -71,6 +71,14 @@ class traitement{
 			},
 			"id_moodle"
 		);
+
+		$this->formatter->calculate_new_indicator(
+			function($object, $parameters){
+				return $object['category_name'];
+			},
+			"category_name"
+		);
+
 
 		$this->formatter->calculate_new_indicator(
 			function($object, $parameters){
@@ -155,7 +163,6 @@ class traitement{
 
 		$this->formatter->calculate_new_indicator(
 			function ($object, $parameters) {
-				error_log(print_r(array("lolhahaoho", $parameters),1));
 				return $parameters['date_fin'];
 			},
 			'date_fin_capture',
@@ -233,8 +240,8 @@ class traitement{
 
 		//Export des données
 		
-		$this->exporter->set_data($data_out);
-		$this->exporter->create_csv($SITE->fullname);
+		/*$this->exporter->set_data($data_out);
+		$this->exporter->create_csv($SITE->fullname);*/
 
 
 		$this->date_fin->setTimestamp(strtotime('NOW'));

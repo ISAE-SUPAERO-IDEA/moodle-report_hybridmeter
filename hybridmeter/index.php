@@ -74,7 +74,7 @@ else{
 $task = optional_param('task', array(), PARAM_TEXT);
 
 if ($task=='download'){
-	$exporter = new exporter(FIELDS, ALIASES);
+	$exporter = new exporter(FIELDS, ALIAS);
 	$exporter->set_data($data_unserialized['data']);
 	$exporter->create_csv($SITE->fullname."-".$date_format);
 	$exporter->download_file();
@@ -103,9 +103,11 @@ $output = $PAGE->get_renderer('report_hybridmeter');
 $debug = optional_param('debug', 0, PARAM_INTEGER);
 $unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
 
+$is_unscheduling = 0;
+
 if($unschedule == 1){
 	$configurator->unschedule_calculation();
-	$lol = 1;
+	$is_unscheduling = 1;
 }
 
 echo $output->header();
@@ -121,7 +123,7 @@ echo $output->general_indicators(
 echo $output->next_schedule(
 	$configurator->has_scheduled_calculation(),
 	$configurator->get_scheduled_date(),
-	$lol
+	$is_unscheduling
 );
 echo $output->index_links($data_available);
 

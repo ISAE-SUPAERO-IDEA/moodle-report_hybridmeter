@@ -39,6 +39,7 @@ class data_provider {
         foreach($records as $key => $object){
             $output[$object->name] = $object->count;
         }
+
         return $output;
     }
 
@@ -184,7 +185,12 @@ class data_provider {
             and timecreated between ? and ?
             group by logs.objecttable",
             $params);
-        return $records;
+
+        $output = array_map(function($obj): int {
+            return $obj->c;
+        }, $records);
+
+        return $output;
     }
 
 
@@ -218,12 +224,14 @@ class data_provider {
         //le cours qui correspond au site est blacklisté par défaut
         array_push($blacklisted_courses, 1);
         $blacklisted_categories = array_keys($data["blacklisted_categories"]);
-        $query = "select id, fullname from ".$DB->get_prefix()."course where true";
+        $query = "select course.id as id from ".
+        $DB->get_prefix()."course as course where true";
+         
         if (count($blacklisted_courses)>0) {
-            $query .= " and id not in (".implode($blacklisted_courses,",").")";
+            $query .= " and course.id not in (".implode($blacklisted_courses,",").")";
         }
         if (count($blacklisted_categories)>0) {
-            $query .= " and category not in (".implode($blacklisted_categories,",").")";
+            $query .= " and course.category not in (".implode($blacklisted_categories,",").")";
         }
 
         $records=$DB->get_records_sql($query);
@@ -237,10 +245,12 @@ class data_provider {
         if(count($courses) == 0)
             return array();
 
-        $query = "select distinct course.id, course.fullname from ".$DB->get_prefix()."course as course
+        $query = "select distinct course.id as id, course.idnumber as idnumber, course.fullname as fullname, category.name as category_name
+        from ".$DB->get_prefix()."course as course
         inner join ".$DB->get_prefix()."logstore_standard_log as logs on course.id=logs.courseid
         inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
         inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
+        inner join ".$DB->get_prefix()."course_categories as category on category.id = course.category
         where role.shortname = 'student'
         and logs.timecreated between ? and ?
         and logs.eventname like '%course_viewed'

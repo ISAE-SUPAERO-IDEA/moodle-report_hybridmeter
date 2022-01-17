@@ -48,6 +48,7 @@ define("HYBRIDMETER_ACTIVITY_TOTAL_INSTANCES_DEVIATOR_CONSTANT", 4);
 const FIELDS = [
 	'id_moodle',
 	'idnumber',
+	'category_name',
 	'fullname',
 	'url',
 	'niveau_de_digitalisation',
@@ -56,11 +57,12 @@ const FIELDS = [
 	'nb_utilisateurs_actifs',
 	'nb_inscrits',
 	'date_debut_capture',
-	'date_fin_capture'
+	'date_fin_capture',
 ];
 
-const ALIASES = [
+const ALIAS = [
 	'idnumber' => 'Identifiant du cours',
+	'category_name' => "Catégorie",
 	'fullname' => 'Nom du cours',
 	'url' => 'URL du cours',
 	'niveau_de_digitalisation' => 'ND',

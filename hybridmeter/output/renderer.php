@@ -17,9 +17,6 @@ class renderer extends plugin_renderer_base {
 
         $date_scheduled = new \DateTime();
         $date_scheduled->setTimestamp($timestamp_scheduled);
-        
-        error_log(print_r(array("wsh",$unscheduled_action),1));
-        error_log(print_r(func_get_args(),1));
 
         if($unscheduled_action == 1){
             $html .= html_writer::start_div('container-fluid');

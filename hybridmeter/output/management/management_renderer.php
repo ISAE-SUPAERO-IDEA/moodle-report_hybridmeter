@@ -13,6 +13,8 @@ use action_menu;
 use action_menu_link;
 use pix_icon;
 
+require_once(dirname(__FILE__).'/../../classes/configurator.php');
+
 // TODO: Retirer les fonctions inutiles
 // TODO: Mettre tous les renderer au même niveau
 class management_renderer extends plugin_renderer_base {
@@ -61,6 +63,7 @@ class management_renderer extends plugin_renderer_base {
             "labelblacklist" => "Sélection des cours/catégories",
             "labelperiod" => "Sélection des cours/catégories",
             "boxok" => $OUTPUT->box("La période de capture a été changée avec succès", 'notice'),
+            "scheduled" => \report_hybridmeter\classes\configurator::getInstance()->has_scheduled_calculation(),
             "boxnotok" => $OUTPUT->box("Le changement de période n'a pas fonctionné", 'errorbox'),
             "www_root" => $CFG->wwwroot
         );

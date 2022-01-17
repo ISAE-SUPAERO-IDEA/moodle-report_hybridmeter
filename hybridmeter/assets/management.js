@@ -170,7 +170,6 @@ Vue.component('category', {
       data.append('value', value);
       category.blacklisted = (await this.post('blacklist_tree_handler.php',data)).blacklisted;
       this.tree = Object.assign({}, this.tree);
-      console.log(this.tree);
     },
     async manage_course_blacklist(course) {
       if (!this.global_blacklist) {
@@ -211,7 +210,7 @@ Vue.component('category', {
 // Configurator
 /*TODO : Envoyer string traduits par moodle*/
 Vue.component('configurator', {
-  props: ['boxok'],
+  props: ['boxok', 'scheduled'],
   template: ` 
     <div>
        <!-- TODO: Widget date input -->
@@ -270,7 +269,7 @@ Vue.component('configurator', {
       </div>
       <hr/>
       <div v-if="oklancement">
-        <p>La date de lancement a été paramétrée avec succès</p>
+        <p>La date de lancement a bien été programmée pour le {{ scheduled_date_formatted }} à {{ scheduled_time }}</p>
       </div>
       <div v-if="okclosed">
         <p>Le lancement a été déprogrammé avec succès</p>
@@ -314,8 +313,8 @@ Vue.component('configurator', {
         <div class="form-item row">
           <div class="form-label col-sm-3 text-sm-right"></div>
           <span class="form-setting col-sm-9">
-            <button type="submit" class="btn btn-primary" @click="saveLancement">Enregistrer les modifications</button>
-            <button type="submit" style="vertical-align: bottom;" class="btn btn-secondary" @click="closeLancement">Déprogrammer le lancement</button>
+            <button :disabled="!datetime_filled" type="submit" class="btn btn-primary" @click="saveLancement">Programmer le lancement</button>
+            <button :disabled="scheduled == 0" type="submit" style="vertical-align: bottom;" class="btn btn-secondary" @click="closeLancement">Déprogrammer le lancement</button>
           </span>
         </div>
       </div>
@@ -345,19 +344,35 @@ Vue.component('configurator', {
     },
     begin_date(date) {
       this.config.begin_date = this.ui_to_timestamp(date);
-      console.log(this.config.begin_date);
     },
     end_date(date) {
       this.config.end_date = this.ui_to_timestamp(date, true);
     }
   },
+  computed: {
+    scheduled_date_formatted : function () {
+      var temp_date = new Date(this.scheduled_date);
+      let year = temp_date.getFullYear();
+      let month = (temp_date.getMonth()+1).toLocaleString('fr-FR', {
+        minimumIntegerDigits : 2,
+        useGrouping: false
+      });
+      let day = (temp_date.getDate()).toLocaleString('fr-FR', {
+        minimumIntegerDigits : 2,
+        useGrouping: false
+      });
+      return `${day}/${month}/${year}`
+    },
+    datetime_filled : function() {
+      return this.scheduled_date && this.scheduled_time;
+    }
+  },
   async created() {
     this.today = new Date();
-    console.log(this.today);
     this.tomorrow = new Date(this.today);
     this.tomorrow.setDate(this.today.getDate() + 1);
     this.scheduled_date = this.date_to_ui(this.tomorrow);
-    this.scheduled_time = "00:00";  
+    this.scheduled_time = "02:00";  
     this.config = await this.get(`configuration_handler.php`);
   },
   methods: {
@@ -371,10 +386,8 @@ Vue.component('configurator', {
       return myaxios.post(urlRequest, data).then(response => response.data)
     },
     set_tomorrow_midnight(){
-      console.log(this.scheduled_date);
       this.scheduled_date = this.date_to_ui(this.tomorrow);
-      this.scheduled_time = "00:00";
-      console.log(this.scheduled_date);
+      this.scheduled_time = "02:00";
     },
     set_saturday_midnight(){
       if(this.saturday == undefined){
@@ -383,7 +396,7 @@ Vue.component('configurator', {
         this.saturday.setDate(this.today.getDate() + delta);
       }
       this.scheduled_date = this.date_to_ui(this.saturday);
-      this.scheduled_time = "00:00";
+      this.scheduled_time = "02:00";
     },
     date_to_ui(date){
       let year = date.getFullYear();
@@ -439,9 +452,9 @@ Vue.component('configurator', {
       data.append('scheduled_timestamp', timestamp);
       data.append('debug', this.config.debug);
       await this.post(`configuration_handler.php`, data);
-      console.log("mdr");
       this.oklancement=true;
       this.okclosed=false;
+      this.scheduled=1;
     },
     async closeLancement() {
       this.action="unschedule";
@@ -453,6 +466,7 @@ Vue.component('configurator', {
       await this.post(`configuration_handler.php`, data);
       this.oklancement=false;
       this.okclosed=true;
+      this.scheduled=0;
     }
   }
 });

@@ -11,21 +11,13 @@
 
     //Vérification des autorisations (rôle admin obligatoire)
 
-	error_log("mdr");
-
 	require_login();
-
-	error_log("oh");
 
 	$context = \context_system::instance();
 	$PAGE->set_context($context);
 	has_capability('report/hybridmeter:all', $context) || die();
 
-	error_log("lol");
-
 	$configurator = configurator::getInstance();
-
-	error_log("haha");
 
  	// Sauvegarde
 	if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -70,5 +62,3 @@
 
 		echo $output;
 	}
-
-	error_log("wtf");
