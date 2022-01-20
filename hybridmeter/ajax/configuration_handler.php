@@ -38,10 +38,8 @@
 			$configurator->schedule_calculation($scheduled_timestamp);
 		}
 		else if ($action == "unschedule"){
-			$configurator->update([
-				"has_scheduled_calculation" => 0,
-				"debug" => $debug
-			]);
+			$configurator->unschedule_calculation();
+			$configurator->update_key("debug", $debug);
 		}
 	} else  {	
 		$task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
