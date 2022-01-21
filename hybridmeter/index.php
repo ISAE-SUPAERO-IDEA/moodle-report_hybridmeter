@@ -120,6 +120,7 @@ echo $output->general_indicators(
 	$date_format,
 	$intervalle_format
 );
+
 echo $output->next_schedule(
 	$configurator->has_scheduled_calculation(),
 	$configurator->get_scheduled_date(),
