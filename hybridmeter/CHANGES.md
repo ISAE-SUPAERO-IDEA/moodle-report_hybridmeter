@@ -6,9 +6,9 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+  
 
-
-HybridMeter version 1.1.0 (21 Janvier 2021)
+HybridMeter version 1.1.0 (28 Janvier 2021)
 ===========================================
 
 Fonctionnalités
@@ -16,11 +16,12 @@ Fonctionnalités
 
 *   Programmation de l'heure et de la date de calcul depuis la page de configuration
 *   Suppression du lancement automatique tous les matins à 4h
+*   Refactorisation de la classe exporter
 
 Correction de Bugs
 ------------------
 
-*   Aucun
+*   Correction des notices qui apparaissaient lors du calcul des indicateurs
 
 HybridMeter version 1.0.3 (15 Décembre 2021)
 ============================================

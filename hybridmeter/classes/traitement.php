@@ -24,10 +24,6 @@ class traitement{
 
 	function __construct(){
 		$timestamp = strtotime('NOW');
-
-		$data_provider = data_provider::getInstance();
-
-		$data_provider->clear_adhoc_tasks();
 		
 		$this->formatter=new formatter(function(){
 			$data_provider = data_provider::getInstance();
