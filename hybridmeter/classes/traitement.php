@@ -41,7 +41,6 @@ class traitement{
 
 		$this->exporter=new exporter(FIELDS, ALIAS);
 		
-
 		$this->date_debut = new \DateTime();
 		$this->date_debut->setTimestamp($timestamp);
 
