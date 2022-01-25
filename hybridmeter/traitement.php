@@ -13,5 +13,3 @@ $data = $traitement->launch();
 
 //echo "<a href='index.php?debug=1'>index.php?debug=1</a>";
 echo json_encode($data);
-
-?>
