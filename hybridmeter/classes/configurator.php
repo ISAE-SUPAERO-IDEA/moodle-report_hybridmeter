@@ -47,9 +47,8 @@ class configurator {
 		$this->set_default_value("blacklisted_categories", []);
 		$this->set_default_value("running", NON_RUNNING);
 
-		$this->set_default_value("has_scheduled_calculation", 1);
-		$tomorrow_midnight = utils::tomorrow_midnight();
-		$this->set_default_value("scheduled_date", $tomorrow_midnight);
+		$this->set_default_value("has_scheduled_calculation", 0);
+		$this->set_default_value("scheduled_date", 0);
 		/*
 		$this->set_default_value("seuil_actif", SEUIL_ACTIF);
 		$this->set_default_value("seuil_dynamique", SEUIL_DYNAMIQUE);
