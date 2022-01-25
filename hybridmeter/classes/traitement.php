@@ -28,22 +28,18 @@ class traitement{
 		$data_provider = data_provider::getInstance();
 
 		$data_provider->clear_adhoc_tasks();
-		
-		$this->formatter=new formatter(function(){
-			$data_provider = data_provider::getInstance();
-			$configurator = configurator::getInstance();
-			
-			$whitelist_ids = array_map(
-				function($course) {
-					return $course->id;
-				},
-				$data_provider->get_whitelisted_courses()
-			);
+		$configurator = configurator::getInstance();
 
-			$filtered = $data_provider->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
+		$whitelist_ids = array_map(
+			function($course) {
+				return $course->id;
+			},
+			$data_provider->get_whitelisted_courses()
+		);
 
-			return $filtered;
-		});
+		$filtered = $data_provider->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
+
+		$this->formatter=new formatter($filtered);
 
 		$this->exporter=new exporter(FIELDS, ALIAS);
 		

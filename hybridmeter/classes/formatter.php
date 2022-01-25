@@ -10,25 +10,21 @@ require_once(dirname(__FILE__).'/logger.php');
 // TODO : Refactoriser (P3)
 class formatter {
 	//Le tableau structuré
-	protected $array;
+	protected $data;
 
-	public function __construct($lambda){
-		$this->array = array();
-		$this->import_objects_array($lambda());
+	public function __construct(array $data){
+		$this->precondition_record($data);
+		$this->data= (array) $data;
 	}
-	
-	protected function import_objects_array(Array $objectarr){
-		foreach($objectarr as $key => $object){
-			$this->array[$key]=$this->object_to_array($object);
+
+	protected function precondition_record($data) { 
+		$precondition_array = array_map(function ($record) {
+			return (is_object($record) || is_array($record));
+		}, $data);
+
+		if (in_array(false, $precondition_array)) {
+			throw new Exception("Les données ne sont pas formatées correctement");
 		}
-	}
-	
-	protected function object_to_array($object){
-		$array=array();
-		foreach ($object as $key => $value){
-			$array[$key]=$value;
-		}
-		return $array;
 	}
 
 	//ajout d'un nouvel indicateur définit par une fonctoin lambda qui prend en paramètres
