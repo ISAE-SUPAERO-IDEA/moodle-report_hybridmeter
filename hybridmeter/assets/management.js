@@ -314,7 +314,7 @@ Vue.component('configurator', {
           <div class="form-label col-sm-3 text-sm-right"></div>
           <span class="form-setting col-sm-9">
             <button :disabled="!datetime_filled" type="submit" class="btn btn-primary" @click="saveLancement">Programmer le lancement</button>
-            <button :disabled="scheduled == 0" type="submit" style="vertical-align: bottom;" class="btn btn-secondary" @click="closeLancement">Déprogrammer le lancement</button>
+            <button :hidden="scheduled == 0" type="submit" style="vertical-align: bottom;" class="btn btn-secondary" @click="closeLancement">Déprogrammer le lancement</button>
           </span>
         </div>
       </div>

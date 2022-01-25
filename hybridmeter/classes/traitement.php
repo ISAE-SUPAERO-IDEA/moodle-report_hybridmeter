@@ -26,8 +26,6 @@ class traitement{
 		$timestamp = strtotime('NOW');
 
 		$data_provider = data_provider::getInstance();
-
-		$data_provider->clear_adhoc_tasks();
 		$configurator = configurator::getInstance();
 
 		$whitelist_ids = array_map(
