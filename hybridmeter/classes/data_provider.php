@@ -25,17 +25,53 @@ class data_provider {
         return self::$instance;
     }
 
-    /*Fonctions qui permettent de calculer les indicateurs*/
+    /*Fonctions utilitaires*/
 
-    //compte le nombre d'activités par type en fonction du cours
-    public function count_modules_types_id(int $id){
+    protected function precondition_ids_courses($ids_courses) {
+        if(!is_array($ids_courses)){
+            $ids_courses=array($ids_courses);
+        }
+
+        $length = count($ids_courses);
+
+        if($length === 0)
+            throw new Error("Le tableau de cours ne doit pas être vide");
+
+        $precondition_array = array_map('is_numeric', $ids_courses);
+
+        if(in_array(false, $precondition_array))
+            throw new Error("Les IDs doivent être des entiers");
+    }
+
+    /*Fonctions d'indicateurs*/
+
+    //retourne le nombre d'activités pour chaque type d'activité pour le cours d'ID $id_course
+    public function count_activities_per_type_of_course(int $id_course){
         global $DB;
         $output=array();
-        $records=$DB->get_records_sql("select modules.name, count(modules.name) as count from ".$DB->get_prefix()."course_modules as course_modules inner join ".$DB->get_prefix()."modules as modules on course_modules.module=modules.id where course_modules.course=? group by modules.name",[$id]);
+
+        $records=$DB->get_records_sql(
+            "select modules.name, count(modules.name) as count
+            from ".$DB->get_prefix()."course_modules as course_modules
+            inner join ".$DB->get_prefix()."modules as modules on course_modules.module=modules.id
+            where course_modules.course=? group by modules.name",
+            [$id_course]
+        );
         foreach($records as $key => $object){
             $output[$object->name] = $object->count;
         }
-        $records=$DB->get_records_sql("select ".$DB->get_prefix()."modules.name as name, 0 as count from ".$DB->get_prefix()."modules where name not in (select modules.name as name from ".$DB->get_prefix()."course_modules as course_modules inner join ".$DB->get_prefix()."modules as modules on course_modules.module=modules.id where course_modules.course=? group by modules.name)",[$id]);
+
+        $records=$DB->get_records_sql(
+            "select ".$DB->get_prefix()."modules.name as name, 0 as count
+            from ".$DB->get_prefix()."modules
+            where name not in (
+                select modules.name as name
+                from ".$DB->get_prefix()."course_modules as course_modules
+                inner join ".$DB->get_prefix()."modules as modules on course_modules.module=modules.id
+                where course_modules.course=? group by modules.name
+            )",
+            [$id_course]
+        );
         foreach($records as $key => $object){
             $output[$object->name] = $object->count;
         }
@@ -43,10 +79,13 @@ class data_provider {
         return $output;
     }
 
-    //compte le nombre de course viewed en fonction du cours et de la période choisie
-    public function count_hits_course_viewed(int $id, int $begin_date, int $end_date){
+    //retourne le nombre de visite d'étudiant sur le cours d'ID $id_course
+    //durant la période allant de $begin_timestamp à $end_timestamp
+    public function count_student_visits_on_course(int $id_course, int $begin_timestamp, int $end_timestamp){
         global $DB;
-        $record=$DB->get_record_sql("select count(*) as c
+
+        $record=$DB->get_record_sql(
+            "select count(*) as count
             from ".$DB->get_prefix()."logstore_standard_log as logs
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
@@ -57,41 +96,17 @@ class data_provider {
             and context.instanceid=?
             and context.contextlevel=?
             and timecreated between ? and ?",
-            array($id, $id, CONTEXT_COURSE, $begin_date, $end_date));
-        return $record->c;
-    }
+            array($id_course, $id_course, CONTEXT_COURSE, $begin_timestamp, $end_timestamp)
+        );
 
-    //compte le nombre de hits toute nature confondue en fonction du cours et de la période choisie
-    public function count_hits(int $id, int $begin_date, int $end_date){
-        global $DB;
-        $record=$DB->get_record_sql("select count(*) as c
-            from ".$DB->get_prefix()."logstore_standard_log as logs
-            inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
-            inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
-            where role.shortname='student'
-            and courseid=?
-            and timecreated between ? and ?",
-            array($id, $begin_date, $end_date));
-        return $record->c;
+        return $record->count;
     }
 
     //compte le nombre d'utilisateurs uniques en fonction du cours et de la période choisie
-    public function count_single_users_course_viewed($ids, int $begin_date, int $end_date){
+    public function count_student_single_visitors_on_courses($ids_courses, int $begin_timestamp, int $end_timestamp){
         global $DB;
 
-        if(!is_array($ids)){
-            $ids=array($ids);
-        }
-
-        $length = count($ids);
-
-        if($length === 0)
-            return 0;
-
-
-        if(!is_numeric($ids[0]))
-            return -1;
-
+        precondition_ids_courses($ids_courses);
 
         $where_compil = "(".$ids[0];
         for($i = 1; $i < $length; $i++){
@@ -101,7 +116,7 @@ class data_provider {
         }
         $where_compil .= ")";
 
-        $query="select count(distinct logs.userid) as c
+        $query="select count(distinct logs.userid) as count
             from ".$DB->get_prefix()."logstore_standard_log as logs
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
@@ -113,66 +128,60 @@ class data_provider {
             and logs.courseid in ".$where_compil."
             and logs.timecreated between ? and ?";
 
-        $params = array(CONTEXT_COURSE, $begin_date, $end_date);
+        $params = array(CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
 
         $record=$DB->get_record_sql($query, $params);
-        return $record->c;
+        return $record->count;
     }
 
-    //compte le nombre d'inscrits en fonction du cours
-    public function count_registered_users(int $id){
+    //retourne le nombre d'inscrits au cours d'ID $id_course selon la table d'assignement
+    public function count_registered_students_of_course(int $id_course){
         global $DB;
-        $record=$DB->get_record_sql("select count(*) as c
+        $record=$DB->get_record_sql("select count(*) as count
             from ".$DB->get_prefix()."context as context
             inner join ".$DB->get_prefix()."role_assignments as assign on context.id=assign.contextid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
             where role.shortname='student'
             and context.instanceid=?
             and context.contextlevel=?",
-            array($id, CONTEXT_COURSE));
-        return $record->c;
+            array($id_course, CONTEXT_COURSE));
+        return $record->count;
     }
 
-    public function count_distinct_students($ids){
+    //retourne le nombre distinct d'étudiants inscrits dans au moins un cours
+    //dont l'id est élément de la liste $ids_courses (selon la table d'enrôlement)
+    public function count_distinct_registered_students_of_courses($ids_courses){
         global $DB;
 
-        $length = count($ids);
+        precondition_ids_courses($ids_courses);
 
-        if(count($ids) === 0)
-            return 0;
-
-        if($length === 0)
-            return 0;
-
-
-        if(!is_numeric($ids[0]))
-            return -1;
-
-        $where_courseid = "enrol.courseid in (".$ids[0];
+        $where_courseid = "enrol.courseid in (".$ids_courses[0];
         for($i = 1; $i < $length; $i++){
-            if(!is_numeric($ids[$i]))
+            if(!is_numeric($ids_courses[$i]))
                 return -1;
-            $where_courseid .= ", ".$ids[$i];
+            $where_courseid .= ", ".$ids_courses[$i];
         }
         $where_courseid .= ")";
 
 
         $record = $DB->get_record_sql(
-            "select count(distinct user_enrolments.userid) as c from mdl_user_enrolments as user_enrolments
+            "select count(distinct user_enrolments.userid) as count from mdl_user_enrolments as user_enrolments
             inner join mdl_enrol as enrol on user_enrolments.enrolid=enrol.id
             where ".$where_courseid." and (enrol.enrolenddate>? or enrol.enrolenddate=0)",
             array(strtotime("now"))
         );
 
-        return $record->c;
+        return $record->count;
     }
 
-    //compte le nombre de hits en fonction du type d'activité visée, du cours et de la période choisie
-    public function count_hits_by_module_type(int $id, int $begin_date, int $end_date){
+    //compte le nombre de clics sur les activités de l'espace de cours d'ID $id_course
+    //par type d'activité et sur la période allant de $begin_timestamp à $end_timestamp
+    public function count_hits_on_activities_per_type(int $id, int $begin_timestamp, int $end_timestamp){
         global $DB;
-        $params=array($id, $id, CONTEXT_COURSE, $begin_date, $end_date);
+        $params=array($id, $id, CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
 
-        $records = $DB->get_records_sql("select logs.objecttable as module, count(*) as c
+        $records = $DB->get_records_sql(
+            "select logs.objecttable as module, count(*) as count
             from ".$DB->get_prefix()."logstore_standard_log as logs
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
@@ -184,20 +193,21 @@ class data_provider {
             and context.contextlevel=?
             and timecreated between ? and ?
             group by logs.objecttable",
-            $params);
+            $params
+        );
 
         $output = array_map(function($obj): int {
-            return $obj->c;
+            return $obj->count;
         }, $records);
 
         return $output;
     }
 
 
-    /*Fonctions utilitaires*/
+    /*Fonction de récupération des cours*/
 
-
-    public function get_subcategories_id(int $id){
+    //retourne les sous catégories d'un catégorie de cours d'ID $id_category
+    public function get_subcategories_of_category(int $id_category){
         global $DB;
 
         return array_values(
@@ -207,14 +217,14 @@ class data_provider {
                 },
                 $DB->get_records(
                     "course_categories",
-                    array("parent"=>$id)
+                    array("parent"=>$id_category)
                 )
             )
         );
     }
 
-    //récupère les cours actifs visibles sans la blacklist
-    public function get_whitelisted_courses(){
+    //retourne les ids des cours actifs visibles non blacklistés dans un tableau
+    public function get_whitelisted_courses_ids(){
         global $DB;
 
         $config = configurator::getInstance();
@@ -235,15 +245,22 @@ class data_provider {
         }
 
         $records=$DB->get_records_sql($query);
+        
+        $output = array_map(
+            function($course) {
+                return $course->id;
+            },
+            $records
+        );
 
         return $records;
     }
 
-    public function filter_living_courses_period($courses, $begin_timestamp, $end_timestamp){
+    //
+    public function filter_living_courses_on_period($ids_courses, $begin_timestamp, $end_timestamp){
         global $DB;
 
-        if(count($courses) == 0)
-            return array();
+        precondition_ids_courses($ids_courses);
 
         $query = "select distinct course.id as id, course.idnumber as idnumber, course.fullname as fullname, category.name as category_name
         from ".$DB->get_prefix()."course as course
@@ -254,15 +271,16 @@ class data_provider {
         where role.shortname = 'student'
         and logs.timecreated between ? and ?
         and logs.eventname like '%course_viewed'
-        and course.id in (".implode($courses,",").")";
+        and course.id in (".implode($id_courses,",").")";
 
         $records = $DB->get_records_sql($query, array($begin_timestamp, $end_timestamp));
         
         return $records;
     }
 
-    /*Fonctions de gestion des tâches adhoc*/
+    /*Gestion des tâches adhoc*/
 
+    //compte le nombre de tâches adhoc
     public function count_adhoc_tasks(){
         global $DB;
         return $DB->count_records(
@@ -271,6 +289,7 @@ class data_provider {
         );
     }
 
+    //
     public function clear_adhoc_tasks(){
         global $DB;
         return $DB->delete_records(
@@ -279,6 +298,7 @@ class data_provider {
         );
     }
 
+    //
     public function get_adhoc_tasks_list(){
         global $DB;
         return array_values(
@@ -297,6 +317,7 @@ class data_provider {
         );
     }
 
+    //
     public function schedule_adhoc_task($timestamp){
         $task = new \report_hybridmeter\task\traitement();
         $task->set_next_run_time($timestamp);

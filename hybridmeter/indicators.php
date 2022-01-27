@@ -35,12 +35,12 @@ function hybridation_calculus($type, $activity_data){
 }
 
 function hybridation_statique($object, $parameters){
-	$activity_data = data_provider::getInstance()->count_modules_types_id($object['id']);
+	$activity_data = data_provider::getInstance()->count_activities_per_type_of_course($object['id']);
 	return hybridation_calculus("static_coeffs", $activity_data);
 }
 
 function raw_data($object, $parameters) {
-	return data_provider::getInstance()->count_modules_types_id($object['id']);
+	return data_provider::getInstance()->count_activities_per_type_of_course($object['id']);
 }
 
 
@@ -51,7 +51,7 @@ function hybridation_dynamique($object, $parameters){
 	$coeffs = $configurator->get_data()["dynamic_coeffs"];
 	$indicator=0;
 	$total=0;
-	$activity_data=$data_provider->count_hits_by_module_type($object['id'], 
+	$activity_data=$data_provider->count_hits_on_activities_per_type($object['id'], 
 		$configurator->get_begin_timestamp(),
 		$configurator->get_end_timestamp());
 	return hybridation_calculus("static_coeffs", $activity_data);
@@ -62,7 +62,7 @@ function is_course_active_last_month($object, $parameters){
 	$configurator = configurator::getInstance();
 	$data_provider = data_provider::getinstance();
 
-	$count=$data_provider->count_single_users_course_viewed(
+	$count=$data_provider->count_student_visits_on_course(
 		$object['id'], 
 		$configurator->get_begin_timestamp(),
 		$configurator->get_end_timestamp()

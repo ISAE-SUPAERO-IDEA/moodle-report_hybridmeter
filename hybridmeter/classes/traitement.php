@@ -28,14 +28,9 @@ class traitement{
 		$data_provider = data_provider::getInstance();
 		$configurator = configurator::getInstance();
 
-		$whitelist_ids = array_map(
-			function($course) {
-				return $course->id;
-			},
-			$data_provider->get_whitelisted_courses()
-		);
+		$whitelist_ids = $data_provider->get_whitelisted_courses_id();
 
-		$filtered = $data_provider->filter_living_courses_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
+		$filtered = $data_provider->filter_living_courses_on_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
 
 		$this->formatter=new formatter($filtered);
 
@@ -119,7 +114,7 @@ class traitement{
 		$this->formatter->calculate_new_indicator(
 			function ($object, $parameters) {
 				$configurator = configurator::getInstance();
-				return data_provider::getInstance()->count_single_users_course_viewed(
+				return data_provider::getInstance()->count_student_visits_on_course(
 					$object['id'],
 					$configurator->get_begin_timestamp(),
 					$configurator->get_end_timestamp()
@@ -130,7 +125,7 @@ class traitement{
 
 		$this->formatter->calculate_new_indicator(
 			function ($object, $parameters) {
-				return data_provider::getInstance()->count_registered_users($object['id']);
+				return data_provider::getInstance()->count_registered_students_of_course($object['id']);
 			},
 			'nb_inscrits'
 		);
@@ -204,11 +199,11 @@ class traitement{
 		$generaldata['nb_cours_hybrides_statiques']=count($generaldata['cours_hybrides_statiques']);
 		$generaldata['nb_cours_hybrides_dynamiques']=count($generaldata['cours_hybrides_dynamiques']);
 
-		$generaldata['nb_etudiants_concernes_statiques']=$data_provider->count_distinct_students(
+		$generaldata['nb_etudiants_concernes_statiques']=$data_provider->count_distinct_registered_students_of_courses(
 			$generaldata['id_hybrides_statiques']
 		);
 
-		$generaldata['nb_etudiants_concernes_statiques_actifs']=$data_provider->count_single_users_course_viewed(
+		$generaldata['nb_etudiants_concernes_statiques_actifs']=$data_provider->count_student_single_visitors_on_courses(
 			$generaldata['id_hybrides_statiques'],
 			$configurator->get_begin_timestamp(),
 			$configurator->get_end_timestamp()
@@ -216,11 +211,11 @@ class traitement{
 		
 		
 
-		$generaldata['nb_etudiants_concernes_dynamiques']=$data_provider->count_distinct_students(
+		$generaldata['nb_etudiants_concernes_dynamiques']=$data_provider->count_distinct_registered_students_of_courses(
 			$generaldata['id_hybrides_dynamiques']
 		);
 		
-		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$data_provider->count_single_users_course_viewed(
+		$generaldata['nb_etudiants_concernes_dynamiques_actifs']=$data_provider->count_student_single_visitors_on_courses(
 			$generaldata['id_hybrides_dynamiques'],
 			$configurator->get_begin_timestamp(),
 			$configurator->get_end_timestamp()
