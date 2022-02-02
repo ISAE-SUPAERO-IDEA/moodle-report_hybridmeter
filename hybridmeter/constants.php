@@ -45,6 +45,19 @@ define("HYBRIDMETER_ACTIVITY_INSTANCES_DEVIATOR_CONSTANT", 2);
 define("HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT", 3);
 define("HYBRIDMETER_ACTIVITY_TOTAL_INSTANCES_DEVIATOR_CONSTANT", 4);
 
+define("DOUBLE", "double");
+define("FLOAT", "float");
+
+const TYPECAST = [
+	FLOAT => "floatval",
+	DOUBLE => "doubleval"
+];
+
+const FIELDS_TYPE = [
+	'niveau_de_digitalisation' => DOUBLE,
+	'niveau_d_utilisation' => DOUBLE
+];
+
 const FIELDS = [
 	'id_moodle',
 	'idnumber',

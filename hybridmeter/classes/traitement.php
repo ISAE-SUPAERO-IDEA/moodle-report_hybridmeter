@@ -28,13 +28,13 @@ class traitement{
 		$data_provider = data_provider::getInstance();
 		$configurator = configurator::getInstance();
 
-		$whitelist_ids = $data_provider->get_whitelisted_courses_id();
+		$whitelist_ids = $data_provider->get_whitelisted_courses_ids();
 
 		$filtered = $data_provider->filter_living_courses_on_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
 
 		$this->formatter=new formatter($filtered);
 
-		$this->exporter=new exporter(FIELDS, ALIAS);
+		$this->exporter=new exporter(FIELDS, ALIAS, FIELDS_TYPE);
 		
 		$this->date_debut = new \DateTime();
 		$this->date_debut->setTimestamp($timestamp);
@@ -190,6 +190,8 @@ class traitement{
 				return $cours["id"];
 			}
 		, $generaldata['cours_hybrides_statiques']);
+		
+		error_log(print_r(array("lol", $generaldata['id_hybrides_statiques'])));
 
 		$generaldata['id_hybrides_dynamiques']=array_map(function($cours){
 				return $cours["id"];

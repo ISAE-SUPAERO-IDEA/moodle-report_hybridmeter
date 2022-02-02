@@ -49,18 +49,14 @@ class configurator {
 
 		$this->set_default_value("has_scheduled_calculation", 0);
 		$this->set_default_value("scheduled_date", 0);
-		/*
+		
 		$this->set_default_value("seuil_actif", SEUIL_ACTIF);
 		$this->set_default_value("seuil_dynamique", SEUIL_DYNAMIQUE);
 		$this->set_default_value("seuil_statique", SEUIL_STATIQUE);
+
 		$this->update_coeffs("dynamic_coeffs", COEFF_DYNAMIQUES);
 		$this->update_coeffs("static_coeffs", COEFF_STATIQUES);
-		*/
-		$this->data["seuil_actif"] = SEUIL_ACTIF;
-		$this->data["seuil_dynamique"] = SEUIL_DYNAMIQUE;
-		$this->data["seuil_statique"] = SEUIL_STATIQUE;
-		$this->data["dynamic_coeffs"] = COEFF_DYNAMIQUES;
-		$this->data["static_coeffs"] = COEFF_STATIQUES;
+	
 		// Should save only if changes have been made
 		$this->save();
 	}
@@ -78,36 +74,48 @@ class configurator {
 		}
 	}
 
-	public function has_scheduled_calculation(){
-		return $this->data["has_scheduled_calculation"];
+	public function update($data){
+		$this->data = array_merge($this->data, $data);
+		$this->save();
 	}
 
-	public function get_scheduled_date(){
-		return $this->data["scheduled_date"];
+	public function update_key($key, $data){
+		$this->data[$key] = $data;
+		$this->save();
 	}
 
-	public function unschedule_calculation(){
-		data_provider::getInstance()->clear_adhoc_tasks();
-		$this->update_key("has_scheduled_calculation", 0);
+	public function delete_key($key){
+		unset($this->data[$key]);
+		$this->save();
 	}
 
-	public function schedule_calculation($timestamp){
-		data_provider::getInstance()->clear_adhoc_tasks();
-		$this->update([
-			"scheduled_date" => $timestamp,
-			"has_scheduled_calculation" => 1,
-		]);
-		data_provider::getInstance()->schedule_adhoc_task($timestamp);
+	// Saves the data in the configuration file
+	protected function save(){
+		$fichier = fopen($this->path, 'w');
+		fwrite($fichier, json_encode($this->data));
+		fclose($fichier);
+	}
+
+	// Get debug status
+	public function get_debug(){
+		return $this->data['debug'];
 	}
 
 	// Update coefficients for a given $type (dynamic or static)
 	public function update_coeffs($key, $default_coeffs){
 		global $DB;
-		$modules = $DB->get_records("modules");
+		$modules_shortname = array_map(
+			function($module){
+				return $module->name;
+			},
+			$DB->get_records("modules")
+		);
 		$this->set_default_value($key, []);
 		foreach ($default_coeffs as $item => $value) {
-			if (!array_key_exists($item, $this->data[$key])) {
-				$this->data[$key][$item] = $value;
+			if (in_array($item, $modules_shortname) && !array_key_exists($item, $this->data[$key])) {
+				$this->data[$key][$item] = array();
+				$this->data[$key][$item]["value"] = $value;
+				$this->data[$key][$item]["name"] = get_string("modulename", $item);
 			}
 		}
 	}
@@ -115,7 +123,7 @@ class configurator {
 	// Get a coefficient $key for a given $type
 	public function get_coeff($key, $item) {
 		if (array_key_exists($item, $this->data[$key])) {
-			return $this->data[$key][$item];
+			return $this->data[$key][$item]["value"];
 		}
 		return 0;
 	}
@@ -127,16 +135,56 @@ class configurator {
 	public function get_dynamic_coeff($key) {
 		return $this->get_coeff("dynamic_coeffs", $key);
 	}
-	// Get a dynamic coefficient far a $key
-	public function update($data){
-		$this->data = array_merge($this->data, $data);
-		$this->save();
+
+	public function get_coeffs_grid($key) {
+		$columns = array("Nom du module", "Coefficient");
+		if(!isset($this->data[$key])){
+			return json_encode(
+				array(
+					"columns" => $columns,
+					"rows" => array()
+				)
+			);
+		}
+
+		$rows = array();
+		$i=0;
+		foreach ($this->data[$key] as $coeff){
+			$rows[$i][$columns[0]]=$coeff["name"];
+			$rows[$i][$columns[1]]=$coeff["value"];
+			$i++;
+		}
+
+		return array(
+			"columns" => $columns,
+			"rows" => $rows
+		);
 	}
 
-	public function update_key($key, $data){
-		$this->data[$key] = $data;
-		$this->save();
+	public function get_seuils_grid(){
+		$columns = array("Nom du seuil", "Valeur du seuil");
+		$rows = array(
+			array(
+				$columns[0] => "Seuil d'hybridation selon le niveau de digitalisation",
+				$columns[1] => $this->data["seuil_statique"]
+			),
+			array(
+				$columns[0] => "Seuil d'hybridation selon le niveau d'utilisation",
+				$columns[1] => $this->data["seuil_dynamique"]
+			),
+			array(
+				$columns[0] => "Nombre d'étudiants actifs minimum pour catégoriser un cours comme actif",
+				$columns[1] => $this->data["seuil_actif"]
+			)
+		);
+
+		return array(
+			"columns" => $columns,
+			"rows" => $rows
+		);
 	}
+
+	// Get a dynamic coefficient far a $key
 
 	public function update_seuil_dynamique($value){
 		if(is_numeric($value))
@@ -200,10 +248,6 @@ class configurator {
 		$output->setTimestamp($this->data['end_date']);
 		return $output;
 	}
-	// Get debug status
-	public function get_debug(){
-		return $this->data['debug'];
-	}
 
 	public function get_begin_timestamp(){
 		return $this->get_begin_date()->getTimestamp();
@@ -218,59 +262,27 @@ class configurator {
 		return $this->data;
 	}
 
-	public function get_coeffs_grid($key) {
-		$columns = array("Nom du module", "Coefficient");
-		if(!isset($this->data[$key])){
-			return json_encode(
-				array(
-					"columns" => $columns,
-					"rows" => array()
-				)
-			);
-		}
-
-		$rows = array();
-		$i=0;
-		foreach ($this->data[$key] as $key => $value){
-			$rows[$i][$columns[0]]=$key;
-			$rows[$i][$columns[1]]=$value;
-			$i++;
-		}
-
-		return array(
-			"columns" => $columns,
-			"rows" => $rows
-		);
+	public function has_scheduled_calculation(){
+		return $this->data["has_scheduled_calculation"];
 	}
 
-	public function get_seuils_grid(){
-		$columns = array("Nom du seuil", "Valeur du seuil");
-		$rows = array(
-			array(
-				$columns[0] => "Seuil d'hybridation selon le niveau de digitalisation",
-				$columns[1] => $this->data["seuil_statique"]
-			),
-			array(
-				$columns[0] => "Seuil d'hybridation selon le niveau d'utilisation",
-				$columns[1] => $this->data["seuil_dynamique"]
-			),
-			array(
-				$columns[0] => "Nombre d'étudiants actifs minimum pour catégoriser un cours comme actif",
-				$columns[1] => $this->data["seuil_actif"]
-			)
-		);
-
-		return array(
-			"columns" => $columns,
-			"rows" => $rows
-		);
+	public function get_scheduled_date(){
+		return $this->data["scheduled_date"];
 	}
 
-	// Saves the data in the configuration file
-	protected function save(){
-		$fichier = fopen($this->path, 'w');
-		fwrite($fichier, json_encode($this->data));
-		fclose($fichier);
+	public function unschedule_calculation(){
+		data_provider::getInstance()->clear_adhoc_tasks();
+		$this->update_key("has_scheduled_calculation", 0);
 	}
+
+	public function schedule_calculation($timestamp){
+		data_provider::getInstance()->clear_adhoc_tasks();
+		$this->update([
+			"scheduled_date" => $timestamp,
+			"has_scheduled_calculation" => 1,
+		]);
+		data_provider::getInstance()->schedule_adhoc_task($timestamp);
+	}
+
 }
 

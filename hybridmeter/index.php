@@ -74,7 +74,7 @@ else{
 $task = optional_param('task', array(), PARAM_TEXT);
 
 if ($task=='download'){
-	$exporter = new exporter(FIELDS, ALIAS);
+	$exporter = new exporter(FIELDS, ALIAS, FIELDS_TYPE);
 	$exporter->set_data($data_unserialized['data']);
 	$exporter->create_csv($SITE->fullname."-".$date_format);
 	$exporter->download_file();

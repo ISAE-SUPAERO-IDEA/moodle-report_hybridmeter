@@ -3,6 +3,7 @@
 namespace report_hybridmeter\classes;
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__)."/../../../config.php");
+require_once(dirname(__FILE__).'/configurator.php');
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
 
@@ -26,19 +27,23 @@ class exporter {
     //Tableau d'alias sur le CSV
     protected $alias;
 
+    //Tableau des types de champs
+    protected $fields_type;
+
     //Le tableau de données en entrée, tableau à deux dimensions
     protected $data;
 
     //L'objet csv_export_writer de moodle core
     protected $csv;
 
-    public function __construct(array $fields=array(), array $alias = array(), array $data=array(), $delimiter = 'comma'){
+    public function __construct(array $fields=array(), array $alias = array(), array $fields_type = array(), array $data=array(), $delimiter = 'comma'){
         $this->set_data($fields);
         if(empty($fields) && !empty($this->data))
             $this->auto_fields();
         else
             $this->set_fields($fields);
         $this->set_alias($alias);
+        $this->set_fields_type($fields_type);
         $this->set_delimiter($delimiter);
     }
 
@@ -60,7 +65,7 @@ class exporter {
             throw new Exception("fields doit etre un tableau de chaînes de caractères");
         }
 
-        $this->fields=$fields;
+        $this->fields = $fields;
     }
 
     //ajoute une entrée au tableau
@@ -69,7 +74,7 @@ class exporter {
     }
 
     public function set_data(array $data){
-        $precondition_array = array_map($data, 'is_array');
+        $precondition_array = array_map('is_array', $data);
         if(in_array(false, $precondition_array)){
             throw new Exception("Les données doivent être passées à l'exporter sous forme de tableau de tableaux");
         }
@@ -77,13 +82,17 @@ class exporter {
         $this->data = $data;
     }
 
+    public function set_alias(array $alias){
+        $this->alias = $alias;
+    }
+
+    public function set_fields_type(array $fields_type) {
+        $this->fields_type = $fields_type;
+    }
+
     public function set_delimiter($delimiter){
         $this->delimiter=$delimiter;
         $this->csv=new \csv_export_writer($this->delimiter);
-    }
-
-    public function set_alias(array $alias){
-        $this->alias=$alias;
     }
 
     private function construct_fields_name(){
@@ -111,7 +120,16 @@ class exporter {
         foreach ($this->data as $key => $record) {
             $row = array();
             foreach ($this->fields as $key => $field) {
-                array_push($row, $record[$field]);
+                if(
+                    in_array($field, array_keys($this->fields_type))
+                    && in_array($this->set_fields_type[$field], array_keys(TYPECAST))
+                ){
+                    $value = TYPECAST[FIELDS_TYPE[$this->set_fields_type[$field]]]($record[$field]);
+                    error_log("bon là là là l");
+                } else
+                    $value = $record[$field];
+
+                array_push($row, $value);
             }
             $this->csv->add_data($row);
         }

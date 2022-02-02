@@ -32,15 +32,10 @@ class data_provider {
             $ids_courses=array($ids_courses);
         }
 
-        $length = count($ids_courses);
-
-        if($length === 0)
-            throw new Error("Le tableau de cours ne doit pas être vide");
-
         $precondition_array = array_map('is_numeric', $ids_courses);
 
         if(in_array(false, $precondition_array))
-            throw new Error("Les IDs doivent être des entiers");
+            throw new \Error("Les IDs doivent être des entiers");
     }
 
     /*Fonctions d'indicateurs*/
@@ -106,13 +101,15 @@ class data_provider {
     public function count_student_single_visitors_on_courses($ids_courses, int $begin_timestamp, int $end_timestamp){
         global $DB;
 
-        precondition_ids_courses($ids_courses);
+        $this->precondition_ids_courses($ids_courses);
 
-        $where_compil = "(".$ids[0];
+        if(count($ids_courses) === 0) {
+            return 0;
+        }
+
+        $where_compil = "(".$ids_courses[0];
         for($i = 1; $i < $length; $i++){
-            if(!is_numeric($ids[$i]))
-                return -1;
-            $where_compil .= ", ".$ids[$i];
+            $where_compil .= ", ".$ids_courses[$i];
         }
         $where_compil .= ")";
 
@@ -153,7 +150,11 @@ class data_provider {
     public function count_distinct_registered_students_of_courses($ids_courses){
         global $DB;
 
-        precondition_ids_courses($ids_courses);
+        $this->precondition_ids_courses($ids_courses);
+
+        if(count($ids_courses) === 0) {
+            return 0;
+        }
 
         $where_courseid = "enrol.courseid in (".$ids_courses[0];
         for($i = 1; $i < $length; $i++){
@@ -176,9 +177,9 @@ class data_provider {
 
     //compte le nombre de clics sur les activités de l'espace de cours d'ID $id_course
     //par type d'activité et sur la période allant de $begin_timestamp à $end_timestamp
-    public function count_hits_on_activities_per_type(int $id, int $begin_timestamp, int $end_timestamp){
+    public function count_hits_on_activities_per_type(int $id_course, int $begin_timestamp, int $end_timestamp){
         global $DB;
-        $params=array($id, $id, CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
+        $params=array($id_course, $id_course, CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
 
         $records = $DB->get_records_sql(
             "select logs.objecttable as module, count(*) as count
@@ -253,14 +254,18 @@ class data_provider {
             $records
         );
 
-        return $records;
+        return $output;
     }
 
     //
     public function filter_living_courses_on_period($ids_courses, $begin_timestamp, $end_timestamp){
         global $DB;
 
-        precondition_ids_courses($ids_courses);
+        $this->precondition_ids_courses($ids_courses);
+
+        if(count($ids_courses) === 0) {
+            return array();
+        }
 
         $query = "select distinct course.id as id, course.idnumber as idnumber, course.fullname as fullname, category.name as category_name
         from ".$DB->get_prefix()."course as course
@@ -271,7 +276,7 @@ class data_provider {
         where role.shortname = 'student'
         and logs.timecreated between ? and ?
         and logs.eventname like '%course_viewed'
-        and course.id in (".implode($id_courses,",").")";
+        and course.id in (".implode($ids_courses,",").")";
 
         $records = $DB->get_records_sql($query, array($begin_timestamp, $end_timestamp));
         
