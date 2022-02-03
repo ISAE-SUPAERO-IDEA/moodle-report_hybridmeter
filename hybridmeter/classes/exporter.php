@@ -7,6 +7,8 @@ require_once(dirname(__FILE__).'/configurator.php');
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
 
+use Exception;
+
 /**
  * Cette classe permet le transcodage sous forme de CSV des données calculées
  * et donne la possibilité de l'afficher sur une page web, de le transférer sur un
@@ -36,8 +38,8 @@ class exporter {
     //L'objet csv_export_writer de moodle core
     protected $csv;
 
-    public function __construct(array $fields=array(), array $alias = array(), array $fields_type = array(), array $data=array(), $delimiter = 'comma'){
-        $this->set_data($fields);
+    public function __construct(array $fields=array(), array $alias = array(), array $fields_type = array(), array $data = array(), $delimiter = 'comma'){
+        $this->set_data($data);
         if(empty($fields) && !empty($this->data))
             $this->auto_fields();
         else
@@ -75,6 +77,14 @@ class exporter {
 
     public function set_data(array $data){
         $precondition_array = array_map('is_array', $data);
+        error_log(print_r(
+            array(
+                "lol",
+                $data,
+                $precondition_array
+            ),
+            1
+        ));
         if(in_array(false, $precondition_array)){
             throw new Exception("Les données doivent être passées à l'exporter sous forme de tableau de tableaux");
         }
@@ -120,19 +130,22 @@ class exporter {
         foreach ($this->data as $key => $record) {
             $row = array();
             foreach ($this->fields as $key => $field) {
-                if(
-                    in_array($field, array_keys($this->fields_type))
-                    && in_array($this->set_fields_type[$field], array_keys(TYPECAST))
-                ){
-                    $value = TYPECAST[FIELDS_TYPE[$this->set_fields_type[$field]]]($record[$field]);
-                    error_log("bon là là là l");
-                } else
-                    $value = $record[$field];
-
+                $value = $this->format_value($record,$key,$field);
                 array_push($row, $value);
             }
             $this->csv->add_data($row);
         }
+    }
+
+    protected function format_value($record, $key, $field){
+        if (
+            in_array($field, array_keys($this->fields_type))
+            && ($this->fields_type[$field] == DOUBLE || $this->fields_type[$field] == FLOAT)
+        ) {
+            return sprintf("%.2f", $record[$field]);
+        }
+
+        return $record[$field];
     }
     
     public function print_csv_data_standard(){

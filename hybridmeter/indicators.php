@@ -31,7 +31,7 @@ function hybridation_calculus($type, $activity_data){
 		$P = $C / ($C + HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT); // Course weight
 		$H = $M * $P * $sigmaPkVk / $sigmaPk;
 	}
-	return round($H, 2);
+	return $H;
 }
 
 function hybridation_statique($object, $parameters){

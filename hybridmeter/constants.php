@@ -48,11 +48,6 @@ define("HYBRIDMETER_ACTIVITY_TOTAL_INSTANCES_DEVIATOR_CONSTANT", 4);
 define("DOUBLE", "double");
 define("FLOAT", "float");
 
-const TYPECAST = [
-	FLOAT => "floatval",
-	DOUBLE => "doubleval"
-];
-
 const FIELDS_TYPE = [
 	'niveau_de_digitalisation' => DOUBLE,
 	'niveau_d_utilisation' => DOUBLE

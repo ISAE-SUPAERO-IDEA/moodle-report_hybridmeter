@@ -6,6 +6,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/logger.php');
 
+use Exception;
+
 // TODO: Expliquer ce que cette classe formatte
 // TODO : Refactoriser (P3)
 class formatter {

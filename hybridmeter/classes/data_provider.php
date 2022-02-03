@@ -9,6 +9,7 @@ require_once(dirname(__FILE__).'/task/traitement.php');
 defined('MOODLE_INTERNAL') || die();
 
 use \report_hybridmeter\classes\configurator as configurator;
+use Error;
 
 class data_provider {
 
@@ -35,7 +36,7 @@ class data_provider {
         $precondition_array = array_map('is_numeric', $ids_courses);
 
         if(in_array(false, $precondition_array))
-            throw new \Error("Les IDs doivent être des entiers");
+            throw new Error("Les IDs doivent être des entiers");
     }
 
     /*Fonctions d'indicateurs*/
