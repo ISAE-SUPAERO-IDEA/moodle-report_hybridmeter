@@ -214,14 +214,6 @@ class configurator {
 	}
 
 	protected function save_blacklist_state_of_category_rec($id_category) {
-		/*error_log(print_r(
-			array(
-				"gacolol",
-				$id_category,
-				in_array(3, $this->data["save_blacklist_courses"])
-			),
-			1
-		));*/
 		$data_provider = data_provider::getInstance();
 		$ids_subcategories=$data_provider->get_children_categories_ids($id_category);
 		$ids_courses=$data_provider->get_children_courses_ids($id_category);

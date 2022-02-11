@@ -171,7 +171,6 @@ Vue.component('category', {
       data.append('type', 'categories');
       data.append('value', value);
       category.blacklisted = (await this.post('blacklist_tree_handler.php',data)).blacklisted;
-      console.log(this.tree);
       this.tree = Object.assign({}, this.tree);
     },
     async manage_course_blacklist(course) {
