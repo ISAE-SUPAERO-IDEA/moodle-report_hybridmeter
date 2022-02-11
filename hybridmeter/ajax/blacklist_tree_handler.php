@@ -5,7 +5,9 @@
 	*/
 	require_once("../../../config.php");
 	require_once(__DIR__."/../classes/configurator.php");
+	require_once(__DIR__."/../classes/data_provider.php");
 	use \report_hybridmeter\classes\configurator as configurator;
+	use \report_hybridmeter\classes\data_provider as data_provider;
 
     header('Content-Type: text/json');
 
@@ -17,6 +19,7 @@
 	has_capability('report/hybridmeter:all', $context) || die();
 
 	$configurator = configurator::getInstance();
+	$data_provider = data_provider::getInstance();
 	
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
 		$task  = required_param('task', PARAM_ALPHAEXT);
@@ -31,12 +34,12 @@
 	// List category children
 	if ($task == "category_children") {
 		$id = required_param('id', PARAM_INT);
-		$categories = $DB->get_records('course_categories', array("parent" => $id));
+		$categories = $data_provider->get_children_categories_ordered($id);
 
 		//Dans le cas où l'id de la catégorie est 0, on ne renvoie pas le cours enfant qui correpond au site
 
 		if($id != 0){
-			$courses = $DB->get_records('course', array("category" =>$id));
+			$courses = $data_provider->get_children_courses_ordered($id);
 		}
 		else{
 			$courses = array();

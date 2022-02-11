@@ -57,6 +57,7 @@ const FIELDS = [
 	'id_moodle',
 	'idnumber',
 	'category_name',
+	'category_path',
 	'fullname',
 	'url',
 	'niveau_de_digitalisation',
@@ -70,7 +71,7 @@ const FIELDS = [
 
 const ALIAS = [
 	'idnumber' => 'Identifiant du cours',
-	'category_name' => "Catégorie",
+	'category_path' => "Catégorie",
 	'fullname' => 'Nom du cours',
 	'url' => 'URL du cours',
 	'niveau_de_digitalisation' => 'ND',

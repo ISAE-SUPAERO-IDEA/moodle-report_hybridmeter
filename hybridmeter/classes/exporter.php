@@ -77,14 +77,6 @@ class exporter {
 
     public function set_data(array $data){
         $precondition_array = array_map('is_array', $data);
-        error_log(print_r(
-            array(
-                "lol",
-                $data,
-                $precondition_array
-            ),
-            1
-        ));
         if(in_array(false, $precondition_array)){
             throw new Exception("Les données doivent être passées à l'exporter sous forme de tableau de tableaux");
         }

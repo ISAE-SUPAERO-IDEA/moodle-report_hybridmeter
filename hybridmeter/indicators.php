@@ -2,10 +2,12 @@
 require_once(__DIR__.'/constants.php');
 require_once(__DIR__.'/classes/configurator.php');
 require_once(__DIR__.'/classes/data_provider.php');
+require_once(__DIR__.'/classes/cache_manager.php');
 defined('MOODLE_INTERNAL') || die();
 
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\classes\data_provider as data_provider;
+use \report_hybridmeter\classes\cache_manager as cache_manager;
 
 # https://app.clickup.com/t/1h2ad7h
 function hybridation_calculus($type, $activity_data){
@@ -31,7 +33,7 @@ function hybridation_calculus($type, $activity_data){
 		$P = $C / ($C + HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT); // Course weight
 		$H = $M * $P * $sigmaPkVk / $sigmaPk;
 	}
-	return $H;
+	return round($H, 2);
 }
 
 function hybridation_statique($object, $parameters){
@@ -39,7 +41,7 @@ function hybridation_statique($object, $parameters){
 	return hybridation_calculus("static_coeffs", $activity_data);
 }
 
-function raw_data($object, $parameters) {
+function raw_data($object, $parameters){
 	return data_provider::getInstance()->count_activities_per_type_of_course($object['id']);
 }
 
@@ -53,8 +55,22 @@ function hybridation_dynamique($object, $parameters){
 	$total=0;
 	$activity_data=$data_provider->count_hits_on_activities_per_type($object['id'], 
 		$configurator->get_begin_timestamp(),
-		$configurator->get_end_timestamp());
+		$configurator->get_end_timestamp()
+	);
 	return hybridation_calculus("static_coeffs", $activity_data);
+}
+
+function get_category_path($object, $parameters){
+	$cache_manager = cache_manager::getInstance();
+
+	if($cache_manager->is_category_path_calculated($object['category_id']))
+		return $cache_manager->get_category_path($object['category_id']);
+
+	$category_path = data_provider::getInstance()->get_category_path($object['category_id']);
+
+	$cache_manager->update_category_path($object['category_id'], $category_path);
+
+	return $category_path;
 }
 
 //Fonction lambda utilisée pour définir si le cours est actif

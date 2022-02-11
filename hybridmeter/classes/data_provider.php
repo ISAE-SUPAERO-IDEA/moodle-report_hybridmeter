@@ -104,7 +104,9 @@ class data_provider {
 
         $this->precondition_ids_courses($ids_courses);
 
-        if(count($ids_courses) === 0) {
+        $length = count($ids_courses);
+
+        if($length === 0) {
             return 0;
         }
 
@@ -153,11 +155,14 @@ class data_provider {
 
         $this->precondition_ids_courses($ids_courses);
 
-        if(count($ids_courses) === 0) {
+        $length = count($ids_courses);
+
+        if($length === 0) {
             return 0;
         }
 
         $where_courseid = "enrol.courseid in (".$ids_courses[0];
+
         for($i = 1; $i < $length; $i++){
             if(!is_numeric($ids_courses[$i]))
                 return -1;
@@ -208,21 +213,99 @@ class data_provider {
 
     /*Fonction de récupération des cours*/
 
-    //retourne les sous catégories d'un catégorie de cours d'ID $id_category
-    public function get_subcategories_of_category(int $id_category){
+    //retourne les cours d'une catégorie dans l'ordre choisi dans les paramètres moodle
+    public function get_children_courses_ordered(int $id_category) {
         global $DB;
 
-        return array_values(
-            array_map(
-                function($category){
-                    return $category->id;
-                },
-                $DB->get_records(
-                    "course_categories",
-                    array("parent"=>$id_category)
-                )
-            )
+        $records = $DB->get_records_sql(
+            "select * from ".$DB->get_prefix()."course
+            where category = ? order by sortorder asc",
+            array($id_category)
         );
+
+        $output = array();
+
+        $index = 0;
+        foreach ($records as $record) {
+            $output[$index] = $record;
+            $index++;
+        }
+
+        return $output;
+    }
+
+    //retourne les sous catégories d'une catégorie dans l'ordre choisi dans les paramètres moodle
+    public function get_children_categories_ordered(int $id_category) {
+        global $DB;
+
+        $records = $DB->get_records_sql(
+            "select * from ".$DB->get_prefix()."course_categories
+            where parent = ? order by sortorder asc",
+            array($id_category)
+        );
+
+        $output = array();
+
+        $index = 0;
+        foreach ($records as $record) {
+            $output[$index] = $record;
+            $index++;
+        }
+
+        return $output;
+    }
+
+    public function get_children_courses_ids(int $id_category) {
+        global $DB;
+
+        $records = $DB->get_records(
+            "course",
+            array("category" => $id_category)
+        );
+
+        return array_map(
+            function($course) {
+                return $course->id;
+            },
+            $records
+        );
+    }
+
+    public function get_children_categories_ids(int $id_category) {
+        global $DB;
+        
+        $records = $DB->get_records(
+            "course_categories",
+            array("parent" => $id_category)
+        );
+
+        return array_map(
+            function($category) {
+                return $category->id;
+            },
+            $records
+        );
+    }
+
+    //retourne le chemin complet de la catégorie $id_category
+    public function get_category_path(int $id_category) {
+        return $this->get_category_path_rec($id_category, "");
+    }
+
+
+    protected function get_category_path_rec(int $id_category, $output) {
+        global $DB;
+
+        $record = $DB->get_record(
+            "course_categories",
+            array("id" => $id_category)
+        );
+
+        if($record->parent == 0){
+            return $output.$record->name;
+        }
+        else
+            return $this->get_category_path_rec($record->parent, $output.$record->name."/");
     }
 
     //retourne les ids des cours actifs visibles non blacklistés dans un tableau
@@ -242,9 +325,6 @@ class data_provider {
         if (count($blacklisted_courses)>0) {
             $query .= " and course.id not in (".implode($blacklisted_courses,",").")";
         }
-        if (count($blacklisted_categories)>0) {
-            $query .= " and course.category not in (".implode($blacklisted_categories,",").")";
-        }
 
         $records=$DB->get_records_sql($query);
         
@@ -258,7 +338,10 @@ class data_provider {
         return $output;
     }
 
-    //
+    /* retourne dans un tableau d'objets les id, idnumber, nom complet et nom de catégorie des cours
+     * dont l'id est un élément du tableau $ids et qui ont été visités par au moins un apprenant
+     * durant la période allant du timestamp $begin_date au timestamp $end_date. 
+     */
     public function filter_living_courses_on_period($ids_courses, $begin_timestamp, $end_timestamp){
         global $DB;
 
@@ -268,7 +351,7 @@ class data_provider {
             return array();
         }
 
-        $query = "select distinct course.id as id, course.idnumber as idnumber, course.fullname as fullname, category.name as category_name
+        $query = "select distinct course.id as id, course.idnumber as idnumber, course.fullname as fullname, category.id as category_id, category.name as category_name
         from ".$DB->get_prefix()."course as course
         inner join ".$DB->get_prefix()."logstore_standard_log as logs on course.id=logs.courseid
         inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
@@ -295,7 +378,7 @@ class data_provider {
         );
     }
 
-    //
+    //déprogramme toutes les tâches adhoc
     public function clear_adhoc_tasks(){
         global $DB;
         return $DB->delete_records(
@@ -304,7 +387,6 @@ class data_provider {
         );
     }
 
-    //
     public function get_adhoc_tasks_list(){
         global $DB;
         return array_values(
@@ -323,7 +405,7 @@ class data_provider {
         );
     }
 
-    //
+    //programme une tâche adhoc au timestamp $timestamp
     public function schedule_adhoc_task($timestamp){
         $task = new \report_hybridmeter\task\traitement();
         $task->set_next_run_time($timestamp);

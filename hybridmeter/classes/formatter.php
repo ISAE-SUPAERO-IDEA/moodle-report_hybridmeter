@@ -14,9 +14,12 @@ class formatter {
 	//Le tableau structuré
 	protected $data;
 
+	protected $cache;
+
 	public function __construct(array $data){
 		$this->precondition_record($data);
 		$this->data = $this->objects_array_to_2D_array($data);
+		$this->cache = array();
 	}
 
 	protected function objects_array_to_2D_array(array $data) {

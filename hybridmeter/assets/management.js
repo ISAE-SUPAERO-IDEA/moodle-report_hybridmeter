@@ -102,6 +102,7 @@ Vue.component('category', {
         categories:[],
         courses:[]
       },
+      test : [],
       config: {},
       loading : true
     }
@@ -126,6 +127,7 @@ Vue.component('category', {
       data.append('id', this.id);
       //Load category tree
       this.tree = await this.post('blacklist_tree_handler.php',data).then(data => {
+        this.test = data.courses;
         //Apply blacklisted status on loaded categories
         for (var i in data.categories) {
           data.categories[i].expanded = false;
@@ -169,20 +171,19 @@ Vue.component('category', {
       data.append('type', 'categories');
       data.append('value', value);
       category.blacklisted = (await this.post('blacklist_tree_handler.php',data)).blacklisted;
+      console.log(this.tree);
       this.tree = Object.assign({}, this.tree);
     },
     async manage_course_blacklist(course) {
-      if (!this.global_blacklist) {
-        var value = !course.blacklisted;
-        // TODO: Utiliser encodeURI()
-        var data = new FormData();
-        data.append('task', 'manage_blacklist');
-        data.append('id', course.id);
-        data.append('type', 'courses');
-        data.append('value', value);
-        course.blacklisted = (await this.post('blacklist_tree_handler.php',data)).blacklisted;
-        this.tree = Object.assign({}, this.tree);
-      }
+      var value = !course.blacklisted;
+      // TODO: Utiliser encodeURI()
+      var data = new FormData();
+      data.append('task', 'manage_blacklist');
+      data.append('id', course.id);
+      data.append('type', 'courses');
+      data.append('value', value);
+      course.blacklisted = (await this.post('blacklist_tree_handler.php',data)).blacklisted;
+      this.tree = Object.assign({}, this.tree);
     },
     //Utilitaries functions
     class_eye_category_blacklist(item) {
@@ -193,7 +194,7 @@ Vue.component('category', {
       }
     },
     class_eye_course_blacklist(item) {
-      var blacklisted = item.blacklisted || this.global_blacklist == true;
+      var blacklisted = item.blacklisted;
       return {
         "fa-eye": !blacklisted,
         "fa-eye-slash": blacklisted,

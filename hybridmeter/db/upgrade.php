@@ -10,8 +10,8 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
 
     if($oldversion < 2022020103) {
         $configurator = configurator::getInstance();
-        $configurator->delete_key("static_coeffs");
-        $configurator->delete_key("dynamic_coeffs");
+        $configurator->unset_key("static_coeffs");
+        $configurator->unset_key("dynamic_coeffs");
         
         $configurator->update_coeffs("dynamic_coeffs", COEFF_DYNAMIQUES);
 		$configurator->update_coeffs("static_coeffs", COEFF_STATIQUES);

@@ -34,7 +34,7 @@ class traitement{
 
 		$this->formatter=new formatter($filtered);
 
-		$this->exporter=new exporter(FIELDS, ALIAS, FIELDS_TYPE);
+		//$this->exporter=new exporter(FIELDS, ALIAS, FIELDS_TYPE);
 		
 		$this->date_debut = new \DateTime();
 		$this->date_debut->setTimestamp($timestamp);
@@ -61,10 +61,8 @@ class traitement{
 		);
 
 		$this->formatter->calculate_new_indicator(
-			function($object, $parameters){
-				return $object['category_name'];
-			},
-			"category_name"
+			'get_category_path',
+			'category_path'
 		);
 
 
@@ -89,7 +87,6 @@ class traitement{
 	    	'niveau_de_digitalisation',
 	    	array(
 	    		"nb_cours" => $this->formatter->get_length_array(),
-	    		"configurator" => $configurator
 	    	)
 	    );
 
@@ -98,17 +95,13 @@ class traitement{
 			'niveau_d_utilisation',
 			array(
 				"nb_cours" => $this->formatter->get_length_array(),
-				"configurator" => $configurator
 			)
 		);
 
 
 		$this->formatter->calculate_new_indicator(
 			"is_course_active_last_month",
-			'cours_actif',
-			array (
-				"configurator" => $configurator
-			)
+			'cours_actif'
 		);
 
 		$this->formatter->calculate_new_indicator(
@@ -190,8 +183,6 @@ class traitement{
 				return $cours["id"];
 			}
 		, $generaldata['cours_hybrides_statiques']);
-		
-		error_log(print_r(array("lol", $generaldata['id_hybrides_statiques'])));
 
 		$generaldata['id_hybrides_dynamiques']=array_map(function($cours){
 				return $cours["id"];
@@ -255,6 +246,7 @@ class traitement{
 			"generaldata" => $generaldata
 		));
 		fwrite($file_exporter, $s);
+		fclose($file_exporter);
 
 		$date_format = $this->date_debut->format('Y-m-d H:i:s');
 
