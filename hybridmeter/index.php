@@ -3,7 +3,6 @@
 require(dirname(__FILE__).'/../../config.php');
 require_once(dirname(__FILE__).'/classes/task/traitement.php');
 require_once(dirname(__FILE__).'/output/renderer.php');
-require_once(dirname(__FILE__).'/indicators.php');
 require_once(dirname(__FILE__).'/constants.php');
 require_once(dirname(__FILE__).'/classes/utils.php');
 require_once(dirname(__FILE__).'/classes/formatter.php');

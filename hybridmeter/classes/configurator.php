@@ -197,7 +197,12 @@ class configurator {
 			$this->update_key("seuil_statique", $value);
 	}
 
-	public function save_blacklist_state_of_category($id_category) {
+	/* Enregistre les cours et catégories blacklistés descendants de $id_category au moment de l'appel de la fonction,
+	pour les garder en mémoire et restituer l'état au moment du whitelisting
+	
+	Le caractère persistant de la sauvegarde permet de rafraîchir la page et de garder la sauvegarde par exemple*/
+
+	protected function save_blacklist_state_of_category($id_category) {
 
 		if(!isset($this->data["save_blacklist_courses"]) || !is_array($this->data["save_blacklist_courses"]))
 			$this->data["save_blacklist_courses"] = array();
@@ -228,7 +233,7 @@ class configurator {
 		}
 	}
 
-	public function delete_blacklist_savelist_of_category($id_category) {
+	protected function delete_blacklist_savelist_of_category($id_category) {
 		$data_provider = data_provider::getInstance();
 		$id_subcategories=$data_provider->get_children_categories_ids($id_category);
 		$id_courses=array_map(
@@ -253,7 +258,13 @@ class configurator {
 		$this->save();
 	}
 
-	public function spend_blacklist_savelist_of_category($id_category) {
+	/* Cette fonction rétabli l'état d'avant le blacklisting de la catégorie $id_category à partir
+	des données de sauvegarde, puis supprime ces dites données de sauvegarde, d'où le terme de "consommer".
+	
+	$id_category ne doit pas forcément être le même $id_category que pour enregistrer les données, ça peut
+	tout autant être un enfant par exemple*/
+
+	protected function spend_blacklist_savelist_of_category($id_category) {
 		$this->spend_blacklist_savelist_of_category_rec($id_category);
 		$this->delete_blacklist_savelist_of_category($id_category);
 		$this->save();

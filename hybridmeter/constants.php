@@ -71,7 +71,8 @@ const FIELDS = [
 
 const ALIAS = [
 	'idnumber' => 'Identifiant du cours',
-	'category_path' => "Catégorie",
+	'category_name' => 'Catégorie',
+	'category_path' => 'Chemin de la catégorie',
 	'fullname' => 'Nom du cours',
 	'url' => 'URL du cours',
 	'niveau_de_digitalisation' => 'ND',

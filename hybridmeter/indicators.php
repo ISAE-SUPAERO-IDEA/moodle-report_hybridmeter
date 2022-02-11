@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__.'/constants.php');
 require_once(__DIR__.'/classes/configurator.php');
+require_once(__DIR__.'/classes/logger.php');
 require_once(__DIR__.'/classes/data_provider.php');
 require_once(__DIR__.'/classes/cache_manager.php');
 defined('MOODLE_INTERNAL') || die();
@@ -8,6 +9,7 @@ defined('MOODLE_INTERNAL') || die();
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\classes\data_provider as data_provider;
 use \report_hybridmeter\classes\cache_manager as cache_manager;
+use \report_hybridmeter\classes\logger as logger;
 
 # https://app.clickup.com/t/1h2ad7h
 function hybridation_calculus($type, $activity_data){
@@ -69,6 +71,8 @@ function get_category_path($object, $parameters){
 	$category_path = data_provider::getInstance()->get_category_path($object['category_id']);
 
 	$cache_manager->update_category_path($object['category_id'], $category_path);
+
+	//logger::file_log($category_path, "lol.txt");
 
 	return $category_path;
 }

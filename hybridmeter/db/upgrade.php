@@ -19,9 +19,9 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022020103, 'report', 'hybridmeter');
     }
 
-    if($oldversion < 2022021101) {
+    if($oldversion < 2022021108) {
         rm_dir("/hybridmetrics");
-        upgrade_plugin_savepoint(true, 2022021101, 'report', 'hybridmeter');
+        upgrade_plugin_savepoint(true, 2022021108, 'report', 'hybridmeter');
     }
 
     return true;

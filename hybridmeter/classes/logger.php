@@ -12,5 +12,12 @@ class logger {
 			error_log(print_r($object, 1));
 		}
     }
+
+	public static function file_log($object, $filename) {
+		if (configurator::getInstance()->get_debug()) {
+			$file = fopen(dirname(__FILE__).'/../'.$filename, 'a');
+			fwrite($file, print_r($object,1));
+		}
+	}
 }
 
