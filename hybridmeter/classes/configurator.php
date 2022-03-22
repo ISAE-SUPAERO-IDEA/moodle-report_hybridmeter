@@ -42,6 +42,7 @@ class configurator {
 		$before = strtotime("-1 months");
 		$this->set_default_value("begin_date", $before);
 		$this->set_default_value("end_date", $now->getTimestamp());
+		$this->set_default_value("student_role", "student");
 		$this->set_default_value("debug", 0);
 		$this->set_default_value("running", NON_RUNNING);
 
@@ -136,7 +137,7 @@ class configurator {
 	public function get_dynamic_coeff($key) {
 		return $this->get_coeff("dynamic_coeffs", $key);
 	}
-
+	
 	public function get_coeffs_grid($key) {
 		$columns = array("Nom du module", "Coefficient");
 		if(!isset($this->data[$key])){
@@ -374,6 +375,10 @@ class configurator {
 
 	public function get_end_timestamp(){
 		return $this->get_end_date()->getTimestamp();
+	}
+	
+	public function get_student_role() {
+		return $this->data["student_role"];
 	}
 
 	// Returns raw configuration data

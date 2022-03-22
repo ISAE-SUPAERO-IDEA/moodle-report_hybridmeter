@@ -24,7 +24,7 @@
 		$action = optional_param('action', 'nothing', PARAM_ALPHAEXT);
 		$debug = optional_param('debug', null, PARAM_BOOL);
 
-		if($action == "periode_mesure"){
+		if($action == "periode_mesure") {
 			$begin_date = required_param('begin_date', PARAM_INT);
 			$end_date = required_param('end_date', PARAM_INT);
 			$configurator->update([
@@ -33,13 +33,19 @@
 				"debug" => $debug
 			]);
 		}
-		else if ($action == "schedule"){
+		else if ($action == "schedule") {
 			$scheduled_timestamp = required_param('scheduled_timestamp', PARAM_INT);
 			$configurator->schedule_calculation($scheduled_timestamp);
 		}
-		else if ($action == "unschedule"){
+		else if ($action == "unschedule") {
 			$configurator->unschedule_calculation();
 			$configurator->update_key("debug", $debug);
+		}
+		else if ($action == "additional_config") {
+			$student_role = required_param('student_role', PARAM_ALPHAEXT);
+			$configurator->update([
+				"student_role" => $student_role, 
+			]);
 		}
 	} else  {	
 		$task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);

@@ -79,6 +79,7 @@ class data_provider {
     //durant la période allant de $begin_timestamp à $end_timestamp
     public function count_student_visits_on_course(int $id_course, int $begin_timestamp, int $end_timestamp){
         global $DB;
+        $student_role = configurator::getInstance()->get_student_role();
 
         $record=$DB->get_record_sql(
             "select count(*) as count
@@ -86,13 +87,13 @@ class data_provider {
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
             inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
-            where role.shortname='student'
+            where role.shortname=?
             and eventname='\\core\\event\\course_viewed'
             and courseid=?
             and context.instanceid=?
             and context.contextlevel=?
             and timecreated between ? and ?",
-            array($id_course, $id_course, CONTEXT_COURSE, $begin_timestamp, $end_timestamp)
+            array($student_role, $id_course, $id_course, CONTEXT_COURSE, $begin_timestamp, $end_timestamp)
         );
 
         return $record->count;
@@ -101,6 +102,7 @@ class data_provider {
     //compte le nombre d'utilisateurs uniques en fonction du cours et de la période choisie
     public function count_student_single_visitors_on_courses($ids_courses, int $begin_timestamp, int $end_timestamp){
         global $DB;
+        $student_role = configurator::getInstance()->get_student_role();
 
         $this->precondition_ids_courses($ids_courses);
 
@@ -121,14 +123,14 @@ class data_provider {
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
             inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
-            where role.shortname = 'student'
+            where role.shortname = ?
             and eventname like '%course_viewed'
             and context.contextlevel = ?
             and context.instanceid in ".$where_compil."
             and logs.courseid in ".$where_compil."
             and logs.timecreated between ? and ?";
 
-        $params = array(CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
+        $params = array($student_role, CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
 
         $record=$DB->get_record_sql($query, $params);
         return $record->count;
@@ -137,14 +139,15 @@ class data_provider {
     //retourne le nombre d'inscrits au cours d'ID $id_course selon la table d'assignement
     public function count_registered_students_of_course(int $id_course){
         global $DB;
+        $student_role = configurator::getInstance()->get_student_role();
         $record=$DB->get_record_sql("select count(*) as count
             from ".$DB->get_prefix()."context as context
             inner join ".$DB->get_prefix()."role_assignments as assign on context.id=assign.contextid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
-            where role.shortname='student'
+            where role.shortname=?
             and context.instanceid=?
             and context.contextlevel=?",
-            array($id_course, CONTEXT_COURSE));
+            array($student_role, $id_course, CONTEXT_COURSE));
         return $record->count;
     }
 
@@ -185,7 +188,8 @@ class data_provider {
     //par type d'activité et sur la période allant de $begin_timestamp à $end_timestamp
     public function count_hits_on_activities_per_type(int $id_course, int $begin_timestamp, int $end_timestamp){
         global $DB;
-        $params=array($id_course, $id_course, CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
+        $student_role = configurator::getInstance()->get_student_role();
+        $params=array($student_role, $id_course, $id_course, CONTEXT_COURSE, $begin_timestamp, $end_timestamp);
 
         $records = $DB->get_records_sql(
             "select logs.objecttable as module, count(*) as count
@@ -193,7 +197,7 @@ class data_provider {
             inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
             inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
             inner join ".$DB->get_prefix()."context as context on assign.contextid=context.id
-            where role.shortname='student'
+            where role.shortname=?
             and courseid=?
             and logs.target='course_module'
             and context.instanceid=?
@@ -344,6 +348,7 @@ class data_provider {
      */
     public function filter_living_courses_on_period($ids_courses, $begin_timestamp, $end_timestamp){
         global $DB;
+        $student_role = configurator::getInstance()->get_student_role();
 
         $this->precondition_ids_courses($ids_courses);
 
@@ -357,12 +362,12 @@ class data_provider {
         inner join ".$DB->get_prefix()."role_assignments as assign on logs.userid=assign.userid
         inner join ".$DB->get_prefix()."role as role on assign.roleid=role.id
         inner join ".$DB->get_prefix()."course_categories as category on category.id = course.category
-        where role.shortname = 'student'
+        where role.shortname = ?
         and logs.timecreated between ? and ?
         and logs.eventname like '%course_viewed'
         and course.id in (".implode($ids_courses,",").")";
 
-        $records = $DB->get_records_sql($query, array($begin_timestamp, $end_timestamp));
+        $records = $DB->get_records_sql($query, array($student_role, $begin_timestamp, $end_timestamp));
         
         return $records;
     }

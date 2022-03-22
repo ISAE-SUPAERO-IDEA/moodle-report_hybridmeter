@@ -265,9 +265,10 @@ Vue.component('configurator', {
             <button type="submit" class="btn btn-primary" @click="saveMesure">Enregistrer les modifications</button>
           </div>
         </div>
-
       </div>
       <hr/>
+
+      <!-- Configuration lancement -->
       <div v-if="oklancement">
         <p>La date de lancement a bien été programmée pour le {{ scheduled_date_formatted }} à {{ scheduled_time }}</p>
       </div>
@@ -318,6 +319,32 @@ Vue.component('configurator', {
           </span>
         </div>
       </div>
+
+      <!-- Configuration additionnelle -->
+      <h3 class="main">Configuration additionnelle</h3>
+      <div v-if="okadditionalconfig">
+        <p>La configuration a été sauvegardée avec succès</p>
+      </div>
+      <div class="management-module">
+        <div style="margin-bottom : 10px;" class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right">
+            <label>Rôle étudiant</label>
+          </div>
+          <div class="form-setting col-sm-9">
+            <span>
+              <select class="form-control" v-model="student_role">
+                <option v-for="role in roles" :key="role.id" :value="role.shortname">{{ role.shortname }}</option>
+              </select>
+            </span>
+          </div>
+        </div>
+        <div class="form-item row">
+          <div class="form-label col-sm-3 text-sm-right"></div>
+          <div class="form-setting col-sm-9">
+            <button type="submit" class="btn btn-primary" @click="saveAdditionalConfig">Enregistrer les modifications</button>
+          </div>
+        </div>
+      </div>
     </div>
     `,
   data() {
@@ -332,8 +359,11 @@ Vue.component('configurator', {
       saturday:undefined,
       okmesure:false,
       oklancement:false,
+      okadditionalconfig: false,
       okclosed:false,
-      action:undefined 
+      action:undefined,
+      roles: [],
+      student_role: undefined
     }
   },
   watch: {
@@ -341,12 +371,16 @@ Vue.component('configurator', {
       this.begin_date = this.timestamp_to_ui(config.begin_date);
       this.end_date = this.timestamp_to_ui(config.end_date);
       this.debug = config.debug;
+      this.student_role = config.student_role;
     },
     begin_date(date) {
       this.config.begin_date = this.ui_to_timestamp(date);
     },
     end_date(date) {
       this.config.end_date = this.ui_to_timestamp(date, true);
+    },
+    student_role(student_role) {
+      this.config.student_role = student_role;
     }
   },
   computed: {
@@ -373,7 +407,8 @@ Vue.component('configurator', {
     this.tomorrow.setDate(this.today.getDate() + 1);
     this.scheduled_date = this.date_to_ui(this.tomorrow);
     this.scheduled_time = "02:00";  
-    this.config = await this.get(`configuration_handler.php`);
+    this.config = this.get(`configuration_handler.php`).then((data) => { this.config = data });
+    this.roles = this.get(`moodle_data.php?task=roles`).then((data) => { this.roles = data });
   },
   methods: {
     // TODO: Utiliser un mixin pour les fonctions de bases get et post
@@ -443,6 +478,14 @@ Vue.component('configurator', {
       data.append('debug', this.config.debug);
       await this.post(`configuration_handler.php`, data);
       this.okmesure=true;
+    },
+    async saveAdditionalConfig() {
+      this.action="additional_config";
+      var data = new FormData();
+      data.append('action', this.action);
+      data.append('student_role', this.student_role);
+      await this.post(`configuration_handler.php`, data);
+      this.okadditionalconfig=true;
     },
     async saveLancement() {
       this.action="schedule";

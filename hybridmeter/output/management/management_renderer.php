@@ -69,8 +69,8 @@ class management_renderer extends plugin_renderer_base {
         );
 
         $html = $OUTPUT->render_from_template("report_hybridmeter/management", $params);
-        //$html = file_get_contents($CFG->wwwroot . '/report/hybridmeter/assets/management.html');;
-        //$html = str_replace('$$www_root$$', $CFG->wwwroot, $html); 
+
+        // Bouton retour au plugin
         $url = new moodle_url('/report/hybridmeter/index.php');
         $html .= html_writer::tag("hr","");
         $html .= html_writer::link($url,
