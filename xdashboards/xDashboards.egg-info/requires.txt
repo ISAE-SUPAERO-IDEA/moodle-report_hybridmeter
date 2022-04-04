@@ -1,4 +1,0 @@
-django==2.1.*
-django-cas-ng
-elasticsearch
-requests

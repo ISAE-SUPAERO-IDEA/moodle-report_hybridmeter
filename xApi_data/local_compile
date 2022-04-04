@@ -1,2 +1,0 @@
-#!/bin/bash
-../venv/bin/python3 setup.py bdist_wheel && ../venv/bin/pip uninstall -y dist/xapi-1.0-py3-none-any.whl && ../venv/bin/pip install dist/xapi-1.0-py3-none-any.whl
