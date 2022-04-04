@@ -1,87 +1,26 @@
-# xDash
-Repository dans le cadre du stage à ISAE-SUPAERO pour le projet xDash
+# Documentation HybridMeter
 
-## CLI POUR RECUPERATION DE STATEMENTS xAPI
+## [Documentation fonctionnelle](doc/doc_fonctionnelle.md)
+## [Documentation utilisateur](doc/doc_utilisateur.md)
+## [Installation et paramétrage](doc/doc_installation.md)
+## [Documentation technique](doc/doc_technique.md)
+## [Foire aux questions](doc/faq.md)
 
-Cette CLI va permettre la récupération de traces d'apprentissages xApi d'une base LRS afin de les insérer dans une autre base de données afin de permettre par la suite du travail d'analyse et de visualisation
+<br/>
 
-### PREREQUISITES
+Objectifs de Hybridmeter
+=================
 
-Afin que le CLI fonctionne, il faut les modules suivants :
+*   La problématique est de calculer une mesure du degré d'hybridation numérique des espaces de cours d'une plateforme pédagogique LMS basée sur le logiciel Moodle
+*   L'objectif est de proposer un dispositif automatisé compatible avec Moodle (dernières versions) qui permettrait de réaliser une mesure automatique à une fréquence à déterminer.
 
-* Cliff
-* Elasticsearch
+**Hypothèse importante** : on suppose que Moodle est utilisé comme Hub des enseignements de l'établissement. C'est très souvent le cas dans les établissements d'enseignement supérieur. On suppose que la plateforme centralisera ainsi tous les cours des programmes de formation de l'établissement.
 
-Installez les modules si ils ne sont pas installés :
+<br/>
 
-```
-sudo pip install cliff elasticsearch
-```
+Site Web
+=================
 
-### INSTALLING
+[![](https://t2594656.p.clickup-attachments.com/t2594656/02a2acc8-fd84-4d24-9e1a-299262ff2ce0/HybridmeterWebsite.png)](https://online.isae-supaero.fr/hybridmeter)
 
-Téléchargement du dépôt
-```
-git clone https://github.com/Graaxes/xDash.git
-```
-
-Installation du wheel
-```
-pip install dist/xapi-1.0-py3-none-any.whl
-```
-
-En cas de besoin le wheel peut être recompilé
-```
-python3 setup.py bdist_wheel
-```
-
-## COMMANDES DU CLI
-On accède au CLI avec le mot clé : "xapi"
-Trois commandes sont disponibles :
-*config
-*info
-*statements
-
-### COMMANDE CONFIG
-
-La commande permet de configurer des fichiers de configuration pour établir des connexions à des bases de données. Dans le cadre du projet xDash, on relève deux types de bases de données :
-
-* LRS : Base de données stockant les traces d'apprentissages. Nous allons juste faire de la récupération de données sur les LRS
-* STORE : Bases de données qui va sauvegarder les traces récupérées dans les LRS.
-/!\ : Tous les fichiers de configuration sont enregistrés dans un dossier nommé "./config_xapi" créé par le CLI.
-
-```
-cd ~/.config_xapi/
-```
-
-Deux sous commandes sont donc disponibles
-
-#### LRS
-```
-xapi config lrs
-```
-Configuration de fichier pour établir une connexion à un LRS
-
-#### STORE
-```
-xapi config store -db {elasticsearch}
-```
-Configuration de paramètres de connexion à une base de données afin de sauvegarder les traces.
-Le seul type de bases de données pris en charge actuellement par le CLI est elasticsearch.
-
-## COMMANDE INFO
-```
-xapi info {filename}
-```
-Permet de connaître les informations de configuration d'un fichier de config. Si un password est défini, il n'est pas affiché.
-
-## COMMANDE STATEMENTS
-```
-xapi statements [-A] [-u] lrs store
-```
-La commande statements permet la récupération de statements dans la base LRS passé en paramètre vers la base "store" passé en paramètre.
-Deux choix sont disponibles pour la récupération de statements : 
-
-*-u ou --update : Récupère dans la base LRS, les traces qui n'on pas encore été insérées dans la base store
-*-A ou --all : Récupère l'ensemble des statements dans la base LRS, et les insère dans la base store. 
-/!\ ATTENTION /!\ : La base ou l'index (elasticsearch) utilisé pour l'enregistrement des traces sera vidé avant l'insertion.
+Visitez le site Web principal de HybridMeter : [https://online.isae-supaero.fr/hybridmete](https://online.isae-supaero.fr/hybridmeter)
