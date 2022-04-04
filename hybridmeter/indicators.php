@@ -50,16 +50,14 @@ function raw_data($object, $parameters){
 
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object, $parameters){
-	$configurator = configurator::getInstance();
 	$data_provider = data_provider::getInstance();
-	$coeffs = $configurator->get_data()["dynamic_coeffs"];
 	$indicator=0;
 	$total=0;
 	$activity_data=$data_provider->count_hits_on_activities_per_type($object['id'], 
 		$configurator->get_begin_timestamp(),
 		$configurator->get_end_timestamp()
 	);
-	return hybridation_calculus("static_coeffs", $activity_data);
+	return hybridation_calculus("dynamic_coeffs", $activity_data);
 }
 
 function get_category_path($object, $parameters){

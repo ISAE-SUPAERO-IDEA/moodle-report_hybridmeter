@@ -8,7 +8,37 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
   
 
-HybridMeter version 1.1.0 (28 Janvier 2021)
+Hybridmeter version 1.1.2 (22 mars 2022)
+========================================
+
+Fonctionnalités
+---------------
+
+*   Possibilité de choisir le rôle permettant d'identifiant les étudiants sur la plateforme
+
+Hybridmeter version 1.1.1 (11 février 2022)
+===========================================
+
+Fonctionnalités
+---------------
+
+*   Affichage du chemin complet des catégories dans le CSV
+*   Affichage du nom fonctionnel des activités dans les tableaux de coefficients et non le nom technique
+*   Possibilité de "whitelister" des cours appartenant à une catégorie blacklistée
+
+Améliorations techniques
+------------------------
+
+*   Refactorisation des classes exporter, data\_provider, configurator et logger
+*   Création d'une classe de gestion de cache pour éviter le calcul redondant.
+
+Correction de bugs
+------------------
+
+*   Correction des problèmes de type quand les indicateurs décimaux coïncidaient avec des nombres entiers dans le CSV
+*   Cours affichés dans l'ordre sur l'interface de gestion de la blacklist
+
+HybridMeter version 1.1.0 (28 Janvier 2022)
 ===========================================
 
 Fonctionnalités
@@ -16,6 +46,11 @@ Fonctionnalités
 
 *   Programmation de l'heure et de la date de calcul depuis la page de configuration
 *   Suppression du lancement automatique tous les matins à 4h
+*   Amélioration de la lisibilité du CSV
+
+Améliorations techniques
+------------------------
+
 *   Refactorisation de la classe exporter
 
 Correction de Bugs
