@@ -6,7 +6,20 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
-  
+
+Hybridmeter version 1.1.3 (21 avril 2022)
+=========================================
+
+Fonctionnalités
+---------------
+
+*   Outil de diagnostic des cours
+
+Améliorations techniques
+------------------------
+
+*   Meilleure utilisation de la classe utils
+
 
 Hybridmeter version 1.1.2 (22 mars 2022)
 ========================================
