@@ -74,8 +74,6 @@ function get_category_path($object, $parameters){
 
 	$cache_manager->update_category_path($object['category_id'], $category_path);
 
-	//logger::file_log($category_path, "lol.txt");
-
 	return $category_path;
 }
 
