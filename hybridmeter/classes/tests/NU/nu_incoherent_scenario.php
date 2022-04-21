@@ -68,11 +68,13 @@ class nu_incoherent_scenario extends \report_hybridmeter\classes\tests\indicateu
         $params=array($this->course_id, $begin_timestamp, $end_timestamp);
 
         $records = $DB->get_records_sql(
-            "select * from ".$DB->get_prefix()."logstore_standard_log as logs
-            where courseid=?
-            and logs.target='course_module'
-            and timecreated between ? and ?
-            group by logs.objecttable limit 1000",
+            "select * from ".$DB->get_prefix()."logstore_standard_log log
+            inner join ".$DB->get_prefix()."role_assignments ass on log.userid=ass.userid
+            inner join ".$DB->get_prefix()."role role on ass.roleid=role.id
+            where log.courseid=?
+            and log.target='course_module'
+            and log.timecreated between ? and ?
+            group by log.objecttable limit 1000",
             $params
         );
 
