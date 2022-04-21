@@ -1,8 +1,10 @@
 <?php
 
-abstract class test {
+namespace report_hybridmeter\classes;
+
+class test_context {
     protected static function error_handler($errno, $errstr, $errfile, $errline) {
-        echo "Je sais pas ".$errno." ".$errstr." ".$errfile." ".$errline."<br/><br/>";
+        echo "<p><strong>ERREUR : ".$errno." ".$errstr." ".$errfile." ".$errline."</strong></p><br/><br/>";
     }
 
     protected static function fatal_handler() {
@@ -12,18 +14,19 @@ abstract class test {
         }
     }
 
-    public function test(){
+    public static function launch(test $test){
+        $this->launch_batch(array($test));
+    }
+
+    public static function launch_batch(Array $test_set){
         $old_error_reporting = ini_get('error_reporting');
         error_reporting(0);
         set_error_handler("diagnostic_component::error_handler");
         register_shutdown_function("diagnostic_component::fatal_handler");
-        echo "<h1>Including libraries</h1>";
-        $this->include_all();
-        echo "<h1>Proceeding to tests</h1>";
-        $this->tests();
+        foreach ($test_set as $test) {
+            $test->test();
+            echo "<hr/>";
+        }
         error_reporting($old_error_reporting);
     }
-
-    abstract protected function tests();
-    abstract protected function include_all();
 }

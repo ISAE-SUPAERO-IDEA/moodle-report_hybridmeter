@@ -4,6 +4,7 @@ require_once(__DIR__.'/classes/configurator.php');
 require_once(__DIR__.'/classes/logger.php');
 require_once(__DIR__.'/classes/data_provider.php');
 require_once(__DIR__.'/classes/cache_manager.php');
+
 defined('MOODLE_INTERNAL') || die();
 
 use \report_hybridmeter\classes\configurator as configurator;
@@ -21,7 +22,9 @@ function hybridation_calculus($type, $activity_data){
 	$sigmaPkVk = 0; // Sum of activity weight multiplicated by their hybridation value
 	$M = 1; // Malus
 	foreach ($activity_data as $k => $Nk) {
+		//Possibilité d'accéder à des valeurs hardcodées pour le diagnostic
 		$Vk = configurator::getInstance()->get_coeff($type, $k); // Activity hybridation value
+	
 		if ($Nk > 0 && $Vk > 0) {
 			$C ++; 
 			$N += $Nk;
@@ -51,6 +54,7 @@ function raw_data($object, $parameters){
 //Fonction lambda utilisée pour calculer les indicateurs dynamiques
 function hybridation_dynamique($object, $parameters){
 	$data_provider = data_provider::getInstance();
+	$configurator = configurator::getInstance();
 	$indicator=0;
 	$total=0;
 	$activity_data=$data_provider->count_hits_on_activities_per_type($object['id'], 
@@ -89,4 +93,17 @@ function is_course_active_last_month($object, $parameters){
 		return 1;
 	else
 		return 0;
+}
+
+function active_students ($object, $parameters) {
+	$configurator = configurator::getInstance();
+	return data_provider::getInstance()->count_student_visits_on_course(
+		$object['id'],
+		$configurator->get_begin_timestamp(),
+		$configurator->get_end_timestamp()
+	);
+}
+
+function nb_inscrits ($object, $parameters) {
+	return data_provider::getInstance()->count_registered_students_of_course($object['id']);
 }

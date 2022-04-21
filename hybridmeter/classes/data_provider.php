@@ -8,8 +8,8 @@ require_once(dirname(__FILE__).'/task/traitement.php');
 
 defined('MOODLE_INTERNAL') || die();
 
+use \report_hybridmeter\classes\utils as utils;
 use \report_hybridmeter\classes\configurator as configurator;
-use Error;
 
 class data_provider {
 
@@ -24,19 +24,6 @@ class data_provider {
         }
 
         return self::$instance;
-    }
-
-    /*Fonctions utilitaires*/
-
-    protected function precondition_ids_courses($ids_courses) {
-        if(!is_array($ids_courses)){
-            $ids_courses=array($ids_courses);
-        }
-
-        $precondition_array = array_map('is_numeric', $ids_courses);
-
-        if(in_array(false, $precondition_array))
-            throw new Error("Les IDs doivent être des entiers");
     }
 
     /*Fonctions d'indicateurs*/
@@ -104,7 +91,7 @@ class data_provider {
         global $DB;
         $student_role = configurator::getInstance()->get_student_role();
 
-        $this->precondition_ids_courses($ids_courses);
+        utils::precondition_ids($ids_courses);
 
         $length = count($ids_courses);
 
@@ -156,7 +143,7 @@ class data_provider {
     public function count_distinct_registered_students_of_courses($ids_courses){
         global $DB;
 
-        $this->precondition_ids_courses($ids_courses);
+        utils::precondition_ids($ids_courses);
 
         $length = count($ids_courses);
 
@@ -291,6 +278,28 @@ class data_provider {
         );
     }
 
+    public function get_courses_tree(int $id_category=1) {
+        global $DB;
+
+        $children_categories = $this->get_children_categories_ordered($id_category);
+        $children_courses = $this->get_children_courses_ordered($id_category);
+        $cat_data = [];
+
+
+        $cat_data['data'] = $DB->get_record("course_categories", array("id" => $id_category));
+
+        $cat_data['children_courses'] = $children_courses;
+
+        $cat_data['children_categories'] = array_map(
+            function ($category) {
+                return $this->get_courses_tree($category->id);
+            },
+            $children_categories
+        );
+
+        return $cat_data;
+    }
+
     //retourne le chemin complet de la catégorie $id_category
     public function get_category_path(int $id_category) {
         return $this->get_category_path_rec($id_category, "");
@@ -322,7 +331,7 @@ class data_provider {
         
         //le cours qui correspond au site est blacklisté par défaut
         array_push($blacklisted_courses, 1);
-        $blacklisted_categories = array_keys($data["blacklisted_categories"]);
+
         $query = "select course.id as id from ".
         $DB->get_prefix()."course as course where true";
          
@@ -350,7 +359,7 @@ class data_provider {
         global $DB;
         $student_role = configurator::getInstance()->get_student_role();
 
-        $this->precondition_ids_courses($ids_courses);
+        utils::precondition_ids($ids_courses);
 
         if(count($ids_courses) === 0) {
             return array();

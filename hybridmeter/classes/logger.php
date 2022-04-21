@@ -1,6 +1,9 @@
 <?php
 
 namespace report_hybridmeter\classes;
+
+require_once(__DIR__."/configurator.php");
+
 use \report_hybridmeter\classes\configurator as configurator;
 
 defined('MOODLE_INTERNAL') || die();

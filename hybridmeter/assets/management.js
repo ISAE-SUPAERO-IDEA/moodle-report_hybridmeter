@@ -57,8 +57,7 @@ Vue.component('PulseLoader',{
       }
     }
   }
-});
-
+}); 
 // Blacklist tree
 Vue.component('category', {
   template: ` 
@@ -68,13 +67,14 @@ Vue.component('category', {
       </div>
       <div v-if="expanded">
         <div v-for="category in tree.categories" :key="category.id" class="category_item">
-          <i class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
+          <i :title="title_blacklist(category)+' la catégorie'" class="icon fa fa-fw " :class="class_eye_category_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
           <i class="icon fa fa-fw " :class="category_caret(category)" @click="category.expanded = !category.expanded"></i>
           <span style="font-weight: bold">{{category.name}}</span>
           <category :id="category.id"  :global_blacklist="category.blacklisted" :expanded="category.expanded"></category>
         </div>
         <div v-for="course in tree.courses" :key="course.id" class="category_item" >
-          <i class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+          <i :title="title_blacklist(course)+' le cours'" class="icon fa fa-fw " :class="class_eye_course_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+          <a title="Obtenir un diagnostic pour le cours" :href="'tests.php?task=course&id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
           {{course.fullname}}
         </div>
       </div>
@@ -198,6 +198,14 @@ Vue.component('category', {
         "fa-eye": !blacklisted,
         "fa-eye-slash": blacklisted,
       }
+    },
+    title_blacklist(item) {
+      var blacklisted = item.blacklisted;
+      return (
+        blacklisted
+        ? "Whitelister"
+        : "Blacklister"
+      )
     },
     category_caret(category) {
       return { 

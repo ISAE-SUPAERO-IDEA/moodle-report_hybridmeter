@@ -105,21 +105,12 @@ class traitement{
 		);
 
 		$this->formatter->calculate_new_indicator(
-			function ($object, $parameters) {
-				$configurator = configurator::getInstance();
-				return data_provider::getInstance()->count_student_visits_on_course(
-					$object['id'],
-					$configurator->get_begin_timestamp(),
-					$configurator->get_end_timestamp()
-				);
-			},
+			"active_students",
 			'nb_utilisateurs_actifs'
 		);
 
 		$this->formatter->calculate_new_indicator(
-			function ($object, $parameters) {
-				return data_provider::getInstance()->count_registered_students_of_course($object['id']);
-			},
+			"nb_inscrits",
 			'nb_inscrits'
 		);
 
