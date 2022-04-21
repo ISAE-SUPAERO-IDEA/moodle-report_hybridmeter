@@ -28,6 +28,16 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
 
     public function specific_tests() {}
 
+    protected function dump_whitelisted_courses() {
+        echo "<h2>Dump des cours whitelistés</h2>";
+
+        echo "<p>Tableau IDs</p>";
+
+        echo "<p>Details</p>";
+
+        //TODO
+    }
+
     protected function dump_config_blacklist($type="blacklist") {
         switch($type) {
             case "savelist_courses" :
