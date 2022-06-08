@@ -1,41 +1,55 @@
 <?php
 
 namespace report_hybridmeter\classes;
+
 defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__)."/../../../config.php");
 require_once(dirname(__FILE__).'/configurator.php');
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
 
 use Exception;
+use csv_export_writer;
 
 /**
- * Cette classe permet le transcodage sous forme de CSV des données calculées
- * et donne la possibilité de l'afficher sur une page web, de le transférer sur un
- * fichier local, ou de le mettre à disposition en tant que téléchargement sur navigateur web
+ * This class allows you to export an array of tuples as a CSV string or as a
+ * CSV file downloaded from the browser, with the possibility to customise
+ * the visible fields
  * 
  * 
  * @package    report_hybridmeter
  * @since      Moodle 3.7
- * @copyright  2021 Bruno Ilponse Nassim Bennouar
+ * @copyright  2021 IDEA ISAE-Supaero
+ * @author     Nassim Bennouar
  */
 class exporter {
-    //Le caractère de délimitation
+    // Delimitation character
     protected $delimiter;
 
-    //Les chaînes de caractères de ce tableau correspondent aux attributs de $data dont les valeurs seront exportés
+    // The strings in this array correspond to the attributes of $data whose values will be exported
     protected $fields;
 
-    //Tableau d'alias sur le CSV
-    protected $alias;
-
-    //Tableau des types de champs
+    /* As PHP is weak typed, this attribute is a array which explicitly associate 
+     * a field with a type to force a certain behaviour.
+     * 
+     * Associate a type to a field is not required to work correctly, but is useful
+     * to deal with double variable processed as integer.
+     * 
+     */
     protected $fields_type;
 
-    //Le tableau de données en entrée, tableau à deux dimensions
+    /* Human-readable strings associated with fields (and displayed in CSV)
+     * If an alias exists then the alias is displayed, otherwise this is the raw field name
+     */
+    protected $alias;
+
+    /* Attribute containing data to be exported, array of arrays required,
+     * please use formatter class to convert from array of objects
+     */ 
     protected $data;
 
-    //L'objet csv_export_writer de moodle core
+    // Instance of csv_export_writer of moodle core
     protected $csv;
 
     public function __construct(array $fields=array(), array $alias = array(), array $fields_type = array(), array $data = array(), $delimiter = 'comma'){
@@ -49,36 +63,38 @@ class exporter {
         $this->set_delimiter($delimiter);
     }
 
-    //Récupère les fields de la première entrée et les définit en fields du fichier sortant
+    // Gets the keys of the first tuple and sets them as fields of the outgoing file
     public function auto_fields(){
         $this->fields=array();
 
         if(!is_array($this->data) || sizeof($this->data)==0)
-            throw new Exception("On ne peut pas calculer automatiquement les fields s'il n'y a pas de données");
+            throw new Exception("Fields cannot be calculated automatically if there is no data");
 
         foreach ($this->data[array_keys($this->data)[0]] as $key => $value){
             array_push($this->fields, $key);
         }
     }
 
+    // Manually set fields of the CSV file
     public function set_fields (array $fields){
         $precondition_array = array_map($fields, 'is_string');
         if(in_array(false, $precondition_array)){
-            throw new Exception("fields doit etre un tableau de chaînes de caractères");
+            throw new Exception("\$fields must be an array of strings");
         }
 
         $this->fields = $fields;
     }
 
-    //ajoute une entrée au tableau
+    // Add a tuple to the $data array
     public function add_data(array $data){
         array_push($this->data, $data);
     }
 
+    // Set $data array
     public function set_data(array $data){
         $precondition_array = array_map('is_array', $data);
         if(in_array(false, $precondition_array)){
-            throw new Exception("Les données doivent être passées à l'exporter sous forme de tableau de tableaux");
+            throw new Exception("The data must be passed to the exporter in the form of a table of tables");
         }
 
         $this->data = $data;
@@ -92,12 +108,12 @@ class exporter {
         $this->fields_type = $fields_type;
     }
 
-    public function set_delimiter($delimiter){
+    public function set_delimiter(string $delimiter){
         $this->delimiter=$delimiter;
-        $this->csv=new \csv_export_writer($this->delimiter);
+        $this->csv=new csv_export_writer($this->delimiter);
     }
 
-    private function construct_fields_name(){
+    private function construct_fields_name(): array {
         $output=array();
 
         foreach ($this->fields as $field){
@@ -112,10 +128,9 @@ class exporter {
         return $output;
     }
 
-    /*TODO : améliorer le workflow */
+    /* TODO : improve workflow */
 
-    //pour créer le csv
-    public function create_csv($filename) {
+    public function create_csv(string $filename) {
         $this->csv->set_filename($filename);
         $this->csv->add_data($this->construct_fields_name());
 
@@ -129,10 +144,10 @@ class exporter {
         }
     }
 
-    protected function format_value($record, $key, $field){
+    protected function format_value(array $record, $key, $field) {
         if (
             in_array($field, array_keys($this->fields_type))
-            && ($this->fields_type[$field] == DOUBLE || $this->fields_type[$field] == FLOAT)
+            && ($this->fields_type[$field] == REPORT_HYBRIDMETER_DOUBLE || $this->fields_type[$field] == REPORT_HYBRIDMETER_FLOAT)
         ) {
             return sprintf("%.2f", $record[$field]);
         }
@@ -144,11 +159,10 @@ class exporter {
         return $this->csv->print_csv_data(false);
     }
 
-    public function csv_data_to_string(){
+    public function csv_data_to_string(): string {
         return $this->csv->print_csv_data(true);
     }
 
-    //pour télécharger le csv
     public function download_file(){
         $this->csv->download_file();
     }

@@ -1,0 +1,78 @@
+<div id="indicateurs">
+    <h3 class="main">{{title}}</h3>
+    <p>{{measurement_period}}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>{{name_columnname}}</th>
+                <th>{{value_columnname}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{name_digitalised_course}}</td>
+                <td>{{value_digitalised_course}}</td>
+            </tr>
+            <tr>
+                <td>{{name_used_course}}</td>
+                <td>{{value_used_course}}</td>
+            </tr>
+            <tr>
+                <td>{{name_digitalisation_registered_students}}</td>
+                <td>{{value_digitalisation_registered_students}}</td>
+            </tr>
+            <tr>
+                <td>{{name_digitalisation_active_students}}</td>
+                <td>{{value_digitalisation_active_students}}</td>
+            </tr>
+            <tr>
+                <td>{{name_usage_registered_students}}</td>
+                <td>{{value_usage_registered_students}}</td>
+            </tr>
+            <tr>
+                <td>{{name_usage_active_students}}</td>
+                <td>{{value_usage_active_students}}</td>
+            </tr>
+            <tr>
+                <td>{{name_nb_analysed_courses}}</td>
+                <td>{{value_nb_analysed_courses}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>{{end_processing}}<br/>
+    {{processing_duration}}</p>
+</div>
+
+<style>
+#indicateurs{
+    margin-top : 20px;
+}
+
+#indicateurs>h3{
+    margin-bottom : 17px;
+}
+
+table {
+    border: 2px solid #00acdf;
+    border-radius: 3px;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right : auto;
+    margin-bottom : 17px;
+}
+
+th {
+    background-color: #00acdf;
+    color: white;
+}
+
+td {
+    background-color: #f9f9f9;
+}
+
+th,
+td {
+    min-width: 120px;
+    padding: 7px 20px;
+}
+</style>

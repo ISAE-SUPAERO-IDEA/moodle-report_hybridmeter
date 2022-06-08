@@ -36,7 +36,7 @@ Pour changer les horaires ou la fréquence de déclenchement des calculs, vous p
 
   
 
-Il est possible de déclencher immédiatement le calcul avec l'URL suivante : `<URL SERVEUR>/report/hybridmeter/traitement.php.`
+Il est possible de déclencher immédiatement le calcul avec l'URL suivante : `<URL SERVEUR>/report/hybridmeter/processing.php.`
 
 Attention, vous risquez d'écrouler les performances de votre plateforme pendant le temps du calcul.  
 La page risque d'afficher un délai dépassé si le calcul est trop long, cette URL n'a été conçue que pour tester le plugin sur une plateforme de test.

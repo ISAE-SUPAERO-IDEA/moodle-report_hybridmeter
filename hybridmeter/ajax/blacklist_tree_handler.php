@@ -1,72 +1,72 @@
 <?php 
-	/*
-	AJAX endpoint to manage HybridMeter blacklist configuration
 
-	*/
-	require_once("../../../config.php");
-	require_once(__DIR__."/../classes/configurator.php");
-	require_once(__DIR__."/../classes/data_provider.php");
-	use \report_hybridmeter\classes\configurator as configurator;
-	use \report_hybridmeter\classes\data_provider as data_provider;
+/*
+AJAX endpoint to manage HybridMeter blacklist configuration
 
-    header('Content-Type: text/json');
+*/
+require_once("../../../config.php");
+require_once(__DIR__."/../classes/configurator.php");
+require_once(__DIR__."/../classes/data_provider.php");
 
-    //Vérification des autorisations (rôle admin obligatoire)
+use \report_hybridmeter\classes\configurator as configurator;
+use \report_hybridmeter\classes\data_provider as data_provider;
 
-	require_login();
-	$context = context_system::instance();
-	$PAGE->set_context($context);
-	has_capability('report/hybridmeter:all', $context) || die();
+header('Content-Type: text/json');
 
-	$configurator = configurator::getInstance();
-	$data_provider = data_provider::getInstance();
-	
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
-		$task  = required_param('task', PARAM_ALPHAEXT);
-	}
-	else {
-		$task = "get";
-		$output = array(
-			"error" => true,
-			"message" => "GET method not supported, please retry with a POST request"
-		);
-	}
-	// List category children
-	if ($task == "category_children") {
-		$id = required_param('id', PARAM_INT);
-		$categories = $data_provider->get_children_categories_ordered($id);
+//Checking authorizations (admin role required)
 
-		//Dans le cas où l'id de la catégorie est 0, on ne renvoie pas le cours enfant qui correpond au site
+require_login();
+$context = context_system::instance();
+$PAGE->set_context($context);
+has_capability('report/hybridmeter:all', $context) || die();
 
-		if($id != 0){
-			$courses = $data_provider->get_children_courses_ordered($id);
-		}
-		else{
-			$courses = array();
-		}
-		
-		$output = [ 
-		  "categories" => $categories,
-		  "courses" => $courses
-		];
-	}
-	// manage blacklist of a category or course
-	else if ($task == "manage_blacklist") {
-		$type = required_param('type', PARAM_ALPHAEXT);
-		$value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
-		$id = required_param('id', PARAM_INT);
-		$configurator->set_blacklisted($type, $id, $value);
-		$output = [ "blacklisted" => $value ];
-	}
-	else{
-		$output = array(
-			"error" => true,
-			"message" => "Tâche inconnue"
-		);
-	}
+$configurator = configurator::get_instance();
+$data_provider = data_provider::get_instance();
 
-	//Renvoie de la réponse
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $task  = required_param('task', PARAM_ALPHAEXT);
+}
+else {
+    $task = "get";
+    $output = array(
+        "error" => true,
+        "message" => "GET method not supported, please retry with a POST request",
+    );
+}
+// List category children
+if ($task == "category_children") {
+    $id = required_param('id', PARAM_INT);
+    $categories = $data_provider->get_children_categories_ordered($id);
 
-	echo json_encode($output);
+    //In the case where the category id is 0, the child course that corresponds to the site is not returned
 
-?>
+    if($id != 0){
+        $courses = $data_provider->get_children_courses_ordered($id);
+    }
+    else{
+        $courses = array();
+    }
+    
+    $output = [ 
+        "categories" => $categories,
+        "courses" => $courses,
+    ];
+}
+// manage blacklist of a category or course
+else if ($task == "manage_blacklist") {
+    $type = required_param('type', PARAM_ALPHAEXT);
+    $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
+    $id = required_param('id', PARAM_INT);
+    $configurator->set_blacklisted($type, $id, $value);
+    $output = [ "blacklisted" => $value ];
+}
+else{
+    $output = array(
+        "error" => true,
+        "message" => "Tâche inconnue",
+    );
+}
+
+//Return response as JSON
+
+echo json_encode($output);

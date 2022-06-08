@@ -2,9 +2,11 @@
 
 namespace report_hybridmeter\classes;
 
+defined('MOODLE_INTERNAL') || die();
+
 class test_context {
     protected static function error_handler($errno, $errstr, $errfile, $errline) {
-        echo "<p><strong>ERREUR : ".$errno." ".$errstr." ".$errfile." ".$errline."</strong></p><br/><br/>";
+        echo "<p><strong>ERROR : ".$errno." ".$errstr." ".$errfile." ".$errline."</strong></p><br/><br/>";
     }
 
     protected static function fatal_handler() {
@@ -14,11 +16,11 @@ class test_context {
         }
     }
 
-    public static function launch(test $test){
+    public static function launch(test_scenario $test){
         $this->launch_batch(array($test));
     }
 
-    public static function launch_batch(Array $test_set){
+    public static function launch_batch(array $test_set){
         $old_error_reporting = ini_get('error_reporting');
         error_reporting(0);
         set_error_handler("diagnostic_component::error_handler");

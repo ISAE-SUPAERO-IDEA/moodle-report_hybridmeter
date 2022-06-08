@@ -329,19 +329,19 @@ Vue.component('configurator', {
       </div>
 
       <!-- Configuration additionnelle -->
-      <h3 class="main">Configuration additionnelle</h3>
+      <h3 class="main">Configuration additionnelle hehe</h3>
       <div v-if="okadditionalconfig">
         <p>La configuration a été sauvegardée avec succès</p>
       </div>
       <div class="management-module">
         <div style="margin-bottom : 10px;" class="form-item row">
           <div class="form-label col-sm-3 text-sm-right">
-            <label>Rôle étudiant</label>
+            <label>Archetype du rôle étudiant</label>
           </div>
           <div class="form-setting col-sm-9">
             <span>
-              <select class="form-control" v-model="student_role">
-                <option v-for="role in roles" :key="role.id" :value="role.shortname">{{ role.shortname }}</option>
+              <select class="form-control" v-model="student_archetype">
+                <option v-for="role in roles" :key="role.id" :value="role.archetype">{{ role.archetype }}</option>
               </select>
             </span>
           </div>
@@ -371,7 +371,7 @@ Vue.component('configurator', {
       okclosed:false,
       action:undefined,
       roles: [],
-      student_role: undefined
+      student_archetype: undefined
     }
   },
   watch: {
@@ -379,7 +379,7 @@ Vue.component('configurator', {
       this.begin_date = this.timestamp_to_ui(config.begin_date);
       this.end_date = this.timestamp_to_ui(config.end_date);
       this.debug = config.debug;
-      this.student_role = config.student_role;
+      this.student_archetype = config.student_archetype;
     },
     begin_date(date) {
       this.config.begin_date = this.ui_to_timestamp(date);
@@ -387,8 +387,8 @@ Vue.component('configurator', {
     end_date(date) {
       this.config.end_date = this.ui_to_timestamp(date, true);
     },
-    student_role(student_role) {
-      this.config.student_role = student_role;
+    student_archetype(student_archetype) {
+      this.config.student_archetype = student_archetype;
     }
   },
   computed: {
@@ -478,7 +478,7 @@ Vue.component('configurator', {
       return date.getTime() / 1000;
     },
     async saveMesure() {
-      this.action="periode_mesure";
+      this.action="measurement_period";
       var data = new FormData();
       data.append('action', this.action);
       data.append('begin_date', this.config.begin_date);
@@ -491,7 +491,7 @@ Vue.component('configurator', {
       this.action="additional_config";
       var data = new FormData();
       data.append('action', this.action);
-      data.append('student_role', this.student_role);
+      data.append('student_archetype', this.student_archetype);
       await this.post(`configuration_handler.php`, data);
       this.okadditionalconfig=true;
     },
