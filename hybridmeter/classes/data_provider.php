@@ -80,13 +80,14 @@ class data_provider {
                  WHERE role.archetype = :archetype
                        AND eventname = '\\core\\event\\course_viewed'
                        AND courseid = :courseid
-                       AND context.instanceid = :courseid
+                       AND context.instanceid = :instanceid
                        AND context.contextlevel= :contextcourse
                        AND timecreated BETWEEN :begintimestamp AND :endtimestamp";
 
         $parameters = array(
             'archetype' => $student_archetype,
             'courseid' => $id_course,
+            'instanceid' => $id_course,
             'contextcourse' => CONTEXT_COURSE,
             'begintimestamp' => $begin_timestamp,
             'endtimestamp' => $end_timestamp,
@@ -151,12 +152,12 @@ class data_provider {
                   JOIN ".$DB->get_prefix()."role_assignments assign ON context.id = assign.contextid
                   JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
                  WHERE role.archetype = :archetype
-                       AND context.instanceid = :courseid
+                       AND context.instanceid = :instanceid
                        AND context.contextlevel = :coursecontext";
 
         $params = array(
             'archetype' => $student_archetype,
-            'courseid' => $id_course,
+            'instanceid' => $id_course,
             'coursecontext' => CONTEXT_COURSE,
         );
 
@@ -213,7 +214,7 @@ class data_provider {
                  WHERE role.archetype = :archetype
                        AND courseid = :courseid
                        AND logs.target = 'course_module'
-                       AND context.instanceid = :courseid
+                       AND context.instanceid = :instanceid
                        AND context.contextlevel = :coursecontext
                        AND timecreated BETWEEN :begintimestamp AND :endtimestamp
               GROUP BY logs.objecttable";
@@ -221,6 +222,7 @@ class data_provider {
         $params=array(
             'archetype' => $student_archetype,
             'courseid' => $id_course,
+            'instanceid' => $id_course,
             'coursecontext' => CONTEXT_COURSE,
             'begintimestamp' => $begin_timestamp,
             'endtimestamp' => $end_timestamp,
@@ -242,12 +244,11 @@ class data_provider {
     public function get_children_courses_ordered(int $id_category): array {
         global $DB;
 
-        $records = $DB->get_records_sql(
-            "SELECT * from ".$DB->get_prefix()."course
-              WHERE category = ?
-           ORDER BY sortorder ASC",
-            array($id_category)
-        );
+        $sql = "SELECT * from ".$DB->get_prefix()."course
+                 WHERE category = ?
+              ORDER BY sortorder ASC";
+
+        $records = $DB->get_records_sql($sql, array($id_category));
 
         $output = array();
 
@@ -264,12 +265,11 @@ class data_provider {
     public function get_children_categories_ordered(int $id_category): array {
         global $DB;
 
-        $records = $DB->get_records_sql(
-            "SELECT * from ".$DB->get_prefix()."course_categories
-              WHERE parent = ? 
-           ORDER BY sortorder ASC",
-            array($id_category)
-        );
+        $sql = "SELECT * from ".$DB->get_prefix()."course_categories
+                 WHERE parent = ? 
+              ORDER BY sortorder ASC";
+
+        $records = $DB->get_records_sql($sql, array($id_category));
 
         $output = array();
 
@@ -394,16 +394,16 @@ class data_provider {
         }
 
         $sql = "SELECT DISTINCT course.id AS id, course.idnumber AS idnumber, course.fullname AS fullname,
-                     category.id AS category_id, category.name AS category_name
-                FROM ".$DB->get_prefix()."course course
-                JOIN ".$DB->get_prefix()."logstore_standard_log logs ON course.id = logs.courseid
-                JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
-                JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
-                JOIN ".$DB->get_prefix()."course_categories category ON category.id = course.category
-               WHERE role.archetype = ?
-                     AND logs.timecreated BETWEEN ? AND ?
-                     AND logs.eventname like '%course_viewed'
-                     AND course.id IN (".implode($ids_courses,",").")";
+                       category.id AS category_id, category.name AS category_name
+                  FROM ".$DB->get_prefix()."course course
+                  JOIN ".$DB->get_prefix()."logstore_standard_log logs ON course.id = logs.courseid
+                  JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
+                  JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
+                  JOIN ".$DB->get_prefix()."course_categories category ON category.id = course.category
+                 WHERE role.archetype = :archetype
+                       AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
+                       AND logs.eventname like '%course_viewed'
+                       AND course.id IN (".implode($ids_courses,",").")";
 
         $params = array(
             'archetype' => $student_archetype,
@@ -411,7 +411,7 @@ class data_provider {
             'endtimestamp' => $end_timestamp,
         );
 
-        $records = $DB->get_records_sql($sql, array($student_archetype, $begin_timestamp, $end_timestamp));
+        $records = $DB->get_records_sql($sql, $params);
         
         return $records;
     }

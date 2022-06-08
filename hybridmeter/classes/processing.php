@@ -5,18 +5,19 @@ namespace report_hybridmeter\classes;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/../../../config.php');
-require_once(__DIR__.'/indicators.php');
+require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
 require_once(__DIR__."/configurator.php");
 require_once(__DIR__."/data_provider.php");
 require_once(__DIR__."/exporter.php");
 require_once(__DIR__."/formatter.php");
+require_once(__DIR__."/logger.php");
 
 use \report_hybridmeter\classes\data_provider as data_provider;
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\classes\exporter as exporter;
 use \report_hybridmeter\classes\formatter as formatter;
-use \report_hybridmeter\classes\indicators as indicators;
+use \report_hybridmeter\classes\logger as logger;
 use DateTime;
 
 class processing {
@@ -63,16 +64,16 @@ class processing {
         );
 
         $this->formatter->calculate_new_indicator(
-            "indicators::get_category_path",
+            "get_category_path",
             REPORT_HYBRIDMETER_FIELD_CATEGORY_PATH
         );
 
 
         $this->formatter->calculate_new_indicator(
             function($object, $parameters){
-                return $object[REPORT_HYBRIDMETER_FIELD_ID_NUMBER];
+                return $object['idnumber'];
             },
-            ID_NUMBER
+            REPORT_HYBRIDMETER_FIELD_ID_NUMBER
         );
 
 
@@ -87,7 +88,7 @@ class processing {
         );
 
         $this->formatter->calculate_new_indicator(
-            "indicators::digitalisation_level",
+            "digitalisation_level",
             REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL,
             array(
                 "nb_cours" => $this->formatter->get_length_array(),
@@ -95,7 +96,7 @@ class processing {
         );
 
         $this->formatter->calculate_new_indicator(
-            "indicators::usage_level",
+            "usage_level",
             REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL,
             array(
                 "nb_cours" => $this->formatter->get_length_array(),
@@ -104,17 +105,17 @@ class processing {
 
 
         $this->formatter->calculate_new_indicator(
-            "indicators::is_course_active_last_month",
+            "is_course_active_last_month",
             REPORT_HYBRIDMETER_FIELD_ACTIVE_COURSE
         );
 
         $this->formatter->calculate_new_indicator(
-            "indicators::active_students",
+            "active_students",
             REPORT_HYBRIDMETER_FIELD_NB_ACTIVE_USERS
         );
 
         $this->formatter->calculate_new_indicator(
-            "indicators::nb_registered_students",
+            "nb_registered_students",
             REPORT_HYBRIDMETER_FIELD_NB_REGISTERED_STUDENTS
         );
 
@@ -148,7 +149,7 @@ class processing {
         );
 
         $this->formatter->calculate_new_indicator(
-            'indicators::raw_data',
+            'raw_data',
             'raw_data'
         );
 
@@ -175,19 +176,19 @@ class processing {
         );
 
         $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]=array_map(function($cours){
-                return $cours["id"];
+                return intval($cours["id"]);
             }
         , $generaldata[REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES]);
 
         $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]=array_map(function($cours){
-                return $cours["id"];
+                return intval($cours["id"]);
             }
         , $generaldata[REPORT_HYBRIDMETER_GENERAL_USED_COURSES]);
 
         $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES]=count($generaldata[REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES]);
         $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_USED_COURSES]=count($generaldata[REPORT_HYBRIDMETER_GENERAL_USED_COURSES]);
 
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED]=$data_provider->count_distinct_registered_students_of_courses(
+        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED] = $data_provider->count_distinct_registered_students_of_courses(
             $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]
         );
 

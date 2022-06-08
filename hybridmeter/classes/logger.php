@@ -10,6 +10,20 @@ use \report_hybridmeter\classes\configurator as configurator;
 
 // Hybridmeter's logger
 class logger {
+    private static function var_dump_ret($object) {
+        ob_start();
+        var_dump($object);
+        $content = ob_get_contents();
+        ob_end_clean();
+        return $content;
+    }
+
+    public static function log_var_dump($object) {
+        if (configurator::get_instance()->get_debug()) {
+            error_log(self::var_dump_ret($object));
+        }
+    }
+      
     public static function log($object) {
         if (configurator::get_instance()->get_debug()) {
             error_log(print_r($object, 1));

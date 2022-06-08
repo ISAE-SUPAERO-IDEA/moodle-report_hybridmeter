@@ -34,7 +34,7 @@ class utils {
             true
         );
 
-        if(!accumulated_precondition)
+        if(!$accumulated_precondition)
             throw new Exception("IDs must be integers");
     }
 

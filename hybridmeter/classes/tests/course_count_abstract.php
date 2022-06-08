@@ -16,6 +16,7 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
     }
 
     public function inclusion() {
+        require_once(__DIR__."/../../../../config.php");
         include_once(__DIR__."/../indicators.php");
         include_once(__DIR__."/../data_provider.php");
         include_once(__DIR__."/../configurator.php");

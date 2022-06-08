@@ -44,7 +44,7 @@ class configurator {
         $this->set_default_value("begin_date", $before);
         $this->set_default_value("end_date", $now->getTimestamp());
         $this->set_default_value("student_archetype", "student");
-        $this->set_default_value("debug", 0);
+        $this->set_default_value("debug", false);
         $this->set_default_value("running", REPORT_HYBRIDMETER_NON_RUNNING);
 
         $this->set_default_value("has_scheduled_calculation", 0);
@@ -102,6 +102,14 @@ class configurator {
     // Get debug status
     public function get_debug(){
         return $this->data['debug'];
+    }
+
+    public function set_debug(){
+        $this->data['debug'] = true;
+    }
+
+    public function unset_debug(){
+        $this->data['debug'] = false;
     }
 
     // Update coefficients for a given $type (dynamic or static)

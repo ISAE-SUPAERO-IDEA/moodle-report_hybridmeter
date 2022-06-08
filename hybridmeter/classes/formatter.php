@@ -40,7 +40,7 @@ class formatter {
         }
     }
 
-    public function calculate_new_indicator(callable $lambda, string $indicator_name, array $parameters = array()){
+    public function calculate_new_indicator($lambda, string $indicator_name, array $parameters = array()){
         $i = 1;
         foreach($this->data as $key => $value){
             logger::log($indicator_name." id=". $key." (".$i."/".count($this->data).")");

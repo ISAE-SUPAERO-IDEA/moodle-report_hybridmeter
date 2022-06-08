@@ -21,6 +21,7 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
     }
 
     public function inclusion() {
+        require_once(__DIR__."/../../../../config.php");
         include_once(__DIR__."/../data_provider.php");
         include_once(__DIR__."/../processing.php");
         include_once(__DIR__."/../configurator.php");
@@ -145,10 +146,10 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
 
             default :
                 throw new Exception(INDICATOR_ERROR);
-                break
+                break;
         }
 
-        $test = \report_hybridmeter\classes\indicators::hybridation_calculus($mode, $test_dataset);
+        $test = hybridation_calculus($mode, $test_dataset);
 
         echo "<p>The hybridation_calculus function returned the following result: ".$test."</p>";
     }

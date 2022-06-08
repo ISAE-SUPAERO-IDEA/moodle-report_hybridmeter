@@ -19,8 +19,6 @@ use \report_hybridmeter\classes\exporter as exporter;
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\classes\data_provider as data_provider;
 use \report_hybridmeter\task\processing as processing;
-use DateTime;
-use moodle_url;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
