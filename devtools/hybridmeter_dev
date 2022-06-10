@@ -1,0 +1,81 @@
+#!/bin/bash
+
+GIT_ROOT="${PWD}/.."
+
+SOURCE_PATH="${GIT_ROOT}/hybridmeter"
+DEVTOOLS_PATH="${GIT_ROOT}/devtools"
+
+MOODLE_ROOT="/var/www/html/moodle"
+
+REPORT_PATH="${MOODLE_ROOT}/report"
+HYBRIDMETER_PATH="${REPORT_PATH}/hybridmeter"
+
+help="hybridmeter_dev usage : hybridmeter_dev [-help|-h] [--] <auto|once|add_path>
+     \n\tautocommit : Commit changes to moodle immediately and when they are changes in codesource
+     \n\tcommit : Commit changes to moodle only once
+     \n\tbuild : build ZIP file for moodle
+     \n\tadd_path : Add script dir to path in .bashrc
+     \n\t--help|-h : Display this screen"
+
+in_options=1
+while [ $# -gt 0 ] && [ $in_options -eq 1 ]
+do
+    case $1 in
+    --help | -h)
+        echo -e $help
+        exit 0
+        shift
+        ;;
+    --)
+        in_options=0
+        shift
+        ;;
+    -*)
+        echo -e $help>&2
+        exit 1
+        ;;
+    *)
+        in_options=0
+        ;;
+    esac
+done
+
+if [ "$1" = "auto" ]
+then
+    while true
+    do
+        find ${SOURCE_PATH} -not -path "*hybridmeter/vue/node_modules*" | entr -dr bash ./commit_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH}
+    done
+elif [ "$1" = "once" ]
+then
+    bash ./commit_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH}
+    error_code=$?
+    if [ $error_code -eq 0 ]
+    then
+        echo "Plugin successfully committed to moodle"
+        exit 0
+    else
+        echo "An error occured during the commit"
+    fi
+elif [ "$1" = "build" ]
+then
+    # TODO : pack the js using webpack &&
+    cd ${SOURCE_PATH} && zip -r "${GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${DEVTOOLS_PATH}
+elif [ "$1" = "add_path" ]
+then
+    grep "Hybridmeter commit path" ~/.bashrc > /dev/null
+    if [ $? -ne 0 ]
+    then
+        script_path=$(readlink -f $0)
+        script_dir=$(dirname $script_path)
+        echo -e "\n# Hybridmeter commit path" >> ~/.bashrc
+        echo -e "export PATH=\"\${PATH}:$script_dir\"\n" >> ~/.bashrc
+        echo "Path added"
+    else
+        echo "Path already in bashrc"
+    fi
+    exit 0
+else
+    echo -e $help>&2
+    exit 1
+fi
