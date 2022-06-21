@@ -117,6 +117,10 @@ then
 elif [ "$1" = "build" ]
 then
     cd ${VUE_PATH} && npm run build && cd ${OLDPWD}
+    if [ -f "${GIT_ROOT}/report_hybridmeter.zip" ]
+    then
+        rm "${GIT_ROOT}/report_hybridmeter.zip"
+    fi
     cd ${SOURCE_PATH} && zip -r "${GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${OLDPWD}
     exit 0
 else
