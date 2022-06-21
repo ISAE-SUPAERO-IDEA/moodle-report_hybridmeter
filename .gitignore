@@ -8,3 +8,10 @@ db.sqlite3
 *sublime*
 *.zip
 .vscode
+node_modules
+.npm
+.eslintcache
+logs
+*.log
+npm-debug.log*
+assets/test

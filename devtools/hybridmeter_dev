@@ -1,21 +1,35 @@
 #!/bin/bash
 
-GIT_ROOT="${PWD}/.."
+git_root_undefined=0
+moodle_root_undefined=0
 
-SOURCE_PATH="${GIT_ROOT}/hybridmeter"
-DEVTOOLS_PATH="${GIT_ROOT}/devtools"
+if [ -d "${HYBRIDMETER_GIT_ROOT}" ]
+then
+    SOURCE_PATH="${HYBRIDMETER_GIT_ROOT}/hybridmeter"
+    DEVTOOLS_PATH="${HYBRIDMETER_GIT_ROOT}/devtools"
+    VUE_PATH="${HYBRIDMETER_GIT_ROOT}/vue"
+else
+    git_root_undefined=1
+fi
 
-MOODLE_ROOT="/var/www/html/moodle"
+if [ -d "${HYBRIDMETER_MOODLE_ROOT_PATH}"]
+then
+    MOODLE_ROOT=${HYBRIDMETER_MOODLE_ROOT_PATH}
+    REPORT_PATH="${MOODLE_ROOT}/report"
+    HYBRIDMETER_PATH="${REPORT_PATH}/hybridmeter"
+else
+    moodle_root_undefined=1
+fi
 
-REPORT_PATH="${MOODLE_ROOT}/report"
-HYBRIDMETER_PATH="${REPORT_PATH}/hybridmeter"
-
-help="hybridmeter_dev usage : hybridmeter_dev [-help|-h] [--] <auto|once|add_path>
+help="hybridmeter_dev usage : hybridmeter_dev [-help|-h] [--] <autocommit|commit|build|auto_config MOODLE_ROOT_PATH> 
      \n\tautocommit : Commit changes to moodle immediately and when they are changes in codesource
      \n\tcommit : Commit changes to moodle only once
      \n\tbuild : build ZIP file for moodle
-     \n\tadd_path : Add script dir to path in .bashrc
+     \n\tauto_config MOODLE_ROOT: Add script dir to path, moodle path and git root path in .bashrc
      \n\t--help|-h : Display this screen"
+
+git_root_error="The git root path isn't defined or isn't valid, please launch ./hybridemeter_dev auto_config MOODLE_ROOT_PATH"
+moodle_root_error="The moodle root path isn't defined or isn't valid, please launch ./hybridemeter_dev auto_config MOODLE_ROOT_PATH"
 
 in_options=1
 while [ $# -gt 0 ] && [ $in_options -eq 1 ]
@@ -40,40 +54,70 @@ do
     esac
 done
 
-if [ "$1" = "auto" ]
+if [ "$1" = "auto_config" ]
+then
+    cp ~/.bashrc ~/.bashrc_backup
+    shift
+
+    if [ $# -eq 0 ]
+    then
+        echo -e $help>&2
+        exit 1
+    fi
+
+    grep "Hybridmeter auto config" ~/.bashrc > /dev/null
+    if [ $? -eq 0 ]
+    then
+        sed '/^# Hybridmeter auto/,/# End hybridmeter/{d}' ~/.bashrc > ~/.bashrc
+    fi
+
+    moodle_path=$1
+    script_path=$(readlink -f $0)
+    script_dir=$(dirname $script_path)
+    git_root=$(dirname "${script_dir}/..")
+
+    echo -e "\n# Hybridmeter auto config" >> ~/.bashrc
+    echo "export PATH=\"\${PATH}:$script_dir\"" >> ~/.bashrc
+    echo "export HYBRIDMETER_MOODLE_ROOT_PATH=${moodle_path}"  >> ~/.bashrc
+    echo "export HYBRIDMETER_GIT_ROOT_PATH=${git_root}" >> ~/.bashrc
+    echo -e "# End hybridmeter auto config" >> ~/.bashrc
+    echo "Path added"
+    exit 0
+fi
+
+if [ $git_root_undefined -eq 1 ]
+    then
+        echo $git_root_error>&2
+        exit 2
+    elif [ $moodle_root_undefined -eq 1 ]
+    then
+        echo $moodle_root_error>&2
+        exit 3
+fi
+
+if [ "$1" = "autocommit" ]
 then
     while true
     do
-        find ${SOURCE_PATH} -not -path "*hybridmeter/vue/node_modules*" | entr -dr bash ./commit_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH}
+        find ${SOURCE_PATH} -not -path "*hybridmeter/vue/node_modules*" | entr -dr bash ./commit_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH}
     done
-elif [ "$1" = "once" ]
+    exit 0
+elif [ "$1" = "commit" ]
 then
-    bash ./commit_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH}
+    bash ${DEVTOOLS_PATH}/commit_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH}
     error_code=$?
     if [ $error_code -eq 0 ]
     then
-        echo "Plugin successfully committed to moodle"
+        echo "Changes successfully committed to moodle"
         exit 0
     else
-        echo "An error occured during the commit"
+        echo "An error occured during the commit">&2
+        exit 4
     fi
 elif [ "$1" = "build" ]
 then
-    # TODO : pack the js using webpack &&
-    cd ${SOURCE_PATH} && zip -r "${GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${DEVTOOLS_PATH}
-elif [ "$1" = "add_path" ]
-then
-    grep "Hybridmeter commit path" ~/.bashrc > /dev/null
-    if [ $? -ne 0 ]
-    then
-        script_path=$(readlink -f $0)
-        script_dir=$(dirname $script_path)
-        echo -e "\n# Hybridmeter commit path" >> ~/.bashrc
-        echo -e "export PATH=\"\${PATH}:$script_dir\"\n" >> ~/.bashrc
-        echo "Path added"
-    else
-        echo "Path already in bashrc"
-    fi
+    cd ${VUE_PATH} && npm run build && cd ${OLDPWD}
+    cd ${SOURCE_PATH} && zip -r "${GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${OLDPWD}
     exit 0
 else
     echo -e $help>&2

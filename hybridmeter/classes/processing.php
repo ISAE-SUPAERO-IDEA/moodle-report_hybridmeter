@@ -197,8 +197,6 @@ class processing {
             $configurator->get_begin_timestamp(),
             $configurator->get_end_timestamp()
         );
-        
-        
 
         $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED]=$data_provider->count_distinct_registered_students_of_courses(
             $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]
