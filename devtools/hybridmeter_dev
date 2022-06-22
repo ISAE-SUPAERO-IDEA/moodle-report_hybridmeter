@@ -95,6 +95,8 @@ if [ $git_root_undefined -eq 1 ]
         exit 3
 fi
 
+#TODO : changer commit par stage
+
 if [ "$1" = "autocommit" ]
 then
     while true
