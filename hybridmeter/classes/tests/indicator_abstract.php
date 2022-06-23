@@ -17,7 +17,7 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
     public function __construct($indicator, $name, $course_id) {
         parent::__construct($name, $course_id);
         $this->indicator = $indicator;
-        define(INDICATOR_ERROR, "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");
+        define("INDICATOR_ERROR", "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");
     }
 
     public function inclusion() {
@@ -60,7 +60,7 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
 
         $data_unserialized = unserialize(file_get_contents($path_serialized_data));
 
-        if(data_unserialized === false) {
+        if($data_unserialized === false) {
             echo "<p>Unable to unserialize the results of the last calculation, could you restart the calculations for this course?</p>";
             return false;
         }
