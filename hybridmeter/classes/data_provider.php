@@ -72,11 +72,10 @@ class data_provider {
         global $DB;
         $student_archetype = configurator::get_instance()->get_student_archetype();
 
-        $sql = "SELECT count(*) as count
+        $sql = "SELECT count(DISTINCT logs.id) AS count
                   FROM ".$DB->get_prefix()."logstore_standard_log logs
                   JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
                   JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
-                  JOIN ".$DB->get_prefix()."context context ON assign.contextid = context.id
                  WHERE role.archetype = :archetype
                        AND eventname = '\\core\\event\\course_viewed'
                        AND courseid = :courseid
@@ -118,11 +117,10 @@ class data_provider {
         }
         $where_compil .= ")";
 
-        $sql = "SELECT count(distinct logs.userid) AS count
+        $sql = "SELECT count(DISTINCT logs.userid) AS count
                   FROM ".$DB->get_prefix()."logstore_standard_log logs
-                  JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
+                  JOIN ".$DB->get_prefix()."role_assignments assign ON (logs.userid = assign.userid AND logs.contextid = assign.contextid)
                   JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
-                  JOIN ".$DB->get_prefix()."context context ON assign.contextid = context.id
                  WHERE role.archetype = :archetype
                        AND eventname like '%course_viewed'
                        AND context.contextlevel = :coursecontext
@@ -147,7 +145,7 @@ class data_provider {
         global $DB;
         $student_archetype = configurator::get_instance()->get_student_archetype();
 
-        $sql = "SELECT count(*) AS count
+        $sql = "SELECT count(DISTINCT role.id) AS count
                   FROM ".$DB->get_prefix()."context context
                   JOIN ".$DB->get_prefix()."role_assignments assign ON context.id = assign.contextid
                   JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
@@ -206,11 +204,11 @@ class data_provider {
 
         $student_archetype = configurator::get_instance()->get_student_archetype();
 
-        $sql = "SELECT logs.objecttable AS module, count(*) AS count
+        $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM ".$DB->get_prefix()."logstore_standard_log logs
-                  JOIN ".$DB->get_prefix()."role_assignments assign on logs.userid = assign.userid
-                  JOIN ".$DB->get_prefix()."role role on assign.roleid = role.id
-                  JOIN ".$DB->get_prefix()."context context on assign.contextid = context.id
+                  JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
+                  JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
+                  JOIN ".$DB->get_prefix()."context context ON logs.contextid = context.id
                  WHERE role.archetype = :archetype
                        AND courseid = :courseid
                        AND logs.target = 'course_module'

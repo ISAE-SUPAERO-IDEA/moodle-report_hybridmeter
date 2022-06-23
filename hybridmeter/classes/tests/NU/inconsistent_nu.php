@@ -69,22 +69,24 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
         $begin_timestamp = $configurator->get_begin_timestamp();
         $end_timestamp = $configurator->get_end_timestamp();
 
-        $sql = "SELECT * FROM ".$DB->get_prefix()."logstore_standard_log log
-                  JOIN ".$DB->get_prefix()."role_assignments ass ON log.userid = ass.userid
-                  JOIN ".$DB->get_prefix()."role role ON ass.roleid = role.id
-                 WHERE log.courseid = :courseid
-                       AND log.target = 'course_module'
-                       AND log.timecreated BETWEEN :begintimestamp AND :endtimestamp
-              GROUP BY log.objecttable
-                 LIMIT 1000";
+        $sql = "SELECT logs.*, role.shortname, role.archetype,
+                       role.description, user.username,
+                       user.firstname, user.lastname
+                  FROM ".$DB->get_prefix()."logstore_standard_log logs
+             LEFT JOIN ".$DB->get_prefix()."role_assignments assignments ON (logs.userid = assignments.userid AND logs.contextid = assignments.contextid)
+             LEFT JOIN ".$DB->get_prefix()."role role ON assignments.roleid = role.id
+                  JOIN ".$DB->get_prefix()."user user ON logs.userid = user.id
+                 WHERE logs.courseid = :courseid
+                   AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
+              ORDER BY logs.timecreated DESC";
 
-        $params=array(
+        $params = array(
             'courseid' => $this->course_id,
             'begintimestamp' => $begin_timestamp,
             'endtimestamp' => $end_timestamp,
         );
 
-        $records = $DB->get_records_sql($sql, $params);
+        $records = $DB->get_records_sql($sql, $params, 0, 1000);
 
         echo "<p>Here it is : </p>";
 
