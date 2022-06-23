@@ -56,7 +56,8 @@ function usage_level(array $object, array $parameters): float {
     $configurator = configurator::get_instance();
     $indicator=0;
     $total=0;
-    $activity_data=$data_provider->count_hits_on_activities_per_type($object['id'], 
+    $activity_data=$data_provider->count_hits_on_activities_per_type(
+        $object['id'], 
         $configurator->get_begin_timestamp(),
         $configurator->get_end_timestamp()
     );
@@ -80,8 +81,8 @@ function is_course_active_last_month(array $object, array $parameters): bool {
     $configurator = configurator::get_instance();
     $data_provider = data_provider::get_instance();
 
-    $count=$data_provider->count_student_visits_on_course(
-        $object['id'], 
+    $count=$data_provider->count_student_single_visitors_on_courses(
+        [$object['id']], 
         $configurator->get_begin_timestamp(),
         $configurator->get_end_timestamp()
     );
@@ -93,8 +94,8 @@ function is_course_active_last_month(array $object, array $parameters): bool {
 
 function active_students (array $object, array $parameters): int {
     $configurator = configurator::get_instance();
-    return data_provider::get_instance()->count_student_visits_on_course(
-        $object['id'],
+    return data_provider::get_instance()->count_student_single_visitors_on_courses(
+        [$object['id']],
         $configurator->get_begin_timestamp(),
         $configurator->get_end_timestamp()
     );

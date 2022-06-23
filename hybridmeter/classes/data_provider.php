@@ -77,10 +77,9 @@ class data_provider {
                   JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
                   JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
                  WHERE role.archetype = :archetype
-                       AND eventname = '\\core\\event\\course_viewed'
-                       AND courseid = :courseid
-                       AND context.instanceid = :instanceid
-                       AND context.contextlevel= :contextcourse
+                       AND logs.eventname like '%course_viewed'
+                       AND logs.courseid = :courseid
+                       AND logs.contextlevel= :contextcourse
                        AND timecreated BETWEEN :begintimestamp AND :endtimestamp";
 
         $parameters = array(
@@ -123,8 +122,7 @@ class data_provider {
                   JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
                  WHERE role.archetype = :archetype
                        AND eventname like '%course_viewed'
-                       AND context.contextlevel = :coursecontext
-                       AND context.instanceid in ".$where_compil."
+                       AND logs.contextlevel = :coursecontext
                        AND logs.courseid in ".$where_compil."
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp";
 
