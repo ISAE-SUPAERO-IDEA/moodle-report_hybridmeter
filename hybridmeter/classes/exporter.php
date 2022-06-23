@@ -77,7 +77,7 @@ class exporter {
 
     // Manually set fields of the CSV file
     public function set_fields (array $fields){
-        $precondition_array = array_map($fields, 'is_string');
+        $precondition_array = array_map('is_string', $fields);
         if(in_array(false, $precondition_array)){
             throw new Exception("\$fields must be an array of strings");
         }
