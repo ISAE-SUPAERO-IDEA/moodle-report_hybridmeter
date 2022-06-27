@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
-import Test from './components/test.vue';
+import Management from './components/Management.vue';
 
-var app = createApp(Test);
-app.mount('#app');
-console.log("mdr");
+export const init = () => {
+    var app = createApp(Management);
+    app.mount('#app');
+};

@@ -132,4 +132,13 @@ class utils {
 
         return $datetime->format($format);
     }
+
+    public static function modulo_fixed($x, int $n) : int {
+        $r = $x % $n;
+        if ($r < 0)
+        {
+            $r += abs($n);
+        }
+        return $r;
+    }
 }

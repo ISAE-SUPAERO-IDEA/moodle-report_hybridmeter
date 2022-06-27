@@ -1,11 +1,16 @@
 #!/bin/bash
 
-help="hybridmeter_dev usage : hybridmeter_dev [-help|-h] [--] <autostage|stage|build|auto_config MOODLE_ROOT_PATH> 
-     \n\tautostage : Stage changes to moodle immediately and when they are changes in codesource
-     \n\tstage : Stage changes to moodle only once
-     \n\tbuild : build ZIP file for moodle
-     \n\tautoconfig MOODLE_ROOT: Add moodle path and git root path in the hybrid_dev.env file
-     \n\t--help|-h : Display this screen"
+ORIGIN_PWD=${PWD}
+
+help="hybridmeter_dev, the all-in-one tool for continuous integration of hybridmeter
+     \n\nUsage : hybridmeter_dev [-help|-h] [--] <autostage|stage|build|auto_config MOODLE_ROOT> 
+     \n\nautoconfig MOODLE_ROOT\tAdd moodle root path and git root path in the hybrid_dev.env file
+     \nautostage\t\tStage changes to local moodle immediately and when they are changes in the codebase
+     \nbuild\t\t\tBuild ZIP file of the plugin for deployment
+     \nstage\t\t\tStage changes to local moodle only once
+     \n\nOptions :
+     \n\t--help|-h\tDisplay this screen
+     \n\n2022 ISAE-Supaero"
 
 in_options=1
 while [ $# -gt 0 ] && [ $in_options -eq 1 ]
@@ -56,9 +61,6 @@ else
     moodle_root_undefined=1
 fi
 
-git_root_error="The git root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH"
-moodle_root_error="The moodle root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH"
-
 if [ "$1" = "autoconfig" ]
 then
     shift
@@ -72,6 +74,7 @@ then
     if [ ! -d $1 ]
     then
         echo "$1 isn't a valid folder path">&2
+        exit 3
     fi
 
     moodle_root=$(readlink -f $1)
@@ -90,11 +93,11 @@ fi
 
 if [ $git_root_undefined -eq 1 ]
     then
-        echo $git_root_error>&2
+        echo "[ERROR] The git root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH">&2
         exit 2
     elif [ $moodle_root_undefined -eq 1 ]
     then
-        echo $moodle_root_error>&2
+        echo "[ERROR] The moodle root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH">&2
         exit 3
 fi
 
@@ -103,29 +106,46 @@ then
     while true
     do
         find ${SOURCE_PATH} -not -path "*hybridmeter/vue/node_modules*" | entr -dr bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH}
+        #TODO : forcer à recharger la page avec xdotool
     done
     exit 0
 elif [ "$1" = "stage" ]
 then
     bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH}
     error_code=$?
-    if [ $error_code -eq 0 ]
+    if [ $error_code -ne 0 ]
     then
-        echo "Changes successfully staged to moodle"
-        exit 0
-    else
-        echo "An error occured during the stage">&2
+        echo "[ERROR] An error occured during the stage, error code ${error_code}">&2
         exit 4
     fi
 elif [ "$1" = "build" ]
 then
     cd ${VUE_PATH} && npm run build && cd ${OLDPWD}
+    
+    error_code=$?
+    if [ $error_code -ne 0 ]
+    then
+        "[ERROR] An error occured during the webpacking, error code ${error_code}">&2
+        cd ${ORIGIN_PWD}
+        exit 5
+    fi
+
     if [ -f "${GIT_ROOT}/report_hybridmeter.zip" ]
     then
         rm "${GIT_ROOT}/report_hybridmeter.zip"
     fi
     cd ${SOURCE_PATH} && zip -r "${GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${OLDPWD}
-    exit 0
+
+    error_code=$?
+    if [ $error_code -eq 0 ]
+    then
+        echo "[SUCCESS] Plugin successfully built"
+        exit 0
+    else
+        cd ${ORIGIN_PWD}
+        echo "[ERROR] An error occured during the building of the zip file, error code ${error_code}">&2
+        exit 5
+    fi
 else
     echo -e $help>&2
     exit 1

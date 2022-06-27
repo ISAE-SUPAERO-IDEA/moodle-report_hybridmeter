@@ -184,7 +184,7 @@ class configurator {
                 $columns[1] => $this->data["digitalisation_treshold"],
             ),
             array(
-                $columns[0] => get_string('digitalisation_treshold', 'report_hybridmeter'),
+                $columns[0] => get_string('usage_treshold', 'report_hybridmeter'),
                 $columns[1] => $this->data["usage_treshold"],
             ),
             array(
