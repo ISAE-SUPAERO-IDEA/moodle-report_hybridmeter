@@ -9,4 +9,4 @@ function buildStringsArgument(keys, component) {
     return output;
 }
 
-export { buildStringsArgument };
+export { buildStringsArgument }

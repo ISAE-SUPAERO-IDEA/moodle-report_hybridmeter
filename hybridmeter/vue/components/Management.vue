@@ -10,10 +10,13 @@
 </template>
 
 <script>
-import { get_strings as getStrings } from 'core/str';
-import { PLUGIN_FRANKENSTYLE } from '../constants.js';
-import { buildStringsArgument } from '../utility.js';
-import BlacklistManager from './BlacklistManager.vue';
+import { get_strings as getStrings } from 'core/str'
+import { PLUGIN_FRANKENSTYLE } from '../constants.js'
+import { buildStringsArgument } from '../utility.js'
+import BlacklistManager from './BlacklistManager.vue'
+import { useStore } from 'vuex'
+
+const store = useStore();
 
 export default {
     data() {
@@ -23,10 +26,19 @@ export default {
         }
     },
     created(){
+        store.dispatch.beginLoading({
+            type: 'beginLoading',
+            uid : this._uid,
+        });
+
         const keys = ["labelblacklist", "labelperiod"];
         const strings_ref = buildStringsArgument(keys, PLUGIN_FRANKENSTYLE);
 
         getStrings(strings_ref).then(strings => {
+            store.dispatch.beginLoading({
+                type: 'endLoading',
+                uid : this._uid,
+            });
             this.blacklistTitle = strings[0];
             this.periodTitle = strings[1];
         });
