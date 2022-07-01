@@ -79,13 +79,18 @@ then
 
     moodle_root=$(readlink -f $1)
     git_root=$(readlink -f "${SCRIPT_DIR}/../")
+    env_file="${SCRIPT_DIR}/hybrid_dev.env"
 
+    if [ -f ${env_file} ]
+    then
+        sed '/HYBRIDMETER_MOODLE_ROOT/d' ${env_file} > ${env_file}
+        sed '/HYBRIDMETER_GIT_ROOT/d' ${env_file} > ${env_file}
+    else
+        touch ${env_file}
+    fi
 
-    sed '/HYBRIDMETER_MOODLE_ROOT/d' "${SCRIPT_DIR}/hybrid_dev.env" > "${SCRIPT_DIR}/hybrid_dev.env"
-    sed '/HYBRIDMETER_GIT_ROOT/d' "${SCRIPT_DIR}/hybrid_dev.env" > "${SCRIPT_DIR}/hybrid_dev.env"
-
-    echo "HYBRIDMETER_MOODLE_ROOT=\"${moodle_root}\"" >> "${SCRIPT_DIR}/hybrid_dev.env"
-    echo "HYBRIDMETER_GIT_ROOT=\"${git_root}\"" >> "${SCRIPT_DIR}/hybrid_dev.env"
+    echo "HYBRIDMETER_MOODLE_ROOT=\"${moodle_root}\"" >> ${env_file}
+    echo "HYBRIDMETER_GIT_ROOT=\"${git_root}\"" >> ${env_file}
 
     echo "Environment ready"
     exit 0
