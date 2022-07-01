@@ -3,7 +3,7 @@
 ORIGIN_PWD=${PWD}
 
 help="hybridmeter_dev, the all-in-one tool for continuous integration of hybridmeter
-     \n\nUsage : hybridmeter_dev [-help|-h] [--] <autostage|stage|build|auto_config MOODLE_ROOT> 
+     \n\nUsage : hybridmeter_dev [-help|-h] [--] <autoconfig MOODLE_ROOT|autostage|build|stage> 
      \n\nautoconfig MOODLE_ROOT\tAdd moodle root path and git root path in the hybrid_dev.env file
      \nautostage\t\tStage changes to local moodle immediately and when they are changes in the codebase
      \nbuild\t\t\tBuild ZIP file of the plugin for deployment
@@ -11,6 +11,8 @@ help="hybridmeter_dev, the all-in-one tool for continuous integration of hybridm
      \n\nOptions :
      \n\t--help|-h\tDisplay this screen
      \n\n2022 ISAE-Supaero"
+
+VALID_MODES=("autoconfig" "autostage" "build" "stage")
 
 in_options=1
 while [ $# -gt 0 ] && [ $in_options -eq 1 ]
@@ -96,11 +98,15 @@ then
     exit 0
 fi
 
-if [ $git_root_undefined -eq 1 ]
+if [[ ! " ${VALID_MODES[*]} " =~ " $1 " ]]
+    then
+        echo -e $help>&2
+        exit 1
+elif [ $git_root_undefined -eq 1 ]
     then
         echo "[ERROR] The git root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH">&2
         exit 2
-    elif [ $moodle_root_undefined -eq 1 ]
+elif [ $moodle_root_undefined -eq 1 ]
     then
         echo "[ERROR] The moodle root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH">&2
         exit 3
