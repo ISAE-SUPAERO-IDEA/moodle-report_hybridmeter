@@ -3,25 +3,23 @@ import Vuex from 'vuex'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
-Vue.use(Vuex)
-
+console.log("mdr");
 const LoadingStatus = {
-    NotLoaded: 0,
+    NotLoading: 0,
     Loading: 1,
-    Loaded: 2
 }
 
 export default new Vuex.Store({
     state: {
-        componentsLoadingStatus : Set(),
-        pageLoadingStatus : LoadingStatus.NotLoaded,
+        componentsLoadingStatus : new Set(),
+        pageLoadingStatus : LoadingStatus.NotLoading,
     },
     getters: {
         isSomethingStillLoading: state => {
-            return (state.componentsLoadingStatus.size() > 0);
+            return (state.componentsLoadingStatus.size > 0);
         },
         howManyComponentsLoading: state => {
-            return state.componentsLoadingStatus.size();
+            return state.componentsLoadingStatus.size;
         },
         isPageLoadingOrLoaded: state => {
             return (state.loadingstatus == LoadingStatus.Loading 
@@ -31,22 +29,22 @@ export default new Vuex.Store({
     mutations: {
         BEGIN_LOADING(state, uid) {
             state.pageLoadingStatus = LoadingStatus.Loading;
-            state.loadingset.add(uid);
+            state.componentsLoadingStatus.add(uid);
         },
         ADD_LOADING_COMPONENT(state, uid) {
-            state.loadingset.add(uid);
+            state.componentsLoadingStatus.add(uid);
         },
         REMOVE_LOADING_COMPONENT(state, uid) {
-            state.loadingset.delete(uid);
+            state.componentsLoadingStatus.delete(uid);
         },
         END_LOADING(state, uid) {
-            state.loadingstatus= LoadingStatus.Loaded;
-            state.loadingset.delete(uid);
+            state.loadingstatus= LoadingStatus.NotLoading;
+            state.componentsLoadingStatus.delete(uid);
         },
     },
     actions: {
         beginLoading(context, uid) {
-            if(context.getters('isPageLoadingOrLoaded')) {
+            if(context.getters['isPageLoadingOrLoaded']) {
                 context.commit('ADD_LOADING_COMPONENT', uid);
                 NProgress.inc();
                 console.log("something already loading");
@@ -58,7 +56,7 @@ export default new Vuex.Store({
             }
         },
         endLoading(context, uid) {
-            if(context.getters('howManyComponentsLoading') <= 1) {
+            if(context.getters['howManyComponentsLoading'] <= 1) {
                 context.commit('END_LOADING', uid);
                 NProgress.done();
                 console.log("page loaded");

@@ -16,9 +16,11 @@ import { buildStringsArgument } from '../utility.js'
 import BlacklistManager from './BlacklistManager.vue'
 import { useStore } from 'vuex'
 
-const store = useStore();
+
 
 export default {
+    setup() {
+    },
     data() {
         return {
             blacklistTitle : "",
@@ -26,22 +28,23 @@ export default {
         }
     },
     created(){
-        store.dispatch.beginLoading({
+        useStore().dispatch({
             type: 'beginLoading',
             uid : this._uid,
         });
 
         const keys = ["labelblacklist", "labelperiod"];
         const strings_ref = buildStringsArgument(keys, PLUGIN_FRANKENSTYLE);
-
-        getStrings(strings_ref).then(strings => {
-            store.dispatch.beginLoading({
-                type: 'endLoading',
-                uid : this._uid,
-            });
+        getStrings(strings_ref).then(strings => this.affectStrings(strings)).then(useStore().dispatch({
+            type: 'endLoading',
+            uid : this._uid,
+        }));
+    },
+    methods : {
+        affectStrings(strings) {
             this.blacklistTitle = strings[0];
             this.periodTitle = strings[1];
-        });
+        } 
     },
     components : { BlacklistManager },
     name: "Management",
