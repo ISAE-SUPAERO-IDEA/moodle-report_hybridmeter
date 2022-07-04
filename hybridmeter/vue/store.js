@@ -1,69 +1,70 @@
-import Vue from 'vue'
 import Vuex from 'vuex'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
-console.log("mdr");
 const LoadingStatus = {
     NotLoading: 0,
     Loading: 1,
 }
 
+//TODO : Replace the counter by a set identifying every loading unit of the code
+//(using this package https://www.npmjs.com/package/uuid).
+
 export default new Vuex.Store({
     state: {
-        componentsLoadingStatus : new Set(),
+        componentsLoadingStatus : 0,
         pageLoadingStatus : LoadingStatus.NotLoading,
     },
     getters: {
         isSomethingStillLoading: state => {
-            return (state.componentsLoadingStatus.size > 0);
+            return (state.componentsLoadingStatus > 0);
         },
         howManyComponentsLoading: state => {
-            return state.componentsLoadingStatus.size;
+            return state.componentsLoadingStatus;
         },
-        isPageLoadingOrLoaded: state => {
-            return (state.loadingstatus == LoadingStatus.Loading 
-                && state.loadingstatus == LoadingStatus.Loaded);
+        isPageLoading: state => {
+            return (state.loadingstatus == LoadingStatus.Loading);
         },
     },
     mutations: {
-        BEGIN_LOADING(state, uid) {
+        BEGIN_LOADING(state) {
             state.pageLoadingStatus = LoadingStatus.Loading;
-            state.componentsLoadingStatus.add(uid);
+            state.componentsLoadingStatus++;
         },
-        ADD_LOADING_COMPONENT(state, uid) {
-            state.componentsLoadingStatus.add(uid);
+        ADD_LOADING_COMPONENT(state) {
+            state.componentsLoadingStatus++;
         },
-        REMOVE_LOADING_COMPONENT(state, uid) {
-            state.componentsLoadingStatus.delete(uid);
+        REMOVE_LOADING_COMPONENT(state) {
+            state.componentsLoadingStatus--;
         },
-        END_LOADING(state, uid) {
+        END_LOADING(state) {
             state.loadingstatus= LoadingStatus.NotLoading;
-            state.componentsLoadingStatus.delete(uid);
+            state.componentsLoadingStatus=0;
         },
     },
     actions: {
-        beginLoading(context, uid) {
-            if(context.getters['isPageLoadingOrLoaded']) {
-                context.commit('ADD_LOADING_COMPONENT', uid);
-                NProgress.inc();
-                console.log("something already loading");
+        beginLoading(context) {
+            if(!context.getters['isPageLoading']) {
+                context.commit('BEGIN_LOADING');
+                console.log("begin loading");
+                NProgress.start();
             }
             else {
-                context.commit('BEGIN_LOADING', uid);
-                NProgress.start();
-                console.log("loading started");
+                context.commit('ADD_LOADING_COMPONENT');
+                console.log("add loading component");
             }
         },
-        endLoading(context, uid) {
+        endLoading(context) {
             if(context.getters['howManyComponentsLoading'] <= 1) {
-                context.commit('END_LOADING', uid);
+                context.commit('END_LOADING');
+                console.log("everything loaded");
                 NProgress.done();
-                console.log("page loaded");
             }
             else {
-                context.commit('REMOVE_LOADING_COMPONENT', uid);
+                console.log("hehhee");
+                context.commit('REMOVE_LOADING_COMPONENT');
                 console.log("component loaded");
+                NProgress.inc();
             }
         },
     }

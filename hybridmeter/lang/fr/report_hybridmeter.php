@@ -73,16 +73,22 @@ $string['active_treshold'] = "Nombre d'étudiants actifs minimum pour catégoris
 
 // Sur la page de management
 
-$string['labelblacklist'] = "Sélection des cours/catégories";
-
-$string['labelperiod'] = "Paramétrage de la période de la capture";
 $string['boxokstring'] = "La période de capture a été changée avec succès";
 $string['boxnotokstring'] = "Le changement de période n'a pas fonctionné";
 
+$string['blacklist_title'] = "Sélection des cours/catégories";
+$string['period_title'] = "Paramétrage de la période de la capture";
 $string['coeff_value_title'] = "Valeur des coefficients";
+$string['treshold_value_title'] = "Valeur des seuils";
+
 $string['coeff_digitalisation_title'] = "Coefficients de digitalisation";
 $string['coeff_using_title'] = "Coefficients d'utilisation";
-$string['treshold_value_title'] = "Valeur des seuils";
+
+$string['blacklist'] = "Blacklister";
+$string['whitelist'] = "Whitelister";
+$string['x_category'] = "%s la catégorie";
+$string['x_course'] = "%s le cours";
+$string['diagnostic_course'] = "Obtenir un diagnostic pour le cours";
 
 $string['back_to_plugin'] = "Retour au plugin";
 

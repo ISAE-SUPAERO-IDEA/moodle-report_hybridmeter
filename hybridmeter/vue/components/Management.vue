@@ -1,52 +1,41 @@
 <template>
     <div id="app">
-        <h3 class="main">{{ blacklistTitle }}</h3>
-        <!--<BlacklistManager/>-->
+        <h3 class="main">{{ strings["blacklist_title"] }}</h3>
+        <BlacklistManager/>
         <hr/>
-        <h3 class="main">{{ periodTitle }}</h3>
+        <h3 class="main">{{ strings["period_title"] }}</h3>
         <!--<PeriodManager/>-->
+        <hr/>
+        <h3 class="main">{{ strings["coeff_value_title"] }}</h3>
+        <!--<CoeffsManager/>-->
+        <hr/>
+        <h3 class="main">{{ strings["treshold_value_title"] }}</h3>
+        <!--<TresholdsManager/>-->
         <hr/>
     </div>
 </template>
 
 <script>
-import { get_strings as getStrings } from 'core/str'
-import { PLUGIN_FRANKENSTYLE } from '../constants.js'
-import { buildStringsArgument } from '../utility.js'
 import BlacklistManager from './BlacklistManager.vue'
-import { useStore } from 'vuex'
-
-
+import utils from '../utils.js'
 
 export default {
     setup() {
+        const { getStringsVue } = utils();
+        return {
+            getStringsVue
+        }
     },
     data() {
         return {
-            blacklistTitle : "",
-            periodTitle : "",
+            strings : []
         }
     },
-    created(){
-        useStore().dispatch({
-            type: 'beginLoading',
-            uid : this._uid,
-        });
-
-        const keys = ["labelblacklist", "labelperiod"];
-        const strings_ref = buildStringsArgument(keys, PLUGIN_FRANKENSTYLE);
-        getStrings(strings_ref).then(strings => this.affectStrings(strings)).then(useStore().dispatch({
-            type: 'endLoading',
-            uid : this._uid,
-        }));
-    },
-    methods : {
-        affectStrings(strings) {
-            this.blacklistTitle = strings[0];
-            this.periodTitle = strings[1];
-        } 
+    created() {
+        const keys = ["blacklist_title", "period_title", "coeff_value_title", "treshold_value_title"];
+        this.getStringsVue(keys).then(strings => this.strings = strings);
     },
     components : { BlacklistManager },
-    name: "Management",
+    name : "Management",
 }
 </script>

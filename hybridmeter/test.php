@@ -13,7 +13,11 @@ $PAGE->set_url($url);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
-$PAGE->requires->js_call_amd('report_hybridmeter/test', 'init');
+$PAGE->requires->js_call_amd('report_hybridmeter/test', 'init', [
+    'www_root' => $CFG->wwwroot,
+    'ajax_url' => "{$CFG->wwwroot}/report/hybridmeter/ajax",
+    'plugin_frankenstyle' => "report_hybridmeter",
+]);
 
 echo $OUTPUT->header();
 

@@ -73,16 +73,22 @@ $string['active_treshold'] = "Minimum number of active students to categorise a 
 
 // In management page
 
-$string['labelblacklist'] = "Selection of courses/categories";
-
-$string['labelperiod'] = "Paramétrage de la période de la capture";
 $string['boxokstring'] = "The capture period has been successfully changed";
 $string['boxnotokstring'] = "The period change did not work";
 
+$string['blacklist_title'] = "Selection of courses/categories";
+$string['period_title'] = "Paramétrage de la période de la capture";
 $string['coeff_value_title'] = "Value of coefficients";
+$string['treshold_value_title'] = "Threshold values";
+
 $string['coeff_digitalisation_title'] = "Digitalisation coefficients";
 $string['coeff_using_title'] = "Usage coefficients";
-$string['treshold_value_title'] = "Threshold values";
+
+$string['blacklist'] = "Blacklist";
+$string['whitelist'] = "Whitelist";
+$string['x_category'] = "%s the category";
+$string['x_course'] = "%s the course";
+$string['diagnostic_course'] = "Get a diagnosis for the course";
 
 $string['back_to_plugin'] = "Back to plugin";
 

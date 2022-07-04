@@ -1,6 +1,6 @@
 <template>
     <div id="blacklist">
-        <Category/>
+        <Category :id=0 :expanded=true :root=true />
     </div>
 </template>
 
@@ -9,6 +9,6 @@ import Category from './blacklist/Category.vue';
 
 export default {
     components : { Category },
-    name : "BlacklistManager"
+    name : "BlacklistManager",
 }
 </script>
