@@ -1,5 +1,5 @@
 <template>
-    <div id="blacklist">
+    <div id="blacklist" class="management-module">
         <Category :id=0 :expanded=true :root=true />
     </div>
 </template>

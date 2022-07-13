@@ -7,9 +7,11 @@ AJAX endpoint to manage HybridMeter blacklist configuration
 require_once("../../../config.php");
 require_once(__DIR__."/../classes/configurator.php");
 require_once(__DIR__."/../classes/data_provider.php");
+require_once(__DIR__."/../classes/logger.php");
 
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\classes\data_provider as data_provider;
+use \report_hybridmeter\classes\logger as logger;
 
 header('Content-Type: text/json');
 
@@ -58,6 +60,11 @@ else if ($task == "manage_blacklist") {
     $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
     $id = required_param('id', PARAM_INT);
     $configurator->set_blacklisted($type, $id, $value);
+
+    //Debugging feature, set debug value to 1 in configurations to display
+    logger::log("New manage_blacklist post request");
+    logger::log(array("value" => $value, "type" => $type, "id" => $id));
+
     $output = [ "blacklisted" => $value ];
 }
 else{

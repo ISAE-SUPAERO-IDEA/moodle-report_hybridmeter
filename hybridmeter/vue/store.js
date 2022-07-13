@@ -46,24 +46,23 @@ export default new Vuex.Store({
         beginLoading(context) {
             if(!context.getters['isPageLoading']) {
                 context.commit('BEGIN_LOADING');
-                console.log("begin loading");
+                //console.log("begin loading");
                 NProgress.start();
             }
             else {
                 context.commit('ADD_LOADING_COMPONENT');
-                console.log("add loading component");
+                //console.log("add loading unit");
             }
         },
         endLoading(context) {
             if(context.getters['howManyComponentsLoading'] <= 1) {
                 context.commit('END_LOADING');
-                console.log("everything loaded");
+                //console.log("everything loaded");
                 NProgress.done();
             }
             else {
-                console.log("hehhee");
                 context.commit('REMOVE_LOADING_COMPONENT');
-                console.log("component loaded");
+                //console.log("unit loaded");
                 NProgress.inc();
             }
         },
