@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <h3 class="main">{{ strings["blacklist_title"] }}</h3>
+        <h3 class="main" @click="lol()">{{ strings["blacklist_title"] }}</h3>
         <BlacklistManager/>
         <hr/>
         <h3 class="main">{{ strings["period_title"] }}</h3>
@@ -16,24 +16,25 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import BlacklistManager from './BlacklistManager.vue'
 import utils from '../utils.js'
 
 export default {
     setup() {
-        const { getStringsVue } = utils();
+        const { getStrings } = utils()
+
+        const strings = ref([])
+
         return {
-            getStringsVue
-        }
-    },
-    data() {
-        return {
-            strings : []
+            strings,
+            getStrings,
+            lol : () => getStrings(["pluginname"]).then(strings => console.log(strings["pluginname"])),            
         }
     },
     created() {
         const keys = ["blacklist_title", "period_title", "coeff_value_title", "treshold_value_title"];
-        this.getStringsVue(keys).then(strings => this.strings = strings);
+        this.getStrings(keys).then(strings => this.strings = strings)
     },
     components : { BlacklistManager },
     name : "Management",

@@ -1,10 +1,11 @@
 import { inject } from 'vue'
 import { useStore } from 'vuex'
-import { get_strings as getStrings } from 'core/str'
-import axios from 'axios';
+import { get_strings } from 'core/str'
+import axios from 'axios'
 
 export default function utils() {
     const constants = inject('constants');
+    const store = useStore();
 
     function buildStringsArgument(keys, component) {
         let output = [];
@@ -25,36 +26,36 @@ export default function utils() {
         return output;
     }
 
-    function getStringsVue(keys) {
-        useStore().dispatch('beginLoading');
+    function getStrings(keys) {
+        store.dispatch('beginLoading');
 
         const strings_ref = buildStringsArgument(keys, constants.PLUGIN_FRANKENSTYLE);
 
-        return getStrings(strings_ref)
+        return get_strings(strings_ref)
         .then(strings => buildStringsObject(keys, strings))
-        .then(useStore().dispatch('endLoading'));
+        .then(store.dispatch('endLoading'));
     }
     
     function get(endpointName) {
-        useStore().dispatch('beginLoading');
+        store.dispatch('beginLoading');
 
         const myaxios = axios.create({ baseURL : constants.AJAX_URL });
         let endpointFile = endpointName + ".php";
 
-        return myaxios.get(endpointFile).then(useStore().dispatch('endLoading')).then(response => response.data);
+        return myaxios.get(endpointFile).then(store.dispatch('endLoading')).then(response => response.data);
     }
     
     function post(endpointName, data) {
-        useStore().dispatch('beginLoading');
+        store.dispatch('beginLoading');
 
         const myaxios = axios.create({ baseURL : constants.AJAX_URL });
         let endpointFile = endpointName + ".php";
 
-        return myaxios.post(endpointFile, data).then(useStore().dispatch('endLoading')).then(response => response.data);
+        return myaxios.post(endpointFile, data).then(store.dispatch('endLoading')).then(response => response.data);
     }
 
     return {
-        getStringsVue,
+        getStrings,
         get,
         post,
     }
