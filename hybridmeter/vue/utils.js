@@ -54,9 +54,33 @@ export default function utils() {
         return myaxios.post(endpointFile, data).then(store.dispatch('endLoading')).then(response => response.data);
     }
 
+    function ui_to_timestamp(text, is_end_date = false) {
+        if(is_end_date){
+            text = text+' 23:59:59';
+        }
+        let date = new Date(text);
+        return date.getTime() / 1000;
+    }
+
+    function timestamp_to_ui(timestamp) {
+        // Create a new JavaScript Date object based on the timestamp
+        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+        let date = new Date(timestamp * 1000);
+        let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
+        let mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date);
+        let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
+
+        // Will display time in 10:30:23 format
+        let formattedTime = `${ye}-${mo}-${da}`;
+
+        return formattedTime;
+    }
+
     return {
         getStrings,
         get,
         post,
+        ui_to_timestamp,
+        timestamp_to_ui,
     }
 }

@@ -14,6 +14,7 @@ export default new Vuex.Store({
     state: {
         componentsLoadingStatus : 0,
         pageLoadingStatus : LoadingStatus.NotLoading,
+        config : {},
     },
     getters: {
         isSomethingStillLoading: state => {
@@ -41,6 +42,9 @@ export default new Vuex.Store({
             state.loadingstatus= LoadingStatus.NotLoading;
             state.componentsLoadingStatus=0;
         },
+        UPDATE_CONFIG(state, config) {
+            state.config = config
+        }
     },
     actions: {
         beginLoading(context) {
@@ -66,5 +70,8 @@ export default new Vuex.Store({
                 NProgress.inc();
             }
         },
+        loadConfig(context, config) {
+            context.commit('LOAD_CONFIG', config);
+        }
     }
 })

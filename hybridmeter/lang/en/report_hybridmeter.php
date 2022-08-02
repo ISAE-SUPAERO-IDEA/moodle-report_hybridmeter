@@ -78,6 +78,8 @@ $string['boxnotokstring'] = "The period change did not work";
 
 $string['blacklist_title'] = "Selection of courses/categories";
 $string['period_title'] = "Paramétrage de la période de la capture";
+$string['next_schedule_title'] = "Prochain lancement";
+$string['additional_config_title'] = "Configuration additionnelle";
 $string['coeff_value_title'] = "Value of coefficients";
 $string['treshold_value_title'] = "Threshold values";
 

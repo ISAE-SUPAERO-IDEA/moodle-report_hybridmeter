@@ -36,7 +36,8 @@ export default {
             let keys = ["blacklist", "whitelist", "x_category", "x_course", "diagnostic_course"];
             let loadstrings = getStrings(keys).then(output => strings.value = output);
 
-            await get("configuration_handler").then(output => config.value = output);
+            let config = 
+            //await get("configuration_handler").then(output => config.value = output);
 
             let data = new FormData();
             data.append('task', 'category_children');
