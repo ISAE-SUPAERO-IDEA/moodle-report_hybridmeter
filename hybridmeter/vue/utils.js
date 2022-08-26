@@ -51,7 +51,21 @@ export default function utils() {
         const myaxios = axios.create({ baseURL : constants.AJAX_URL });
         let endpointFile = endpointName + ".php";
 
-        return myaxios.post(endpointFile, data).then(store.dispatch('endLoading')).then(response => response.data);
+        return myaxios.post(endpointFile, data)
+            .then(store.dispatch('endLoading'))
+            .then(response => response.data);
+    }
+
+    function postConfig(endpointName, data) {
+        store.dispatch('beginLoading');
+
+        const myaxios = axios.create({ baseURL : constants.AJAX_URL });
+        let endpointFile = endpointName + ".php";
+
+        return myaxios.post(endpointFile, data)
+            .then(loadConfig())
+            .then(store.dispatch('endLoading'))
+            .then(response => response.data);
     }
 
     function ui_to_timestamp(text, is_end_date = false) {
@@ -76,11 +90,37 @@ export default function utils() {
         return formattedTime;
     }
 
+    function getConfig() {
+        return store.getters.getConfig;
+    }
+
+    function loadConfig() {
+        get("configuration_handler").then(config => store.dispatch('loadConfig', config))
+    }
+
+    function updateBlacklist() {
+        get("configuration_handler").then(config => store.dispatch('updateBlacklistFromConfig', config))
+    }
+
+    function updateScheduledData() {
+        get("configuration_handler").then(config => store.dispatch('updateScheduledDateFromConfig', config))
+    }
+
+    function updateProgrammedDates() {
+        get("configuration_handler").then(config => store.dispatch('updateProgrammedDatesFromConfig', config))
+    }
+
     return {
         getStrings,
         get,
         post,
+        postConfig,
         ui_to_timestamp,
         timestamp_to_ui,
+        getConfig,
+        loadConfig,
+        updateBlacklist,
+        updateScheduledData,
+        updateProgrammedDates,
     }
 }

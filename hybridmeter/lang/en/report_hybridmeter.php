@@ -86,6 +86,9 @@ $string['treshold_value_title'] = "Threshold values";
 $string['coeff_digitalisation_title'] = "Digitalisation coefficients";
 $string['coeff_using_title'] = "Usage coefficients";
 
+$string['begin_date'] = "Beginning date";
+$string['end_date'] = "Ending date";
+
 $string['blacklist'] = "Blacklist";
 $string['whitelist'] = "Whitelist";
 $string['x_category'] = "%s the category";
@@ -93,5 +96,7 @@ $string['x_course'] = "%s the course";
 $string['diagnostic_course'] = "Get a diagnosis for the course";
 
 $string['back_to_plugin'] = "Back to plugin";
+
+$string['save_modif'] = "Save modifications";
 
 // These variables can be accessed with the get_string('index', "report_hybridmeter") function;

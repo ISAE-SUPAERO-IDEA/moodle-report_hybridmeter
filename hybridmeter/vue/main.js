@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import store from './store.js'
 import Management from './components/Management.vue'
 import './assets/style/management.css';
-import '@fortawesome/fontawesome-free/js/fontawesome'
 
 export const init = (www_root, ajax_url, plugin_frankenstyle) => {
     var app = createApp(Management);

@@ -73,3 +73,16 @@ Configuration du navigateur
 ==================================
 
 Nous vous recommandons d'installer le plugin Vue.js devtools, qui propose tout un tas d'outils pour visualiser l'état des composants, le déclenchement des évènements... afin de débugguer plus facilement l'interface : https://addons.mozilla.org/fr/firefox/addon/vue-js-devtools/
+
+Règles de codage moodle
+==================================
+
+La communauté Moodle impose des règles de codage pour assurer le bon fonctionnement et l'homogénéité du coeur du programme et des plugins.
+
+La tabulation doit par exemple être constituée de quatre espaces, et il faut laisser un saut de ligne en fin de fichier sans ne jamais fermer la balise PHP...
+
+la liste exhaustive de cette règle est documentée sur [ce site](https://moodledev.io/general/development/policies/codingstyle)
+
+Il existe également un plugin qui permet de vérifier la bonne syntaxe de son code. Le plugin s'appelle code checker et est téléchargeable [sur le store moodle](https://moodle.org/plugins/local_codechecker)
+
+Pour l'utiliser, il suffit de se rendre dans l'Administration du site > Development > Code Checker et de renseigner la cible des fichiers à analyser, dans notre cas ``report/hybridmeter``

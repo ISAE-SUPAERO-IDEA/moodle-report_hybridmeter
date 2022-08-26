@@ -28,26 +28,23 @@ import { ref } from 'vue'
 import Category from './subcomponents/Category.vue'
 import PeriodManager from './subcomponents/PeriodManager.vue'
 import utils from '../utils.js'
-import { useStore } from 'vuex'
+//import { useStore } from 'vuex'
 
 export default {
     setup() {
-        const { getStrings } = utils()
+        const { getStrings, loadConfig } = utils()
 
         const strings = ref([])
 
         return {
             strings,
-            get,
             getStrings,
-            lol : () => getStrings(["pluginname"]).then(strings => console.log(strings["pluginname"])),            
+            loadConfig,
         }
     },
-    beforeMount() {
-        await get("configuration_handler").then(config => useStore().dispatch('loadConfig', { config : config }));
-    },
     created() {
-        const keys = ["blacklist_title", "period_title", "next_schedule_title", "additionnal_config_title", 
+        this.loadConfig();
+        const keys = [ "blacklist_title", "period_title", "next_schedule_title", "additional_config_title", 
                 "coeff_value_title", "treshold_value_title", ];
         this.getStrings(keys).then(strings => this.strings = strings)
     },

@@ -83,6 +83,9 @@ $string['additional_config_title'] = "Configuration additionnelle";
 $string['coeff_value_title'] = "Valeur des coefficients";
 $string['treshold_value_title'] = "Valeur des seuils";
 
+$string['begin_date'] = "Date de début";
+$string['end_date'] = "Date de fin";
+
 $string['coeff_digitalisation_title'] = "Coefficients de digitalisation";
 $string['coeff_using_title'] = "Coefficients d'utilisation";
 
@@ -93,5 +96,7 @@ $string['x_course'] = "%s le cours";
 $string['diagnostic_course'] = "Obtenir un diagnostic pour le cours";
 
 $string['back_to_plugin'] = "Retour au plugin";
+
+$string['save_modif'] = "Enregistrer les modifications";
 
 // On peut accéder à ces variables avec la fonction get_string('indice', 'report_hybridmeter');

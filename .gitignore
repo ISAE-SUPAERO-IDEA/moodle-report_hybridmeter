@@ -15,4 +15,3 @@ logs
 *.log
 npm-debug.log*
 assets/test
-hybrid_dev.env
