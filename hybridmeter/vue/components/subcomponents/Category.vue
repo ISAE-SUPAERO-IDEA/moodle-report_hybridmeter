@@ -1,10 +1,10 @@
 <template>
     <div class="category">
+        <i :title="title_category(category)" class="icon fa fa-fw " :class="class_eye_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
+        <i class="icon fa fa-fw " :class="category_caret(category)" @click="expandCategory(category)"></i>
+        <span style="font-weight: bold">{{category.name}}</span>
         <div v-if="expanded">
             <div v-for="category in tree.categories" :key="category.id" class="category_item">
-                <i :title="title_category(category)" class="icon fa fa-fw " :class="class_eye_blacklist(category)" @click="manage_category_blacklist(category)" ></i>
-                <i class="icon fa fa-fw " :class="category_caret(category)" @click="expandCategory(category)"></i>
-                <span style="font-weight: bold">{{category.name}}</span>
                 <category :id="category.id" :expanded="category.expanded"></category>
             </div>
             <div v-for="course in tree.courses" :key="course.id" class="category_item" >
@@ -42,11 +42,10 @@ export default {
 
         const loadedChildren = ref(false)
 
-        const loadChildren = (id) => {
-            console.log("🤨 "+id)
+        const loadChildren = () => {
             let data = new FormData();
             data.append('task', 'category_children');
-            data.append('id', id);
+            data.append('id', props.id);
 
             return post('blacklist_tree_handler', data).then(data => {
                 tree.value = data;
@@ -55,12 +54,9 @@ export default {
         }
 
         const updateDisplayedBlacklist = blacklistData => {
-            if(!loadedChildren.value && props.id == 0){
+            if(!loadedChildren.value){
                 loadChildren(props.id)
             }
-
-            console.log(blacklistData)
-            console.log(blacklistData.blacklisted_categories)
 
             if (blacklistData.blacklisted_categories) {
                 for (var i in tree.value.categories) {
@@ -83,7 +79,7 @@ export default {
 
         function expandCategory(category) {
             category.expanded = !category.expanded
-            loadChildren(category.id)
+            //loadChildren(category.id)
         }
 
         function manage_element_blacklist(type, element) {
@@ -152,16 +148,13 @@ export default {
         }
     },
     props : {
-        id : {
-            required : true,
+        category_data : {
+            required : true
         },
         global_blacklist : {
             default : false,
         },
         expanded : {
-            default : false,
-        },
-        root : {
             default : false,
         },
     },

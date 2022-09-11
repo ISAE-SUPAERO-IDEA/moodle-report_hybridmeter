@@ -1,9 +1,7 @@
 <template>
     <div id="app">
         <h3 class="main" @click="lol()">{{ strings["blacklist_title"] }}</h3>
-        <!--BlacklistManager wasn't really used, so I directly put the component
-        Category into management.vue -->
-        <Category :id=0 :expanded=true :root=true />
+        <BlacklistManager />
         <hr/>
         <h3 class="main">{{ strings["period_title"] }}</h3>
         <PeriodManager/>
@@ -25,9 +23,9 @@
 
 <script>
 import { ref } from 'vue'
-import Category from './subcomponents/Category.vue'
 import PeriodManager from './subcomponents/PeriodManager.vue'
 import utils from '../utils.js'
+import BlacklistManager from './subcomponents/BlacklistManager.vue'
 //import { useStore } from 'vuex'
 
 export default {
@@ -48,7 +46,7 @@ export default {
                 "coeff_value_title", "treshold_value_title", ];
         this.getStrings(keys).then(strings => this.strings = strings)
     },
-    components : { Category, PeriodManager, },
+    components : { PeriodManager, BlacklistManager, },
     name : "Management",
 }
 </script>
