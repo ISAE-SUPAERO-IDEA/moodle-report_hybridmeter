@@ -2,7 +2,7 @@ const path = require('path');
 const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
-    entry: "./main.js",
+    entry: "./src/main.js",
     devtool : 'source-map',
     output: {
         path: path.resolve(__dirname, "../amd/build"),

@@ -4,6 +4,7 @@ words=("ada" "turing" "dijkstra" "lamport" "berners-lee" "shannon" "babbage")
 length=${#words[@]}
 random_index=$(($RANDOM % ${length}))
 echo "[INFO] Staging to moodle ${words[${random_index}]}"
+cp $3/src $4
 cd $3 && npm run dev && cd ${OLDPWD}
 error_code=$?
 if [ ${error_code} -ne 0 ]

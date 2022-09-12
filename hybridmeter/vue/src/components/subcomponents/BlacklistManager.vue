@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="category in categories" :key="category.id">
-            <Category :id="category.id" :expanded="category.expanded"></Category>
+            <Category :category_data="category" :expanded="false"></Category>
         </div>
     </div>
 </template>
@@ -35,7 +35,7 @@ export default {
     created() {
         this.loadCategories()
     },
-    components : { Category, },
+    components : { Category },
     name : "BlacklistManager",
 }
 </script>

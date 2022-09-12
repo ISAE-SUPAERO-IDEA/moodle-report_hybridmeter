@@ -17,14 +17,14 @@
 </template>
 
 <script>
-import { ref, watch, toRef } from 'vue'
+import { ref } from 'vue'
 import { useStore } from 'vuex'
 import utils from '../../utils.js'
-import { sprintf } from 'sprintf-js'
+import sprintf from 'sprintf-js'
 
 export default {
     setup(props) {
-        const { get, postConfig, post, getStrings, getConfig, updateBlacklist } = utils();
+        const { post, getStrings, updateBlacklist } = utils();
         
         const tree = ref({
             categories : [],
@@ -54,10 +54,6 @@ export default {
         }
 
         const updateDisplayedBlacklist = blacklistData => {
-            if(!loadedChildren.value){
-                loadChildren(props.id)
-            }
-
             if (blacklistData.blacklisted_categories) {
                 for (var i in tree.value.categories) {
                     if (Object.keys(blacklistData.blacklisted_categories).includes(tree.value.categories[i].id))
@@ -77,14 +73,17 @@ export default {
             }
         }
 
-        function expandCategory(category) {
-            category.expanded = !category.expanded
-            //loadChildren(category.id)
+        const loadBlacklist = () => {
+            this.loadChildren()
+            this.updateDisplayedBlacklist(store.state.blacklistData)
+        }
+
+        function expandCategory() {
+            props.expanded = !props.expanded
         }
 
         function manage_element_blacklist(type, element) {
             var value = !element.blacklisted;
-            console.log("value : "+value)
             var data = new FormData();
             data.append('task', 'manage_blacklist');
             data.append('id', element.id);
@@ -129,30 +128,30 @@ export default {
         }
 
         return {
+            post,
+            getStrings,
+            updateBlacklist,
             tree,
             strings,
-            get,
-            postConfig,
-            getStrings,
-            loadChildren,
+            store,
             loadStrings,
+            loadedChildren,
+            loadChildren,
+            loadBlacklist,
+            updateDisplayedBlacklist,
+            expandCategory,
+            manage_element_blacklist,
             manage_course_blacklist,
             manage_category_blacklist,
             class_eye_blacklist,
             category_caret,
             title_category,
             title_course,
-            getConfig,
-            updateDisplayedBlacklist,
-            expandCategory,
         }
     },
     props : {
         category_data : {
             required : true
-        },
-        global_blacklist : {
-            default : false,
         },
         expanded : {
             default : false,
@@ -160,6 +159,7 @@ export default {
     },
     created() {
         this.loadStrings();
+        this.loadBlacklist();
     },
     name : "Category",
 }

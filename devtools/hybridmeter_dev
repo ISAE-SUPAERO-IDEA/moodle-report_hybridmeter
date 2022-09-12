@@ -50,6 +50,7 @@ then
     SOURCE_PATH="${HYBRIDMETER_GIT_ROOT}/hybridmeter"
     DEVTOOLS_PATH="${HYBRIDMETER_GIT_ROOT}/devtools"
     VUE_PATH="${SOURCE_PATH}/vue"
+    AMD_PATH="${SOURCE_PATH}/amd"
 else
     git_root_undefined=1
 fi
@@ -116,13 +117,13 @@ if [ "$1" = "autostage" ]
 then
     while true
     do
-        find ${SOURCE_PATH} -not -path "*hybridmeter/vue/node_modules*" | entr -dr bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH}
+        find ${SOURCE_PATH} -not -path "*hybridmeter/vue/node_modules*" | entr -dr bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH}
         #TODO : forcer à recharger la page avec xdotool
     done
     exit 0
 elif [ "$1" = "stage" ]
 then
-    bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH}
+    bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH}
     error_code=$?
     if [ $error_code -ne 0 ]
     then
