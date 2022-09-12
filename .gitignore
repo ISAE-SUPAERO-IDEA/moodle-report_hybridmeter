@@ -16,5 +16,5 @@ logs
 *.log
 npm-debug.log*
 assets/test
-amd/build/*
-amd/src/*
+hybridmeter/amd/build/*
+hybridmeter/amd/src/*
