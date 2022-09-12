@@ -74,8 +74,8 @@ export default {
         }
 
         const loadBlacklist = () => {
-            this.loadChildren()
-            this.updateDisplayedBlacklist(store.state.blacklistData)
+            loadChildren()
+            updateDisplayedBlacklist(store.state.blacklistData)
         }
 
         function expandCategory() {
