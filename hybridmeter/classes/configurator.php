@@ -2,433 +2,410 @@
 
 namespace report_hybridmeter\classes;
 
-defined('MOODLE_INTERNAL') || die();
-
 require_once(dirname(__FILE__)."/../../../config.php");
 require_once(__DIR__."/../constants.php");
 require_once(__DIR__."/utils.php");
 require_once(__DIR__."/data_provider.php");
 
+defined('MOODLE_INTERNAL') || die();
+
 use \report_hybridmeter\classes\data_provider as data_provider;
 use \report_hybridmeter\classes\utils as utils;
-use DateTime;
 
 // Manage hybridmeter's configuration file
 class configurator {
-    protected $path;
+	protected $path;
 
-    protected $data;
+	protected $data;
 
-    protected $begin_date;
+	protected $begin_date;
 
-    protected $end_date;
+	protected $end_date;
 
-    protected static $instance = null;
+	protected static $instance = null;
 
-    public function __construct(){
-        global $CFG;
+	public function __construct(){
+		global $CFG;
 
-        $this->path=$CFG->dataroot."/hybridmeter/config.json";
-        // Initialize empty data if no configuration file exists 
-        if (!file_exists($this->path)) {
-            $this->data = [];
-        }
-        // Read data from configuration file if it exists
-        else{
-            $this->data = file_get_contents($this->path);
-            $this->data = json_decode($this->data, true);
-        }
-        // Sanitize data
-        $now = new DateTime("now");
-        $before = strtotime("-1 months");
-        $this->set_default_value("begin_date", $before);
-        $this->set_default_value("end_date", $now->getTimestamp());
-        $this->set_default_value("student_archetype", "student");
-        $this->set_default_value("debug", false);
-        $this->set_default_value("running", REPORT_HYBRIDMETER_NON_RUNNING);
+		$this->path=$CFG->dataroot."/hybridmeter/config.json";
+		// Initialize empty data if no configuration file exists 
+		if (!file_exists($this->path)) {
+			$this->data = [];
+		}
+		// Read data from configuration file if it exists
+		else{
+			$this->data = file_get_contents($this->path);
+			$this->data = json_decode($this->data, true);
+		}
+		// Sanitize data
+		$now = new \DateTime("now");
+		$before = strtotime("-1 months");
+		$this->set_default_value("begin_date", $before);
+		$this->set_default_value("end_date", $now->getTimestamp());
+		$this->set_default_value("student_role", "student");
+		$this->set_default_value("debug", 0);
+		$this->set_default_value("running", NON_RUNNING);
 
-        $this->set_default_value("has_scheduled_calculation", 0);
-        $this->set_default_value("scheduled_date", 0);
-        
-        $this->set_default_value("active_treshold", REPORT_HYBRIDMETER_ACTIVE_TRESHOLD);
-        $this->set_default_value("usage_treshold", REPORT_HYBRIDMETER_USAGE_TRESHOLD);
-        $this->set_default_value("digitalisation_treshold", REPORT_HYBRIDMETER_DIGITALISATION_TRESHOLD);
+		$this->set_default_value("has_scheduled_calculation", 0);
+		$this->set_default_value("scheduled_date", 0);
+		
+		$this->set_default_value("seuil_actif", SEUIL_ACTIF);
+		$this->set_default_value("seuil_dynamique", SEUIL_DYNAMIQUE);
+		$this->set_default_value("seuil_statique", SEUIL_STATIQUE);
 
-        $this->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
-        $this->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
+		$this->update_coeffs("dynamic_coeffs", COEFF_DYNAMIQUES);
+		$this->update_coeffs("static_coeffs", COEFF_STATIQUES);
 
-        $this->set_default_value("blacklisted_courses", []);
-        $this->set_default_value("blacklisted_categories", []);
-    
-        // Should save only if changes have been made
-        $this->save();
-    }
-    // Get the singleton configuration instance
-    public static function get_instance() {
-        if (self::$instance == null) {
-            self::$instance = new configurator();
-        }
+		$this->set_default_value("blacklisted_courses", []);
+		$this->set_default_value("blacklisted_categories", []);
+	
+		// Should save only if changes have been made
+		$this->save();
+	}
+	// Get the singleton configuration instance
+	public static function getInstance() {
+		if (self::$instance == null) {
+			self::$instance = new configurator();
+		}
         return self::$instance;
     }
     // Sets a default value for a configuration key
-    public function set_default_value($key, $value){
-        if (!array_key_exists($key, $this->data)) {
-            $this->data[$key] = $value;
-        }
-    }
+	public function set_default_value($key, $value){
+		if (!array_key_exists($key, $this->data)) {
+			$this->data[$key] = $value;
+		}
+	}
 
-    public function update($data){
-        $this->data = array_merge($this->data, $data);
-        $this->save();
-    }
+	public function update($data){
+		$this->data = array_merge($this->data, $data);
+		$this->save();
+	}
 
-    public function update_key($key, $data){
-        $this->data[$key] = $data;
-        $this->save();
-    }
+	public function update_key($key, $data){
+		$this->data[$key] = $data;
+		$this->save();
+	}
 
-    public function unset_key($key){
-        unset($this->data[$key]);
-        $this->save();
-    }
+	public function unset_key($key){
+		unset($this->data[$key]);
+		$this->save();
+	}
 
-    // Saves the data in the configuration file
-    protected function save(){
-        $fichier = fopen($this->path, 'w');
-        fwrite($fichier, json_encode($this->data));
-        fclose($fichier);
-    }
+	// Saves the data in the configuration file
+	protected function save(){
+		$fichier = fopen($this->path, 'w');
+		fwrite($fichier, json_encode($this->data, JSON_FORCE_OBJECT));
+		fclose($fichier);
+	}
 
-    // Get debug status
-    public function get_debug(){
-        return $this->data['debug'];
-    }
+	// Get debug status
+	public function get_debug(){
+		return $this->data['debug'];
+	}
 
-    public function set_debug(){
-        $this->data['debug'] = true;
-    }
+	// Update coefficients for a given $type (dynamic or static)
+	public function update_coeffs($key, $default_coeffs){
+		global $DB;
+		$modules_shortname = array_map(
+			function($module){
+				return $module->name;
+			},
+			$DB->get_records("modules")
+		);
+		$this->set_default_value($key, []);
+		foreach ($default_coeffs as $item => $value) {
+			if (in_array($item, $modules_shortname) && !array_key_exists($item, $this->data[$key])) {
+				$this->data[$key][$item] = array();
+				$this->data[$key][$item]["value"] = $value;
+				$this->data[$key][$item]["name"] = get_string("modulename", $item);
+			}
+		}
+	}
 
-    public function unset_debug(){
-        $this->data['debug'] = false;
-    }
+	// Get a coefficient $key for a given $type
+	public function get_coeff($key, $item) {
+		if (array_key_exists($item, $this->data[$key])) {
+			return $this->data[$key][$item]["value"];
+		}
+		return 0;
+	}
+	// Get a static coefficient for a $key
+	public function get_static_coeff($key) {
+		return $this->get_coeff("static_coeffs", $key);
+	}
+	// Get a dynamic coefficient for a $key
+	public function get_dynamic_coeff($key) {
+		return $this->get_coeff("dynamic_coeffs", $key);
+	}
+	
+	public function get_coeffs_grid($key) {
+		$columns = array("Nom du module", "Coefficient");
+		if(!isset($this->data[$key])){
+			return json_encode(
+				array(
+					"columns" => $columns,
+					"rows" => array()
+				)
+			);
+		}
 
-    // Update coefficients for a given $type (dynamic or static)
-    public function update_coeffs($key, $default_coeffs){
-        global $DB;
-        $modules_shortname = array_map(
-            function($module){
-                return $module->name;
-            },
-            $DB->get_records("modules")
-        );
-        $this->set_default_value($key, []);
-        foreach ($default_coeffs as $item => $value) {
-            if (in_array($item, $modules_shortname) && !array_key_exists($item, $this->data[$key])) {
-                $this->data[$key][$item] = array();
-                $this->data[$key][$item]["value"] = $value;
-                $this->data[$key][$item]["name"] = get_string('modulename', $item);
-            }
-        }
-    }
+		$rows = array();
+		$i=0;
+		foreach ($this->data[$key] as $coeff){
+			$rows[$i][$columns[0]]=$coeff["name"];
+			$rows[$i][$columns[1]]=$coeff["value"];
+			$i++;
+		}
 
-    // Get a coefficient $key for a given $type
-    public function get_coeff(string $key, string $item) {
-        if (array_key_exists($item, $this->data[$key])) {
-            return $this->data[$key][$item]["value"];
-        }
-        return 0;
-    }
-    // Get a static coefficient for a $key
-    public function get_static_coeff(string $key) {
-        return $this->get_coeff("digitalisation_coeffs", $key);
-    }
-    // Get a dynamic coefficient for a $key
-    public function get_dynamic_coeff(string $key) {
-        return $this->get_coeff("usage_coeffs", $key);
-    }
-    
-    public function get_coeffs_grid(string $key) {
-        $columns = array(
-            get_string('module_name', 'report_hybridmeter'),
-            get_string('coefficient', 'report_hybridmeter'),
-        );
-        
-        if(!isset($this->data[$key])){
-            return json_encode(
-                array(
-                    "columns" => $columns,
-                    "rows" => array(),
-                )
-            );
-        }
+		return array(
+			"columns" => $columns,
+			"rows" => $rows
+		);
+	}
 
-        $rows = array();
-        $i=0;
-        foreach ($this->data[$key] as $coeff){
-            $rows[$i][$columns[0]]=$coeff["name"];
-            $rows[$i][$columns[1]]=$coeff["value"];
-            $i++;
-        }
+	public function get_seuils_grid(){
+		$columns = array("Nom du seuil", "Valeur du seuil");
+		$rows = array(
+			array(
+				$columns[0] => "Seuil d'hybridation selon le niveau de digitalisation",
+				$columns[1] => $this->data["seuil_statique"]
+			),
+			array(
+				$columns[0] => "Seuil d'hybridation selon le niveau d'utilisation",
+				$columns[1] => $this->data["seuil_dynamique"]
+			),
+			array(
+				$columns[0] => "Nombre d'étudiants actifs minimum pour catégoriser un cours comme actif",
+				$columns[1] => $this->data["seuil_actif"]
+			)
+		);
 
-        return array(
-            "columns" => $columns,
-            "rows" => $rows,
-        );
-    }
+		return array(
+			"columns" => $columns,
+			"rows" => $rows
+		);
+	}
 
-    public function get_treshold_grid(){
-        $columns = array(get_string('treshold_name', 'report_hybridmeter'), get_string('treshold_value', 'report_hybridmeter'));
-        $rows = array(
-            array(
-                $columns[0] => get_string('digitalisation_treshold', 'report_hybridmeter'),
-                $columns[1] => $this->data["digitalisation_treshold"],
-            ),
-            array(
-                $columns[0] => get_string('usage_treshold', 'report_hybridmeter'),
-                $columns[1] => $this->data["usage_treshold"],
-            ),
-            array(
-                $columns[0] => get_string('active_treshold', 'report_hybridmeter'),
-                $columns[1] => $this->data["active_treshold"],
-            ),
-        );
+	// Get a dynamic coefficient far a $key
 
-        return array(
-            "columns" => $columns,
-            "rows" => $rows,
-        );
-    }
+	public function update_seuil_dynamique($value){
+		if(is_numeric($value))
+			$this->update_key("seuil_dynamique", $value);
+	}
 
-    // Get a dynamic coefficient far a $key
+	public function update_seuil_statique($value){
+		if(is_numeric($value))
+			$this->update_key("seuil_statique", $value);
+	}
 
-    public function update_usage_treshold($value){
-        if(is_numeric($value))
-            $this->update_key("usage_treshold", $value);
-    }
+	/* Enregistre les cours et catégories blacklistés descendants de $id_category au moment de l'appel de la fonction,
+	pour les garder en mémoire et restituer l'état au moment du whitelisting
+	
+	Le caractère persistant de la sauvegarde permet de rafraîchir la page et de garder la sauvegarde par exemple*/
 
-    public function update_digitalisation_treshold($value){
-        if(is_numeric($value))
-            $this->update_key("digitalisation_treshold", $value);
-    }
+	protected function save_blacklist_state_of_category($id_category) {
 
-    /* Stores the blacklisted courses and categories descending from $id_category when the function is called,
-     * to keep them in memory and restore the state at whitelisting time
-     *
-     * The persistent nature of the state allows you to refresh the page and keep the state for example
-     */
+		if(!isset($this->data["save_blacklist_courses"]) || !is_array($this->data["save_blacklist_courses"]))
+			$this->data["save_blacklist_courses"] = array();
 
-    private function add_id_to_blacklist_array(string $key, int $id) {
-        array_push($this->data[$key], strval($id));
-    }
+		if(!isset($this->data["save_blacklist_categories"]) || !is_array($this->data["save_blacklist_categories"]))
+			$this->data["save_blacklist_categories"] = array();
 
-    private function remove_id_from_blacklist_array(string $key, int $id) {
-        $index = array_search(strval($id), $this->data[$key]);
-        unset($this->data[$key][$id]);
-        $this->data[$key] = array_values($this->data[$key]);
-    }
+		$this->save_blacklist_state_of_category_rec($id_category);
 
-    protected function save_blacklist_state_of_category(int $id_category) {
-        if(!isset($this->data["save_blacklist_courses"]) || !is_array($this->data["save_blacklist_courses"]))
-            $this->data["save_blacklist_courses"] = array();
+		if(!in_array(strval($id_category), $this->data["save_blacklist_categories"]))
+			array_push($this->data["save_blacklist_categories"], strval($id_category));
 
-        if(!isset($this->data["save_blacklist_categories"]) || !is_array($this->data["save_blacklist_categories"]))
-            $this->data["save_blacklist_categories"] = array();
+		$this->save();
+	}
 
-        $this->save_blacklist_state_of_category_rec($id_category);
+	protected function save_blacklist_state_of_category_rec($id_category) {
+		$data_provider = data_provider::getInstance();
+		$ids_subcategories=$data_provider->get_children_categories_ids($id_category);
+		$ids_courses=$data_provider->get_children_courses_ids($id_category);
 
-        if(!in_array(strval($id_category), $this->data["save_blacklist_categories"]))
-            add_id_to_blacklist_array("save_blacklist_categories", $id_category);
+		foreach($ids_courses as $id_course){
+			if($this->get_blacklisted_state("courses", $id_course) == true && !in_array(strval($id_course),$this->data["save_blacklist_courses"]))
+				array_push($this->data["save_blacklist_courses"], strval($id_course));
+		}
 
-        $this->save();
-    }
+		foreach($ids_subcategories as $id_category){
+			$this->save_blacklist_state_of_category_rec($id_category);
+		}
+	}
 
-    protected function save_blacklist_state_of_category_rec(int $id_category) {
-        $data_provider = data_provider::get_instance();
-        $ids_subcategories=$data_provider->get_children_categories_ids($id_category);
-        $ids_courses=$data_provider->get_children_courses_ids($id_category);
+	protected function delete_blacklist_savelist_of_category($id_category) {
+		$data_provider = data_provider::getInstance();
+		$id_subcategories=$data_provider->get_children_categories_ids($id_category);
+		$id_courses=array_map(
+			function($id_course){
+				return strval($id_course);
+			},
+			$data_provider->get_children_courses_ids($id_category)
+		);
 
-        foreach($ids_courses as $id_course){
-            $course_is_not_in_save_blacklist = (!in_array(strval($id_course),$this->data["save_blacklist_courses"]));
-            if($this->get_blacklisted_state("courses", $id_course) && $course_is_not_in_save_blacklist)
-                add_id_to_blacklist_array("save_blacklist_courses", $id_course);
-        }
+		$this->data["save_blacklist_courses"] = array_diff($this->data["save_blacklist_courses"], $id_courses);
 
-        foreach($ids_subcategories as $id_category){
-            $this->save_blacklist_state_of_category_rec($id_category);
-        }
-    }
+		if(in_array(strval($id_category), $this->data["save_blacklist_categories"])){
+			$category_index = array_search(strval($id_category), $this->data["save_blacklist_categories"]);
+			unset($this->data["save_blacklist_categories"][$category_index]);
+			$this->data["save_blacklist_categories"] = array_values($this->data["save_blacklist_categories"]);
+		}
 
-    protected function delete_blacklist_savelist_of_category(int $id_category) {
-        $data_provider = data_provider::get_instance();
-        $id_subcategories=$data_provider->get_children_categories_ids($id_category);
-        $id_courses=array_map(
-            function($id_course){
-                return strval($id_course);
-            },
-            $data_provider->get_children_courses_ids($id_category)
-        );
+		foreach($id_subcategories as $id_category){
+			$this->delete_blacklist_savelist_of_category($id_category);
+		}
 
-        $this->data["save_blacklist_courses"] = array_diff($this->data["save_blacklist_courses"], $id_courses);
+		$this->save();
+	}
 
-        if(in_array(strval($id_category), $this->data["save_blacklist_categories"])){
-            remove_id_from_blacklist_array("save_blacklist_categories", $id_category);
-        }
+	/* Cette fonction rétabli l'état d'avant le blacklisting de la catégorie $id_category à partir
+	des données de sauvegarde, puis supprime ces dites données de sauvegarde, d'où le terme de "consommer".
+	
+	$id_category ne doit pas forcément être le même $id_category que pour enregistrer les données, ça peut
+	tout autant être un enfant par exemple*/
 
-        foreach($id_subcategories as $id_category){
-            $this->delete_blacklist_savelist_of_category($id_category);
-        }
+	protected function spend_blacklist_savelist_of_category($id_category) {
+		$this->spend_blacklist_savelist_of_category_rec($id_category);
+		$this->delete_blacklist_savelist_of_category($id_category);
+		$this->save();
+	}
 
-        $this->save();
-    }
+	protected function spend_blacklist_savelist_of_category_rec($id_category) {
+		$data_provider = data_provider::getInstance();
+		$id_subcategories=$data_provider->get_children_categories_ids($id_category);
+		$id_courses=$data_provider->get_children_courses_ids($id_category);
 
-    /* This function restores the pre-blacklisting state of the $id_category from
-     * backup data, and then deletes the backup data, hence the term "consume".
-     *
-     * $id_category does not have to be the same $id_category as the one used to store the data,
-     * it can be a child for example.
-     */
+		$array_categories = &$this->data["blacklisted_categories"];
+		$array_courses = &$this->data["blacklisted_courses"];
 
-    protected function spend_blacklist_savelist_of_category(int $id_category) {
-        $this->spend_blacklist_savelist_of_category_rec($id_category);
-        $this->delete_blacklist_savelist_of_category($id_category);
-        $this->save();
-    }
+		foreach($id_courses as $id_course) {
+			if(!in_array($id_course, $this->data["save_blacklist_courses"])){
+				unset($array_courses[$id_course]);
+			}
+		}
 
-    protected function spend_blacklist_savelist_of_category_rec(int $id_category) {
-        $data_provider = data_provider::get_instance();
-        $id_subcategories=$data_provider->get_children_categories_ids($id_category);
-        $id_courses=$data_provider->get_children_courses_ids($id_category);
+		foreach($id_subcategories as $id_category) {
+			if(!in_array($id_category, $this->data["save_blacklist_categories"])){
+				unset($array_categories[$id_category]);
+			}
+			$this->spend_blacklist_savelist_of_category_rec($id_category);
+		}
+	}
 
-        foreach($id_courses as $id_course) {
-            if(!in_array($id_course, $this->data["save_blacklist_courses"])){
-                remove_id_from_blacklist_array("blacklisted_courses", $id_course);
-            }
-        }
+	public function get_blacklisted_state($type, $id){
+		$array_key = "blacklisted_".$type;
 
-        foreach($id_subcategories as $id_category) {
-            if(!in_array($id_category, $this->data["save_blacklist_categories"])){
-                remove_id_from_blacklist_array("blacklisted_categories", $id_category);
-            }
-            $this->spend_blacklist_savelist_of_category_rec($id_category);
-        }
-    }
+		if(!isset($this->data[$array_key][$id]))
+			return false;
 
-    public function get_blacklisted_state(string $type, int $id): bool {
-        $array_key = "blacklisted_".$type;
+		return $this->data[$array_key][$id];
+	}
 
-        if(!isset($this->data[$array_key][$id]))
-            return false;
+	// Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
+	public function set_blacklisted($type, $id, $value, $rec=0) {
+		$data_provider = data_provider::getInstance();
 
-        return $this->data[$array_key][$id];
-    }
+		$array_key = "blacklisted_".$type;
+		if (!array_key_exists($array_key, $this->data)) {
+			$this->data[$array_key] = [];
+		}
+		$array = &$this->data[$array_key];
 
-    // Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
-    public function set_blacklisted(string $type, int $id, $value, bool $rec = false) {
-        $data_provider = data_provider::get_instance();
+		if($value == true) {
+			$array[$id] = true;
+		}
+		else {
+			unset($array[$id]);
+		}
 
-        $array_key = "blacklisted_".$type;
-        if (!array_key_exists($array_key, $this->data)) {
-            $this->data[$array_key] = [];
-        }
-        $array = &$this->data[$array_key];
+		if($type=="categories"){
+			$id_categories=$data_provider->get_children_categories_ids($id);
+			$id_courses=$data_provider->get_children_courses_ids($id);
 
-        if($value == true) {
-            if(!in_array(strval($id), $this->data["save_blacklist_categories"]))
-                array_push($this->data[$array_key], strval($id));
-        }
-        else {
-            $index = array_search(strval($id), $this->data[$array_key]);
-            unset($this->data[$array_key][$index]);
-            $this->data[$array_key] = array_values($this->data[$array_key]);
-        }
+			if($value == false){
+				$this->spend_blacklist_savelist_of_category($id);
+			}
+			else{
+				if(!$rec)
+					$this->save_blacklist_state_of_category($id);
 
-        if($type=="categories"){
-            $id_categories=$data_provider->get_children_categories_ids($id);
-            $id_courses=$data_provider->get_children_courses_ids($id);
+				foreach($id_categories as $id_cat){
+					$this->set_blacklisted("categories", $id_cat, true, 1);
+				}
+				foreach($id_courses as $id_course){
+					$this->set_blacklisted("courses", $id_course, true, 1);
+				}
+			}
+		}
+		
+		if(!$rec)
+			$this->save();
+	}
 
-            if($value == false){
-                $this->spend_blacklist_savelist_of_category($id);
-            }
-            else{
-                if(!$rec)
-                    $this->save_blacklist_state_of_category($id);
+	public function set_as_running($timestamp) {
+		$this->update_key("running", $timestamp);
+	}
 
-                foreach($id_categories as $id_cat){
-                    $this->set_blacklisted("categories", $id_cat, true, 1);
-                }
-                foreach($id_courses as $id_course){
-                    $this->set_blacklisted("courses", $id_course, true, 1);
-                }
-            }
-        }
-        
-        if(!$rec)
-            $this->save();
-    }
+	public function unset_as_running() {
+		$this->update_key("running", NON_RUNNING);
+	}
 
-    public function set_as_running(DateTime $datetime) {
-        $this->update_key("running", $datetime->getTimestamp());
-    }
+	public function get_running(){
+		return $this->data['running'];
+	}
 
-    public function unset_as_running() {
-        $this->update_key("running", REPORT_HYBRIDMETER_NON_RUNNING);
-    }
+	// Get begin date in DateTime format
+	public function get_begin_date() {
+		$output = new \DateTime();
+		$output->setTimestamp($this->data['begin_date']);
+		return $output;
+	}
 
-    public function get_running(): int {
-        return $this->data['running'];
-    }
+	// Get end date in DateTime format
+	public function get_end_date(){
+		$output = new \DateTime();
+		$output->setTimestamp($this->data['end_date']);
+		return $output;
+	}
 
-    // Get begin date in DateTime format
-    public function get_begin_date(): DateTime {
-        $output = new DateTime();
-        $output->setTimestamp($this->data['begin_date']);
-        return $output;
-    }
+	public function get_begin_timestamp(){
+		return $this->get_begin_date()->getTimestamp();
+	}
 
-    // Get end date in DateTime format
-    public function get_end_date(): DateTime{
-        $output = new DateTime();
-        $output->setTimestamp($this->data['end_date']);
-        return $output;
-    }
+	public function get_end_timestamp(){
+		return $this->get_end_date()->getTimestamp();
+	}
+	
+	public function get_student_role() {
+		return $this->data["student_role"];
+	}
 
-    public function get_begin_timestamp(): int {
-        return $this->get_begin_date()->getTimestamp();
-    }
+	// Returns raw configuration data
+	public function get_data() {
+		return $this->data;
+	}
 
-    public function get_end_timestamp(): int {
-        return $this->get_end_date()->getTimestamp();
-    }
+	public function has_scheduled_calculation(){
+		return $this->data["has_scheduled_calculation"];
+	}
 
-    public function get_student_archetype(): string {
-        return $this->data["student_archetype"];
-    }
+	public function get_scheduled_date(){
+		return $this->data["scheduled_date"];
+	}
 
-    // Returns raw configuration data
-    public function get_data(): array {
-        return $this->data;
-    }
+	public function unschedule_calculation(){
+		data_provider::getInstance()->clear_adhoc_tasks();
+		$this->update_key("has_scheduled_calculation", 0);
+	}
 
-    public function has_scheduled_calculation(): bool {
-        return $this->data["has_scheduled_calculation"];
-    }
-
-    public function get_scheduled_date(){
-        return $this->data["scheduled_date"];
-    }
-
-    public function unschedule_calculation(){
-        data_provider::get_instance()->clear_adhoc_tasks();
-        $this->update_key("has_scheduled_calculation", 0);
-    }
-
-    public function schedule_calculation($timestamp){
-        data_provider::get_instance()->clear_adhoc_tasks();
-        $this->update([
-            "scheduled_date" => $timestamp,
-            "has_scheduled_calculation" => 1,
-        ]);
-        data_provider::get_instance()->schedule_adhoc_task($timestamp);
-    }
+	public function schedule_calculation($timestamp){
+		data_provider::getInstance()->clear_adhoc_tasks();
+		$this->update([
+			"scheduled_date" => $timestamp,
+			"has_scheduled_calculation" => 1,
+		]);
+		data_provider::getInstance()->schedule_adhoc_task($timestamp);
+	}
 
 }
