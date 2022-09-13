@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="blacklistmanager">
         <div v-for="category in categories" :key="category.id">
             <Category :category_data="category" :expanded="false"></Category>
         </div>
@@ -13,7 +13,7 @@ import Category from './Category.vue'
 
 export default {
     setup() {
-        const { post } = utils();
+        const { post, updateBlacklist } = utils();
 
         const categories = ref([])
 
@@ -30,9 +30,12 @@ export default {
         return {
             categories,
             loadCategories,
+            updateBlacklist,
         }
     },
     created() {
+        console.log("hohohooooo")
+        this.updateBlacklist()
         this.loadCategories()
     },
     components : { Category },

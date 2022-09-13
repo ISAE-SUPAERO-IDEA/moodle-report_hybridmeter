@@ -217,6 +217,16 @@ class configurator {
      * The persistent nature of the state allows you to refresh the page and keep the state for example
      */
 
+    private function add_id_to_blacklist_array(string $key, int $id) {
+        array_push($this->data[$key], strval($id));
+    }
+
+    private function remove_id_from_blacklist_array(string $key, int $id) {
+        $index = array_search(strval($id), $this->data[$key]);
+        unset($this->data[$key][$id]);
+        $this->data[$key] = array_values($this->data[$key]);
+    }
+
     protected function save_blacklist_state_of_category(int $id_category) {
         if(!isset($this->data["save_blacklist_courses"]) || !is_array($this->data["save_blacklist_courses"]))
             $this->data["save_blacklist_courses"] = array();
@@ -227,7 +237,7 @@ class configurator {
         $this->save_blacklist_state_of_category_rec($id_category);
 
         if(!in_array(strval($id_category), $this->data["save_blacklist_categories"]))
-            array_push($this->data["save_blacklist_categories"], strval($id_category));
+            add_id_to_blacklist_array("save_blacklist_categories", $id_category);
 
         $this->save();
     }
@@ -240,7 +250,7 @@ class configurator {
         foreach($ids_courses as $id_course){
             $course_is_not_in_save_blacklist = (!in_array(strval($id_course),$this->data["save_blacklist_courses"]));
             if($this->get_blacklisted_state("courses", $id_course) && $course_is_not_in_save_blacklist)
-                array_push($this->data["save_blacklist_courses"], strval($id_course));
+                add_id_to_blacklist_array("save_blacklist_courses", $id_course);
         }
 
         foreach($ids_subcategories as $id_category){
@@ -261,9 +271,7 @@ class configurator {
         $this->data["save_blacklist_courses"] = array_diff($this->data["save_blacklist_courses"], $id_courses);
 
         if(in_array(strval($id_category), $this->data["save_blacklist_categories"])){
-            $category_index = array_search(strval($id_category), $this->data["save_blacklist_categories"]);
-            unset($this->data["save_blacklist_categories"][$category_index]);
-            $this->data["save_blacklist_categories"] = array_values($this->data["save_blacklist_categories"]);
+            remove_id_from_blacklist_array("save_blacklist_categories", $id_category);
         }
 
         foreach($id_subcategories as $id_category){
@@ -291,18 +299,15 @@ class configurator {
         $id_subcategories=$data_provider->get_children_categories_ids($id_category);
         $id_courses=$data_provider->get_children_courses_ids($id_category);
 
-        $array_categories = &$this->data["blacklisted_categories"];
-        $array_courses = &$this->data["blacklisted_courses"];
-
         foreach($id_courses as $id_course) {
             if(!in_array($id_course, $this->data["save_blacklist_courses"])){
-                unset($array_courses[$id_course]);
+                remove_id_from_blacklist_array("blacklisted_courses", $id_course);
             }
         }
 
         foreach($id_subcategories as $id_category) {
             if(!in_array($id_category, $this->data["save_blacklist_categories"])){
-                unset($array_categories[$id_category]);
+                remove_id_from_blacklist_array("blacklisted_categories", $id_category);
             }
             $this->spend_blacklist_savelist_of_category_rec($id_category);
         }
@@ -328,10 +333,13 @@ class configurator {
         $array = &$this->data[$array_key];
 
         if($value == true) {
-            $array[$id] = true;
+            if(!in_array(strval($id), $this->data["save_blacklist_categories"]))
+                array_push($this->data[$array_key], strval($id));
         }
         else {
-            unset($array[$id]);
+            $index = array_search(strval($id), $this->data[$array_key]);
+            unset($this->data[$array_key][$index]);
+            $this->data[$array_key] = array_values($this->data[$array_key]);
         }
 
         if($type=="categories"){
