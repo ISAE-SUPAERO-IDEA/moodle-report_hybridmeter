@@ -13,7 +13,9 @@ export default new Vuex.Store({
         pageLoadingStatus : LoadingStatus.NotLoading,
         programmedDates : undefined,
         blacklistData : undefined,
-        scheduledData : undefined,
+        scheduledTime : undefined,
+        debug : undefined,
+        student_archetype : undefined,
     },
     getters: {
         isSomethingStillLoading: state => {
@@ -52,17 +54,29 @@ export default new Vuex.Store({
                 blacklisted_categories : config.blacklisted_categories,
                 save_blacklist_courses : config.save_blacklist_courses,
                 save_blacklist_categories : config.save_blacklist_categories,
-            }
+            };
+
+            state.scheduledTime = {
+                scheduled : ((config.has_scheduled_calculation == 0) ? false : true),
+                scheduled_timestamp : config.scheduled_date,
+            };
+
+            state.debug = config.debug;
+
+            state.student_archetype = config.student_archetype;
         },
         UPDATE_BLACKLIST(state, blacklistData) {
             state.blacklistData = blacklistData
         },
-        UPDATE_SCHEDULED_DATA(state, scheduledData) {
-            state.scheduledData = scheduledData
+        UPDATE_SCHEDULED_DATA(state, scheduledTime) {
+            state.scheduledTime = scheduledTime
         },
         UPDATE_PROGRAMMED_DATES(state, programmedDates) {
             state.programmedDates = programmedDates
-        }
+        },
+        UPDATE_STUDENT_ARCHETYPE(state, student_archetype) {
+            state.student_archetype = student_archetype
+        },
     },
     actions: {
         beginLoading(context) {
@@ -96,12 +110,12 @@ export default new Vuex.Store({
             };
             context.commit('UPDATE_BLACKLIST', blacklistData);
         },
-        updateScheduledDataFromConfig(context, config) {
-            let scheduledData = {
-                has_scheduled_calculation : config.has_scheduled_calculation,
-                scheduled_date : config.scheduled_date,
+        updateScheduledTimeFromConfig(context, config) {
+            let scheduledTime = {
+                scheduled : ((config.has_scheduled_calculation == 0) ? false : true),
+                scheduled_timestamp : config.scheduled_date,
             };
-            context.commit('UPDATE_SCHEDULED_DATA', scheduledData);
+            context.commit('UPDATE_SCHEDULED_DATA', scheduledTime);
         },
         updateProgrammedDatesFromConfig(context, config) {
             let programmedDates = {
@@ -109,6 +123,9 @@ export default new Vuex.Store({
                 end_date : config.end_date,
             };
             context.commit('UPDATE_PROGRAMMED_DATES', programmedDates);
+        },
+        updateStudentArchetype(context, config) {
+            context.commit('UPDATE_STUDENT_ARCHETYPE', config.student_archetype);
         },
     }
 })

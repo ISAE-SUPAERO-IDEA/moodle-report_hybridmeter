@@ -1,13 +1,15 @@
 const path = require('path');
+const webpack = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader')
 
 module.exports = {
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     entry: "./src/main.js",
     devtool : 'source-map',
     output: {
         path: path.resolve(__dirname, "../amd/build"),
-        filename: 'test.min.js',
-        chunkFilename: "[id].test.min.js?v=[hash]",
+        filename: 'management.min.js',
+        chunkFilename: "[id].management.min.js?v=[hash]",
         libraryTarget: 'amd',
     },
     module: {
@@ -69,6 +71,10 @@ module.exports = {
         hints: false
     },
     plugins: [
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new webpack.DefinePlugin({
+            __VUE_OPTIONS_API__ : true,
+            __VUE_PROD_DEVTOOLS__ : false,
+        })
     ],
 };

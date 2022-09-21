@@ -1,14 +1,14 @@
 <template>
-    <div class="category">
-        <i :title="title_category(category)" class="icon fa fa-fw " :class="class_eye_blacklist()" @click="manage_category_blacklist()" ></i>
+    <div class="hybrid-category">
+        <i :title="title_category()" class="icon fa fa-fw " :class="class_eye_blacklist()" @click="manage_category_blacklist()" ></i>
         <i class="icon fa fa-fw " :class="category_caret()" @click="expanded = !expanded"></i>
-        <span style="font-weight: bold">{{category_data.name}}</span>
+        <span style="font-weight: bold">{{category_name}}</span>
         <div v-if="expanded">
-            <div v-for="category in tree.categories" :key="category.id" class="category_item">
-                <category :category_data="category"></category>
+            <div v-for="category in tree.categories" :key="category.id">
+                <category :category_id="category.id" :category_name="category.name" :strings="strings"></category>
             </div>
-            <div v-for="course in tree.courses" :key="course.id" class="category_item" >
-                <i :title="title_course(course)" class="icon fa fa-fw " :class="class_eye_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+            <div v-for="course in tree.courses" :key="course.id" class="hybrid-course" >
+                <i :title="title_course(course)" class="icon fa fa-fw " :class="course_class_eye_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
                 <a :title="strings['diagnostic_course']" :href="'tests.php?task=course&id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
                 {{course.fullname}}
             </div>
@@ -17,116 +17,109 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import utils from '../../utils.js'
 import { sprintf } from 'sprintf-js'
 
 export default {
     setup(props) {
-        const { post, getStrings, updateBlacklist } = utils();
+        const { get, post, updateBlacklist } = utils();
         
+        const strings = ref(props.strings);
+
         const tree = ref({
             categories : [],
             courses : [],
         })
 
-        const strings = ref([])
+        const expanded = ref(false)
 
         const store = useStore()
 
         const blacklisted = ref(false)
 
-        const loadStrings = () => {
-            let keys = ["blacklist", "whitelist", "x_category", "x_course", "diagnostic_course"];
-            return getStrings(keys).then(output => strings.value = output);
-        }
-
         const loadedChildren = ref(false)
 
-        const loadChildren = () => {
-            let data = new FormData();
-            data.append('task', 'category_children');
-            data.append('id', props.category_data.id);
+        watch(props, data => {
+            strings.value = data.strings;
+        });
 
-            return post('blacklist_tree_handler', data).then(data => {
-                console.log(data)
-                console.log("eh oh grossss "+props.category_data.id)
+        const loadChildren = () => {
+            let data = [
+                { task : 'category_children' }, 
+                { id : props.category_id },
+            ];
+
+            return get('blacklist_tree_handler', data).then(data => {
                 tree.value = data;
                 loadedChildren.value = true
             });
         }
 
-        const blacklistedCategory = (blacklistData, category) => {
+        const isBlacklistedCategory = (blacklistData, category) => {
             if (blacklistData == undefined) {
                 throw new Error('blacklist data in unavailable');
             }
             
-            let x = Object.keys(blacklistData.blacklisted_categories).includes(category);
-            let y = blacklistData.save_blacklist_categories.includes(category)
-
-            return (x && y)
+            return (Object.keys(blacklistData.blacklisted_categories).includes(category))
         }
 
-        const blacklistedCourse = (blacklistData, course) => {
+        const isBlacklistedCourse = (blacklistData, course) => {
             if (blacklistData == undefined) {
                 throw new Error('blacklist data in unavailable');
             }
             
-            let x = Object.keys(blacklistData.blacklisted_courses).includes(course);
-            let y = blacklistData.save_blacklist_courses.includes(course);
-
-            console.log((x && y));
-
-            return (x && y);
+            return (Object.keys(blacklistData.blacklisted_courses).includes(course));
         }
 
         const updateDisplayedBlacklist = blacklistData => {
             if(blacklistData != undefined) {
-                blacklisted.value = blacklistedCategory(blacklistData, props.category_data.id)
+                blacklisted.value = isBlacklistedCategory(blacklistData, props.category_id)
                 
                 let courses = tree.value.courses
                 for (let i = 0; i<courses.length; i++) {
-                    courses[i].blacklisted = blacklistedCourse(blacklistData, courses[i].id);
+                    courses[i].blacklisted = isBlacklistedCourse(blacklistData, courses[i].id);
                 }
             }
         }
 
         const loadBlacklist = () => {
-            loadChildren().then(() => {updateDisplayedBlacklist(store.state.blacklistData); console.log("wsh ?");})
+            loadChildren().then(updateDisplayedBlacklist(store.state.blacklistData))
         }
 
-        function manage_element_blacklist(type, element) {
-            var value = !element.blacklisted;
+        function manage_element_blacklist(type, value, id) {
             var data = new FormData();
             data.append('task', 'manage_blacklist');
-            data.append('id', element.id);
+            data.append('id', id);
             data.append('type', type);
             data.append('value', value);
             return post('blacklist_tree_handler', data)
             .then(updateBlacklist())
         }
 
+        const manage_course_blacklist = (course) => {
+            manage_element_blacklist("courses", !course.blacklisted, course.id)
+        }
+
         store.watch(state => state.blacklistData, blacklistData => {
-            console.log("yes bébé 🤙 ça marche ? 👊 "+props.category_data.id)
             updateDisplayedBlacklist(blacklistData);
         })
 
-
-        const manage_course_blacklist = (course) => {
-            manage_element_blacklist("courses", course)
-        }
-
         const manage_category_blacklist = () => {
-            manage_element_blacklist("categories", props.category_data.id)
+            manage_element_blacklist("categories", !blacklisted.value, props.category_id)
         }
 
         const class_eye_blacklist = () => {
             return (blacklisted.value ? "fa-eye-slash" : "fa-eye")
         }
 
+        const course_class_eye_blacklist = (course) => {
+            return (course.blacklisted ? "fa-eye-slash" : "fa-eye")
+        }
+
         const category_caret = () => {
-            return (props.expanded ? "fa-caret-down" : "fa-caret-right")
+            return (expanded.value ? "fa-caret-down" : "fa-caret-right")
         }
 
         const title_category = () => {
@@ -140,39 +133,35 @@ export default {
         }
 
         return {
-            post,
-            getStrings,
-            updateBlacklist,
-            blacklisted,
-            tree,
             strings,
-            store,
-            loadStrings,
+            tree,
+            expanded,
+            blacklisted,
             loadedChildren,
             loadChildren,
             loadBlacklist,
-            blacklistedCategory,
-            blacklistedCourse,
-            updateDisplayedBlacklist,
-            manage_element_blacklist,
             manage_course_blacklist,
             manage_category_blacklist,
             class_eye_blacklist,
+            course_class_eye_blacklist,
             category_caret,
             title_category,
             title_course,
         }
     },
     props : {
-        category_data : {
-            required : true
+        category_id : {
+            required : true,
         },
-        expanded : {
-            default : false,
+        category_name : {
+            required : true,
+            type : String,
         },
+        strings : {
+            required : true,
+        }
     },
     created() {
-        this.loadStrings();
         this.loadBlacklist();
     },
     name : "Category",

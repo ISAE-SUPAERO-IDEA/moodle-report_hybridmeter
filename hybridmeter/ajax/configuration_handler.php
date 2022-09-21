@@ -1,5 +1,5 @@
 <?php
-    
+//TODO : Standardize APIs response
 /*
 AJAX endpoint to manage HybridMeter configuration
 
@@ -20,6 +20,8 @@ $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
 $configurator = configurator::get_instance();
+$data_provider = configurator::get_instance();
+$output = "";
 
 // Writing
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -50,22 +52,34 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             "debug" => $debug,
         ]);
     }
-} else  {
+} else if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
-// Reading
+    // Reading
     if ($task == "get_usage_coeffs"){
-        $output = json_encode($configurator->get_coeffs_grid("usage_coeffs"));
+        $output = $configurator->get_coeffs_grid("usage_coeffs");
     }
     else if ($task == "get_digitalisation_coeffs"){
-        $output = json_encode($configurator->get_coeffs_grid("digitalisation_coeffs"));
+        $output = $configurator->get_coeffs_grid("digitalisation_coeffs");
+    }
+    else if ($task == "get_all_coeffs") {
+        $output = $configurator->get_all_coeffs_rows();
     }
     else if ($task == "get_seuils"){
-        $output = json_encode($configurator->get_treshold_grid());
+        $output = $configurator->get_treshold_grid();
+    }
+    else if ($task == "get_tresholds"){
+        $output = $configurator->get_tresholds_rows();
     }
     else{
-        $output = json_encode($configurator->get_data());
+        $output = $configurator->get_data();
     }
-
-    echo $output;
 }
+else {
+    $output = array(
+        "error" => true,
+        "message" => "GET method not supported, please retry with a POST request",
+    );
+}
+
+echo json_encode($output);

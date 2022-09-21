@@ -1,5 +1,5 @@
 <?php 
-
+//TODO : Standardize APIs response
 /*
 AJAX endpoint to manage HybridMeter blacklist configuration
 
@@ -27,6 +27,53 @@ $data_provider = data_provider::get_instance();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $task  = required_param('task', PARAM_ALPHAEXT);
+    // manage blacklist of a category or course
+    if ($task == "manage_blacklist") {
+        $type = required_param('type', PARAM_ALPHAEXT);
+        $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
+        $id = required_param('id', PARAM_INT);
+        $configurator->set_blacklisted($type, $id, $value);
+
+        //Debugging feature, set debug value to 1 in configurations to display
+        logger::log("New manage_blacklist post request");
+        logger::log(array("value" => $value, "type" => $type, "id" => $id));
+
+        $output = [ "blacklisted" => $value ];
+    }
+    else{
+        $output = array(
+            "error" => true,
+            "message" => "Unknown task",
+        );
+    }
+}
+else if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
+
+    if($task == "category_children") {
+        $id = required_param('id', PARAM_INT);
+        $categories = $data_provider->get_children_categories_ordered($id);
+
+        //In the case where the category id is 0, the child course that corresponds to the site is not returned
+
+        if($id != 0){
+            $courses = $data_provider->get_children_courses_ordered($id);
+        }
+        else{
+            $courses = array();
+        }
+        
+        $output = [ 
+            "categories" => $categories,
+            "courses" => $courses,
+        ];
+    }
+    else {
+        $output = array(
+            "error" => true,
+            "message" => "Unknown task",
+        );
+    }
 }
 else {
     $task = "get";
@@ -35,44 +82,7 @@ else {
         "message" => "GET method not supported, please retry with a POST request",
     );
 }
-// List category children
-if ($task == "category_children") {
-    $id = required_param('id', PARAM_INT);
-    $categories = $data_provider->get_children_categories_ordered($id);
 
-    //In the case where the category id is 0, the child course that corresponds to the site is not returned
-
-    if($id != 0){
-        $courses = $data_provider->get_children_courses_ordered($id);
-    }
-    else{
-        $courses = array();
-    }
-    
-    $output = [ 
-        "categories" => $categories,
-        "courses" => $courses,
-    ];
-}
-// manage blacklist of a category or course
-else if ($task == "manage_blacklist") {
-    $type = required_param('type', PARAM_ALPHAEXT);
-    $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
-    $id = required_param('id', PARAM_INT);
-    $configurator->set_blacklisted($type, $id, $value);
-
-    //Debugging feature, set debug value to 1 in configurations to display
-    logger::log("New manage_blacklist post request");
-    logger::log(array("value" => $value, "type" => $type, "id" => $id));
-
-    $output = [ "blacklisted" => $value ];
-}
-else{
-    $output = array(
-        "error" => true,
-        "message" => "Tâche inconnue",
-    );
-}
 
 //Return response as JSON
 

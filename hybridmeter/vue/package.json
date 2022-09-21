@@ -4,8 +4,9 @@
   "description": "Hybridmeter vue components",
   "main": "main.js",
   "scripts": {
-    "dev": "npx webpack build --mode development --progress",
+    "dev": "npx sass --no-source-map ./src/assets/style/management.scss ../styles.css; npx webpack build --mode development --progress",
     "build": "npx webpack build --mode production --progress",
+    "sass" : "npx sass --no-source-map ./src/assets/style/management.scss ../styles.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "IDEA ISAE-Supaero",
@@ -15,6 +16,7 @@
     "nprogress": "^0.2.0",
     "sprintf-js": "^1.1.2",
     "vue": "^3.2.37",
+    "vue3-table-lite": "^1.2.4",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
@@ -25,6 +27,7 @@
     "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
     "file-loader": "^6.2.0",
+    "sass": "^1.54.9",
     "vue-loader": "^17.0.0",
     "vue-style-loader": "^4.1.3",
     "vue-template-compiler": "^2.7.10",

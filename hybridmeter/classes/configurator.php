@@ -146,6 +146,50 @@ class configurator {
     public function get_dynamic_coeff(string $key) {
         return $this->get_coeff("usage_coeffs", $key);
     }
+
+    public function get_all_coeffs_rows(): array {
+        $keys = array_keys($this->data["usage_coeffs"]);
+        $rows = array();
+
+        $i=0;
+
+        foreach ($keys as $key) {
+            $i++;
+            $row = array(
+                "name" => $key,
+                "usage_coeff" => $this->data["usage_coeffs"][$key]["value"],
+                "digitalisation_coeff" => $this->data["digitalisation_coeffs"][$key]["value"],
+            );
+            array_push($rows, $row);
+        }
+        
+        $output = array (
+            "rows" => $rows,
+            "count" => count($rows),
+        );
+
+        return $output;
+    }
+
+    public function get_tresholds_rows(): array {
+        $columns = ["name", "value"];
+        $rows = array(
+            array(
+                $columns[0] => get_string('digitalisation_treshold', 'report_hybridmeter'),
+                $columns[1] => $this->data["digitalisation_treshold"],
+            ),
+            array(
+                $columns[0] => get_string('usage_treshold', 'report_hybridmeter'),
+                $columns[1] => $this->data["usage_treshold"],
+            ),
+            array(
+                $columns[0] => get_string('active_treshold', 'report_hybridmeter'),
+                $columns[1] => $this->data["active_treshold"],
+            ),
+        );
+
+        return array("rows" => $rows, "count" => count($rows));
+    }
     
     public function get_coeffs_grid(string $key) {
         $columns = array(

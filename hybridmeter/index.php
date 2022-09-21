@@ -60,6 +60,7 @@ else{
     $formatted_date = REPORT_HYBRIDMETER_NA;
     $generaldata = null;
     $time = null;
+    $intervalle_format = null;
 }
 
 $task = optional_param('task', array(), PARAM_TEXT);

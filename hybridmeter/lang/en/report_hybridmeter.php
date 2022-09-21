@@ -59,35 +59,50 @@ $string['inconsistent_nd'] = "ND inconsistent";
 $string['inconsistent_nu'] = "NU inconsistent";
 $string['inconsistent_blacklist'] = "Blacklist inconsistent";
 
-// In configurator.php
+// In management page
 
 $string['module_name'] = "Module name";
 $string['coefficient'] = "Coefficient";
+$string['usage_coeff'] = "Usage coefficient";
+$string['digitalisation_coeff'] = "Digitalisation coefficient";
 
 $string['treshold_name'] = "Treshold name";
+$string['treshold'] = "Treshold";
 $string['treshold_value'] = "Treshold value";
 
-$string['digitalisation_treshold'] = "Hybridization threshold according to the level of digitization";
-$string['usage_treshold'] = "Hybridization threshold according to the level of use";
+$string['digitalisation_treshold'] = "Hybridization threshold according to the level of digitalisation";
+$string['usage_treshold'] = "Hybridization threshold according to the level of usage";
 $string['active_treshold'] = "Minimum number of active students to categorise a course as active";
-
-// In management page
 
 $string['boxokstring'] = "The capture period has been successfully changed";
 $string['boxnotokstring'] = "The period change did not work";
 
 $string['blacklist_title'] = "Selection of courses/categories";
-$string['period_title'] = "Paramétrage de la période de la capture";
-$string['next_schedule_title'] = "Prochain lancement";
-$string['additional_config_title'] = "Configuration additionnelle";
+$string['period_title'] = "Capture period configuration";
+$string['next_schedule_title'] = "Schedule next calculation";
+$string['additional_config_title'] = "Additional configuration";
 $string['coeff_value_title'] = "Value of coefficients";
 $string['treshold_value_title'] = "Threshold values";
-
 $string['coeff_digitalisation_title'] = "Digitalisation coefficients";
 $string['coeff_using_title'] = "Usage coefficients";
 
+$string['error_occured'] = "An error occured, please refresh the page and try again. Error code : %s";
+
 $string['begin_date'] = "Beginning date";
 $string['end_date'] = "Ending date";
+$string['success_program'] = "Capture period successfully changed";
+
+$string['scheduled_date'] = "Scheduled date";
+$string['scheduled_time'] = "Scheduled time";
+$string['tonight'] = "Tonight";
+$string['this_weekend'] = "This week-end";
+$string['schedule_submit'] = "Schedule";
+$string['unschedule_submit'] = "Unschedule";
+$string['success_schedule'] = "Calculation scheduled with success";
+$string['success_unschedule'] = "Calculation unscheduled with success";
+
+$string['student_archetype'] = "Student role archetype";
+$string['student_archetype_updated'] = "L'archetype du rôle étudiant a bien été mis à jour";
 
 $string['blacklist'] = "Blacklist";
 $string['whitelist'] = "Whitelist";

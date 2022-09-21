@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import store from './store.js'
 import Management from './components/Management.vue'
-import './assets/style/management.css';
+//import './assets/style/management.css';
 
 export const init = (www_root, ajax_url, plugin_frankenstyle) => {
     var app = createApp(Management);

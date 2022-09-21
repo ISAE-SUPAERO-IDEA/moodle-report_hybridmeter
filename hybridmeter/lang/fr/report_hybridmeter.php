@@ -59,19 +59,20 @@ $string['inconsistent_nd'] = "ND incohérent";
 $string['inconsistent_nu'] = "NU incohérent";
 $string['inconsistent_blacklist'] = "Blacklist incohérent";
 
-// Dans configurator.php
+// Sur la page de management
 
 $string['module_name'] = "Nom du module";
 $string['coefficient'] = "Coefficient";
+$string['usage_coeff'] = "Coefficient d'usage";
+$string['digitalisation_coeff'] = "Coefficient de digitalisation";
 
 $string['treshold_name'] = "Nom du seuil";
+$string['treshold'] = "Seuil";
 $string['treshold_value'] = "Valeur du seuil";
 
 $string['digitalisation_treshold'] = "Seuil d'hybridation selon le niveau de digitalisation";
 $string['usage_treshold'] = "Seuil d'hybridation selon le niveau d'utilisation";
 $string['active_treshold'] = "Nombre d'étudiants actifs minimum pour catégoriser un cours comme actif";
-
-// Sur la page de management
 
 $string['boxokstring'] = "La période de capture a été changée avec succès";
 $string['boxnotokstring'] = "Le changement de période n'a pas fonctionné";
@@ -82,12 +83,26 @@ $string['next_schedule_title'] = "Prochain lancement";
 $string['additional_config_title'] = "Configuration additionnelle";
 $string['coeff_value_title'] = "Valeur des coefficients";
 $string['treshold_value_title'] = "Valeur des seuils";
+$string['coeff_digitalisation_title'] = "Coefficients de digitalisation";
+$string['coeff_using_title'] = "Coefficients d'utilisation";
+
+$string['error_occured'] = "Une erreur s'est produite, veuillez rafraîchir la page et réessayer. Code erreur : %s";
 
 $string['begin_date'] = "Date de début";
 $string['end_date'] = "Date de fin";
+$string['success_program'] = "La période de capture a bien été mise à jour";
 
-$string['coeff_digitalisation_title'] = "Coefficients de digitalisation";
-$string['coeff_using_title'] = "Coefficients d'utilisation";
+$string['scheduled_date'] = "Date de lancement";
+$string['scheduled_time'] = "Heure de lancement";
+$string['tonight'] = "Cette nuit";
+$string['this_weekend'] = "Ce week-end";
+$string['schedule_submit'] = "Programmer le lancement";
+$string['unschedule_submit'] = "Déprogrammer le lancement";
+$string['success_schedule'] = "Lancement programmé avec succès";
+$string['success_unschedule'] = "Lancement déprogrammé avec succès";
+
+$string['student_archetype'] = "Archetype du rôle étudiant";
+$string['student_archetype_updated'] = "L'archetype du rôle étudiant a bien été mis à jour";
 
 $string['blacklist'] = "Blacklister";
 $string['whitelist'] = "Whitelister";

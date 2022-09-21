@@ -1,5 +1,5 @@
 <?php
-
+//TODO : Standardize APIs response
 /*
 AJAX endpoint to manage HybridMeter configuration data
 

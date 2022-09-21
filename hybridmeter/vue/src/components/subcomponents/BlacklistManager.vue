@@ -1,7 +1,7 @@
 <template>
-    <div class="blacklistmanager">
+    <div id="blacklistmanager" class="hybridmeter-component">
         <div v-for="category in categories" :key="category.id">
-            <Category :category_data="category" :expanded="false"></Category>
+            <Category :category_id="category.id" :category_name="category.name" :strings="strings"></Category>
         </div>
     </div>
 </template>
@@ -13,30 +13,39 @@ import Category from './Category.vue'
 
 export default {
     setup() {
-        const { post, updateBlacklist } = utils();
+        const { get, getStrings, updateBlacklist } = utils();
 
-        const categories = ref([])
+        const strings = ref([]);
+        const categories = ref([]);
+
+        const loadStrings = () => {
+            let keys = ["blacklist", "whitelist", "x_category", "x_course", "diagnostic_course"];
+            return getStrings(keys).then(output => strings.value = output);
+        }
 
         const loadCategories = () => {
-            let data = new FormData();
-            data.append('task', 'category_children');
-            data.append('id', 0);
+            let data = [
+                { task : 'category_children' }, 
+                { id : 0 },
+            ];
 
-            return post('blacklist_tree_handler', data).then(data => {
+            return get('blacklist_tree_handler', data).then(data => {
                 categories.value = data.categories;
             });
         }
         
         return {
+            strings,
             categories,
             loadCategories,
             updateBlacklist,
+            loadStrings,
         }
     },
     created() {
-        console.log("hohohooooo")
-        this.updateBlacklist()
+        this.loadStrings()
         this.loadCategories()
+        this.updateBlacklist()
     },
     components : { Category },
     name : "BlacklistManager",

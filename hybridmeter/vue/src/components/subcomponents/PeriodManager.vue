@@ -1,44 +1,32 @@
 <template>
-    <div id="plage" class="management-module">
+    <div id="periodmanager" class="hybridmeter-component">
+        <Message :messages="message.messages" :display="message.display" :params="message.params"/>
         <!-- Beginning date -->
-        <div class="form-item row">
-            <div class="form-label col-sm-3 text-sm-right">
-                <label>{{ strings["begin_date"] }}</label>
-            </div>
-            <div class="form-setting col-sm-9">
-                <div class="form-text defaultsnext">
-                    <input type="date"  v-model="begin_date"/>
-                </div>
-            </div>
+        <div class="hybridmeter-field">
+            <label>{{ strings["begin_date"] }}</label>
+            <input class="form-control" type="date"  v-model="begin_date"/>
         </div>
         <!-- End date -->
-        <div class="form-item row">
-            <div class="form-label col-sm-3 text-sm-right">
-                <label>{{ strings["end_date"] }}</label>
-            </div>
-            <div class="form-setting col-sm-9">
-                <div class="form-text defaultsnext">
-                    <input type="date"  v-model="end_date">
-                </div>
-            </div>
+        <div class="hybridmeter-field">
+            <label>{{ strings["end_date"] }}</label>
+            <input class="form-control" type="date"  v-model="end_date">
         </div>
         <!-- Submit -->
-        <div class="form-item row">
-            <div class="form-setting col-sm-9">
+        <div class="hybridmeter-control">
             <button type="submit" class="btn btn-primary" @click="save">{{ strings["save_modif"] }}</button>
-          </div>
         </div>
     </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
 import utils from '../../utils.js'
+import Message from '../Message.vue'
 
 export default{
     setup() {
-        const { postConfig, getConfig, updateConfig, getStrings, timestamp_to_ui, ui_to_timestamp } = utils()
+        const { post, updateProgrammedDates, getStrings, timestamp_to_ui, displayParam } = utils()
 
         const store = useStore()
 
@@ -47,42 +35,94 @@ export default{
         
         const strings = ref([])
 
-        const oksaved = ref(false)
+        const loading = ref(false)
+
+        const message = reactive({
+            messages : {
+                error : {
+                    message : "",
+                    semantic : "error",
+                },
+                success : {
+                    message : "",
+                    semantic : "success",
+                },
+            },
+            display : undefined,
+            params : [],
+        });
+
+        const ui_to_timestamp = (text, is_end_date = false) => {
+            if(is_end_date){
+                text = text+' 23:59:59';
+            }
+            let date = new Date(text);
+            return date.getTime() / 1000;
+        }
 
         const save = async () => {
-            let action="measurement_period";
-            var data = new FormData();
-            data.append('action', action);
-            data.append('begin_date', ui_to_timestamp(begin_date.value));
-            data.append('end_date', ui_to_timestamp(end_date.value));
-            data.append('debug', store.state.config.debug);
-            post(`configuration_handler`, data).updateProgrammedDates();
+            let dates = store.state.programmedDates;
+            let begin_timestamp = ui_to_timestamp(begin_date.value);
+            let end_timestamp = ui_to_timestamp(end_date.value);
+
+            if(dates.begin_date == begin_timestamp && dates.end_date == end_timestamp) {
+                message.display = displayParam("success");
+            }
+            else {
+                let action="measurement_period";
+                var data = new FormData();
+                data.append('action', action);
+                data.append('begin_date', begin_timestamp);
+                data.append('end_date', end_timestamp);
+                data.append('debug', store.state.debug);
+
+                loading.value = true;
+                store.dispatch('beginLoading');
+
+                post(`configuration_handler`, data)
+                .catch(error => {
+                    loading.value = false;
+                    store.dispatch('endLoading');
+                    message.params = [error.response.status]
+                    message.display = displayParam("error");
+                })
+                .then(updateProgrammedDates());
+            }
         }
 
-        const load = async () => {
-            let keys = ["begin_date", "end_date", "save_modif"];
-            getStrings(keys).then(output => strings.value = output);
-        }
-
-        store.watch(state => state.programmedDates, dates => {
-            console.log("2pak 🦜 2pak 🦜 ooooooooooh 🥰")
+        const dispatchDates = (dates) => {
             if(dates != undefined) {
                 begin_date.value = timestamp_to_ui(dates.begin_date);
                 end_date.value = timestamp_to_ui(dates.end_date);
             }
+        }
+
+        const load = async () => {
+            let keys = ["begin_date", "end_date", "save_modif", "success_program", "error_occured"];
+            getStrings(keys).then(output => {
+                strings.value = output;
+                message.messages.error.message = strings.value.error_occured;
+                message.messages.success.message = strings.value.success_program;
+            });
+            dispatchDates(store.state.programmedDates);
+        }
+
+        store.watch(state => state.programmedDates, dates => {
+            dispatchDates(dates)
+            if(loading.value) {
+                loading.value = false;
+                store.dispatch('endLoading');
+                message.display = displayParam("success");
+            }
         })
         
         return {
-            postConfig,
-            getConfig,
-            updateConfig,
-            getStrings,
-            timestamp_to_ui,
+            message,
+            save,
+            strings,
+            loading,
             begin_date,
             end_date,
-            strings,
-            oksaved,
-            save,
             load,
         }
     },
@@ -90,5 +130,6 @@ export default{
         this.load();
     },
     name : "PeriodManager",
+    components : { Message },
 }
 </script>

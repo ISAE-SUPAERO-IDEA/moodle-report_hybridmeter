@@ -36,13 +36,25 @@ export default function utils() {
         .then(store.dispatch('endLoading'));
     }
     
-    function get(endpointName) {
+    function get(endpointName, params = []) {
         store.dispatch('beginLoading');
 
         const myaxios = axios.create({ baseURL : constants.AJAX_URL });
         let endpointFile = endpointName + ".php";
 
-        return myaxios.get(endpointFile).then(store.dispatch('endLoading')).then(response => response.data);
+        let data = ""
+        let separator = "?"
+
+        params.forEach(
+            param => {
+                let [key, value] = Object.entries(param)[0];
+                data += separator + key + "=" + value;
+                if(separator == "?")
+                    separator = "&"
+            }
+        )
+
+        return myaxios.get(endpointFile + data).then(store.dispatch('endLoading')).then(response => response.data);
     }
     
     function post(endpointName, data) {
@@ -68,26 +80,36 @@ export default function utils() {
             .then(response => response.data);
     }
 
-    function ui_to_timestamp(text, is_end_date = false) {
-        if(is_end_date){
-            text = text+' 23:59:59';
-        }
-        let date = new Date(text);
-        return date.getTime() / 1000;
+    function date_to_ui(date) {
+        let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
+        let mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date);
+        let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
+
+        return `${ye}-${mo}-${da}`;
     }
 
     function timestamp_to_ui(timestamp) {
         // Create a new JavaScript Date object based on the timestamp
         // multiplied by 1000 so that the argument is in milliseconds, not seconds.
         let date = new Date(timestamp * 1000);
-        let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date);
-        let mo = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(date);
-        let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(date);
+        
+        return date_to_ui(date)
+    }
 
-        // Will display time in 10:30:23 format
-        let formattedTime = `${ye}-${mo}-${da}`;
+    function pad(val){
+        return (val<10) ? '0' + val : val;
+    }
 
-        return formattedTime;
+    function timestamp_to_time(timestamp) {
+        let temp_date = new Date(timestamp * 1000);
+        let hour = temp_date.getHours();
+        let minute = temp_date.getMinutes();
+        let output = (pad(hour) + ':' + pad(minute));
+        return output;
+    }
+
+    function displayParam(name) {
+        return { name : name }
     }
 
     function getConfig() {
@@ -102,12 +124,16 @@ export default function utils() {
         get("configuration_handler").then(config => store.dispatch('updateBlacklistFromConfig', config))
     }
 
-    function updateScheduledData() {
-        get("configuration_handler").then(config => store.dispatch('updateScheduledDateFromConfig', config))
+    function updateScheduledTime() {
+        get("configuration_handler").then(config => store.dispatch('updateScheduledTimeFromConfig', config))
     }
 
     function updateProgrammedDates() {
         get("configuration_handler").then(config => store.dispatch('updateProgrammedDatesFromConfig', config))
+    }
+
+    function updateStudentArchetype() {
+        get("configuration_handler").then(config => store.dispatch('updateStudentArchetype', config))
     }
 
     return {
@@ -115,12 +141,15 @@ export default function utils() {
         get,
         post,
         postConfig,
-        ui_to_timestamp,
+        date_to_ui,
         timestamp_to_ui,
+        timestamp_to_time,
         getConfig,
         loadConfig,
         updateBlacklist,
-        updateScheduledData,
+        updateScheduledTime,
         updateProgrammedDates,
+        updateStudentArchetype,
+        displayParam,
     }
 }

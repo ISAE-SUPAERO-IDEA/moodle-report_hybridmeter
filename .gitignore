@@ -18,3 +18,5 @@ npm-debug.log*
 assets/test
 hybridmeter/amd/build/*
 hybridmeter/amd/src/*
+hybridmeter/vue/src/assets/style/themes*
+.env

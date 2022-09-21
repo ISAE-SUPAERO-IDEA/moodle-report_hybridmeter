@@ -1,12 +1,9 @@
 <?php
 
-require(dirname(__FILE__).'/../../config.php');
-//require_once(dirname(__FILE__).'/classes/management_form.php');
-require_once(dirname(__FILE__).'/output/management/management_renderer.php');
-require_once(dirname(__FILE__).'/constants.php');
+require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-use moodle_url;
+use html_writer;
 
 require_login();
 $context = context_system::instance();
@@ -15,18 +12,6 @@ has_capability('report/hybridmeter:all', $context) || die();
 
 admin_externalpage_setup('report_hybridmeter');
 
-$PAGE->requires->css('/report/hybridmeter/output/management.css');
-$url = new moodle_url("$CFG->wwwroot/report/hybridmeter/management.php");
-$PAGE->set_url($url);
-
-$categoryid = optional_param('categoryid', null, PARAM_INT);
-$selectedcategoryid = optional_param('selectedcategoryid', null, PARAM_INT);
-$courseid = optional_param('courseid', null, PARAM_INT);
-$action = optional_param('action', false, PARAM_ALPHA);
-
-$search = optional_param('search', '', PARAM_RAW);
-
-$systemcontext = $context = context_system::instance();
 
 $title = get_string('pluginname', 'report_hybridmeter');
 $pagetitle = get_string('config', 'report_hybridmeter');
@@ -35,11 +20,26 @@ $PAGE->set_url($url);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
-$renderer = $PAGE->get_renderer('report_hybridmeter', 'management');
+$PAGE->requires->js_call_amd('report_hybridmeter/management', 'init', [
+    'www_root' => $CFG->wwwroot,
+    'ajax_url' => "{$CFG->wwwroot}/report/hybridmeter/ajax",
+    'plugin_frankenstyle' => "report_hybridmeter",
+]);
 
-echo $renderer->header();
-echo $renderer->heading($pagetitle);
+echo $OUTPUT->header();
 
-echo $renderer->include_vue();
+echo <<<'EOT'
+<div id="app">
+</div>
+EOT;
 
-echo $renderer->footer();
+echo html_writer::link(
+    $url,
+    get_string('back_to_plugin', 'report_hybridmeter'),
+    array(
+        'class' => 'row btn btn-primary',
+        'style' => 'margin-left: 5px; margin-top: 20px;',
+    )
+);
+
+echo $OUTPUT->footer();
