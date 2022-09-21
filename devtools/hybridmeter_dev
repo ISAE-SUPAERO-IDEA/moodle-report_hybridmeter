@@ -158,11 +158,11 @@ then
         exit 5
     fi
 
-    if [ -f "${GIT_ROOT}/report_hybridmeter.zip" ]
+    if [ -f "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip" ]
     then
-        rm "${GIT_ROOT}/report_hybridmeter.zip"
+        rm "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip"
     fi
-    cd ${SOURCE_PATH} && zip -r "${GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${OLDPWD}
+    cd ${SOURCE_PATH} && zip -r "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${OLDPWD}
 
     error_code=$?
     if [ $error_code -eq 0 ]
