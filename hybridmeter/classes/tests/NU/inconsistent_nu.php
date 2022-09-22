@@ -6,7 +6,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__)."/../../../../../config.php");
 require_once(__DIR__."/../indicator_abstract.php");
-require_once(__DIR__."/../utils.php");
+require_once(__DIR__."/../../utils.php");
 
 use \report_hybridmeter\classes\utils as utils;
 

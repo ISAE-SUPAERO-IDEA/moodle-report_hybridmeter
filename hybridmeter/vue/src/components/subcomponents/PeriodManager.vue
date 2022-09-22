@@ -13,13 +13,13 @@
         </div>
         <!-- Submit -->
         <div class="hybridmeter-control">
-            <button type="submit" class="btn btn-primary" @click="save">{{ strings["save_modif"] }}</button>
+            <button type="submit" :disabled="!are_dates_filled" class="btn btn-primary" @click="save">{{ strings["save_modif"] }}</button>
         </div>
     </div>
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useStore } from 'vuex'
 import utils from '../../utils.js'
 import Message from '../Message.vue'
@@ -39,7 +39,11 @@ export default{
 
         const message = reactive({
             messages : {
-                error : {
+                error_network : {
+                    message : "",
+                    semantic : "error",
+                },
+                error_begin_date : {
                     message : "",
                     semantic : "error",
                 },
@@ -50,6 +54,10 @@ export default{
             },
             display : undefined,
             params : [],
+        });
+
+        const are_dates_filled = computed(() => {
+            return (begin_date.value && end_date.value);
         });
 
         const ui_to_timestamp = (text, is_end_date = false) => {
@@ -65,7 +73,10 @@ export default{
             let begin_timestamp = ui_to_timestamp(begin_date.value);
             let end_timestamp = ui_to_timestamp(end_date.value);
 
-            if(dates.begin_date == begin_timestamp && dates.end_date == end_timestamp) {
+            if (begin_timestamp>end_timestamp) {
+                message.display = displayParam("error_begin_date");
+            }
+            else if(dates.begin_date == begin_timestamp && dates.end_date == end_timestamp) {
                 message.display = displayParam("success");
             }
             else {
@@ -76,15 +87,17 @@ export default{
                 data.append('end_date', end_timestamp);
                 data.append('debug', store.state.debug);
 
-                loading.value = true;
-                store.dispatch('beginLoading');
+                if(!loading.value) {
+                    loading.value = true;
+                    store.dispatch('beginLoading');
+                }
 
                 post(`configuration_handler`, data)
                 .catch(error => {
                     loading.value = false;
                     store.dispatch('endLoading');
                     message.params = [error.response.status]
-                    message.display = displayParam("error");
+                    message.display = displayParam("error_network");
                 })
                 .then(updateProgrammedDates());
             }
@@ -98,10 +111,12 @@ export default{
         }
 
         const load = async () => {
-            let keys = ["begin_date", "end_date", "save_modif", "success_program", "error_occured"];
+            let keys = ["begin_date", "end_date", "save_modif", "success_program",
+                         "error_occured", "error_begin_after_end"];
             getStrings(keys).then(output => {
                 strings.value = output;
-                message.messages.error.message = strings.value.error_occured;
+                message.messages.error_network.message = strings.value.error_occured;
+                message.messages.error_begin_date.message = strings.value.error_begin_after_end;
                 message.messages.success.message = strings.value.success_program;
             });
             dispatchDates(store.state.programmedDates);
@@ -124,6 +139,7 @@ export default{
             begin_date,
             end_date,
             load,
+            are_dates_filled,
         }
     },
     created() {

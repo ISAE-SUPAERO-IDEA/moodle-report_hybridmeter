@@ -89,8 +89,9 @@ $string['coeff_using_title'] = "Usage coefficients";
 $string['error_occured'] = "An error occured, please refresh the page and try again. Error code : %s";
 
 $string['begin_date'] = "Beginning date";
-$string['end_date'] = "Ending date";
+$string['end_date'] = "End date";
 $string['success_program'] = "Capture period successfully changed";
+$string['error_begin_after_end'] = "Beginning date needs to be inferior to end date";
 
 $string['scheduled_date'] = "Scheduled date";
 $string['scheduled_time'] = "Scheduled time";
@@ -100,6 +101,7 @@ $string['schedule_submit'] = "Schedule";
 $string['unschedule_submit'] = "Unschedule";
 $string['success_schedule'] = "Calculation scheduled with success";
 $string['success_unschedule'] = "Calculation unscheduled with success";
+$string['error_past_schedule'] = "Scheduled date needs to be in the future";
 
 $string['student_archetype'] = "Student role archetype";
 $string['student_archetype_updated'] = "L'archetype du rôle étudiant a bien été mis à jour";

@@ -85,8 +85,10 @@ export default {
                 data.append('student_archetype', student_archetype.value);
                 data.append('debug', store.state.debug);
 
-                loading.value = true;
-                store.dispatch('beginLoading');
+                if(!loading.value) {
+                    loading.value = true;
+                    store.dispatch('beginLoading');
+                }
 
                 post(`configuration_handler`, data)
                 .then(updateStudentArchetype())

@@ -10,6 +10,8 @@ require_once(__DIR__."/../utils.php");
 use \report_hybridmeter\classes\utils as utils;
 use Exception;
 
+define("INDICATOR_ERROR", "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");
+
 abstract class indicator_abstract extends \report_hybridmeter\classes\test_scenario_course {
 
     protected $indicator;
@@ -17,7 +19,6 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
     public function __construct($indicator, $name, $course_id) {
         parent::__construct($name, $course_id);
         $this->indicator = $indicator;
-        define(INDICATOR_ERROR, "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");
     }
 
     public function inclusion() {
@@ -141,7 +142,7 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
                 break;
 
             case "nd" :
-                $coeffs = "digitalisation_coeffs";
+                $mode = "digitalisation_coeffs";
                 break;
 
             default :

@@ -3,8 +3,6 @@
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-use html_writer;
-
 require_login();
 $context = context_system::instance();
 $PAGE->set_context($context);

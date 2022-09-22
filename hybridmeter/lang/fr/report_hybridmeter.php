@@ -91,6 +91,7 @@ $string['error_occured'] = "Une erreur s'est produite, veuillez rafraîchir la p
 $string['begin_date'] = "Date de début";
 $string['end_date'] = "Date de fin";
 $string['success_program'] = "La période de capture a bien été mise à jour";
+$string['error_begin_after_end'] = "La date de début de période doit être inférieure à la date de fin de période";
 
 $string['scheduled_date'] = "Date de lancement";
 $string['scheduled_time'] = "Heure de lancement";
@@ -100,6 +101,7 @@ $string['schedule_submit'] = "Programmer le lancement";
 $string['unschedule_submit'] = "Déprogrammer le lancement";
 $string['success_schedule'] = "Lancement programmé avec succès";
 $string['success_unschedule'] = "Lancement déprogrammé avec succès";
+$string['error_past_schedule'] = "La date de lancement soumise est dans le passé";
 
 $string['student_archetype'] = "Archetype du rôle étudiant";
 $string['student_archetype_updated'] = "L'archetype du rôle étudiant a bien été mis à jour";

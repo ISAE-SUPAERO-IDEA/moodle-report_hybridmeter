@@ -4,7 +4,7 @@ words=("ada" "turing" "dijkstra" "lamport" "berners-lee" "shannon" "babbage")
 length=${#words[@]}
 random_index=$(($RANDOM % ${length}))
 echo "[INFO] Staging to moodle ${words[${random_index}]}"
-if [ -f $4/src ]
+if [ -d $4/src ]
 then
     rm -R $4/src
 fi

@@ -18,7 +18,7 @@
             <input class="form-control" type="time" v-model="scheduled_time" />
         </div>
         <div class="hybridmeter-control">
-            <button class="btn btn-primary" :disabled="!datetime_filled" type="submit" @click="schedule">{{ strings.schedule_submit }}</button>
+            <button class="btn btn-primary" :disabled="!is_datetime_filled" type="submit" @click="schedule">{{ strings.schedule_submit }}</button>
             <button class="btn btn-secondary" :hidden="!scheduled" type="submit" @click="unschedule">{{ strings.unschedule_submit }}</button>
         </div>
     </div>
@@ -49,9 +49,13 @@ export default{
 
         const message = reactive({
             messages : {
-                error : {
+                error_network : {
                     message : "",
                     semantic : "error",
+                },
+                error_past : {
+                    message : "",
+                    semantic : "error",  
                 },
                 success_schedule : {
                     message : "",
@@ -66,7 +70,7 @@ export default{
             params : [],
         });
 
-        const datetime_filled = computed(() => {
+        const is_datetime_filled = computed(() => {
             return (scheduled_date.value && scheduled_time.value)
         })
 
@@ -95,26 +99,34 @@ export default{
 
         const schedule = async () => {
             let scheduledTime = store.state.scheduledTime;
-            let timestamp = ui_to_timestamp();
-            if ( scheduledTime != undefined && scheduledTime.scheduled && scheduledTime.scheduled_timestamp == timestamp) {
-                message.display =  displayParam("success_schedule");
+            let ui_timestamp = ui_to_timestamp();
+            let now_timestamp = Math.floor(Date.now() / 1000);
+            if ( now_timestamp > ui_timestamp ) {
+                message.display = displayParam("error_past");
+            }
+            else if ( scheduledTime != undefined && scheduledTime.scheduled && scheduledTime.scheduled_timestamp == ui_timestamp) {
+                message.display = displayParam("success_schedule");
             }
             else {
                 let action="schedule";
                 var data = new FormData();
                 loading.value = true;
                 data.append('action', action);
-                data.append('scheduled_timestamp', timestamp);
+                data.append('scheduled_timestamp', ui_timestamp);
                 data.append('debug', store.state.debug);
-                loading.value = true;
-                store.dispatch('beginLoading');
+
+                if(!loading.value) {
+                    loading.value = true;
+                    store.dispatch('beginLoading');
+                }
+
                 post(`configuration_handler`, data)
                 .then(updateScheduledTime())
                 .catch(error => {
                     loading.value = false;
                     store.dispatch('endLoading');
                     message.params = [error.response.status]
-                    message.display = displayParam("error");
+                    message.display = displayParam("error_network");
                 });
             }
         }
@@ -129,8 +141,12 @@ export default{
                 var data = new FormData();
                 data.append('action', action);
                 data.append('debug', store.state.debug);
-                loading.value = true;
-                store.dispatch('beginLoading');
+
+                if(!loading.value) {
+                    loading.value = true;
+                    store.dispatch('beginLoading');
+                }
+
                 post(`configuration_handler`, data).then(updateScheduledTime());
             }
         }
@@ -154,11 +170,13 @@ export default{
         }
 
         const load = async () => {
-            let keys = ["scheduled_date", "scheduled_time", "tonight", "this_weekend", "schedule_submit",
-                "unschedule_submit", "error_occured", "success_schedule", "success_unschedule"];
+            let keys = ["scheduled_date", "scheduled_time", "tonight", "this_weekend", 
+                    "schedule_submit", "unschedule_submit", "error_occured", 
+                    "success_schedule", "success_unschedule", "error_past_schedule"];
             getStrings(keys).then(output => {
                 strings.value = output;
-                message.messages.error.message = strings.value.error_occured;
+                message.messages.error_network.message = strings.value.error_occured;
+                message.messages.error_past.message = strings.value.error_past_schedule;
                 message.messages.success_schedule.message = strings.value.success_schedule;
                 message.messages.success_unschedule.message = strings.value.success_unschedule;
             });
@@ -184,7 +202,7 @@ export default{
             strings,
             load,
             loading,
-            datetime_filled,
+            is_datetime_filled,
             schedule,
             unschedule,
             message,

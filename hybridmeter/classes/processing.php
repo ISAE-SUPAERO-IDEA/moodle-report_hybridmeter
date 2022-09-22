@@ -28,7 +28,7 @@ class processing {
     protected $end_date;
 
     function __construct(){
-        $timestamp = strtotime('REPORT_HYBRIDMETER_NOW');
+        $timestamp = REPORT_HYBRIDMETER_NOW;
 
         $data_provider = data_provider::get_instance();
         $configurator = configurator::get_instance();
@@ -215,7 +215,7 @@ class processing {
 
         // Data exportation
         
-        $this->end_date->setTimestamp(strtotime('REPORT_HYBRIDMETER_NOW'));
+        $this->end_date->setTimestamp(strtotime("now"));
 
         $interval = $this->end_date->getTimestamp()-$this->begin_date->getTimestamp();
 

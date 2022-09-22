@@ -148,6 +148,12 @@ fi
 
 if [ "$1" = "build" ]
 then
+    if [ -d ${AMD_PATH}/src ]
+    then
+        rm -R ${AMD_PATH}/src
+    fi
+    cp -r ${VUE_PATH}/src ${AMD_PATH}
+
     cd ${VUE_PATH} && npm run build && cd ${OLDPWD}
     
     error_code=$?
@@ -162,7 +168,7 @@ then
     then
         rm "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip"
     fi
-    cd ${SOURCE_PATH} && zip -r "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip" . -x "vue/*" && cd ${OLDPWD}
+    cd ${HYBRIDMETER_GIT_ROOT} && zip -x "/hybridmeter/vue/*" -r "report_hybridmeter.zip" "hybridmeter"  && cd ${OLDPWD}
 
     error_code=$?
     if [ $error_code -eq 0 ]
