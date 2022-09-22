@@ -39,13 +39,13 @@ module.exports = {
         hints: false
     },
     externals: {
-        'core/ajax': {
+        /*'core/ajax': {
             amd: 'core/ajax'
-        },
+        },*/
         'core/str': {
             amd: 'core/str'
         },
-        'core/modal_factory': {
+        /*'core/modal_factory': {
             amd: 'core/modal_factory'
         },
         'core/modal_events': {
@@ -65,7 +65,7 @@ module.exports = {
         },
         'jquery': {
             amd: 'jquery'
-        }
+        }*/
     },
     performance: {
         hints: false

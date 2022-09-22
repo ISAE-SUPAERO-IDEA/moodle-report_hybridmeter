@@ -1,7 +1,7 @@
 <template>
     <div class="hybrid-category">
-        <i :title="title_category()" class="icon fa fa-fw " :class="class_eye_blacklist()" @click="manage_category_blacklist()" ></i>
-        <i class="icon fa fa-fw " :class="category_caret()" @click="expanded = !expanded"></i>
+        <i :title="title_category" class="icon fa fa-fw " :class="class_eye_blacklist" @click="manage_category_blacklist()" ></i>
+        <i class="icon fa fa-fw " :class="category_caret" @click="expanded = !expanded"></i>
         <span style="font-weight: bold">{{category_name}}</span>
         <div v-if="expanded">
             <div v-for="category in tree.categories" :key="category.id">
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useStore } from 'vuex'
 import utils from '../../utils.js'
 import { sprintf } from 'sprintf-js'
@@ -121,22 +121,22 @@ export default {
             manage_element_blacklist("categories", !blacklisted.value, props.category_id)
         }
 
-        const class_eye_blacklist = () => {
+        const class_eye_blacklist = computed(() => {
             return (blacklisted.value ? "fa-eye-slash" : "fa-eye")
-        }
+        });
 
         const course_class_eye_blacklist = (course) => {
             return (course.blacklisted ? "fa-eye-slash" : "fa-eye")
-        }
+        };
 
-        const category_caret = () => {
+        const category_caret = computed(() => {
             return (expanded.value ? "fa-caret-down" : "fa-caret-right")
-        }
+        })
 
-        const title_category = () => {
+        const title_category = computed(() => {
             let x = blacklisted.value ? strings.value["whitelist"] : strings.value["blacklist"]
             return sprintf(strings.value["x_category"], x)
-        }
+        })
 
         const title_course = (course) => {
             let x = course.blacklisted ? strings.value["whitelist"] : strings.value["blacklist"]
