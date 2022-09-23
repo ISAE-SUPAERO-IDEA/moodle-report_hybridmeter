@@ -1,7 +1,9 @@
 <template>
     <div class="hybrid-category">
         <i :title="title_category" class="icon fa fa-fw " :class="class_eye_blacklist" @click="manage_category_blacklist()" ></i>
-        <i class="icon fa fa-fw " :class="category_caret" @click="expanded = !expanded"></i>
+        <i v-if="loadedChildren && hasChildren" class="icon fa fa-fw " :class="category_caret" @click="expanded = !expanded"></i>
+        <i v-else-if="!loadedChildren" class="icon fa fa-fw " :class="category_caret"></i>
+        <i v-else class="icon fa"></i>
         <span style="font-weight: bold">{{category_name}}</span>
         <div v-if="expanded">
             <div v-for="category in tree.categories" :key="category.id">
@@ -47,6 +49,10 @@ export default {
             strings.value = data.strings;
         });
 
+        const hasChildren = computed(() => {
+            return (tree.value.courses.length + tree.value.categories.length) > 0
+        });
+
         const loadChildren = () => {
             let data = [
                 { task : 'category_children' }, 
@@ -54,6 +60,7 @@ export default {
             ];
 
             return get('blacklist_tree_handler', data).then(data => {
+                console.log(props.category_id);
                 tree.value = data;
                 loadedChildren.value = true
             });
@@ -71,23 +78,33 @@ export default {
             if (blacklistData == undefined) {
                 throw new Error('blacklist data in unavailable');
             }
+
+            console.log(blacklistData.blacklisted_courses);
             
             return (Object.keys(blacklistData.blacklisted_courses).includes(course));
         }
 
         const updateDisplayedBlacklist = blacklistData => {
+            console.log("go")
             if(blacklistData != undefined) {
-                blacklisted.value = isBlacklistedCategory(blacklistData, props.category_id)
+                console.log("to go");
+                let is_blacklisted_category = isBlacklistedCategory(blacklistData, props.category_id);
+                blacklisted.value = is_blacklisted_category;
                 
                 let courses = tree.value.courses
+                console.log(tree)
                 for (let i = 0; i<courses.length; i++) {
+                    console.log("hihi");
                     courses[i].blacklisted = isBlacklistedCourse(blacklistData, courses[i].id);
                 }
             }
         }
 
         const loadBlacklist = () => {
-            loadChildren().then(updateDisplayedBlacklist(store.state.blacklistData))
+            loadChildren().then(() => {
+                
+                updateDisplayedBlacklist(store.state.blacklistData)
+            })
         }
 
         function manage_element_blacklist(type, value, id) {
@@ -151,6 +168,7 @@ export default {
             blacklisted,
             loadedChildren,
             loadChildren,
+            hasChildren,
             loadBlacklist,
             manage_course_blacklist,
             manage_category_blacklist,

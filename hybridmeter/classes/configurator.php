@@ -361,6 +361,41 @@ class configurator {
         return $this->data[$array_key][$id];
     }
 
+    public function update_blacklisted_data() {
+        $data_provider = data_provider::get_instance();
+        $courses_tree = $data_provider->get_courses_tree();
+
+        $this->update_blacklisted_data_rec($courses_tree);
+    }
+
+    private function update_blacklisted_data_rec($tree) {
+        $blacklisted_courses = &$this->data["blacklisted_courses"];
+        $blacklisted_categories = &$this->data["blacklisted_categories"];
+
+        if(!in_array($tree['data']->id, $blacklisted_categories)) {
+            $parent_id = $tree['data']->parent;
+            if($parent_id == 1){
+                $value = false;
+            }
+            else {
+                $value = $blacklisted_categories[$parent_id];
+            }
+            set_blacklisted("categories", $tree['data']->id, $value);
+        }
+
+        foreach($tree['children_courses'] as &$course) {
+            $id = $course->id;
+            if(!in_array($id, $blacklisted_courses)){
+                $category_id = $course->category;
+                set_blacklisted("courses", $id, $blacklisted_categories[$category_id]);
+            }
+        }
+
+        foreach($tree['children_categories'] as &$category) {
+            $this->update_blacklisted_data_rec($category);
+        }
+    }
+
     // Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
     public function set_blacklisted(string $type, int $id, $value, bool $rec = false) {
         $data_provider = data_provider::get_instance();
