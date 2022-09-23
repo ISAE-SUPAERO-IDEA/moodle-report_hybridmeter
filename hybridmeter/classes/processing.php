@@ -103,7 +103,6 @@ class processing {
             )
         );
 
-
         $this->formatter->calculate_new_indicator(
             "is_course_active_last_month",
             REPORT_HYBRIDMETER_FIELD_ACTIVE_COURSE
@@ -230,6 +229,7 @@ class processing {
         }
 
         $file_exporter = fopen($CFG->dataroot."/hybridmeter/records/serialized_data","w");
+        
         $s = serialize(array(
             "time" => $time,
             "data" => $data_out,

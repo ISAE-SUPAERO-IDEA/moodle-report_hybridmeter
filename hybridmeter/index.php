@@ -33,7 +33,6 @@ $path_serialized_data = $CFG->dataroot."/hybridmeter/records/serialized_data";
 if (file_exists($path_serialized_data)) {
     $data_available = true;
     $data_unserialized = unserialize(file_get_contents($path_serialized_data));
-    error_log(print_r($data_unserialized, 1));
     $time = $data_unserialized['time'];
 
     $generaldata = $data_unserialized['generaldata'];

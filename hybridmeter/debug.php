@@ -12,23 +12,24 @@ has_capability('report/hybridmeter:all', $context) || die();
 
 $configurator = configurator::get_instance();
 
-$disable = optional_param('disable', 'nothing', PARAM_ALPHAEXT);
-$enable = optional_param('enable', 'nothing', PARAM_ALPHAEXT);
+$task = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
-if ($disable != 'nothing')
+if ($task == "disable") {
     $configurator->unset_debug();
-else if ($enable != 'nothing')
+}
+else if ($task == 'enable') {
     $configurator->set_debug();
+}
 
 if ($configurator->get_debug()) {
     echo '<form action="" method="get">
             <p>Debug feature is ON</p>
-            <input type="submit" name="disable" value="Disable"/>
+            <input type="submit" name="task" value="disable"/>
           </form>';
 }
 else {
     echo '<form action="" method="get">
             <p>Debug feature is OFF</p>
-            <input type="submit" name="enable" value="Enable"/>
+            <input type="submit" name="task" value="enable"/>
           </form>';
 }

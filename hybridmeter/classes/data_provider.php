@@ -12,6 +12,7 @@ require_once(dirname(__FILE__).'/utils.php');
 use \report_hybridmeter\classes\utils as utils;
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\task\processing as processing;
+use \report_hybridmeter\classes\logger as logger;
 use Exception;
 
 class data_provider {
@@ -78,7 +79,7 @@ class data_provider {
                   JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
                   JOIN ".$DB->get_prefix()."context context ON assign.contextid = context.id
                  WHERE role.archetype = :archetype
-                       AND eventname = '\\core\\event\\course_viewed'
+                       AND eventname like '%course_viewed'
                        AND courseid = :courseid
                        AND context.instanceid = :instanceid
                        AND context.contextlevel= :contextcourse

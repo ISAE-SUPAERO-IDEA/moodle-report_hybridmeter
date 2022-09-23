@@ -105,11 +105,11 @@ class configurator {
     }
 
     public function set_debug(){
-        $this->data['debug'] = true;
+        $this->update_key('debug', true);
     }
 
     public function unset_debug(){
-        $this->data['debug'] = false;
+        $this->update_key('debug', false);
     }
 
     // Update coefficients for a given $type (dynamic or static)

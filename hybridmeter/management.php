@@ -27,7 +27,7 @@ $PAGE->requires->js_call_amd('report_hybridmeter/management', 'init', [
 echo $OUTPUT->header();
 
 echo <<<'EOT'
-<div id="app">
+<div id="hybridmeter-app">
 </div>
 EOT;
 

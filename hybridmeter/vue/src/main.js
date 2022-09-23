@@ -12,5 +12,5 @@ export const init = (www_root, ajax_url, plugin_frankenstyle) => {
     }
     app.use(store);
     app.provide('constants', constants);
-    app.mount('#app');
+    app.mount('#hybridmeter-app');
 }
