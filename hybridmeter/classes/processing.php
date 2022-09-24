@@ -53,6 +53,8 @@ class processing {
         $data_provider = data_provider::get_instance();
 
         $configurator->set_as_running($this->begin_date);
+        
+        $configurator->update_blacklisted_data();
 
         // Calculation of detailed indicators
 

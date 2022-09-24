@@ -4,15 +4,15 @@
         <i v-if="loadedChildren && hasChildren" class="icon fa fa-fw " :class="category_caret" @click="expanded = !expanded"></i>
         <i v-else-if="!loadedChildren" class="icon fa fa-fw " :class="category_caret"></i>
         <i v-else class="icon fa"></i>
-        <span style="font-weight: bold">{{category_name}}</span>
+        <span style="font-weight: bold">{{category_id}} {{category_name}}</span>
         <div v-if="expanded">
             <div v-for="category in tree.categories" :key="category.id">
-                <category :category_id="category.id" :category_name="category.name" :strings="strings"></category>
+                <category :parent_id="category_id" :category_id="category.id" :category_name="category.name" :strings="strings"></category>
             </div>
             <div v-for="course in tree.courses" :key="course.id" class="hybrid-course" >
                 <i :title="title_course(course)" class="icon fa fa-fw " :class="course_class_eye_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
                 <a :title="strings['diagnostic_course']" :href="'tests.php?task=course&id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
-                {{course.fullname}}
+                {{course.id}} {{course.fullname}}
             </div>
         </div>
     </div>
@@ -34,6 +34,8 @@ export default {
             categories : [],
             courses : [],
         })
+
+        const category_id = ref(props.category_id);
 
         const expanded = ref(false)
 
@@ -60,7 +62,6 @@ export default {
             ];
 
             return get('blacklist_tree_handler', data).then(data => {
-                console.log(props.category_id);
                 tree.value = data;
                 loadedChildren.value = true
             });
@@ -71,7 +72,15 @@ export default {
                 throw new Error('blacklist data in unavailable');
             }
             
-            return (Object.keys(blacklistData.blacklisted_categories).includes(category))
+            if (Object.keys(blacklistData.blacklisted_categories).includes(category)) {
+                return blacklistData.blacklisted_categories[category];
+            }
+            else if (props.parent_id == 0) {
+                return false;
+            }
+            else {
+                return isBlacklistedCategory(blacklistData, props.parent_id);
+            }
         }
 
         const isBlacklistedCourse = (blacklistData, course) => {
@@ -79,22 +88,21 @@ export default {
                 throw new Error('blacklist data in unavailable');
             }
 
-            console.log(blacklistData.blacklisted_courses);
-            
-            return (Object.keys(blacklistData.blacklisted_courses).includes(course));
+            if (Object.keys(blacklistData.blacklisted_courses).includes(course)) {
+                return blacklistData.blacklisted_courses[course];
+            }
+            else {
+                return isBlacklistedCategory(blacklistData, props.category_id);
+            }
         }
 
         const updateDisplayedBlacklist = blacklistData => {
-            console.log("go")
             if(blacklistData != undefined) {
-                console.log("to go");
                 let is_blacklisted_category = isBlacklistedCategory(blacklistData, props.category_id);
                 blacklisted.value = is_blacklisted_category;
                 
                 let courses = tree.value.courses
-                console.log(tree)
                 for (let i = 0; i<courses.length; i++) {
-                    console.log("hihi");
                     courses[i].blacklisted = isBlacklistedCourse(blacklistData, courses[i].id);
                 }
             }
@@ -161,6 +169,7 @@ export default {
         }
 
         return {
+            category_id,
             loading,
             strings,
             tree,
@@ -186,6 +195,9 @@ export default {
         category_name : {
             required : true,
             type : String,
+        },
+        parent_id : {
+            required : true,
         },
         strings : {
             required : true,

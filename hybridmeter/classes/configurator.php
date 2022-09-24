@@ -57,8 +57,16 @@ class configurator {
         $this->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
         $this->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
 
+        $blacklist_loaded = (!array_key_exists("blacklisted_courses", $this->data) 
+            || !array_key_exists("blacklisted_categories", $this->data));
+        
         $this->set_default_value("blacklisted_courses", []);
         $this->set_default_value("blacklisted_categories", []);
+        $this->set_default_value("save_blacklist_courses", []);
+        $this->set_default_value("save_blacklist_categories", []);
+
+        if(!$blacklist_loaded)
+            $this->update_blacklisted_data();
     
         // Should save only if changes have been made
         $this->save();
@@ -255,115 +263,18 @@ class configurator {
             $this->update_key("digitalisation_treshold", $value);
     }
 
-    /* Stores the blacklisted courses and categories descending from $id_category when the function is called,
-     * to keep them in memory and restore the state at whitelisting time
-     *
-     * The persistent nature of the state allows you to refresh the page and keep the state for example
-     */
-
-    protected function save_blacklist_state_of_category(int $id_category) {
-        if(!isset($this->data["save_blacklist_courses"]) || !is_array($this->data["save_blacklist_courses"]))
-            $this->data["save_blacklist_courses"] = array();
-
-        if(!isset($this->data["save_blacklist_categories"]) || !is_array($this->data["save_blacklist_categories"]))
-            $this->data["save_blacklist_categories"] = array();
-
-        $this->save_blacklist_state_of_category_rec($id_category);
-
-        if(!in_array(strval($id_category), $this->data["save_blacklist_categories"]))
-            array_push($this->data["save_blacklist_categories"], strval($id_category));
-
-        $this->save();
-    }
-
-    protected function save_blacklist_state_of_category_rec(int $id_category) {
-        $data_provider = data_provider::get_instance();
-        $ids_subcategories=$data_provider->get_children_categories_ids($id_category);
-        $ids_courses=$data_provider->get_children_courses_ids($id_category);
-
-        foreach($ids_courses as $id_course){
-            $course_is_not_in_save_blacklist = (!in_array(strval($id_course),$this->data["save_blacklist_courses"]));
-            if($this->get_blacklisted_state("courses", $id_course) && $course_is_not_in_save_blacklist)
-                array_push($this->data["save_blacklist_courses"], strval($id_course));
-        }
-
-        foreach($ids_subcategories as $id_category){
-            $this->save_blacklist_state_of_category_rec($id_category);
-        }
-    }
-
-    protected function delete_blacklist_savelist_of_category(int $id_category) {
-        $data_provider = data_provider::get_instance();
-        $id_subcategories=$data_provider->get_children_categories_ids($id_category);
-        $id_courses=array_map(
-            function($id_course){
-                return strval($id_course);
-            },
-            $data_provider->get_children_courses_ids($id_category)
-        );
-
-        $this->data["save_blacklist_courses"] = array_diff($this->data["save_blacklist_courses"], $id_courses);
-
-        if(in_array(strval($id_category), $this->data["save_blacklist_categories"])){
-            $category_index = array_search(strval($id_category), $this->data["save_blacklist_categories"]);
-            unset($this->data["save_blacklist_categories"][$category_index]);
-            $this->data["save_blacklist_categories"] = array_values($this->data["save_blacklist_categories"]);
-        }
-
-        foreach($id_subcategories as $id_category){
-            $this->delete_blacklist_savelist_of_category($id_category);
-        }
-
-        $this->save();
-    }
-
-    /* This function restores the pre-blacklisting state of the $id_category from
-     * backup data, and then deletes the backup data, hence the term "consume".
-     *
-     * $id_category does not have to be the same $id_category as the one used to store the data,
-     * it can be a child for example.
-     */
-
-    protected function spend_blacklist_savelist_of_category(int $id_category) {
-        $this->spend_blacklist_savelist_of_category_rec($id_category);
-        $this->delete_blacklist_savelist_of_category($id_category);
-        $this->save();
-    }
-
-    protected function spend_blacklist_savelist_of_category_rec(int $id_category) {
-        $data_provider = data_provider::get_instance();
-        $id_subcategories=$data_provider->get_children_categories_ids($id_category);
-        $id_courses=$data_provider->get_children_courses_ids($id_category);
-
-        $array_categories = &$this->data["blacklisted_categories"];
-        $array_courses = &$this->data["blacklisted_courses"];
-
-        foreach($id_courses as $id_course) {
-            if(!in_array($id_course, $this->data["save_blacklist_courses"])){
-                unset($array_courses[$id_course]);
-            }
-        }
-
-        foreach($id_subcategories as $id_category) {
-            if(!in_array($id_category, $this->data["save_blacklist_categories"])){
-                unset($array_categories[$id_category]);
-            }
-            $this->spend_blacklist_savelist_of_category_rec($id_category);
-        }
-    }
-
-    public function get_blacklisted_state(string $type, int $id): bool {
+    public function is_blacklisted_element(string $type, int $id): bool {
         $array_key = "blacklisted_".$type;
+        $array = &$this->data[$array_key];
 
-        if(!isset($this->data[$array_key][$id]))
-            return false;
-
-        return $this->data[$array_key][$id];
+        return (isset($array[$id]) && $array[$id]);
     }
 
     public function update_blacklisted_data() {
         $data_provider = data_provider::get_instance();
         $courses_tree = $data_provider->get_courses_tree();
+
+        error_log(print_r($courses_tree, 1));
 
         $this->update_blacklisted_data_rec($courses_tree);
     }
@@ -372,22 +283,26 @@ class configurator {
         $blacklisted_courses = &$this->data["blacklisted_courses"];
         $blacklisted_categories = &$this->data["blacklisted_categories"];
 
-        if(!in_array($tree['data']->id, $blacklisted_categories)) {
+        if(!array_key_exists($tree['data']->id, $blacklisted_categories)) {
             $parent_id = $tree['data']->parent;
-            if($parent_id == 1){
+            if($parent_id == 0){
                 $value = false;
             }
             else {
                 $value = $blacklisted_categories[$parent_id];
             }
-            set_blacklisted("categories", $tree['data']->id, $value);
+            $this->atomic_set_blacklisted("categories", $tree['data']->id, $value);
         }
 
         foreach($tree['children_courses'] as &$course) {
             $id = $course->id;
-            if(!in_array($id, $blacklisted_courses)){
+            error_log($id);
+            if($id == 6) {
+                
+            }
+            if(!array_key_exists($id, $blacklisted_courses)){
                 $category_id = $course->category;
-                set_blacklisted("courses", $id, $blacklisted_categories[$category_id]);
+                $this->atomic_set_blacklisted("courses", $id, $blacklisted_categories[$category_id]);
             }
         }
 
@@ -396,39 +311,94 @@ class configurator {
         }
     }
 
-    // Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
-    public function set_blacklisted(string $type, int $id, $value, bool $rec = false) {
-        $data_provider = data_provider::get_instance();
+    private function is_saved_element(string $type, $id) {
+        $array_key = "save_blacklist_" . $type;
+        $array = &$this->data[$array_key];
 
+        return in_array(strval($id), $array);
+    }
+
+    private function save_blacklisted_element(string $type, $id) {
+        $array_key = "save_blacklist_" . $type;
+        $array = &$this->data[$array_key];
+
+        if(!in_array(strval($id), $array)) {
+            array_push($array, strval($id));
+        }
+    }
+
+    private function remove_blacklisted_element_from_save(string $type, $id) {
+        $array_key = "save_blacklist_" . $type;
+        $array = &$this->data[$array_key];
+
+        if(in_array(strval($id), $array)){
+            $category_index = array_search(strval($id), $array);
+            unset($array[$category_index]);
+            $array = array_values($array);
+        }
+    }
+
+    public function atomic_set_blacklisted(string $type, $id, bool $value) {
         $array_key = "blacklisted_".$type;
         if (!array_key_exists($array_key, $this->data)) {
             $this->data[$array_key] = [];
         }
         $array = &$this->data[$array_key];
 
-        if($value == true) {
-            $array[$id] = true;
-        }
-        else {
-            unset($array[$id]);
-        }
+        $array[$id] = $value;
+    }
 
-        if($type=="categories"){
+    // Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
+    public function set_blacklisted(string $type, int $id, bool $value, bool $rec = false) {
+        $data_provider = data_provider::get_instance();
+
+        $this->atomic_set_blacklisted($type, $id, $value);
+
+        if($type == "categories") {
+            $blacklisted_categories = &$this->data["blacklisted_categories"];
+
             $id_categories=$data_provider->get_children_categories_ids($id);
             $id_courses=$data_provider->get_children_courses_ids($id);
 
-            if($value == false){
-                $this->spend_blacklist_savelist_of_category($id);
-            }
-            else{
-                if(!$rec)
-                    $this->save_blacklist_state_of_category($id);
-
-                foreach($id_categories as $id_cat){
-                    $this->set_blacklisted("categories", $id_cat, true, 1);
+            if($value) {
+                foreach ($id_courses as &$course) {
+                    if($this->is_blacklisted_element("courses", $course)) {
+                        $this->save_blacklisted_element("courses", $course);
+                    }
+                    $this->atomic_set_blacklisted("courses", $course, true);
                 }
-                foreach($id_courses as $id_course){
-                    $this->set_blacklisted("courses", $id_course, true, 1);
+                
+                foreach ($id_categories as &$category) {
+                    $is_blacklisted = (isset($blacklisted_categories[$category]) && $blacklisted_categories[$category]);
+                    error_log(print_r(array(
+                        $category,
+                        " gros ",
+                        ($is_blacklisted ? 1 : 0),
+                        (isset($blacklisted_categories[$category]) ? 1 : 0),
+                        ($blacklisted_categories[$category] ? 1 : 0),
+                    ), 1));
+                    if($is_blacklisted) {
+                        $this->save_blacklisted_element("categories", $category);
+                    } else {
+                        $this->set_blacklisted("categories", $category, true, true);
+                    }
+                }
+            }
+            else {
+                foreach ($id_courses as &$course) {
+                    if(!$this->is_saved_element("courses", $course)){
+                        $this->atomic_set_blacklisted("courses", $course, false);
+                    }
+                    $this->remove_blacklisted_element_from_save("courses", $course);
+                }
+
+                foreach ($id_categories as &$category) {
+                    if(!$this->is_saved_element("categories", $category)) {
+                        $this->set_blacklisted("categories", $category, false, true);
+                    }
+                    else {
+                        $this->remove_blacklisted_element_from_save("categories", $category);
+                    }
                 }
             }
         }

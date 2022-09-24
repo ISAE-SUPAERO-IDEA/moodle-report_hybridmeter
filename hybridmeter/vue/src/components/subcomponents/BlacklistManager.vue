@@ -1,7 +1,7 @@
 <template>
     <div id="blacklistmanager" class="hybridmeter-component">
         <div v-for="category in categories" :key="category.id">
-            <Category :category_id="category.id" :category_name="category.name" :strings="strings"></Category>
+            <Category parent_id="0" :category_id="category.id" :category_name="category.name" :strings="strings"></Category>
         </div>
     </div>
 </template>
