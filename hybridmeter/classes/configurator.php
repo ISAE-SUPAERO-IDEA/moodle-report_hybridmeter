@@ -274,8 +274,6 @@ class configurator {
         $data_provider = data_provider::get_instance();
         $courses_tree = $data_provider->get_courses_tree();
 
-        error_log(print_r($courses_tree, 1));
-
         $this->update_blacklisted_data_rec($courses_tree);
     }
 
@@ -296,10 +294,7 @@ class configurator {
 
         foreach($tree['children_courses'] as &$course) {
             $id = $course->id;
-            error_log($id);
-            if($id == 6) {
-                
-            }
+
             if(!array_key_exists($id, $blacklisted_courses)){
                 $category_id = $course->category;
                 $this->atomic_set_blacklisted("courses", $id, $blacklisted_categories[$category_id]);
@@ -370,13 +365,7 @@ class configurator {
                 
                 foreach ($id_categories as &$category) {
                     $is_blacklisted = (isset($blacklisted_categories[$category]) && $blacklisted_categories[$category]);
-                    error_log(print_r(array(
-                        $category,
-                        " gros ",
-                        ($is_blacklisted ? 1 : 0),
-                        (isset($blacklisted_categories[$category]) ? 1 : 0),
-                        ($blacklisted_categories[$category] ? 1 : 0),
-                    ), 1));
+                    
                     if($is_blacklisted) {
                         $this->save_blacklisted_element("categories", $category);
                     } else {
