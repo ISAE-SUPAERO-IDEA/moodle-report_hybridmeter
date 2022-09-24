@@ -1,0 +1,194 @@
+#hybridmeter-app > h3 {
+  margin-bottom: 20px;
+  margin-left: 2px;
+  margin-top: 15px;
+}
+
+.hybridmeter-component {
+  margin-bottom: 15px;
+}
+
+.hybrid-category {
+  border: 1px rgb(214, 214, 214) solid;
+  padding-left: 13px;
+  padding-right: 13px;
+  line-height: 40px;
+  vertical-align: middle;
+  margin-top: -1px;
+}
+.hybrid-category > div {
+  margin-bottom: 10px;
+}
+
+.hybrid-course {
+  border: 1px rgb(214, 214, 214) solid;
+  padding-left: 13px;
+  padding-right: 13px;
+  line-height: 40px;
+  vertical-align: middle;
+  margin-top: -1px;
+}
+
+.hybridmeter-field {
+  margin-bottom: 10px;
+}
+@media screen and (max-width: 499px) {
+  .hybridmeter-field {
+    text-align: center;
+  }
+}
+.hybridmeter-field > input, .hybridmeter-field select {
+  width: 250px;
+  display: inline-block;
+}
+@media screen and (max-width: 499px) {
+  .hybridmeter-field > input, .hybridmeter-field select {
+    width: 150px;
+    display: inline;
+    margin-bottom: 10px;
+  }
+}
+.hybridmeter-field > label {
+  margin-right: 20px;
+  text-align: end;
+}
+@media screen and (min-width: 2000px) {
+  .hybridmeter-field > label {
+    width: 15%;
+  }
+}
+@media screen and (min-width: 1200px) and (max-width: 1999px) {
+  .hybridmeter-field > label {
+    width: 20%;
+  }
+}
+@media screen and (min-width: 500px) and (max-width: 1199px) {
+  .hybridmeter-field > label {
+    width: 30%;
+  }
+}
+@media screen and (max-width: 499px) {
+  .hybridmeter-field > label {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 499px) {
+  .hybridmeter-date {
+    text-align: center;
+  }
+}
+
+.hybridmeter-control {
+  margin-bottom: 20px;
+  padding-left: 20px;
+}
+.hybridmeter-control > button {
+  margin-right: 10px;
+}
+@media screen and (min-width: 2000px) {
+  .hybridmeter-control {
+    margin-left: 15%;
+  }
+}
+@media screen and (min-width: 1200px) and (max-width: 1999px) {
+  .hybridmeter-control {
+    margin-left: 20%;
+  }
+}
+@media screen and (min-width: 500px) and (max-width: 1199px) {
+  .hybridmeter-control {
+    margin-left: 30%;
+  }
+}
+@media screen and (max-width: 499px) {
+  .hybridmeter-control {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.hybridmeter-message {
+  color: #fff;
+  border: 2px solid;
+  width: 99%;
+  margin-left: 13px;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border-radius: 5px;
+}
+.hybridmeter-message span {
+  vertical-align: center;
+  display: inline-block;
+  padding-left: 3%;
+}
+@media screen and (min-width: 2000px) {
+  .hybridmeter-message span {
+    width: 98%;
+    padding-left: 2%;
+  }
+}
+@media screen and (min-width: 800px) and (max-width: 1999px) {
+  .hybridmeter-message span {
+    width: 96%;
+  }
+}
+@media screen and (min-width: 500px) and (max-width: 799px) {
+  .hybridmeter-message span {
+    width: 94%;
+  }
+}
+@media screen and (max-width: 499px) {
+  .hybridmeter-message span {
+    width: 90%;
+  }
+}
+.hybridmeter-message i {
+  width: 15px;
+  display: inline-block;
+  vertical-align: end;
+}
+.hybridmeter-message i:hover {
+  color: rgb(104, 103, 103);
+}
+
+.hybridmeter-message-error {
+  background-color: #af5a50;
+}
+
+.hybridmeter-message-success {
+  background-color: #3a6938;
+}
+
+.hybridmeter-message-warning {
+  background-color: #ecbc77;
+}
+
+.hybridmeter-message-info {
+  background-color: #298c9b;
+}
+
+.hybridmeter-pulse {
+  animation: pulse 1s 1;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+.hybridmeter-th {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #454d55;
+}

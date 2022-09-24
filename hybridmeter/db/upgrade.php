@@ -26,6 +26,12 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022021108, 'report', 'hybridmeter');
     }
 
+    if($oldversion < 2022092303) {
+        $configurator = configurator::get_instance();
+        $configurator->update_blacklisted_data();
+        upgrade_plugin_savepoint(true, 2022092303, 'report', 'hybridmeter');
+    }
+
     return true;
 }
 

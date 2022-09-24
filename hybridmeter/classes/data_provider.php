@@ -12,6 +12,7 @@ require_once(dirname(__FILE__).'/utils.php');
 use \report_hybridmeter\classes\utils as utils;
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\task\processing as processing;
+use \report_hybridmeter\classes\logger as logger;
 use Exception;
 
 class data_provider {
@@ -359,7 +360,7 @@ class data_provider {
                  WHERE true";
          
         if (count($blacklisted_courses)>0) {
-            $sql .= " AND course.id NOT IN (".implode($blacklisted_courses,",").")";
+            $sql .= " AND course.id NOT IN (".implode(",",$blacklisted_courses).")";
         }
 
         $records=$DB->get_records_sql($sql);
@@ -399,7 +400,7 @@ class data_provider {
                  WHERE role.archetype = :archetype
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
                        AND logs.eventname like '%course_viewed'
-                       AND course.id IN (".implode($ids_courses,",").")";
+                       AND course.id IN (".implode(",",$ids_courses).")";
 
         $params = array(
             'archetype' => $student_archetype,

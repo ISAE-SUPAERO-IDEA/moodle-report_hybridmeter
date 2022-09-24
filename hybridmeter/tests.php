@@ -8,8 +8,8 @@ require(dirname(__FILE__).'/classes/tests/course_count/inconsistent_registered_a
 require(dirname(__FILE__).'/classes/tests/blacklist_scenario.php');
 
 use \report_hybridmeter\classes\tests\ND\inconsistent_nd as inconsistent_nd;
-use \report_hybridmeter\classes\tests\ND\inconsistent_nu as inconsistent_nu;
-use \report_hybridmeter\classes\tests\ND\inconsistent_registered_active_students as inconsistent_registered_active_students;
+use \report_hybridmeter\classes\tests\NU\inconsistent_nu as inconsistent_nu;
+use \report_hybridmeter\classes\tests\course_count\inconsistent_registered_active_students as inconsistent_registered_active_students;
 use \report_hybridmeter\classes\tests\blacklist_scenario as blacklist_scenario;
 
 require_login();

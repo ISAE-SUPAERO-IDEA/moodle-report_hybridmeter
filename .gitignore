@@ -1,3 +1,4 @@
+hybrid_dev.env
 install.sh
 build
 *.whl
@@ -9,3 +10,13 @@ db.sqlite3
 *.zip
 .vscode
 node_modules
+.npm
+.eslintcache
+logs
+*.log
+npm-debug.log*
+assets/test
+hybridmeter/amd/build/*
+hybridmeter/amd/src/*
+hybridmeter/vue/src/assets/style/themes*
+.env

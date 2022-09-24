@@ -33,7 +33,6 @@ $path_serialized_data = $CFG->dataroot."/hybridmeter/records/serialized_data";
 if (file_exists($path_serialized_data)) {
     $data_available = true;
     $data_unserialized = unserialize(file_get_contents($path_serialized_data));
-
     $time = $data_unserialized['time'];
 
     $generaldata = $data_unserialized['generaldata'];
@@ -41,26 +40,16 @@ if (file_exists($path_serialized_data)) {
     $date_record = new DateTime();
     $date_record->setTimestamp($time["begin_timestamp"]);
 
-
-    function modulo_fixed($x,$n) {
-        $r = $x % $n;
-        if ($r < 0)
-        {
-            $r += abs($n);
-        }
-        return $r;
-    }
-
     $t=$data_unserialized['time']['diff'];
 
     if($t<60){
         $intervalle_format = sprintf(get_string('template_seconds', 'report_hybridmeter'), $t);
     }
     else if ($t<3600){
-        $intervalle_format = sprintf(get_string('template_minutes_seconds', 'report_hybridmeter'), ($t/60), modulo_fixed($t,60));
+        $intervalle_format = sprintf(get_string('template_minutes_seconds', 'report_hybridmeter'), ($t/60), utils::modulo_fixed($t,60));
     }
     else{
-        $intervalle_format = sprintf(get_string('template_hours_minutes_seconds', 'report_hybridmeter'), ($t/3600), modulo_fixed(($t/60),60), modulo_fixed($t,60));
+        $intervalle_format = sprintf(get_string('template_hours_minutes_seconds', 'report_hybridmeter'), ($t/3600), utils::modulo_fixed(($t/60),60), utils::modulo_fixed($t,60));
     }
     
     $formatted_date = $date_record->format('d/m/Y à H:i:s');
@@ -70,6 +59,7 @@ else{
     $formatted_date = REPORT_HYBRIDMETER_NA;
     $generaldata = null;
     $time = null;
+    $intervalle_format = null;
 }
 
 $task = optional_param('task', array(), PARAM_TEXT);

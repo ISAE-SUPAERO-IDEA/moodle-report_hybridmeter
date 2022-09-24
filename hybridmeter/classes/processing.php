@@ -28,7 +28,7 @@ class processing {
     protected $end_date;
 
     function __construct(){
-        $timestamp = strtotime('REPORT_HYBRIDMETER_NOW');
+        $timestamp = REPORT_HYBRIDMETER_NOW;
 
         $data_provider = data_provider::get_instance();
         $configurator = configurator::get_instance();
@@ -53,6 +53,8 @@ class processing {
         $data_provider = data_provider::get_instance();
 
         $configurator->set_as_running($this->begin_date);
+        
+        $configurator->update_blacklisted_data();
 
         // Calculation of detailed indicators
 
@@ -102,7 +104,6 @@ class processing {
                 "nb_cours" => $this->formatter->get_length_array(),
             )
         );
-
 
         $this->formatter->calculate_new_indicator(
             "is_course_active_last_month",
@@ -197,8 +198,6 @@ class processing {
             $configurator->get_begin_timestamp(),
             $configurator->get_end_timestamp()
         );
-        
-        
 
         $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED]=$data_provider->count_distinct_registered_students_of_courses(
             $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]
@@ -217,7 +216,7 @@ class processing {
 
         // Data exportation
         
-        $this->end_date->setTimestamp(strtotime('REPORT_HYBRIDMETER_NOW'));
+        $this->end_date->setTimestamp(strtotime("now"));
 
         $interval = $this->end_date->getTimestamp()-$this->begin_date->getTimestamp();
 
@@ -232,6 +231,7 @@ class processing {
         }
 
         $file_exporter = fopen($CFG->dataroot."/hybridmeter/records/serialized_data","w");
+        
         $s = serialize(array(
             "time" => $time,
             "data" => $data_out,

@@ -77,7 +77,7 @@ function get_category_path(array $object, array $parameters): string {
     return $category_path;
 }
 
-function is_course_active_last_month(array $object, array $parameters): bool {
+function is_course_active_last_month(array $object, array $parameters): int {
     $configurator = configurator::get_instance();
     $data_provider = data_provider::get_instance();
 
@@ -86,9 +86,10 @@ function is_course_active_last_month(array $object, array $parameters): bool {
         $configurator->get_begin_timestamp(),
         $configurator->get_end_timestamp()
     );
+
     if ($count >= $configurator->get_data()["active_treshold"])
         return 1;
-    else
+    else 
         return 0;
 }
 
