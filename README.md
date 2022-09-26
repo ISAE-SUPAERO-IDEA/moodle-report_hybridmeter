@@ -23,4 +23,4 @@ Site Web
 
 [![](https://t2594656.p.clickup-attachments.com/t2594656/02a2acc8-fd84-4d24-9e1a-299262ff2ce0/HybridmeterWebsite.png)](https://online.isae-supaero.fr/hybridmeter)
 
-Visitez le site Web principal de HybridMeter : [https://online.isae-supaero.fr/hybridmete](https://online.isae-supaero.fr/hybridmeter)
+Visitez le site Web principal de HybridMeter : [https://online.isae-supaero.fr/hybridmeter](https://online.isae-supaero.fr/hybridmeter)
