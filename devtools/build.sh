@@ -11,7 +11,8 @@ rm -rf $TMP/$TMP_HYBRIDMETER
 rm -rf $TMP/$TMP_HYBRIDMETER.zip
 cp -r $HYBRIDMETER $TMP_HYBRIDMETER
 rm -rf $TMP/hybridmeter/vue
-zip -r $TMP/report_hybridmeter.zip $TMP_HYBRIDMETER/*
+cd $TMP_HYBRIDMETER
+zip -r $TMP/report_hybridmeter.zip *
 
 
 
