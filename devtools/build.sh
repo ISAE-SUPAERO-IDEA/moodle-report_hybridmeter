@@ -19,7 +19,7 @@ rm -rf $TMP_HYBRIDMETER/vue
 # Build zip
 cd $TMP
 rm -rf $TMP_HYBRIDMETER_ZIP
-zip -r $TMP_HYBRIDMETER_ZIP $TMP_HYBRIDMETER
+zip -r $TMP_HYBRIDMETER_ZIP report_hybridmeter
 
 
 
