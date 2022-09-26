@@ -7,10 +7,10 @@ export TMP=/tmp
 export TMP_HYBRIDMETER=$TMP/hybridmeter
 cd $VUE
 npm install && npm run build
-rm -rf $TMP/$TMP_HYBRIDMETER
-rm -rf $TMP/$TMP_HYBRIDMETER.zip
+rm -rf $TMP_HYBRIDMETER
+rm -rf $TMP_HYBRIDMETER.zip
 cp -r $HYBRIDMETER $TMP_HYBRIDMETER
-rm -rf $TMP/hybridmeter/vue
+rm -rf $TMP_HYBRIDMETER/vue
 cd $TMP_HYBRIDMETER
 zip -r $TMP/report_hybridmeter.zip *
 
