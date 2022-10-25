@@ -26,17 +26,19 @@ $string['indicator_name'] = "Nom de l'indicateur";
 $string['number'] = "Nombre";
 $string[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES] = "Cours hybrides selon l'indicateur du niveau de digitalisation";
 $string[REPORT_HYBRIDMETER_GENERAL_NB_USED_COURSES] = "Cours hybrides selon l'indicateur du niveau d'utilisation";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED] = "Étudiants actuellement inscrits dans au moins un cours hybride selon l'indicateur du niveau de digitalisation";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE] = "Etudiants actifs sur la periode de capture dans au moins un cours hybride selon l'indicateur du niveau de digitalisation";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED] = "Étudiants actuellement inscrits dans au moins un cours hybride selon l'indicateur du niveau d'utilisation";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE] = "Etudiants actifs sur la periode de capture dans au moins un cours hybride selon l'indicateur du niveau d'utilisation";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED] = "Étudiants inscrits dans au moins un cours hybride selon l'indicateur du niveau de digitalisation en date du";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE] = "Etudiants actifs dans au moins un cours hybride selon l'indicateur du niveau de digitalisation";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED] = "Étudiants inscrits dans au moins un cours hybride selon l'indicateur du niveau d'utilisation en date du";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE] = "Etudiants actifs dans au moins un cours hybride selon l'indicateur du niveau d'utilisation";
 $string[REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES] = "Cours analysés";
 
 $string['template_seconds'] = "%02d secondes";
 $string['template_minutes_seconds'] = "%02d minutes %02d secondes";
 $string['template_hours_minutes_seconds'] = "%02d heures %02d minutes %02d secondes";
 
-$string['measurement_period'] = "Période de mesure : du %s au %s.";
+$string['measurement_period_intro'] = "Période de mesure : ";
+$string['measurement_period'] = "du %s au %s.";
+$string['measurement_disclaimer'] = "Les mesures portant sur les périodes passées peuvent varier en fonction des changements effectués depuis (modification du contenu des cours, inscription/désinscription des étudiants aux cours et suppression des étudiants de la plateforme)";
 $string['end_processing'] = "Traitement terminé le %s.";
 $string['processing_duration'] = "Le traitement a duré %s."; 
 

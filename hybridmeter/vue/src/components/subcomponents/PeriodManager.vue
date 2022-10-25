@@ -1,5 +1,6 @@
 <template>
     <div id="periodmanager" class="hybridmeter-component">
+        <i>{{strings.measurement_disclaimer}}</i>
         <Message :messages="message.messages" :display="message.display" :params="message.params"/>
         <!-- Beginning date -->
         <div class="hybridmeter-field">
@@ -112,7 +113,7 @@ export default{
 
         const load = async () => {
             let keys = ["begin_date", "end_date", "save_modif", "success_program",
-                         "error_occured", "error_begin_after_end"];
+                         "error_occured", "error_begin_after_end", "measurement_disclaimer"];
             getStrings(keys).then(output => {
                 strings.value = output;
                 message.messages.error_network.message = strings.value.error_occured;

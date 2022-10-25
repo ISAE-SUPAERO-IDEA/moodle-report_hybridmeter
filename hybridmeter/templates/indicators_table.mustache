@@ -1,6 +1,8 @@
 <div id="indicateurs">
     <h3 class="main">{{title}}</h3>
-    <p>{{measurement_period}}</p>
+    <p>{{measurement_period_intro}} {{measurement_period}}<br/>
+        <i>{{measurement_disclaimer}}</i>
+    </p>
     <table>
         <thead>
             <tr>
@@ -18,24 +20,24 @@
                 <td>{{value_used_course}}</td>
             </tr>
             <tr>
-                <td>{{name_digitalisation_registered_students}}</td>
+                <td>{{name_nb_analysed_courses}}</td>
+                <td>{{value_nb_analysed_courses}}</td>
+            </tr>
+            <tr>
+                <td>{{name_digitalisation_registered_students}} {{processing_date}}</td>
                 <td>{{value_digitalisation_registered_students}}</td>
             </tr>
             <tr>
-                <td>{{name_digitalisation_active_students}}</td>
+                <td>{{name_digitalisation_active_students}} {{measurement_period}}</td>
                 <td>{{value_digitalisation_active_students}}</td>
             </tr>
             <tr>
-                <td>{{name_usage_registered_students}}</td>
+                <td>{{name_usage_registered_students}} {{processing_date}}</td>
                 <td>{{value_usage_registered_students}}</td>
             </tr>
             <tr>
-                <td>{{name_usage_active_students}}</td>
+                <td>{{name_usage_active_students}} {{measurement_period}}</td>
                 <td>{{value_usage_active_students}}</td>
-            </tr>
-            <tr>
-                <td>{{name_nb_analysed_courses}}</td>
-                <td>{{value_nb_analysed_courses}}</td>
             </tr>
         </tbody>
     </table>

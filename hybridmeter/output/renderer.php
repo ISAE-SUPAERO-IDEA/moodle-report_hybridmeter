@@ -259,6 +259,8 @@ class renderer extends plugin_renderer_base {
                 get_string('end_processing','report_hybridmeter'),
                 $end_processing
             );
+            $processing_date = date_parse($end_processing);
+            $processing_date = str_pad($processing_date["day"], 2, "0",STR_PAD_LEFT) . "/" . str_pad($processing_date["month"], 2, "0", STR_PAD_LEFT) . "/" . $processing_date["year"];
         }
         else {
             $string_end_processing = REPORT_HYBRIDMETER_NA;
@@ -274,10 +276,17 @@ class renderer extends plugin_renderer_base {
             $string_processing_duration = REPORT_HYBRIDMETER_NA;
         }
 
+        
+
+        
+        
         $params=array(
             "title" => get_string('last_processing_results', 'report_hybridmeter'),
+            "measurement_period_intro" => get_string('measurement_period_intro', 'report_hybridmeter'),
             "measurement_period" => $string_measurement_period,
+            "measurement_disclaimer" => get_string('measurement_disclaimer', 'report_hybridmeter'),
             "end_processing" => $string_end_processing,
+            "processing_date" => $processing_date,
             "processing_duration" => $string_processing_duration,
             "name_columnname" => get_string('indicator_name', 'report_hybridmeter'),
             "value_columnname" => get_string('number', 'report_hybridmeter'),
