@@ -2,6 +2,8 @@
 
 namespace report_hybridmeter\classes;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(__DIR__."/formatter.php");
 require_once(__DIR__."/utils.php");
 
@@ -17,10 +19,10 @@ abstract class test_scenario {
 
     public function test() {
         echo "<h1>Test : ".$this->name."</h1>";
-        echo "<h2>Inclusion des librairies</h2>";
+        echo "<h2>Inclusion of libraries</h2>";
         $this->inclusion();
-        echo "<p>Les librairies ont bien été incluses</p>";
-        echo "<h2>Lancement des tests</h2>";
+        echo "<p>Libraries have been included</p>";
+        echo "<h2>Launching the tests</h2>";
         $this->dump_config();
         $this->common_tests();
         $this->specific_tests();
@@ -30,33 +32,33 @@ abstract class test_scenario {
     abstract public function specific_tests();
 
     protected function dump_config() {
-        echo "<h3>Dump du fichier config.json</h3>";
+        echo "<h3>Dump of the config.json file</h3>";
 
         global $CFG;
 
-		$path=$CFG->dataroot."/hybridmeter/config.json";
+        $path=$CFG->dataroot."/hybridmeter/config.json";
 
         if (!file_exists($path))
-            echo "<p>Il semble qu'il n'y ait pas de fichier config.json</p>";
+            echo "<p>It seems that there is no config.json file</p>";
         else {
             $data = file_get_contents($path);
-            echo "<p>Voici le fichier brut</p>";
+            echo "<p>Here is the raw file</p>";
             var_dump($data);
-            echo "<p>Voici le fichier décodé</p>";
-			print_r(json_decode($data, true));
+            echo "<p>Here is the decoded file</p>";
+            print_r(json_decode($data, true));
         }
     }
 
-    protected function test_student_role() {
-        echo "<h3>Verification de la bonne configuration des rôles</h3>";
-
-        echo "<p>Voici le rôle étudiant défini dans les paramètres :</p>";
-
-        var_dump(\report_hybridmeter\classes\configurator::getInstance()->get_student_role());
-
-        echo "<p>Voici les rôles disponibles sur le serveur moodle : </p>";
-
+    protected function test_student_archetype() {
         global $DB;
+        
+        echo "<h3>Verification of the correct configuration of the roles</h3>";
+
+        echo "<p>This is the student archetype defined in the settings:</p>";
+
+        var_dump(\report_hybridmeter\classes\configurator::get_instance()->get_student_archetype());
+
+        echo "<p>The following roles are available on the moodle server: </p>";
 
         echo utils::objects_array_to_html($DB->get_records("role"));
     }

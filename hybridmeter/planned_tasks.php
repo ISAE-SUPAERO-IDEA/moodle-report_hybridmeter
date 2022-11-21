@@ -10,6 +10,6 @@ $context = context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
-$planned_tasks = data_provider::getInstance()->get_adhoc_tasks_list();
+$planned_tasks = data_provider::get_instance()->get_adhoc_tasks_list();
 
 echo json_encode($planned_tasks);

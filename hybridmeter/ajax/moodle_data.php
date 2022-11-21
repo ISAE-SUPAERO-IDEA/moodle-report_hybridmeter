@@ -1,28 +1,29 @@
 <?php
-	/*
-	AJAX endpoint to manage HybridMeter configuration
+//TODO : Standardize APIs response
+/*
+AJAX endpoint to manage HybridMeter configuration
 
-	*/
-	require_once(dirname(__FILE__)."/../../../config.php");
+*/
+require_once(dirname(__FILE__)."/../../../config.php");
 
-    header('Content-Type: text/json');
+header('Content-Type: text/json');
 
-    //Vérification des autorisations (rôle admin obligatoire)
+//Checking authorizations (admin role required)
 
-	require_login();
+require_login();
 
-	$context = \context_system::instance();
-	$PAGE->set_context($context);
-	has_capability('report/hybridmeter:all', $context) || die();
+$context = \context_system::instance();
+$PAGE->set_context($context);
+has_capability('report/hybridmeter:all', $context) || die();
 
-	$task  = required_param('task', PARAM_ALPHAEXT);
+$task  = required_param('task', PARAM_ALPHAEXT);
 
-	if ($task == "roles"){
-		$roles = $DB->get_records("role");
-		$output = json_encode(array_values($roles));
-	}
-	else{
-		$output = json_encode([]);
-	}
+if ($task == "roles"){
+    $roles = $DB->get_records("role");
+    $output = json_encode(array_values($roles));
+}
+else{
+    $output = json_encode([]);
+}
 
-	echo $output;
+echo $output;

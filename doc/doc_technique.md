@@ -29,7 +29,7 @@ La classe configurator a pour fonction de gérer les paramètres du plugin.
 
   
 
-On accède à l'instance de configurator via la méthode statique `configurator::getInstance()`
+On accède à l'instance de configurator via la méthode statique `configurator::get_instance()`
 
   
 
@@ -37,11 +37,11 @@ Les données de paramètre sont organisées sous forme de tableau clé-valeur et
 
   
 
-Dans le constructeur on initialise les paramètres avec leur valeur par défaut grâce à la fonction `set_default_value(string $key, mixed $value)` qui prend en paramètre une chaîne de caractères `$key` la clé, et sa valeur associée `$value` qui peut être de n'importe quel type supporté par [`json_encode`](https://www.php.net/manual/fr/function.json-encode.php).
+Dans le constructeur on initialise les paramètres avec leur valeur par défaut grâce à la fonction `set_default_value(string $key, $value)` qui prend en paramètre une chaîne de caractères `$key` la clé, et sa valeur associée `$value` qui peut être de n'importe quel type supporté par [`json_encode`](https://www.php.net/manual/fr/function.json-encode.php).
 
   
 
-Pour mettre à jour un paramètre, on utilise la fonction `update_key (string $key, mixed $value)` qui prend en paramètre une chaîne de caractères `$key` pour la clé, et sa valeur associée `$value`.
+Pour mettre à jour un paramètre, on utilise la fonction `update_key (string $key, $value)` qui prend en paramètre une chaîne de caractères `$key` pour la clé, et sa valeur associée `$value`.
 
   
 
@@ -56,7 +56,7 @@ array(
 
   
 
-C'est un singleton, dont la méthode statique `configurator::getInstance()` retourne la référence vers l'instance.
+C'est un singleton, dont la méthode statique `configurator::get_instance()` retourne la référence vers l'instance.
 
 {$CFG->dataroot}/hybridmeter/config.json
 ----------------------------------------
@@ -74,7 +74,7 @@ La classe `data_provider` est le point unique d'accès à la base de données da
 
   
 
-On y accède via la fonction statique `data_provider::getInstance()`.
+On y accède via la fonction statique `data_provider::get_instance()`.
 
   
 
@@ -104,7 +104,7 @@ array(
 
   
 
-C'est un singleton, dont la méthode statique `data_provider::getInstance()` retourne la référence vers l'instance.
+C'est un singleton, dont la méthode statique `data_provider::get_instance()` retourne la référence vers l'instance.
 
 classes/cache\_manager.php
 --------------------------
@@ -113,7 +113,7 @@ La classe cache\_manager permet de mettre en mémoire les résultats des traitem
 
   
 
-On y accède grâce à la méthode statique `cache_manager::getInstance()`.
+On y accède grâce à la méthode statique `cache_manager::get_instance()`.
 
   
 
@@ -131,7 +131,7 @@ Pour ce faire, de méthodes existent :
 
   
 
-C'est un singleton, dont la méthode statique `cache_manager::getInstance()` retourne la référence vers l'instance.
+C'est un singleton, dont la méthode statique `cache_manager::get_instance()` retourne la référence vers l'instance.
 
 classes/exporter.php
 --------------------
@@ -152,14 +152,14 @@ Pour ce faire nous utiliserons la classe `formatter`, décrite un peu plus bas.
 
 $example_data = array(
   array(
-    "id_moodle" => 1,
-    "fullname" => "Physique des fluides",
+    REPORT_HYBRIDMETER_FIELD_ID_MOODLE => 1,
+    REPORT_HYBRIDMETER_FIELD_FULLNAME => "Physique des fluides",
     "niveau_digitalisation" => 0.3,
     ...
   ),
   array(
-    "id_moodle" => 2,
-    "fullname" => "Théorie des jeux",
+    REPORT_HYBRIDMETER_FIELD_ID_MOODLE => 2,
+    REPORT_HYBRIDMETER_FIELD_FULLNAME => "Théorie des jeux",
     "niveau_digitalisation" => 0.5,
     ...
   ),
@@ -174,14 +174,14 @@ Le tableau des champs actuellement utilisés pour les traitements est codé en d
 ```php
 //Pour reprendre l'exemple ci-dessus :
 
-$example_fields = array("fullname", "niveau_digitalisation");
+$example_fields = array(REPORT_HYBRIDMETER_FIELD_FULLNAME, "niveau_digitalisation");
 
 //Avec ce tableau fields, le fichier CSV n'afficherait que le nom complet du cours et son niveau de digitalisation
 ```
 
 *   **$alias** : ce tableau est un tableau associatif qui à chaque nom de champ associe son énoncé humain à afficher en haut du CSV. Sans alias, le nom brut du champs est utilisé.
 
-"fullname" est ainsi associé à "Nom du cours" dans le tableau d'alias codé en dur dans constants.php
+FIELD_FULLNAME est ainsi associé à "Nom du cours" dans le tableau d'alias codé en dur dans constants.php
 
 *   **$csv** : c'est une référence vers une instance de l'objet `csv_export_writer` de moodle utilisé pour la création du CSV.
 *   **$delimiter** : c'est un chaîne de caractères décrivant le caractère de délimitation des champs à afficher dans le CSV. Par défaut il vaut "comma", c'est une virgule. Les valeurs supportées sont les suivantes : [`supported types(comma, tab, semicolon, colon, cfg)`](https://wimski.org/api/3.8/d5/d99/classcsv__export__writer.html#a26132b4a8a7bd633f393a26d30fce97d)
@@ -213,7 +213,7 @@ $example_exporter = new report_hybridmetrics\classes\exporter();
 $example_exporter->set_data($example_data);
 $example_exporter->auto_fields();
 
-//Le champ $fields de notre exporter sera ainsi array("id_moodle", "fullname", "niveau_digitalisation", ...)
+//Le champ $fields de notre exporter sera ainsi array(REPORT_HYBRIDMETER_FIELD_ID_MOODLE, REPORT_HYBRIDMETER_FIELD_FULLNAME, "niveau_digitalisation", ...)
 ```
 
 *   `set_alias (array $alias)` : cette méthode permet de modifier le tableau d'alias à utiliser.
@@ -291,14 +291,14 @@ Une telle fonction doit obligatoirement prendre deux paramètres :
 
 function nb_clicks_lambda($object, $parameters){
   //On récupère une instance de data_provider pour faire des appels à la BDD
-  $data_provider = data_provider::getInstance();
+  $data_provider = data_provider::get_instance();
   //On appelle la méthode (fictive) de data_provider qui retourne le nombre de clics du cours d'ID $id
   $clicks = $data_provider->get_course_clicks($object['id']);
   ...
   return $clicks;
 }
 
-//Dans classes/traitement.php
+//Dans classes/processing.php
 
 //On veut que pour chaque cours, son nombre de clicks soit affecté à la clé "nb_clicks" de son tableau associatif, pour ce faire :
 
@@ -311,7 +311,7 @@ $formatter->calculate_new_indicator("nb_clicks_lambda", "nb_clicks", array("para
 
 ```
 
-classes/traitement.php
+classes/processing.php
 ----------------------
 
 Cette classe est en charge de fournir la trame du traitement.
@@ -335,7 +335,7 @@ Le traitement est séquentiel et se déroule dans l'ordre suivant :
 7.  Enfin, il sérialise dans une même variable la variable `$generaldata`, le tableau avec les indicateurs cours par cours via la méthode `get_array` du formatter, et le temps de calcul, qu'il reporte dans un fichier à l'intérieur du moodledata, au chemin suivant : `"{$CFG->dataroot}/hybridmeter/records/serialized_data"`
 8.  Avant de terminer le traitement, le programme déclare qu'il a terminé son traitement avec la méthode `unset_as_running` de configurator
 
-classes/task/traitement.php
+classes/task/processing.php
 ---------------------------
 
 Cette classe est une réalisation de la classe abstraite `\core\task\adhoc_task` de Moodle, c'est-à-dire qu'elle sert à instancier des tâches ad hoc.
@@ -346,7 +346,7 @@ Une tâche ad hoc est une classe qui ne s'exécute que ponctuellement à un mome
 
 Cette classe contient deux méthodes : `get_name()` qui se contente de retourner le nom du plugin, et `execute()` qui sera executée au moment du traitement de la tâche ad hoc : elle se contente de signaler au configurator que la tâche adhoc a été exécutée, de créer une instance de la classe traitement et de lancer le traitement.
 
-classes/task/traitement\_regulier.php
+classes/task/cron_processing.php
 -------------------------------------
 
 Cette classe est une réalisation de la classe abstraite `\core\task\scheduled_task` de moodle, c'est-à-dire qu'elle sert à instancier des tâches à exécution périodique.

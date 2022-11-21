@@ -1,0 +1,212 @@
+#!/bin/bash
+
+ORIGIN_PWD=${PWD}
+
+BCR="\n\n\n"
+LCR="\n\n"
+ITAB="\t\t\t\t"
+
+help="hybridmeter_dev, the all-in-one tool for continuous integration of hybridmeter
+     ${LCR}Usage : hybridmeter_dev [-help|-h] [--] <autoconfig MOODLE_ROOT|autostage|build|stage> 
+     ${BCR}autoconfig MOODLE_ROOT\t\tAdd moodle root path and git root path in the hybrid_dev.env file
+     ${LCR}autostage\t\t\tStage changes to local moodle immediately and watch for changes
+     \n${ITAB}in the codebase
+     ${LCR}build\t\t\t\tBuild ZIP file of the plugin for deployment
+     ${LCR}stage\t\t\t\tStage changes to local moodle only once
+     ${BCR}Options :
+     \n\t--clear|-c\t\tClear terminal before every staging when autostage is enabled
+     \n\t--help|-h\t\tDisplay this screen
+     \n\t--keep-sass|-scss\tCompile SCSS file when staging even if compilation is disabled
+     \n\t--no-compilation|-nc\tDisable webpack compilation during staging
+     ${BCR}2022 ISAE-Supaero"
+
+VALID_MODES=("autoconfig" "autostage" "build" "stage")
+
+COMPILATION=1
+KEEP_SASS=0
+CLEAR=""
+
+in_options=1
+while [ $# -gt 0 ] && [ $in_options -eq 1 ]
+do
+    case $1 in
+    --clear | -c)
+        CLEAR="-c"
+        shift
+        ;;
+    --help | -h)
+        echo -e $help
+        exit 0
+        ;;
+    --keep-sass | -scss)
+        KEEP_SASS=1
+        shift
+        ;;
+    --no-compilation | -nc)
+        COMPILATION=0
+        shift
+        ;;
+    --)
+        in_options=0
+        shift
+        ;;
+    -*)
+        echo -e $help>&2
+        exit 1
+        ;;
+    *)
+        in_options=0
+        ;;
+    esac
+done
+
+SCRIPT_PATH=$(readlink -f $0)
+SCRIPT_DIR=$(dirname $SCRIPT_PATH)
+
+. ${SCRIPT_DIR}/hybrid_dev.env
+
+git_root_undefined=0
+moodle_root_undefined=0
+
+if [ -d "${HYBRIDMETER_GIT_ROOT}" ]
+then
+    SOURCE_PATH="${HYBRIDMETER_GIT_ROOT}/hybridmeter"
+    DEVTOOLS_PATH="${HYBRIDMETER_GIT_ROOT}/devtools"
+    VUE_PATH="${SOURCE_PATH}/vue"
+    VUE_STYLE_PATH="${VUE_PATH}/src/assets/style"
+    STYLE_PATH="${SOURCE_PATH}/assets/style"
+    AMD_PATH="${SOURCE_PATH}/amd"
+else
+    git_root_undefined=1
+fi
+
+if [ -d "${HYBRIDMETER_MOODLE_ROOT}" ]
+then
+    MOODLE_ROOT=${HYBRIDMETER_MOODLE_ROOT}
+    REPORT_PATH="${MOODLE_ROOT}/report"
+    HYBRIDMETER_PATH="${REPORT_PATH}/hybridmeter"
+    THEME_PATH="${MOODLE_ROOT}/theme"
+else
+    moodle_root_undefined=1
+fi
+
+if [ "$1" = "autoconfig" ]
+then
+    shift
+
+    if [ $# -eq 0 ]
+    then
+        echo -e $help>&2
+        exit 1
+    fi
+
+    if [ ! -d $1 ]
+    then
+        echo "$1 isn't a valid folder path">&2
+        exit 3
+    fi
+
+    moodle_root=$(readlink -f $1)
+    boost_scss_path=$(readlink -f "${moodle_root}/theme/boost/scss")
+    git_root=$(readlink -f "${SCRIPT_DIR}/../")
+    env_file="${SCRIPT_DIR}/hybrid_dev.env"
+    #vue_env_file="${git_root}/hybridmeter/vue/.env"
+
+    if [ -f ${env_file} ]
+    then
+        sed '/HYBRIDMETER_MOODLE_ROOT/d' ${env_file} > ${env_file}
+        sed '/HYBRIDMETER_GIT_ROOT/d' ${env_file} > ${env_file}
+    else
+        touch ${env_file}
+    fi
+
+    #if [ -f ${vue_env_file} ]
+    #then
+    #    sed '/MOODLE_BOOST_SCSS_PATH/d' ${vue_env_file} > ${vue_env_file}
+    #else
+    #    touch ${vue_env_file}
+    #fi
+
+    echo "HYBRIDMETER_MOODLE_ROOT=\"${moodle_root}\"" >> ${env_file}
+    echo "HYBRIDMETER_GIT_ROOT=\"${git_root}\"" >> ${env_file}
+
+    #echo "MOODLE_BOOST_SCSS_PATH=\"${boost_scss_path}\"" >> ${vue_env_file}
+
+    echo "Environment ready"
+    exit 0
+fi
+
+if [[ ! " ${VALID_MODES[*]} " =~ " $1 " ]]
+    then
+        echo -e $help>&2
+        exit 1
+elif [ $git_root_undefined -eq 1 ]
+    then
+        echo "[ERROR] The git root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH">&2
+        exit 2
+fi
+
+if [ "$1" = "build" ]
+then
+    if [ -d ${AMD_PATH}/src ]
+    then
+        rm -R ${AMD_PATH}/src
+    fi
+    cp -r ${VUE_PATH}/src ${AMD_PATH}
+
+    cd ${VUE_PATH} && npm run build && cd ${OLDPWD}
+    
+    error_code=$?
+    if [ $error_code -ne 0 ]
+    then
+        "[ERROR] An error occured during the webpacking, error code ${error_code}">&2
+        cd ${ORIGIN_PWD}
+        exit 5
+    fi
+
+    if [ -f "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip" ]
+    then
+        rm "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip"
+    fi
+    cd ${HYBRIDMETER_GIT_ROOT} && zip -x "/hybridmeter/vue/*" -r "report_hybridmeter.zip" "hybridmeter"  && cd ${OLDPWD}
+
+    error_code=$?
+    if [ $error_code -eq 0 ]
+    then
+        echo "[SUCCESS] Plugin successfully built"
+        exit 0
+    else
+        cd ${ORIGIN_PWD}
+        echo "[ERROR] An error occured during the building of the zip file, error code ${error_code}">&2
+        exit 5
+    fi
+fi
+
+if [ $moodle_root_undefined -eq 1 ]
+then
+    echo "[ERROR] The moodle root path isn't defined or isn't valid, please execute ./hybridemeter_dev autoconfig MOODLE_ROOT_PATH">&2
+    exit 3
+fi
+
+if [ "$1" = "autostage" ]
+then
+    while true
+    do
+        find ${SOURCE_PATH} -type f -name "*" ! -path "*hybridmeter/vue/node_modules*" ! -path "*hybridmeter/amd*" ! -path "*hybridmeter/vue/src/assets/themes*" | entr -d ${CLEAR} bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH} ${COMPILATION} ${KEEP_SASS}
+    done
+    exit 0
+elif [ "$1" = "stage" ]
+then
+    bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH} ${COMPILATION} ${KEEP_SASS}
+    error_code=$?
+    if [ $error_code -ne 0 ]
+    then
+        echo "[ERROR] An error occured during the stage, error code ${error_code}">&2
+        exit 4
+    else
+        exit 0
+    fi
+else
+    echo -e $help>&2
+    exit 1
+fi
