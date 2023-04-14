@@ -62,7 +62,6 @@ export default new Vuex.Store({
             };
 
             state.debug = config.debug;
-
             state.student_archetype = config.student_archetype;
         },
         UPDATE_BLACKLIST(state, blacklistData) {
@@ -76,6 +75,9 @@ export default new Vuex.Store({
         },
         UPDATE_STUDENT_ARCHETYPE(state, student_archetype) {
             state.student_archetype = student_archetype
+        },
+        UPDATE_DEBUG(state, debug) {
+            state.debug = debug
         },
     },
     actions: {
@@ -124,8 +126,9 @@ export default new Vuex.Store({
             };
             context.commit('UPDATE_PROGRAMMED_DATES', programmedDates);
         },
-        updateStudentArchetype(context, config) {
+        updateOtherData(context, config) {
             context.commit('UPDATE_STUDENT_ARCHETYPE', config.student_archetype);
+            context.commit('UPDATE_DEBUG', config.debug);
         },
     }
 })

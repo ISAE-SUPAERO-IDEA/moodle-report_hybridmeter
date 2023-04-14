@@ -7,8 +7,12 @@
                 <option v-for="role in roles" :key="role.id" :value="role.archetype">{{ role.archetype }}</option>
             </select>
         </div>
+        <div class="hybridmeter-field">
+            <label>{{ strings.debug_mode }}</label>
+            <input type="checkbox" v-model="debug">
+        </div>
         <div class="hybridmeter-control">
-            <button type="submit" class="btn btn-primary" @click="saveStudentArchetype">{{ strings.save_modif }}</button>
+            <button type="submit" class="btn btn-primary" @click="saveOtherData">{{ strings.save_modif }}</button>
         </div>
     </div>
 </template>
@@ -21,11 +25,13 @@ import Message from '../Message.vue'
 
 export default {
     setup() {
-        const { get, post, getStrings, updateStudentArchetype, displayParam, } = utils();
+        const { get, post, getStrings, updateOtherData, displayParam, } = utils();
 
         const store = useStore();
 
         const student_archetype = ref(undefined);
+
+        const debug = ref(undefined);
 
         const strings = ref([]);
 
@@ -51,6 +57,9 @@ export default {
         const dispatchCurrentArchetype = (archetype) => {
             student_archetype.value = archetype;
         };
+        const dispatchCurrentDebug = (d) => {
+            debug.value = d;
+        };
 
         store.watch(state => state.student_archetype, data => {
             dispatchCurrentArchetype(data);
@@ -62,7 +71,7 @@ export default {
         })
 
         const load = () => {
-            let keys = ["student_archetype", "save_modif", "student_archetype_updated", "error_occured"];
+            let keys = ["student_archetype", "save_modif", "student_archetype_updated", "error_occured", "debug_mode"];
             getStrings(keys).then(output => {
                 strings.value = output;
                 message.messages.error.message = strings.value.error_occured;
@@ -70,12 +79,24 @@ export default {
             });
 
             let data = [{ task : "roles" }];
+            dispatchCurrentDebug(store.state.debug) 
 
-            get("moodle_data", data).then(data => roles.value = data).then(dispatchCurrentArchetype(store.state.student_archetype));
+            get("moodle_data", data).then(data => roles.value = data).then(() => {
+                dispatchCurrentArchetype(store.state.student_archetype)
+            });
         }
+        store.watch(state => state.debug, debug => {
+            dispatchCurrentDebug(debug ? true : false) 
+            if(loading.value) {
+                loading.value = false;
+                store.dispatch('endLoading');
+                message.display = displayParam("success");
+            }
+        })
 
-        const saveStudentArchetype = () => {
-            if(store.state.student_archetype == student_archetype.value) {
+        const saveOtherData = () => {
+            if(store.state.student_archetype == student_archetype.value
+            && store.state.debug == debug.value) {
                 message.display = displayParam("success");
             }
             else {
@@ -83,7 +104,7 @@ export default {
                 var data = new FormData();
                 data.append('action', action);
                 data.append('student_archetype', student_archetype.value);
-                data.append('debug', store.state.debug);
+                data.append('debug', debug.value ? 1 : 0);
 
                 if(!loading.value) {
                     loading.value = true;
@@ -91,7 +112,7 @@ export default {
                 }
 
                 post(`configuration_handler`, data)
-                .then(updateStudentArchetype())
+                .then(updateOtherData())
                 .catch(error => {
                     loading.value = false;
                     store.dispatch('endLoading');
@@ -103,9 +124,10 @@ export default {
 
         return {
             student_archetype,
+            debug,
             strings,
             roles,
-            saveStudentArchetype,
+            saveOtherData,
             load,
             loading,
             message,

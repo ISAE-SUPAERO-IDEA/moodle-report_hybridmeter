@@ -132,8 +132,8 @@ export default function utils() {
         get("configuration_handler").then(config => store.dispatch('updateProgrammedDatesFromConfig', config))
     }
 
-    function updateStudentArchetype() {
-        get("configuration_handler").then(config => store.dispatch('updateStudentArchetype', config))
+    function updateOtherData() {
+        get("configuration_handler").then(config => store.dispatch('updateOtherData', config))
     }
 
     return {
@@ -149,7 +149,7 @@ export default function utils() {
         updateBlacklist,
         updateScheduledTime,
         updateProgrammedDates,
-        updateStudentArchetype,
+        updateOtherData,
         displayParam,
     }
 }
