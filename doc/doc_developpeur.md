@@ -16,6 +16,8 @@ Visual Studio Code permet d'accéder à vos fichiers sur la WSL depuis une insta
 
 Ainsi, vous profitez d'un environnement de travail optimal avec tout le confort de votre IDE habituel.
 
+De plus désactivez le cache javascript afin de ne pas avoir à le purger pendant le développement: Site administration ► Appearance ► AJAX and Javascript
+
 Configuration du gestionnaire de paquet npm
 ------------
 
@@ -40,7 +42,7 @@ Configuration
 
 Avant d'utiliser le plugin il est nécessaire de le configurer.
 
-Rendez-vous dans le répertoire ``devtools`` depuis la racine du git, munissez-vous du chemin vers la racine de votre moodle sur votre serveur web (répertoire dans lequel il y a le fichier ``config.php`` par exemple), et exécutez ``./hybridmeter_dev <RACINE_DE_MOODLE>``
+Rendez-vous dans le répertoire ``devtools`` depuis la racine du git, munissez-vous du chemin vers la racine de votre moodle sur votre serveur web (répertoire dans lequel il y a le fichier ``config.php`` par exemple), et exécutez ``./hybridmeter_dev autoconfig <RACINE_DE_MOODLE>``
 
 Un fichier hybrid_dev.env sera généré dans le répertoire et contiendra le lien vers le code source du plugin et celui vers la racine de moodle.
 
