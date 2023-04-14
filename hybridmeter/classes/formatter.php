@@ -43,7 +43,7 @@ class formatter {
     public function calculate_new_indicator($lambda, string $indicator_name, array $parameters = array()){
         $i = 1;
         foreach($this->data as $key => $value){
-            logger::log($indicator_name." id=". $key." (".$i."/".count($this->data).")");
+            logger::log("Computing indicator ".$indicator_name." for course id=". $key." (".$i."/".count($this->data).")");
             $this->data[$key][$indicator_name]=$lambda($value,$parameters);
             $i++;
         }

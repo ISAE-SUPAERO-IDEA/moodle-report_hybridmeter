@@ -34,6 +34,8 @@ class processing {
         $configurator = configurator::get_instance();
 
         $whitelist_ids = $data_provider->get_whitelisted_courses_ids();
+        logger::log("Whitelist: ".implode(", ", $whitelist_ids));
+
 
         $filtered = $data_provider->filter_living_courses_on_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
 
@@ -48,6 +50,7 @@ class processing {
     function launch() {
         global $CFG;
         global $SITE;
+        logger::log("Processing launched");
 
         $configurator = configurator::get_instance();
         $data_provider = data_provider::get_instance();

@@ -26,6 +26,7 @@ class utils {
     }
 
     public static function precondition_ids(array $ids_courses) {
+        
         $accumulated_precondition = array_reduce(
             $ids_courses,
             function($acc, $id) {
@@ -33,7 +34,6 @@ class utils {
             },
             true
         );
-
         if(!$accumulated_precondition)
             throw new Exception("IDs must be integers");
     }

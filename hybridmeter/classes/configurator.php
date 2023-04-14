@@ -65,8 +65,8 @@ class configurator {
         $this->set_default_value("save_blacklist_courses", []);
         $this->set_default_value("save_blacklist_categories", []);
 
-        if(!$blacklist_loaded)
-            $this->update_blacklisted_data();
+        /*if(!$blacklist_loaded)
+            $this->update_blacklisted_data();*/
     
         // Should save only if changes have been made
         $this->save();
@@ -271,6 +271,7 @@ class configurator {
     }
 
     public function update_blacklisted_data() {
+        logger::log("Update blacklist data");
         $data_provider = data_provider::get_instance();
         $courses_tree = $data_provider->get_courses_tree();
 
@@ -278,6 +279,7 @@ class configurator {
     }
 
     private function update_blacklisted_data_rec($tree) {
+        logger::log("Update blacklist data: ".$tree['data']->id);
         $blacklisted_courses = &$this->data["blacklisted_courses"];
         $blacklisted_categories = &$this->data["blacklisted_categories"];
 
