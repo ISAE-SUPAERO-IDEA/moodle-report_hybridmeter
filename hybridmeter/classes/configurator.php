@@ -57,15 +57,17 @@ class configurator {
         $this->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
         $this->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
 
-        $blacklist_loaded = (!array_key_exists("blacklisted_courses", $this->data) 
-            || !array_key_exists("blacklisted_categories", $this->data));
         
         $this->set_default_value("blacklisted_courses", []);
         $this->set_default_value("blacklisted_categories", []);
         $this->set_default_value("save_blacklist_courses", []);
         $this->set_default_value("save_blacklist_categories", []);
 
-        /*if(!$blacklist_loaded)
+        /*
+        $blacklist_loaded = (!array_key_exists("blacklisted_courses", $this->data) 
+            || !array_key_exists("blacklisted_categories", $this->data));
+        
+        if(!$blacklist_loaded)
             $this->update_blacklisted_data();*/
     
         // Should save only if changes have been made
