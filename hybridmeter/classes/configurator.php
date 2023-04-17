@@ -57,7 +57,8 @@ class configurator {
         $this->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
         $this->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
 
-        
+        $this->set_default_value("autoscheduler", "none");
+
         $this->set_default_value("blacklisted_courses", []);
         $this->set_default_value("blacklisted_categories", []);
         $this->set_default_value("save_blacklist_courses", []);
@@ -120,6 +121,10 @@ class configurator {
 
     public function unset_debug(){
         $this->update_key('debug', false);
+    }
+    // Get autoscheduler status
+    public function get_autoscheduler(){
+        return $this->data['autoscheduler'];
     }
 
     // Update coefficients for a given $type (dynamic or static)

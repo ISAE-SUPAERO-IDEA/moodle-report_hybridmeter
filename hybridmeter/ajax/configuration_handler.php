@@ -34,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $configurator->update([
             "begin_date" => $begin_date, 
             "end_date" => $end_date,
-            "debug" => $debug,
         ]);
     }
     else if ($action == "schedule") {
