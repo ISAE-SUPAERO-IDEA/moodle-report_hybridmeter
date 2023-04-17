@@ -20,13 +20,13 @@ class logger {
 
     public static function log_var_dump($object) {
         if (configurator::get_instance()->get_debug()) {
-            error_log(self::var_dump_ret($object));
+            error_log("[Hybridmeter] ".self::var_dump_ret($object));
         }
     }
       
     public static function log($object) {
         if (configurator::get_instance()->get_debug()) {
-            error_log(print_r($object, 1));
+            error_log("[Hybridmeter] ".print_r($object, 1));
         }
     }
 

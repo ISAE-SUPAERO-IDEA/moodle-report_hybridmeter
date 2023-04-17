@@ -271,7 +271,7 @@ class configurator {
     }
 
     public function update_blacklisted_data() {
-        logger::log("Update blacklist data");
+        logger::log("Update blacklist");
         $data_provider = data_provider::get_instance();
         $courses_tree = $data_provider->get_courses_tree();
 
@@ -279,7 +279,7 @@ class configurator {
     }
 
     private function update_blacklisted_data_rec($tree) {
-        logger::log("Update blacklist data: ".$tree['data']->id);
+        logger::log("Update blacklist for course_id=".$tree['data']->id);
         $blacklisted_courses = &$this->data["blacklisted_courses"];
         $blacklisted_categories = &$this->data["blacklisted_categories"];
 

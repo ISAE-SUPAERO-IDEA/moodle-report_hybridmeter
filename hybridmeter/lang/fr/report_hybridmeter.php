@@ -106,7 +106,7 @@ $string['success_unschedule'] = "Lancement déprogrammé avec succès";
 $string['error_past_schedule'] = "La date de lancement soumise est dans le passé";
 
 $string['student_archetype'] = "Archetype du rôle étudiant";
-$string['student_archetype_updated'] = "L'archetype du rôle étudiant a bien été mis à jour";
+$string['student_archetype_updated'] = "Les données ont bien été mises à jour";
 
 $string['debug_mode'] = "Mode debug";
 

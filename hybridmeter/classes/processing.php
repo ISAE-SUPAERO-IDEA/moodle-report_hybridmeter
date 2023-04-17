@@ -28,16 +28,18 @@ class processing {
     protected $end_date;
 
     function __construct(){
+        logger::log("# Processing: initializing");
         $timestamp = REPORT_HYBRIDMETER_NOW;
 
         $data_provider = data_provider::get_instance();
         $configurator = configurator::get_instance();
 
         $whitelist_ids = $data_provider->get_whitelisted_courses_ids();
-        logger::log("Whitelist: ".implode(", ", $whitelist_ids));
-
+        logger::log("Whitelisted course ids: ".implode(", ", $whitelist_ids));
 
         $filtered = $data_provider->filter_living_courses_on_period($whitelist_ids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
+        $filtered_ids = array_map(function ($a) { return $a->id; }, $filtered);
+        logger::log("Active course ids: ".implode(", ", $filtered_ids));
 
         $this->formatter=new formatter($filtered);
         
@@ -50,7 +52,7 @@ class processing {
     function launch() {
         global $CFG;
         global $SITE;
-        logger::log("Processing launched");
+        logger::log("# Processing: blacklist computation");
 
         $configurator = configurator::get_instance();
         $data_provider = data_provider::get_instance();
@@ -60,6 +62,8 @@ class processing {
         $configurator->update_blacklisted_data();
 
         // Calculation of detailed indicators
+
+        logger::log("# Processing: course indicators computation");
 
         $this->formatter->calculate_new_indicator(
             function($object, $parameters){
@@ -156,10 +160,12 @@ class processing {
             'raw_data',
             'raw_data'
         );
-
+        
         $data_out = $this->formatter->get_array();
 
+
         // Calculation of general indicators
+        logger::log("# Processing: global indicators computation");
 
         $generaldata=array();
 
@@ -218,6 +224,7 @@ class processing {
         $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES] = $this->formatter->get_length_array();
 
         // Data exportation
+        logger::log("# Processing: serializing results");
         
         $this->end_date->setTimestamp(strtotime("now"));
 
@@ -253,6 +260,7 @@ class processing {
         // Log and task management
 
         $configurator->unset_as_running();
+        logger::log("# Processing: done");
 
         return $data_out;
     }
