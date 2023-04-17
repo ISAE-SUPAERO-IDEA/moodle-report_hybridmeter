@@ -45,7 +45,6 @@ export default {
 
         const loadedChildren = ref(false)
 
-        const loading = ref(false)
 
         watch(props, data => {
             strings.value = data.strings;
@@ -116,18 +115,13 @@ export default {
         }
 
         function manage_element_blacklist(type, value, id) {
-            if(!loading.value) {
-                loading.value = true;
-                store.dispatch('beginLoading');
-            }
-
             var data = new FormData();
             data.append('task', 'manage_blacklist');
             data.append('id', id);
             data.append('type', type);
             data.append('value', value);
             return post('blacklist_tree_handler', data)
-            .then(updateBlacklist())
+            .then(() => updateBlacklist())
         }
 
         const manage_course_blacklist = (course) => {
@@ -136,10 +130,6 @@ export default {
 
         store.watch(state => state.blacklistData, blacklistData => {
             updateDisplayedBlacklist(blacklistData);
-            if(loading.value){
-                loading.value = false;
-                store.dispatch("endLoading");
-            }
         })
 
         const manage_category_blacklist = () => {
@@ -170,7 +160,6 @@ export default {
 
         return {
             category_id,
-            loading,
             strings,
             tree,
             expanded,
