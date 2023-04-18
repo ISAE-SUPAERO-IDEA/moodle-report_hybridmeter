@@ -37,8 +37,6 @@ export default {
 
         const roles = ref([]);
 
-        const loading = ref(false);
-
         const message = reactive({
             messages : {
                 error : {
@@ -63,11 +61,6 @@ export default {
 
         store.watch(state => state.student_archetype, data => {
             dispatchCurrentArchetype(data);
-            if(loading.value) {
-                loading.value = false;
-                message.display = displayParam("success");
-                store.dispatch("endLoading");
-            }
         })
 
         const load = () => {
@@ -87,11 +80,6 @@ export default {
         }
         store.watch(state => state.debug, debug => {
             dispatchCurrentDebug(debug ? true : false) 
-            if(loading.value) {
-                loading.value = false;
-                store.dispatch('endLoading');
-                message.display = displayParam("success");
-            }
         })
 
         const saveOtherData = () => {
@@ -106,18 +94,10 @@ export default {
                 data.append('student_archetype', student_archetype.value);
                 data.append('debug', debug.value ? 1 : 0);
 
-                if(!loading.value) {
-                    loading.value = true;
-                    store.dispatch('beginLoading');
-                }
-
                 post(`configuration_handler`, data)
-                .then(updateOtherData())
-                .catch(error => {
-                    loading.value = false;
-                    store.dispatch('endLoading');
-                    message.params = [error.response.status]
-                    message.display = displayParam("error");
+                .then(async () => {
+                    await updateOtherData();
+                    message.display = displayParam("success");
                 });
             }
         }
@@ -129,7 +109,6 @@ export default {
             roles,
             saveOtherData,
             load,
-            loading,
             message,
         }
     },

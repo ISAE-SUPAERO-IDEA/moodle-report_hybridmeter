@@ -121,7 +121,7 @@ export default{
                 }
 
                 post(`configuration_handler`, data)
-                .then(updateScheduledTime())
+                .then(() => updateScheduledTime())
                 .catch(error => {
                     loading.value = false;
                     store.dispatch('endLoading');

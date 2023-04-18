@@ -57,16 +57,19 @@ class configurator {
         $this->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
         $this->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
 
-        $blacklist_loaded = (!array_key_exists("blacklisted_courses", $this->data) 
-            || !array_key_exists("blacklisted_categories", $this->data));
-        
+        $this->set_default_value("autoscheduler", "none");
+
         $this->set_default_value("blacklisted_courses", []);
         $this->set_default_value("blacklisted_categories", []);
         $this->set_default_value("save_blacklist_courses", []);
         $this->set_default_value("save_blacklist_categories", []);
 
+        /*
+        $blacklist_loaded = (!array_key_exists("blacklisted_courses", $this->data) 
+            || !array_key_exists("blacklisted_categories", $this->data));
+        
         if(!$blacklist_loaded)
-            $this->update_blacklisted_data();
+            $this->update_blacklisted_data();*/
     
         // Should save only if changes have been made
         $this->save();
@@ -118,6 +121,10 @@ class configurator {
 
     public function unset_debug(){
         $this->update_key('debug', false);
+    }
+    // Get autoscheduler status
+    public function get_autoscheduler(){
+        return $this->data['autoscheduler'];
     }
 
     // Update coefficients for a given $type (dynamic or static)
@@ -271,6 +278,7 @@ class configurator {
     }
 
     public function update_blacklisted_data() {
+        logger::log("Update blacklist");
         $data_provider = data_provider::get_instance();
         $courses_tree = $data_provider->get_courses_tree();
 
@@ -278,6 +286,7 @@ class configurator {
     }
 
     private function update_blacklisted_data_rec($tree) {
+        logger::log("Update blacklist for course_id=".$tree['data']->id);
         $blacklisted_courses = &$this->data["blacklisted_courses"];
         $blacklisted_categories = &$this->data["blacklisted_categories"];
 

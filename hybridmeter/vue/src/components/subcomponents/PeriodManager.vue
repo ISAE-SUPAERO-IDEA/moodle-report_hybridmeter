@@ -100,7 +100,7 @@ export default{
                     message.params = [error.response.status]
                     message.display = displayParam("error_network");
                 })
-                .then(updateProgrammedDates());
+                .then(() => updateProgrammedDates());
             }
         }
 

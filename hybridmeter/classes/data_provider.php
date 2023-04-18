@@ -350,15 +350,16 @@ class data_provider {
 
         $config = configurator::get_instance();
         $data = $config->get_data();
-        $blacklisted_courses = array_keys($data["blacklisted_courses"]);
-        
-        // the course that matches the site is blacklisted by default
-        array_push($blacklisted_courses, 1);
 
+        // the course that matches the site is blacklisted by default
+        $blacklisted_courses = [1];
+        forEach($data["blacklisted_courses"] as $course_id => $value) {
+            if ($value==1) $blacklisted_courses[] = $course_id;
+        }
+        
         $sql = "SELECT course.id AS id 
                   FROM ".$DB->get_prefix()."course AS course
                  WHERE true";
-         
         if (count($blacklisted_courses)>0) {
             $sql .= " AND course.id NOT IN (".implode(",",$blacklisted_courses).")";
         }
@@ -371,7 +372,6 @@ class data_provider {
             },
             $records
         );
-
         return $output;
     }
 
@@ -409,6 +409,10 @@ class data_provider {
         );
 
         $records = $DB->get_records_sql($sql, $params);
+        forEach($records as &$record) {
+            $record->id = intval($record->id);
+            $record->category_id = intval($record->category_id);
+        }
         
         return $records;
     }

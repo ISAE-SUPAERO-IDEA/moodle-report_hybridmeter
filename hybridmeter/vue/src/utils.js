@@ -32,8 +32,10 @@ export default function utils() {
         const strings_ref = buildStringsArgument(keys, constants.PLUGIN_FRANKENSTYLE);
 
         return get_strings(strings_ref)
-        .then(strings => buildStringsObject(keys, strings))
-        .then(store.dispatch('endLoading'));
+        .then(strings => { 
+            store.dispatch('endLoading'); 
+            return buildStringsObject(keys, strings);
+        });
     }
     
     function get(endpointName, params = []) {
@@ -54,7 +56,11 @@ export default function utils() {
             }
         )
 
-        return myaxios.get(endpointFile + data).then(store.dispatch('endLoading')).then(response => response.data);
+        return myaxios.get(endpointFile + data)
+            .then(response => { 
+                store.dispatch('endLoading')
+                return response.data
+            });
     }
     
     function post(endpointName, data) {
@@ -64,8 +70,10 @@ export default function utils() {
         let endpointFile = endpointName + ".php";
 
         return myaxios.post(endpointFile, data)
-            .then(store.dispatch('endLoading'))
-            .then(response => response.data);
+            .then(response => {  
+                store.dispatch('endLoading')
+                return response.data;
+            });
     }
 
     function postConfig(endpointName, data) {
@@ -75,9 +83,11 @@ export default function utils() {
         let endpointFile = endpointName + ".php";
 
         return myaxios.post(endpointFile, data)
-            .then(loadConfig())
-            .then(store.dispatch('endLoading'))
-            .then(response => response.data);
+            .then((response) => { 
+                loadConfig();
+                store.dispatch('endLoading');
+                return response.data;
+            });
     }
 
     function date_to_ui(date) {
@@ -117,23 +127,23 @@ export default function utils() {
     }
 
     function loadConfig() {
-        get("configuration_handler").then(config => store.dispatch('loadConfig', config))
+        return get("configuration_handler").then(config => store.dispatch('loadConfig', config))
     }
 
     function updateBlacklist() {
-        get("configuration_handler").then(config => store.dispatch('updateBlacklistFromConfig', config))
+        return get("configuration_handler").then(config => store.dispatch('updateBlacklistFromConfig', config))
     }
 
     function updateScheduledTime() {
-        get("configuration_handler").then(config => store.dispatch('updateScheduledTimeFromConfig', config))
+        return get("configuration_handler").then(config => store.dispatch('updateScheduledTimeFromConfig', config))
     }
 
     function updateProgrammedDates() {
-        get("configuration_handler").then(config => store.dispatch('updateProgrammedDatesFromConfig', config))
+        return get("configuration_handler").then(config => store.dispatch('updateProgrammedDatesFromConfig', config))
     }
 
     function updateOtherData() {
-        get("configuration_handler").then(config => store.dispatch('updateOtherData', config))
+        return get("configuration_handler").then(config => store.dispatch('updateOtherData', config))
     }
 
     return {

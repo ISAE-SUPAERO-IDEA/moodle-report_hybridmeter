@@ -106,7 +106,7 @@ $string['success_unschedule'] = "Calculation unscheduled with success";
 $string['error_past_schedule'] = "Scheduled date needs to be in the future";
 
 $string['student_archetype'] = "Student role archetype";
-$string['student_archetype_updated'] = "L'archetype du rôle étudiant a bien été mis à jour";
+$string['student_archetype_updated'] = "Data successfully updated";
 
 $string['debug_mode'] = "Debug mode";
 
