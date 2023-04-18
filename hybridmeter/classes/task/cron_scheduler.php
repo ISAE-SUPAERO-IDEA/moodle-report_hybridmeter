@@ -50,7 +50,7 @@ class cron_scheduler extends \core\task\scheduled_task {
             if ($configured) {
                 $configurator->update([
                     "begin_date" => $begin, 
-                    "end_date" => $end,
+                    "end_date" => $end - 1,
                 ]);
                 $configurator->schedule_calculation($end);
             }
