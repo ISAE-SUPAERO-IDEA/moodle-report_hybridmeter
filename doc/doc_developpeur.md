@@ -46,7 +46,15 @@ Rendez-vous dans le répertoire ``devtools`` depuis la racine du git, munissez-v
 
 Un fichier hybrid_dev.env sera généré dans le répertoire et contiendra le lien vers le code source du plugin et celui vers la racine de moodle.
 
-Il est ensuite nécessaire d'installer les paquets ``entr``, ``rsync``, et ``npm`` si ce n'est pas déjà fait : ``sudo apt-get install entr rsync npm``
+Il est ensuite nécessaire d'installer les paquets ``inotify-tools``, ``rsync``, et ``npm`` si ce n'est pas déjà fait
+
+```bash
+# Avec APT
+sudo apt-get update && sudo apt-get install inotify-tools rsync npm
+
+# Avec DNF
+sudo dnf update && sudo dnf install inotify-tools rsync npm
+```
 
 Nous vous recommandons enfin d'ajouter le chemin vers le répertoire ``devtools`` dans votre ``.bashrc`` afin de pouvoir executer la commande ``hybridmeter_dev`` depuis n'importe quel répertoire, pour cela rendez-vous dans le répertoire ``devtools`` et éxecutez :
 ```bash

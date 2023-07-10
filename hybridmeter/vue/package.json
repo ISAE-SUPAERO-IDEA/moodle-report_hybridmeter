@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npx sass --no-source-map ./src/assets/style/management.scss ../styles.css; npx webpack build --mode development --progress",
     "build": "npx webpack build --mode production --progress",
-    "sass" : "npx sass --no-source-map ./src/assets/style/management.scss ../styles.css",
+    "sass": "npx sass --no-source-map ./src/assets/style/management.scss ../styles.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "IDEA ISAE-Supaero",

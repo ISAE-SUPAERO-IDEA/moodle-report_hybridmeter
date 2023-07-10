@@ -190,10 +190,7 @@ fi
 
 if [ "$1" = "autostage" ]
 then
-    while true
-    do
-        find ${SOURCE_PATH} -type f -name "*" ! -path "*hybridmeter/vue/node_modules*" ! -path "*hybridmeter/amd*" ! -path "*hybridmeter/vue/src/assets/themes*" | entr -d ${CLEAR} bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH} ${COMPILATION} ${KEEP_SASS}
-    done
+    while FILE_MODIFIED=$(inotifywait -r -e modify --format "%w%f" $(find ${SOURCE_PATH} -type f -name "*" ! -path "*hybridmeter/vue/node_modules*" ! -path "*hybridmeter/amd*" ! -path "*hybridmeter/vue/src/assets/themes*")); do bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH} ${COMPILATION} ${KEEP_SASS} ${FILE_MODIFIED}; done
     exit 0
 elif [ "$1" = "stage" ]
 then
