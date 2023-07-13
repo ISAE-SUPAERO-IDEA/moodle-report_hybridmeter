@@ -38,8 +38,8 @@ class data_provider {
         $output=array();
 
         $sql = "SELECT modules.name, count(modules.name) AS count
-                  FROM ".$DB->get_prefix()."course_modules course_modules
-                  JOIN ".$DB->get_prefix()."modules modules ON course_modules.module = modules.id
+                  FROM {course_modules} course_modules
+                  JOIN {modules} modules ON course_modules.module = modules.id
                  WHERE course_modules.course = ?
               GROUP BY modules.name";
 
@@ -49,12 +49,12 @@ class data_provider {
             $output[$object->name] = $object->count;
         }
 
-        $sql = "SELECT ".$DB->get_prefix()."modules.name AS name, 0 AS count
-                  FROM ".$DB->get_prefix()."modules
+        $sql = "SELECT modules.name AS name, 0 AS count
+                  FROM {modules} modules
                  WHERE name NOT IN (
                     SELECT modules.name AS name
-                      FROM ".$DB->get_prefix()."course_modules course_modules
-                      JOIN ".$DB->get_prefix()."modules modules ON course_modules.module = modules.id
+                      FROM {course_modules} course_modules
+                      JOIN {modules} modules ON course_modules.module = modules.id
                      WHERE course_modules.course = ?
                   GROUP BY modules.name
                 )";
@@ -74,9 +74,9 @@ class data_provider {
         $student_archetype = configurator::get_instance()->get_student_archetype();
 
         $sql = "SELECT count(DISTINCT logs.id) AS count
-                  FROM ".$DB->get_prefix()."logstore_standard_log logs
-                  JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
-                  JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
+                  FROM {logstore_standard_log} logs
+                  JOIN {role_assignments} assign ON logs.userid = assign.userid
+                  JOIN {role} role ON assign.roleid = role.id
                  WHERE role.archetype = :archetype
                        AND logs.eventname like '%course_viewed'
                        AND logs.courseid = :courseid
@@ -118,9 +118,9 @@ class data_provider {
         $where_compil .= ")";
 
         $sql = "SELECT count(DISTINCT logs.userid) AS count
-                  FROM ".$DB->get_prefix()."logstore_standard_log logs
-                  JOIN ".$DB->get_prefix()."role_assignments assign ON (logs.userid = assign.userid AND logs.contextid = assign.contextid)
-                  JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
+                  FROM {logstore_standard_log} logs
+                  JOIN {role_assignments} assign ON (logs.userid = assign.userid AND logs.contextid = assign.contextid)
+                  JOIN {role} role ON assign.roleid = role.id
                  WHERE role.archetype = :archetype
                        AND eventname like '%course_viewed'
                        AND logs.contextlevel = :coursecontext
@@ -144,10 +144,10 @@ class data_provider {
         global $DB;
         $student_archetype = configurator::get_instance()->get_student_archetype();
 
-        $sql = "SELECT count(DISTINCT role.id) AS count
-                  FROM ".$DB->get_prefix()."context context
-                  JOIN ".$DB->get_prefix()."role_assignments assign ON context.id = assign.contextid
-                  JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
+        $sql = "SELECT count(DISTINCT assign.userid) AS count
+                  FROM {context} context
+                  JOIN {role_assignments} assign ON context.id = assign.contextid
+                  JOIN {role} role ON assign.roleid = role.id
                  WHERE role.archetype = :archetype
                        AND context.instanceid = :instanceid
                        AND context.contextlevel = :coursecontext";
@@ -204,10 +204,10 @@ class data_provider {
         $student_archetype = configurator::get_instance()->get_student_archetype();
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
-                  FROM ".$DB->get_prefix()."logstore_standard_log logs
-                  JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
-                  JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
-                  JOIN ".$DB->get_prefix()."context context ON logs.contextid = context.id
+                  FROM {logstore_standard_log} logs
+                  JOIN {role_assignments} assign ON logs.userid = assign.userid
+                  JOIN {role} role ON assign.roleid = role.id
+                  JOIN {context} context ON logs.contextid = context.id
                  WHERE role.archetype = :archetype
                        AND courseid = :courseid
                        AND logs.target = 'course_module'
@@ -241,7 +241,7 @@ class data_provider {
     public function get_children_courses_ordered(int $id_category): array {
         global $DB;
 
-        $sql = "SELECT * from ".$DB->get_prefix()."course
+        $sql = "SELECT * from {course}
                  WHERE category = ?
               ORDER BY sortorder ASC";
 
@@ -262,7 +262,7 @@ class data_provider {
     public function get_children_categories_ordered(int $id_category): array {
         global $DB;
 
-        $sql = "SELECT * from ".$DB->get_prefix()."course_categories
+        $sql = "SELECT * from {course_categories}
                  WHERE parent = ? 
               ORDER BY sortorder ASC";
 
@@ -305,21 +305,29 @@ class data_provider {
         );
     }
 
-    public function get_courses_tree(int $id_category = 1): array {
+    public function get_courses_tree(): array {
         global $DB;
 
-        $children_categories = $this->get_children_categories_ordered($id_category);
-        $children_courses = $this->get_children_courses_ordered($id_category);
+        $lowest_parent = $DB->get_field_sql('SELECT MIN(parent) FROM {course_categories}');
+
+        return $this->get_courses_tree_rec($lowest_parent, true);
+    }
+
+    public function get_courses_tree_rec(int $id_category, bool $root = false): array {
+        global $DB;
+
         $cat_data = [];
-
-
         $cat_data['data'] = $DB->get_record("course_categories", array("id" => $id_category));
 
-        $cat_data['children_courses'] = $children_courses;
+        if(!$root) {
+            $children_courses = $this->get_children_courses_ordered($id_category);
+            $cat_data['children_courses'] = $children_courses;
+        }
 
+        $children_categories = $this->get_children_categories_ordered($id_category);
         $cat_data['children_categories'] = array_map(
             function ($category) {
-                return $this->get_courses_tree(intval($category->id));
+                return $this->get_courses_tree_rec(intval($category->id));
             },
             $children_categories
         );
@@ -358,7 +366,7 @@ class data_provider {
         }
         
         $sql = "SELECT course.id AS id 
-                  FROM ".$DB->get_prefix()."course AS course
+                  FROM {course} AS course
                  WHERE true";
         if (count($blacklisted_courses)>0) {
             $sql .= " AND course.id NOT IN (".implode(",",$blacklisted_courses).")";
@@ -392,11 +400,11 @@ class data_provider {
 
         $sql = "SELECT DISTINCT course.id AS id, course.idnumber AS idnumber, course.fullname AS fullname,
                        category.id AS category_id, category.name AS category_name
-                  FROM ".$DB->get_prefix()."course course
-                  JOIN ".$DB->get_prefix()."logstore_standard_log logs ON course.id = logs.courseid
-                  JOIN ".$DB->get_prefix()."role_assignments assign ON logs.userid = assign.userid
-                  JOIN ".$DB->get_prefix()."role role ON assign.roleid = role.id
-                  JOIN ".$DB->get_prefix()."course_categories category ON category.id = course.category
+                  FROM {course} course
+                  JOIN {logstore_standard_log} logs ON course.id = logs.courseid
+                  JOIN {role_assignments} assign ON logs.userid = assign.userid
+                  JOIN {role} role ON assign.roleid = role.id
+                  JOIN {course_categories} category ON category.id = course.category
                  WHERE role.archetype = :archetype
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
                        AND logs.eventname like '%course_viewed'

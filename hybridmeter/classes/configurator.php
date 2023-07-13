@@ -35,8 +35,8 @@ class configurator {
         }
         // Read data from configuration file if it exists
         else{
-            $this->data = file_get_contents($this->path);
-            $this->data = json_decode($this->data, true);
+            $data = file_get_contents($this->path);
+            $this->data = json_decode($data, true);
         }
         // Sanitize data
         $now = new DateTime("now");
@@ -281,6 +281,7 @@ class configurator {
         logger::log("Update blacklist");
         $data_provider = data_provider::get_instance();
         $courses_tree = $data_provider->get_courses_tree();
+        logger::log($data_provider->get_courses_tree());
 
         $this->update_blacklisted_data_rec($courses_tree);
     }

@@ -87,12 +87,40 @@ Nous vous recommandons d'installer le plugin Vue.js devtools, qui propose tout u
 Règles de codage moodle
 ==================================
 
-La communauté Moodle impose des règles de codage pour assurer le bon fonctionnement et l'homogénéité du coeur du programme et des plugins.
+La communauté Moodle impose des règles de codage pour assurer le bon fonctionnement et l'homogénéité du programme.
 
 La tabulation doit par exemple être constituée de quatre espaces, et il faut laisser un saut de ligne en fin de fichier sans ne jamais fermer la balise PHP...
 
-la liste exhaustive de cette règle est documentée sur [ce site](https://moodledev.io/general/development/policies/codingstyle)
+les règles de codages sont listées sur [ce site](https://moodledev.io/general/development/policies/codingstyle)
 
 Il existe également un plugin qui permet de vérifier la bonne syntaxe de son code. Le plugin s'appelle code checker et est téléchargeable [sur le store moodle](https://moodle.org/plugins/local_codechecker)
 
 Pour l'utiliser, il suffit de se rendre dans l'Administration du site > Development > Code Checker et de renseigner la cible des fichiers à analyser, dans notre cas ``report/hybridmeter``
+
+Requêtes SQL utile au développement 
+==================================
+
+Voici une requête SQL utile au débogage sur un environnement de développement. Notez que le préfixe de nos tables est "mdl_" et que cela peut varier selon les installations.
+
+N'hésitez pas à adapter la requête pour répondre à votre besoin spécifique.
+
+```sql
+SELECT 
+    log.id, 
+    log.eventname, 
+    user.username, 
+    course.fullname, 
+    DATE_FORMAT(FROM_UNIXTIME(log.timecreated), '%Y-%H:%i:%s') 
+FROM 
+    mdl_logstore_standard_log as log 
+INNER JOIN 
+    mdl_user as user 
+ON 
+    log.userid = user.id 
+INNER JOIN 
+    mdl_course as course 
+ON 
+    log.courseid = course.id 
+WHERE 
+    user.username != 'admin';
+```
