@@ -194,7 +194,7 @@ then
     exit 0
 elif [ "$1" = "stage" ]
 then
-    bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH} ${COMPILATION} ${KEEP_SASS}
+    bash ${DEVTOOLS_PATH}/stage_to_moodle.sh ${SOURCE_PATH} ${REPORT_PATH} ${VUE_PATH} ${AMD_PATH} ${COMPILATION} ${KEEP_SASS} ${FILE_MODIFIED}
     error_code=$?
     if [ $error_code -ne 0 ]
     then
