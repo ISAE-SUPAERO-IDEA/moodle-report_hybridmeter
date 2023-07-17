@@ -168,7 +168,10 @@ then
     then
         rm "${HYBRIDMETER_GIT_ROOT}/report_hybridmeter.zip"
     fi
-    cd ${HYBRIDMETER_GIT_ROOT} && zip -x "/hybridmeter/vue/*" -r "report_hybridmeter.zip" "hybridmeter"  && cd ${OLDPWD}
+    RELATIVE_VUE_DIR="${VUE_PATH#/${HYBRIDMETER_GIT_ROOT}}"
+    RELATIVE_SOURCE_DIR="${SOURCE_PATH#/${HYBRIDMETER_GIT_ROOT}}"
+    echo "${RELATIVE_VUE_DIR}/*"
+    cd ${HYBRIDMETER_GIT_ROOT} && zip -x "${RELATIVE_VUE_DIR}/*" -r "report_hybridmeter.zip" "${RELATIVE_SOURCE_DIR}" && cd ${OLDPWD}
 
     error_code=$?
     if [ $error_code -eq 0 ]
