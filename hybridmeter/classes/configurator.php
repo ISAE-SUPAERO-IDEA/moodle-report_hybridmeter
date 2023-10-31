@@ -281,38 +281,42 @@ class configurator {
         logger::log("Update blacklist");
         $data_provider = data_provider::get_instance();
         $courses_tree = $data_provider->get_courses_tree();
-        logger::log($data_provider->get_courses_tree());
+        logger::log($courses_tree);
 
         $this->update_blacklisted_data_rec($courses_tree);
     }
 
     private function update_blacklisted_data_rec($tree) {
-        logger::log("Update blacklist for course_id=".$tree['data']->id);
         $blacklisted_courses = &$this->data["blacklisted_courses"];
         $blacklisted_categories = &$this->data["blacklisted_categories"];
-
-        if(!array_key_exists($tree['data']->id, $blacklisted_categories)) {
-            $parent_id = $tree['data']->parent;
-            if($parent_id == 0){
-                $value = false;
-            }
-            else {
-                $value = $blacklisted_categories[$parent_id];
-            }
-            $this->atomic_set_blacklisted("categories", $tree['data']->id, $value);
-        }
-
-        foreach($tree['children_courses'] as &$course) {
-            $id = $course->id;
-
-            if(!array_key_exists($id, $blacklisted_courses)){
-                $category_id = $course->category;
-                $this->atomic_set_blacklisted("courses", $id, $blacklisted_categories[$category_id]);
+        if ($tree['data']) {
+            logger::log("Update blacklist for course_id=".$tree['data']->id);
+            if(!array_key_exists($tree['data']->id, $blacklisted_categories)) {
+                error_log(print_r("aa", 1));
+                $parent_id = $tree['data']->parent;
+                if($parent_id == 0){
+                    $value = false;
+                }
+                else {
+                    $value = $blacklisted_categories[$parent_id];
+                }
+                $this->atomic_set_blacklisted("categories", $tree['data']->id, $value);
             }
         }
+        if (in_array('children_courses', $tree)) {
+            foreach($tree['children_courses'] as &$course) {
+                $id = $course->id;
 
-        foreach($tree['children_categories'] as &$category) {
-            $this->update_blacklisted_data_rec($category);
+                if(!array_key_exists($id, $blacklisted_courses)){
+                    $category_id = $course->category;
+                    $this->atomic_set_blacklisted("courses", $id, $blacklisted_categories[$category_id]);
+                }
+            }
+        }
+        if (in_array('children_categories', $tree)) {
+            foreach($tree['children_categories'] as &$category) {
+                $this->update_blacklisted_data_rec($category);
+            }
         }
     }
 
