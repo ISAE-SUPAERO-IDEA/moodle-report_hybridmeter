@@ -36,7 +36,7 @@ class inconsistent_nd extends \report_hybridmeter\classes\tests\indicator_abstra
 
         echo "<h3>Dump of course activities</h3>";
         
-        $sql = "SELECT * FROM mdl_course_modules AS cm 
+        $sql = "SELECT cm.id, mo.name, cm.*  FROM mdl_course_modules AS cm 
                   JOIN mdl_modules mo ON cm.module = mo.id
                  WHERE course = ?";
 
