@@ -17,7 +17,9 @@ class inconsistent_registered_active_students extends \report_hybridmeter\classe
 
     public function specific_tests() {
         $this->test_count_student_single_visitors_on_course();
+        $this->dump_logs();
         $this->dump_active_logs();
+        $this->dump_module_activity();
         $this->test_count_registered_students_of_course();
         $this->dump_registered_students();
     }

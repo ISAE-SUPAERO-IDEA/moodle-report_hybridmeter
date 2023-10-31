@@ -209,11 +209,9 @@ class data_provider {
                   JOIN {role} role ON assign.roleid = role.id
                   JOIN {context} context ON logs.contextid = context.id
                  WHERE role.archetype = :archetype
-                       AND courseid = :courseid
+                       AND logs.courseid = :courseid
                        AND logs.target = 'course_module'
-                       AND context.instanceid = :instanceid
-                       AND context.contextlevel = :coursecontext
-                       AND timecreated BETWEEN :begintimestamp AND :endtimestamp
+                       AND (context.contextlevel = " . CONTEXT_COURSE . " OR context.contextlevel = " . CONTEXT_MODULE . ")
               GROUP BY logs.objecttable";
 
         $params=array(

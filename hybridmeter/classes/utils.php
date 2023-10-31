@@ -44,6 +44,7 @@ class utils {
     }
 
     public static function objects_array_to_html(array $array): string {
+        if (empty($array)) return "No data";
         $array = (new formatter($array))->get_array();
 
         $output = "<table>";

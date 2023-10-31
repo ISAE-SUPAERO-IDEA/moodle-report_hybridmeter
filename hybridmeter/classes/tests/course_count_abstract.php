@@ -8,6 +8,7 @@ require_once(__DIR__."/../test_scenario_course.php");
 require_once(__DIR__."/../utils.php");
 
 use \report_hybridmeter\classes\utils as utils;
+use \report_hybridmeter\classes\configurator as configurator;
 
 abstract class course_count_abstract extends \report_hybridmeter\classes\test_scenario_course {
     
@@ -77,7 +78,7 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
         echo utils::objects_array_to_html($records);
     }
 
-    protected function dump_active_logs() {
+    protected function dump_logs() {
         global $DB;
         
         echo "<h3>Dump of the first thousand entries in the course logs during the activity period</h3>";
@@ -100,6 +101,84 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
         $params = array(
             'courseid' => $this->course_id,
+            'begintimestamp' => $begin_timestamp,
+            'endtimestamp' => $end_timestamp,
+        );
+
+        $records = $DB->get_records_sql($sql, $params, 0, 1000);
+
+        echo "<p>Here it is : </p>";
+
+        echo utils::objects_array_to_html($records);
+    }
+
+    protected function dump_active_logs() {
+        global $DB;
+
+        echo "<h3>Dump of the first thousand entries in the course logs during the activity period</h3>";
+
+        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+
+        $begin_timestamp = $configurator->get_begin_timestamp();
+        $end_timestamp = $configurator->get_end_timestamp();
+
+        $student_archetype = configurator::get_instance()->get_student_archetype();
+
+        $sql = "SELECT logs.id, timecreated, logs.target, assign.id as assign_id, role.id as role_id, role.archetype, context.id as context_id, logs.userid, logs.courseid, context.instanceid, context.contextlevel
+                  FROM {logstore_standard_log} logs
+                  JOIN {role_assignments} assign ON logs.userid = assign.userid
+                  JOIN {role} role ON assign.roleid = role.id
+                  JOIN {context} context ON logs.contextid = context.id
+                 WHERE role.archetype = :archetype
+                       AND logs.courseid = :courseid
+                       AND logs.target = 'course_module'
+                       AND (context.contextlevel = " . CONTEXT_COURSE . " OR context.contextlevel = " . CONTEXT_MODULE . ")
+                       AND timecreated BETWEEN :begintimestamp AND :endtimestamp
+              ";
+        $params=array(
+            'archetype' => $student_archetype,
+            'courseid' => $this->course_id,
+            'instanceid' => $this->course_id,
+            'begintimestamp' => $begin_timestamp,
+            'endtimestamp' => $end_timestamp,
+        );
+        error_log(print_r(CONTEXT_COURSE, 1));
+
+        $records = $DB->get_records_sql($sql, $params, 0, 1000);
+
+        echo "<p>Here it is : </p>";
+
+        echo utils::objects_array_to_html($records);
+    }
+
+    protected function dump_module_activity() {
+        global $DB;
+
+        echo "<h3>Dump the module activity during the activity period</h3>";
+
+        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+
+        $begin_timestamp = $configurator->get_begin_timestamp();
+        $end_timestamp = $configurator->get_end_timestamp();
+
+        $student_archetype = configurator::get_instance()->get_student_archetype();
+
+        $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
+                  FROM {logstore_standard_log} logs
+                  JOIN {role_assignments} assign ON logs.userid = assign.userid
+                  JOIN {role} role ON assign.roleid = role.id
+                  JOIN {context} context ON logs.contextid = context.id
+                 WHERE role.archetype = :archetype
+                       AND logs.courseid = :courseid
+                       AND logs.target = 'course_module'
+                       AND (context.contextlevel = " . CONTEXT_COURSE . " OR context.contextlevel = " . CONTEXT_MODULE . ")
+                       AND timecreated BETWEEN :begintimestamp AND :endtimestamp
+                       GROUP BY logs.objecttable
+              ";
+        $params=array(
+            'archetype' => $student_archetype,
+            'courseid' => $this->course_id,
+            'instanceid' => $this->course_id,
             'begintimestamp' => $begin_timestamp,
             'endtimestamp' => $end_timestamp,
         );
