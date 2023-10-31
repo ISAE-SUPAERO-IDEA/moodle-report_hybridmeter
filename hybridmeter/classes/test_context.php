@@ -23,8 +23,8 @@ class test_context {
     public static function launch_batch(array $test_set){
         $old_error_reporting = ini_get('error_reporting');
         error_reporting(0);
-        set_error_handler("diagnostic_component::error_handler");
-        register_shutdown_function("diagnostic_component::fatal_handler");
+        //set_error_handler("diagnostic_component::error_handler");
+        //register_shutdown_function("diagnostic_component::fatal_handler");
         foreach ($test_set as $test) {
             $test->test();
             echo "<hr/>";

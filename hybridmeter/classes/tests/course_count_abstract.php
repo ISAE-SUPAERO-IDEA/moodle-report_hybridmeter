@@ -88,12 +88,12 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
         $end_timestamp = $configurator->get_end_timestamp();
 
         $sql = "SELECT logs.*, role.shortname, role.archetype,
-                       role.description, user.username,
-                       user.firstname, user.lastname
+                       role.description, u.username,
+                       u.firstname, u.lastname
                   FROM ".$DB->get_prefix()."logstore_standard_log logs
              LEFT JOIN ".$DB->get_prefix()."role_assignments assignments ON (logs.userid = assignments.userid AND logs.contextid = assignments.contextid)
              LEFT JOIN ".$DB->get_prefix()."role role ON assignments.roleid = role.id
-                  JOIN ".$DB->get_prefix()."user user ON logs.userid = user.id
+                  JOIN ".$DB->get_prefix()."user u ON logs.userid = u.id
                  WHERE logs.courseid = :courseid
                    AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
               ORDER BY logs.timecreated DESC";
