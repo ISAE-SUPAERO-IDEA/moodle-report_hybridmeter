@@ -16,5 +16,5 @@ The following doc resources are currently available only in French :
 * [Technical documentation](doc/doc_technique.md)
 * [FAQ](doc/faq.md)
 
-## License
-The Moodle plugin HybridMeter is distributed under the license [GNU AFFERO GENERAL PUBLIC LICENSE v3](LICENSE.md).
+## Copyright
+Copyright ISAE-SUPAERO for this plugin is licensed under [GNU AFFERO GENERAL PUBLIC LICENSE v3](LICENSE.md).
