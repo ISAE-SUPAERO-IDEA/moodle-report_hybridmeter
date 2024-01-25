@@ -16,5 +16,8 @@ The following doc resources are currently available only in French :
 * [Technical documentation](doc/doc_technique.md)
 * [FAQ](doc/faq.md)
 
+## Source code
+The source code of HybridMeter is publicly available at https://gitlab.isae-supaero.fr/idea/xdash/hybridmeter.
+
 ## Copyright
 Copyright ISAE-SUPAERO for this plugin is licensed under [GNU AFFERO GENERAL PUBLIC LICENSE v3](LICENSE.md).
