@@ -6,6 +6,16 @@ in order to collect standardized hybridization indicators on a regular basis.
 
 ![](https://t2594656.p.clickup-attachments.com/t2594656/0d25ea82-ff6e-4643-b73f-b43d6cf6bc72/image.png)
 
+## Installation
+### Requirements
+Moodle 3.7 or later (HybridMeter has been tested with Moodle up to 4.2.2).
+### Install procedure
+* Download the last version of the plugin [here](https://online.isae-supaero.fr/resources/hybridmeter/download/report_hybridmeter.zip).
+* As a Moodle admin, install the plugin as any other plugin
+
+Note : only Moodle admins can access to the plugin functionalities.
+
+
 ## Documentation
 The following doc resources are currently available only in French :
 * [Install and setup](doc/doc_installation.md)
