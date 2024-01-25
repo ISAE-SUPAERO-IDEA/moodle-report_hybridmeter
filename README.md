@@ -21,6 +21,7 @@ The following doc resources are currently available only in French :
 * [User documentation](doc/doc_utilisateur.md)
 * [Functional documentation](doc/doc_fonctionnelle.md)
 * [Technical documentation](doc/doc_technique.md)
+* [Developer documentation](doc/doc_developpeur.md)
 * [FAQ](doc/faq.md)
 
 ## Web site
