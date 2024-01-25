@@ -10,9 +10,9 @@ The french website of HybridMeter is available at : [https://online.isae-supaero
 
 ## Documentation
 The following doc resources are currently available only in French :
-* [Functional documentation](doc/doc_fonctionnelle.md)
-* [User documentation](doc/doc_utilisateur.md)
 * [Install and setup](doc/doc_installation.md)
+* [User documentation](doc/doc_utilisateur.md)
+* [Functional documentation](doc/doc_fonctionnelle.md)
 * [Technical documentation](doc/doc_technique.md)
 * [FAQ](doc/faq.md)
 
