@@ -1,12 +1,10 @@
 # HybridMeter
 
 ## Description
-HybridMeter is a Moodle plugin dedicated to calculate the degree of digital hybridization of 
-course spaces.
+HybridMeter is a Moodle plugin dedicated to monitor the use of digital teaching tools within schools, 
+in order to collect standardized hybridization indicators on a regular basis.
 
-## Web site
-The french website of HybridMeter is available at : [https://online.isae-supaero.fr/hybridmeter](https://online.isae-supaero.fr/hybridmeter) \
-[![](https://t2594656.p.clickup-attachments.com/t2594656/02a2acc8-fd84-4d24-9e1a-299262ff2ce0/HybridmeterWebsite.png)](https://online.isae-supaero.fr/hybridmeter)
+![](https://t2594656.p.clickup-attachments.com/t2594656/0d25ea82-ff6e-4643-b73f-b43d6cf6bc72/image.png)
 
 ## Documentation
 The following doc resources are currently available only in French :
@@ -15,6 +13,11 @@ The following doc resources are currently available only in French :
 * [Functional documentation](doc/doc_fonctionnelle.md)
 * [Technical documentation](doc/doc_technique.md)
 * [FAQ](doc/faq.md)
+
+## Web site
+The french website of HybridMeter is available at : [https://online.isae-supaero.fr/hybridmeter](https://online.isae-supaero.fr/hybridmeter) \
+[![](https://t2594656.p.clickup-attachments.com/t2594656/02a2acc8-fd84-4d24-9e1a-299262ff2ce0/HybridmeterWebsite.png)](https://online.isae-supaero.fr/hybridmeter)
+
 
 ## Source code
 The source code of HybridMeter is publicly available at https://gitlab.isae-supaero.fr/idea/xdash/hybridmeter.
