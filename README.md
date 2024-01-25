@@ -22,5 +22,8 @@ The french website of HybridMeter is available at : [https://online.isae-supaero
 ## Source code
 The source code of HybridMeter is publicly available at https://gitlab.isae-supaero.fr/idea/xdash/hybridmeter.
 
+## ChangeLog
+The change log is available [here](https://doc.clickup.com/d/h/2f5v0-8568/7b507d8c7c54778).
+
 ## Copyright
 Copyright ISAE-SUPAERO for this plugin is licensed under [GNU AFFERO GENERAL PUBLIC LICENSE v3](LICENSE.md).
