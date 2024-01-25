@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #
-# Hybryd Meter
-# Copyright (C) 2020 - 2024  ISAE-Supaéro
+# Hybrid Meter
+# Copyright (C) 2020 - 2024  ISAE-SUPAERO
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
