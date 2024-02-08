@@ -207,7 +207,7 @@ class processing {
             }
         , $generaldata[REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES]);
 
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]=array_map(function($cours){
+        $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_USED_COURSES]=array_map(function($cours){
                 return intval($cours["id"]);
             }
         , $generaldata[REPORT_HYBRIDMETER_GENERAL_USED_COURSES]);
@@ -226,11 +226,11 @@ class processing {
         );
 
         $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED]=$data_provider->count_distinct_registered_students_of_courses(
-            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]
+            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_USED_COURSES]
         );
         
         $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE]=$data_provider->count_student_single_visitors_on_courses(
-            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES],
+            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_USED_COURSES],
             $configurator->get_begin_timestamp(),
             $configurator->get_end_timestamp()
         );
