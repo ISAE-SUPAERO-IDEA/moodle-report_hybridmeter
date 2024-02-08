@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/HybridMeter.iml" filepath="$PROJECT_DIR$/.idea/HybridMeter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hybridmeter/HybridMeter.iml" filepath="$PROJECT_DIR$/hybridmeter/HybridMeter.iml" />
     </modules>
   </component>
 </project>
