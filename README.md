@@ -20,7 +20,7 @@ It is based on their number, diversity and hybrid nature.
 A threshold determines whether the course is then counted as "digital hybrid" or not.
 * The level of use : this is the level of digitalization coupled with the use of activities by the course's students. 
 Each course space included in the measurement is analyzed, and the indicator now includes not only the activities, 
-* but also the use of the activities by the students in each course.
+but also the use of the activities by the students in each course.
 
 These indicators are used to calculate :
 * the number of hybrid courses according to level of digitalization, 
