@@ -29,7 +29,9 @@ require_once(__DIR__."/data_provider.php");
 require_once(__DIR__."/exporter.php");
 require_once(__DIR__."/formatter.php");
 require_once(__DIR__."/logger.php");
+require_once(__DIR__."/data/general_data.php");
 
+use \report_hybridmeter\classes\data\general_data as general_data;
 use \report_hybridmeter\classes\data_provider as data_provider;
 use \report_hybridmeter\classes\configurator as configurator;
 use \report_hybridmeter\classes\exporter as exporter;
@@ -184,61 +186,7 @@ class processing {
         // Calculation of general indicators
         logger::log("# Processing: global indicators computation");
 
-        $generaldata=array();
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES] = array_values(
-            array_filter($data_out,
-                function($cours){
-                    return $cours[REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL] >= configurator::get_instance()->get_data()["digitalisation_treshold"];
-                }
-            )
-        );
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_USED_COURSES]=array_values(
-            array_filter($data_out,
-                function($cours){
-                    return $cours[REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL] >= configurator::get_instance()->get_data()["usage_treshold"];
-                }
-            )
-        );
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]=array_map(function($cours){
-                return intval($cours["id"]);
-            }
-        , $generaldata[REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES]);
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_USED_COURSES]=array_map(function($cours){
-                return intval($cours["id"]);
-            }
-        , $generaldata[REPORT_HYBRIDMETER_GENERAL_USED_COURSES]);
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES]=count($generaldata[REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES]);
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_USED_COURSES]=count($generaldata[REPORT_HYBRIDMETER_GENERAL_USED_COURSES]);
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED] = $data_provider->count_distinct_registered_students_of_courses(
-            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES]
-        );
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE]=$data_provider->count_student_single_visitors_on_courses(
-            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_DIGITALISED_COURSES],
-            $configurator->get_begin_timestamp(),
-            $configurator->get_end_timestamp()
-        );
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED]=$data_provider->count_distinct_registered_students_of_courses(
-            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_USED_COURSES]
-        );
-        
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE]=$data_provider->count_student_single_visitors_on_courses(
-            $generaldata[REPORT_HYBRIDMETER_GENERAL_IDS_USED_COURSES],
-            $configurator->get_begin_timestamp(),
-            $configurator->get_end_timestamp()
-        );
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_BEGIN_CAPTURE_TIMESTAMP] = $configurator->get_begin_timestamp();
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_END_CAPTURE_DATE] = $configurator->get_end_timestamp();
-
-        $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES] = $this->formatter->get_length_array();
+        $general_data = new general_data($data_out,  $configurator);
 
         // Data exportation
         logger::log("# Processing: serializing results");
@@ -262,7 +210,7 @@ class processing {
         $s = serialize(array(
             "time" => $time,
             "data" => $data_out,
-            "generaldata" => $generaldata,
+            "generaldata" => $general_data->toMap(),
         ));
         fwrite($file_exporter, $s);
         fclose($file_exporter);
