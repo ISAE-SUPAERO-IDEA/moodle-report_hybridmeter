@@ -231,6 +231,7 @@ class renderer extends plugin_renderer_base {
     public function general_indicators($is_data_available, $generaldata, $timestamp_begin, $timestamp_end, $end_processing, $processing_duration){
         global $OUTPUT;
 
+
         $does_data_exist = ($is_data_available && isset($generaldata[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES]));
         $nb_cours_hybrides_statiques = $does_data_exist ? $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES] : REPORT_HYBRIDMETER_NA;
 
@@ -276,7 +277,8 @@ class renderer extends plugin_renderer_base {
                 get_string('end_processing','report_hybridmeter'),
                 $end_processing
             );
-            $processing_date = date_parse($end_processing);
+            $processing_date = date_parse_from_format('d/m/Y à H:i:s', $end_processing);
+
             $processing_date = str_pad($processing_date["day"], 2, "0",STR_PAD_LEFT) . "/" . str_pad($processing_date["month"], 2, "0", STR_PAD_LEFT) . "/" . $processing_date["year"];
         }
         else {
