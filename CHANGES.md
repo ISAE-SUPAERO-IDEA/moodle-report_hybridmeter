@@ -7,121 +7,104 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
 
-Hybridmeter version 1.1.3 (21 avril 2022)
-=========================================
+## Hybridmeter version 1.1.6 (2024-02-26)
 
-Fonctionnalités
----------------
 
+### Fixes
+* Fix computations of summarized indicators that has been broken during a refactor
+
+
+## Hybridmeter version 1.1.5 (18 avril 2023)
+### Améliorations techniques
+* AjoutMise en conformité de Hybridmeter avec les normes de développement Moodle:
+* Transformation de la librairie javascript en module AMD
+* Normalisation du nommage des variables, des fonctions et des fichiers
+* Mise à jour du framework de développement front (vuejs 3.0)
+* Création de scripts de packaging
+* Mise en Compatibilité avec Moodle 4.0
+
+
+## Hybridmeter version 1.1.4 (18 avril 2023)
+
+### Fonctionnalités
+* Ajout d'une fonctionnalité permettant de programmer des lancements automatiquement
+* Ajout d'un mode debug permettant d'enregistrer les opérations faites par le plugin dans les logs du serveur web.
+
+### Correction de bugs
+* Correction d'un bug qui empêchait le bon rafraîchi
+
+## Hybridmeter version 1.1.3 (21 avril 2022)
+
+# Fonctionnalités
 *   Outil de diagnostic des cours
 
-Améliorations techniques
-------------------------
-
+# Améliorations techniques
 *   Meilleure utilisation de la classe utils
 
 
-Hybridmeter version 1.1.2 (22 mars 2022)
-========================================
+## Hybridmeter version 1.1.2 (22 mars 2022)
 
-Fonctionnalités
----------------
-
+### Fonctionnalités
 *   Possibilité de choisir le rôle permettant d'identifiant les étudiants sur la plateforme
 
-Hybridmeter version 1.1.1 (11 février 2022)
-===========================================
 
-Fonctionnalités
----------------
+## Hybridmeter version 1.1.1 (11 février 2022)
 
+### Fonctionnalités
 *   Affichage du chemin complet des catégories dans le CSV
 *   Affichage du nom fonctionnel des activités dans les tableaux de coefficients et non le nom technique
 *   Possibilité de "whitelister" des cours appartenant à une catégorie blacklistée
 
-Améliorations techniques
-------------------------
-
+### Améliorations techniques
 *   Refactorisation des classes exporter, data\_provider, configurator et logger
 *   Création d'une classe de gestion de cache pour éviter le calcul redondant.
 
-Correction de bugs
-------------------
-
+### Correction de bugs
 *   Correction des problèmes de type quand les indicateurs décimaux coïncidaient avec des nombres entiers dans le CSV
 *   Cours affichés dans l'ordre sur l'interface de gestion de la blacklist
 
-HybridMeter version 1.1.0 (28 Janvier 2022)
-===========================================
 
-Fonctionnalités
----------------
+## HybridMeter version 1.1.0 (28 Janvier 2022)
 
+###  Fonctionnalités
 *   Programmation de l'heure et de la date de calcul depuis la page de configuration
 *   Suppression du lancement automatique tous les matins à 4h
 *   Amélioration de la lisibilité du CSV
 
-Améliorations techniques
-------------------------
-
+### Améliorations techniques
 *   Refactorisation de la classe exporter
 
-Correction de Bugs
-------------------
-
+###  Correction de Bugs
 *   Correction des notices qui apparaissaient lors du calcul des indicateurs
 
-HybridMeter version 1.0.3 (15 Décembre 2021)
-============================================
+## HybridMeter version 1.0.3 (15 Décembre 2021)
 
-Fonctionnalités
----------------
-
+### Fonctionnalités
 *   Ajouts de liens vers la documentation et le changelog
 
-Correction de Bugs
-------------------
-
+###  Correction de Bugs
 *   Rétablissement de l'export de la metadonnée idnumber (Identification du cours)
 
-  
 
-HybridMeter version 1.0.2 (10 Décembre 2021)
-============================================
+## HybridMeter version 1.0.2 (10 Décembre 2021)
 
-Fonctionnalités
----------------
-
+### Fonctionnalités
 *   Modification des valeurs d'hybridation des activités selon la concertation des membres THE\_Campus
 *   Mise en œuvre d'un nouveau modèle de calcul des indicateurs d'hybridation
 *   Evolution de la documentation gérée sur un Wiki
 
-Correction de Bugs
-------------------
 
-*   Aucun
+## HybridMeter version 1.0.1 (23 septembre 2021)
 
-  
-
-HybridMeter version 1.0.1 (23 septembre 2021)
-=============================================
-
-Fonctionnalités
----------------
-
+###  Fonctionnalités
 *   Option permettant aux tâches d'être plus ou moins verbeuses dans le log
 
-Correction de Bugs
-------------------
-
+### Correction de Bugs
 *   Amélioration des performances du plugin
 
-HybridMeter version 1.0.0 (22 septembre 2021)
-=============================================
+## HybridMeter version 1.0.0 (22 septembre 2021)
 
-Fonctionnalités
----------------
-
+### Fonctionnalités
 *   Version initiale du plugin HybridMeter
 *   Choix des cours et des catégories à analyser
 *   Affichage et choix de la période de mesure
@@ -133,8 +116,3 @@ Fonctionnalités
 *   Etudiants actuellement inscrits au cours
 *   Calcul et affichage du temps de traitement
 *   Programmation du lancement asynchrone du plugin utilisant le CRON
-
-Correction de bugs
-------------------
-
-*   N/A

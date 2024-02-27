@@ -1,4 +1,21 @@
 <?php
+/*
+ * Hybrid Meter
+ * Copyright (C) 2020 - 2024  ISAE-SUPAERO
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace report_hybridmeter\output;
 
@@ -214,6 +231,7 @@ class renderer extends plugin_renderer_base {
     public function general_indicators($is_data_available, $generaldata, $timestamp_begin, $timestamp_end, $end_processing, $processing_duration){
         global $OUTPUT;
 
+
         $does_data_exist = ($is_data_available && isset($generaldata[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES]));
         $nb_cours_hybrides_statiques = $does_data_exist ? $generaldata[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES] : REPORT_HYBRIDMETER_NA;
 
@@ -259,7 +277,8 @@ class renderer extends plugin_renderer_base {
                 get_string('end_processing','report_hybridmeter'),
                 $end_processing
             );
-            $processing_date = date_parse($end_processing);
+            $processing_date = date_parse_from_format('d/m/Y à H:i:s', $end_processing);
+
             $processing_date = str_pad($processing_date["day"], 2, "0",STR_PAD_LEFT) . "/" . str_pad($processing_date["month"], 2, "0", STR_PAD_LEFT) . "/" . $processing_date["year"];
         }
         else {
