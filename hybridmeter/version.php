@@ -18,7 +18,7 @@
  */
 
 $plugin->component = "report_hybridmeter";
-$plugin->version = 2023103100;
+$plugin->version = 2024022600;
 $plugin->requires = 2018051700; // Moodle 3.5.7 minimum
-$plugin->release = "1.1.5";
+$plugin->release = "1.1.6";
 $plugin->maturity = MATURITY_RC;
