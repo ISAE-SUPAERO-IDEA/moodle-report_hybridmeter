@@ -20,7 +20,7 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  */
 $plugin->component = "report_hybridmeter";
-$plugin->version = 2024022600;
+$plugin->version = 2024022900;
 $plugin->requires = 2018051700; // Moodle 3.5.7 minimum
-$plugin->release = "1.1.6";
+$plugin->release = "1.1.7";
 $plugin->maturity = MATURITY_RC;
