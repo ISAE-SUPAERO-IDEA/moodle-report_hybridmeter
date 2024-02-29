@@ -45,7 +45,7 @@ More information about Hybridmeter : https://online.isae-supaero.fr/hybridmeter 
 
 ## Installation
 ### Requirements
-Moodle 3.7 or later (HybridMeter has been tested with Moodle up to 4.2.2).
+Moodle 3.5.7 or later (HybridMeter has been tested with Moodle up to 4.2.2).
 ### Install procedure
 * Download the last version of the plugin [here](https://online.isae-supaero.fr/resources/hybridmeter/download/report_hybridmeter.zip).
 * As a Moodle admin, install the plugin as any other plugin

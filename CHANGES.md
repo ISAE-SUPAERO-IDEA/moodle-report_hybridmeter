@@ -6,6 +6,9 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.1.7 (2024-02-29)
+- Update copyrights within source files
+
 
 ## Hybridmeter version 1.1.6 (2024-02-26)
 
