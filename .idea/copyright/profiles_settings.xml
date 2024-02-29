@@ -1,7 +1,12 @@
 <component name="CopyrightManager">
-  <settings default="ISAE-supaero AGPL-v3">
+  <settings>
     <module2copyright>
-      <element module="Project Files" copyright="ISAE-supaero AGPL-v3" />
+      <element module="Project Files" copyright="Moodle+ISAE-supaero" />
     </module2copyright>
+    <LanguageOptions name="PHP">
+      <option name="fileTypeOverride" value="3" />
+      <option name="block" value="false" />
+      <option name="lenBefore" value="1" />
+    </LanguageOptions>
   </settings>
 </component>
