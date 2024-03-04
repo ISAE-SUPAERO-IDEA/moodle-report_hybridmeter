@@ -1,3 +1,4 @@
+<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -26,18 +27,18 @@ use report_hybridmeter\classes\data_provider as data_provider;
 
 class general_data {
 
-    protected $begintimestamp;
-    protected $endtimestamp;
+    protected $begin_timestamp;
+    protected $end_timestamp;
 
     protected $courses;
-    protected $usedcourses;
-    protected $digitalisedcourses;
+    protected $used_courses;
+    protected $digitalised_courses;
 
-    protected $nbstudentsconcerneddigitalised;
-    protected $nbstudentsconcernedused;
+    protected $nb_students_concerned_digitalised;
+    protected $nb_students_concerned_used;
 
-    protected $nbstudentsconcerneddigitalisedactive;
-    protected $nbstudentsconcernedusedactive;
+    protected $nb_students_concerned_digitalised_active;
+    protected $nb_students_concerned_used_active;
 
     public function __construct($courses, $configurator) {
         $dataprovider = data_provider::get_instance();
