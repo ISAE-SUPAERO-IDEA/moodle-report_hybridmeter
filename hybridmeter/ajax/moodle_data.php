@@ -33,11 +33,10 @@ has_capability('report/hybridmeter:all', $context) || die();
 
 $task  = required_param('task', PARAM_ALPHAEXT);
 
-if ($task == "roles"){
+if ($task == "roles") {
     $roles = $DB->get_records("role");
     $output = json_encode(array_values($roles));
-}
-else{
+} else {
     $output = json_encode([]);
 }
 
