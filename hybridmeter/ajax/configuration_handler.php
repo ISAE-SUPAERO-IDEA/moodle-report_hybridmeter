@@ -44,23 +44,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $action = optional_param('action', 'nothing', PARAM_ALPHAEXT);
     $debug = optional_param('debug', null, PARAM_BOOL);
 
-    if($action == "measurement_period") {
+    if ($action == "measurement_period") {
         $begindate = required_param('begin_date', PARAM_INT);
         $enddate = required_param('end_date', PARAM_INT);
         $configurator->update([
             "begin_date" => $begindate,
             "end_date" => $enddate,
         ]);
-    }
-    else if ($action == "schedule") {
+    } else if ($action == "schedule") {
         $scheduledtimestamp = required_param('scheduled_timestamp', PARAM_INT);
         $configurator->schedule_calculation($scheduledtimestamp);
-    }
-    else if ($action == "unschedule") {
+    } else if ($action == "unschedule") {
         $configurator->unschedule_calculation();
         $configurator->update_key("debug", $debug);
-    }
-    else if ($action == "additional_config") {
+    } else if ($action == "additional_config") {
         $studentarchetype = required_param('student_archetype', PARAM_ALPHAEXT);
         $configurator->update([
             "student_archetype" => $studentarchetype,
@@ -71,26 +68,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
     // Reading
-    if ($task == "get_usage_coeffs"){
+    if ($task == "get_usage_coeffs") {
         $output = $configurator->get_coeffs_grid("usage_coeffs");
-    }
-    else if ($task == "get_digitalisation_coeffs"){
+    } else if ($task == "get_digitalisation_coeffs") {
         $output = $configurator->get_coeffs_grid("digitalisation_coeffs");
-    }
-    else if ($task == "get_all_coeffs") {
+    } else if ($task == "get_all_coeffs") {
         $output = $configurator->get_all_coeffs_rows();
-    }
-    else if ($task == "get_seuils"){
+    } else if ($task == "get_seuils") {
         $output = $configurator->get_treshold_grid();
-    }
-    else if ($task == "get_tresholds"){
+    } else if ($task == "get_tresholds") {
         $output = $configurator->get_tresholds_rows();
-    }
-    else{
+    } else {
         $output = $configurator->get_data();
     }
-}
-else {
+} else {
     $output = [
         "error" => true,
         "message" => "GET method not supported, please retry with a POST request",
