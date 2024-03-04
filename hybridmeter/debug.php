@@ -35,8 +35,7 @@ $task = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
 if ($task == "disable") {
     $configurator->unset_debug();
-}
-else if ($task == 'enable') {
+} else if ($task == 'enable') {
     $configurator->set_debug();
 }
 
@@ -45,8 +44,7 @@ if ($configurator->get_debug()) {
             <p>Debug feature is ON</p>
             <input type="submit" name="task" value="disable"/>
           </form>';
-}
-else {
+} else {
     echo '<form action="" method="get">
             <p>Debug feature is OFF</p>
             <input type="submit" name="task" value="enable"/>
