@@ -59,7 +59,7 @@ $string['measurement_period_intro'] = "Measurement period:";
 $string['measurement_period'] = "from %s to %s.";
 $string['measurement_disclaimer'] = "Mesures taken on older timestamps can vary depending of changes done since then (modification of courses content, registration, unregistration of students from courses and deletion of students from the platform)";
 $string['end_processing'] = "Processing completed on %s.";
-$string['processing_duration'] = "The processing lasted %s."; 
+$string['processing_duration'] = "The processing lasted %s.";
 
 $string['next_schedule'] = "Next scheduled calculation for %s at %s";
 $string['no_schedule'] = "No programmed calculation";

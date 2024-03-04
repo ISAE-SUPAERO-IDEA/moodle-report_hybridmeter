@@ -59,7 +59,7 @@ $string['measurement_period_intro'] = "Période de mesure : ";
 $string['measurement_period'] = "du %s au %s.";
 $string['measurement_disclaimer'] = "Les mesures portant sur les périodes passées peuvent varier en fonction des changements effectués depuis (modification du contenu des cours, inscription/désinscription des étudiants aux cours et suppression des étudiants de la plateforme)";
 $string['end_processing'] = "Traitement terminé le %s.";
-$string['processing_duration'] = "Le traitement a duré %s."; 
+$string['processing_duration'] = "Le traitement a duré %s.";
 
 $string['next_schedule'] = "Prochain calcul programmé pour le %s à %s";
 $string['no_schedule'] = "Pas de calcul programmé";
