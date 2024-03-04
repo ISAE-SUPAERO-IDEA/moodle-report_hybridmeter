@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,7 +33,7 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
         $configurator = configurator::get_instance();
         $configurator->unset_key("digitalisation_coeffs");
         $configurator->unset_key("usage_coeffs");
-        
+
         $configurator->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
         $configurator->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
 
@@ -54,5 +54,5 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
     return true;
 }
 
-    
-?>
+
+

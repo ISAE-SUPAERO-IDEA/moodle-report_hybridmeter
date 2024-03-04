@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes;
 
@@ -42,7 +42,7 @@ class logger {
             error_log("[Hybridmeter] ".self::var_dump_ret($object));
         }
     }
-      
+
     public static function log($object) {
         if (configurator::get_instance()->get_debug()) {
             error_log("[Hybridmeter] ".print_r($object, 1));
@@ -52,7 +52,7 @@ class logger {
     public static function file_log($object, $filename) {
         if (configurator::get_instance()->get_debug()) {
             $file = fopen(dirname(__FILE__).'/../'.$filename, 'a');
-            fwrite($file, print_r($object,1));
+            fwrite($file, print_r($object, 1));
         }
     }
 }

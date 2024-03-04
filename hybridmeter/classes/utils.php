@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes;
 
@@ -30,40 +30,42 @@ use Exception;
 use DateTime;
 
 class utils {
-    public static function object_to_array(object $object){
-        $array=array();
+    public static function object_to_array(object $object) {
+        $array = [];
         foreach ($object as $key => $value){
-            $array[$key]=$value;
+            $array[$key] = $value;
         }
         return $array;
     }
 
-    public static function id_objects_array_to_array(array $array){
+    public static function id_objects_array_to_array(array $array) {
         return array_values(array_map(function($obj) {
             return $obj->id;
         }, $array));
     }
 
-    public static function precondition_ids(array $ids_courses) {
-        
-        $accumulated_precondition = array_reduce(
-            $ids_courses,
+    public static function precondition_ids(array $idscourses) {
+
+        $accumulatedprecondition = array_reduce(
+            $idscourses,
             function($acc, $id) {
                 return ($acc && is_int($id));
             },
             true
         );
-        if(!$accumulated_precondition)
+        if(!$accumulatedprecondition) {
             throw new Exception("IDs must be integers");
+        }
     }
 
     public static function tomorrow_midnight() {
-        $tomorrow_midnight = strtotime("tomorrow 00:00");
-        return $tomorrow_midnight;
+        $tomorrowmidnight = strtotime("tomorrow 00:00");
+        return $tomorrowmidnight;
     }
 
     public static function objects_array_to_html(array $array): string {
-        if (empty($array)) return "No data";
+        if (empty($array)) { return "No data";
+        }
         $array = (new formatter($array))->get_array();
 
         $output = "<table>";
@@ -90,7 +92,7 @@ class utils {
     public static function data_grouped_by_to_html(array $array): string {
         $output = "<table>";
         $output .= "<tbody>";
-        foreach ($array as $key =>$elem) {
+        foreach ($array as $key => $elem) {
             $output .= "<tr>";
             $output .= "<th>";
             $output .= $key;
@@ -133,9 +135,10 @@ class utils {
         $length = count($array);
         $i = 0;
         $output .= "<tr class=\"n_uplets\">";
-        while($i<$length) {
-            if ($i != 0 && ($i % $n) === 0)
+        while($i < $length) {
+            if ($i != 0 && ($i % $n) === 0) {
                 $output .= "</tr><tr>";
+            }
             $output .= "<td>".$array[$i]."</td>";
             $i++;
         }
@@ -153,7 +156,7 @@ class utils {
         return $datetime->format($format);
     }
 
-    public static function modulo_fixed($x, int $n) : int {
+    public static function modulo_fixed($x, int $n): int {
         $r = $x % $n;
         if ($r < 0)
         {

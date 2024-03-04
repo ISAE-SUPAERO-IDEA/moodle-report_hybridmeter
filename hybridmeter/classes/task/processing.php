@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\task;
 
@@ -34,7 +34,7 @@ class processing extends \core\task\adhoc_task {
     public function get_name() {
         return get_string('pluginname', 'report_hybridmeter');
     }
-    
+
     public function execute() {
         \report_hybridmeter\classes\configurator::get_instance()->unschedule_calculation();
         $processing = new class_processing();

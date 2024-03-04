@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\task;
 
@@ -30,7 +30,7 @@ use report_hybridmeter\classes\processing as processing;
 
 // Scheduled task that produces hybridmeter's serialized data
 class cron_processing extends \core\task\scheduled_task {
-    public function get_name(){
+    public function get_name() {
         return get_string('pluginname', 'report_hybridmeter');
     }
 

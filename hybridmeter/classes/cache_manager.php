@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes;
 
@@ -37,7 +37,7 @@ class cache_manager {
     protected static $instance = null;
 
     public function __construct() {
-        $this->cache = array();
+        $this->cache = [];
     }
 
     public static function get_instance() {
@@ -49,22 +49,24 @@ class cache_manager {
     }
 
     public function append_stack_key(string $key, $data) {
-        if(isset($this->cache[$key]) && !is_array($this->cache[$key]))
+        if(isset($this->cache[$key]) && !is_array($this->cache[$key])) {
             throw new Exception("The key is already associated with a variable that is not an array");
-        
+        }
+
         if(!isset($this->cache[$key])){
-            $this->cache[$key] = array();
+            $this->cache[$key] = [];
         }
 
         array_push($this->cache[$key], $data);
     }
 
     public function update_associative_array_key(string $key, string $subkey, $data) {
-        if(isset($this->cache[$key]) && !is_array($this->cache[$key]))
+        if(isset($this->cache[$key]) && !is_array($this->cache[$key])) {
             throw new Exception("The key is already associated with a variable that is not an array");
-        
+        }
+
         if(!isset($this->cache[$key])){
-            $this->cache[$key] = array();
+            $this->cache[$key] = [];
         }
 
         $this->cache[$key][$subkey] = $data;
@@ -82,15 +84,15 @@ class cache_manager {
         return $this->cache[$key];
     }
 
-    public function is_category_path_calculated(int $category_id) {
-        return isset($this->cache["categories"][$category_id]);
+    public function is_category_path_calculated(int $categoryid) {
+        return isset($this->cache["categories"][$categoryid]);
     }
 
-    public function update_category_path(int $category_id, $value) {
-        $this->cache["categories"][$category_id] = $value;
+    public function update_category_path(int $categoryid, $value) {
+        $this->cache["categories"][$categoryid] = $value;
     }
 
-    public function get_category_path(int $category_id) {
-        return $this->cache["categories"][$category_id];
+    public function get_category_path(int $categoryid) {
+        return $this->cache["categories"][$categoryid];
     }
 }

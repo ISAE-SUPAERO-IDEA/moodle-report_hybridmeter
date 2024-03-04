@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes\tests;
 
@@ -30,9 +30,9 @@ use report_hybridmeter\classes\utils as utils;
 use report_hybridmeter\classes\configurator as configurator;
 
 abstract class course_count_abstract extends \report_hybridmeter\classes\test_scenario_course {
-    
-    protected function __construct(string $name, int $course_id) {
-        parent::__construct($name, $course_id);
+
+    protected function __construct(string $name, int $courseid) {
+        parent::__construct($name, $courseid);
     }
 
     public function inclusion() {
@@ -51,32 +51,32 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
     protected function test_count_student_single_visitors_on_course() {
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
-        $data_provider = \report_hybridmeter\classes\data_provider::get_instance();
+        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
 
-        $begin_timestamp = $configurator->get_begin_timestamp();
-        $end_timestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_begin_timestamp();
+        $endtimestamp = $configurator->get_end_timestamp();
 
         echo "<h3>Testing the count_student_single_visitors_on_course function</h3>";
-        
-        echo "<p>The begin and end timestamps are ".$begin_timestamp." and ".$end_timestamp."</p>";
+
+        echo "<p>The begin and end timestamps are ".$begintimestamp." and ".$endtimestamp."</p>";
 
         echo "<p>The function returned : </p>";
 
-        var_dump($data_provider->count_student_single_visitors_on_courses(
-            array($this->course_id),
-            $begin_timestamp,
-            $end_timestamp
+        var_dump($dataprovider->count_student_single_visitors_on_courses(
+            [$this->course_id],
+            $begintimestamp,
+            $endtimestamp
         ));
     }
 
     protected function test_count_registered_students_of_course() {
-        $data_provider = \report_hybridmeter\classes\data_provider::get_instance();
+        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
 
         echo "<h3>Testing the count_registered_students_of_course function</h3>";
 
         echo "<p>The function returned : </p>";
 
-        var_dump($data_provider->count_registered_students_of_course($this->course_id));
+        var_dump($dataprovider->count_registered_students_of_course($this->course_id));
     }
 
     protected function dump_registered_students() {
@@ -92,20 +92,20 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
                  WHERE cont.instanceid = ?
                  LIMIT 1000";
 
-        $records = $DB->get_records_sql($sql, array($this->course_id));
+        $records = $DB->get_records_sql($sql, [$this->course_id]);
 
         echo utils::objects_array_to_html($records);
     }
 
     protected function dump_logs() {
         global $DB;
-        
+
         echo "<h3>Dump of the first thousand entries in the course logs during the activity period</h3>";
 
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
 
-        $begin_timestamp = $configurator->get_begin_timestamp();
-        $end_timestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_begin_timestamp();
+        $endtimestamp = $configurator->get_end_timestamp();
 
         $sql = "SELECT logs.*, role.shortname, role.archetype,
                        role.description, u.username,
@@ -118,11 +118,11 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
                    AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
               ORDER BY logs.timecreated DESC";
 
-        $params = array(
+        $params = [
             'courseid' => $this->course_id,
-            'begintimestamp' => $begin_timestamp,
-            'endtimestamp' => $end_timestamp,
-        );
+            'begintimestamp' => $begintimestamp,
+            'endtimestamp' => $endtimestamp,
+        ];
 
         $records = $DB->get_records_sql($sql, $params, 0, 1000);
 
@@ -138,10 +138,10 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
 
-        $begin_timestamp = $configurator->get_begin_timestamp();
-        $end_timestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_begin_timestamp();
+        $endtimestamp = $configurator->get_end_timestamp();
 
-        $student_archetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = configurator::get_instance()->get_student_archetype();
 
         $sql = "SELECT logs.id, timecreated, logs.target, assign.id as assign_id, role.id as role_id, role.archetype, context.id as context_id, logs.userid, logs.courseid, context.instanceid, context.contextlevel
                   FROM {logstore_standard_log} logs
@@ -154,13 +154,13 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
                        AND (context.contextlevel = " . CONTEXT_COURSE . " OR context.contextlevel = " . CONTEXT_MODULE . ")
                        AND timecreated BETWEEN :begintimestamp AND :endtimestamp
               ";
-        $params=array(
-            'archetype' => $student_archetype,
+        $params = [
+            'archetype' => $studentarchetype,
             'courseid' => $this->course_id,
             'instanceid' => $this->course_id,
-            'begintimestamp' => $begin_timestamp,
-            'endtimestamp' => $end_timestamp,
-        );
+            'begintimestamp' => $begintimestamp,
+            'endtimestamp' => $endtimestamp,
+        ];
         error_log(print_r(CONTEXT_COURSE, 1));
 
         $records = $DB->get_records_sql($sql, $params, 0, 1000);
@@ -177,10 +177,10 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
 
-        $begin_timestamp = $configurator->get_begin_timestamp();
-        $end_timestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_begin_timestamp();
+        $endtimestamp = $configurator->get_end_timestamp();
 
-        $student_archetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = configurator::get_instance()->get_student_archetype();
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM {logstore_standard_log} logs
@@ -194,13 +194,13 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
                        AND timecreated BETWEEN :begintimestamp AND :endtimestamp
                        GROUP BY logs.objecttable
               ";
-        $params=array(
-            'archetype' => $student_archetype,
+        $params = [
+            'archetype' => $studentarchetype,
             'courseid' => $this->course_id,
             'instanceid' => $this->course_id,
-            'begintimestamp' => $begin_timestamp,
-            'endtimestamp' => $end_timestamp,
-        );
+            'begintimestamp' => $begintimestamp,
+            'endtimestamp' => $endtimestamp,
+        ];
 
         $records = $DB->get_records_sql($sql, $params, 0, 1000);
 

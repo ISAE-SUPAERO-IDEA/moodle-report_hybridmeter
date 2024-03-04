@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes\tests;
 
@@ -52,12 +52,13 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
         $this->dump_courses_with_student_activity_during_period();
     }
 
-    public function specific_tests() {}
+    public function specific_tests() {
+    }
 
     protected function dump_whitelisted_courses() {
         echo "<h2>Dump of whitelisted courses</h2>";
 
-        //TODO
+        // TODO
     }
 
     protected function dump_config_blacklist(string $type="blacklist") {
@@ -66,22 +67,22 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
         switch($type) {
             case "savelist_courses" :
                 $name = "courses in savelist";
-                $SQL_table = "course";
+                $sqltable = "course";
                 $index = "save_blacklist_courses";
                 break;
 
             case "savelist_categories" :
                 $name = "categories in savelist";
-                $SQL_table = "course_categories";
+                $sqltable = "course_categories";
                 $index = "save_blacklist_categories";
                 break;
 
             case "blacklist" :
                 $name = "blacklisted courses";
-                $SQL_table = "course";
+                $sqltable = "course";
                 $index = "blacklisted_courses";
                 break;
-                
+
             default :
                 throw new Exception("The parameter \$type can only be (savelist_courses|savelist_categories|blacklist)");
                 return;
@@ -99,8 +100,9 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
 
         print_r($array);
 
-        if($type=="blacklist")
+        if($type == "blacklist") {
             $array = array_keys($array);
+        }
 
         $length = count($array);
 
@@ -120,11 +122,11 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
             }
             $where .= ")";
 
-            $sql = "SELECT * FROM " . $DB->get_prefix() . $SQL_table . " " . $where;
+            $sql = "SELECT * FROM " . $DB->get_prefix() . $sqltable . " " . $where;
 
-            $blacklisted_courses_details = $DB->get_records_sql($sql,array());
+            $blacklistedcoursesdetails = $DB->get_records_sql($sql, []);
 
-            echo utils::objects_array_to_html($blacklisted_courses_details);
+            echo utils::objects_array_to_html($blacklistedcoursesdetails);
         }
     }
 
@@ -132,9 +134,7 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
         echo "<h3>Dump of courses that received activity in the current period</h3>";
         global $DB;
 
-        $student_archetype = configurator::get_instance()->get_student_archetype();
-
-        
+        $studentarchetype = configurator::get_instance()->get_student_archetype();
 
         $sql = "SELECT DISTINCT course.id AS id, course.idnumber AS idnumber, course.fullname AS fullname,
                                 category.id AS category_id, category.name AS category_name
@@ -147,11 +147,11 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
                       AND logs.timecreated between :begintimestamp and :endtimestamp
                       AND logs.eventname like '%course_viewed'";
 
-        $params = array(
-            'studentarchetype' => $student_archetype,
-            'begintimestamp' => $begin_timestamp,
-            'endtimestamp' => $end_timestamp,
-        );
+        $params = [
+            'studentarchetype' => $studentarchetype,
+            'begintimestamp' => $begintimestamp,
+            'endtimestamp' => $endtimestamp,
+        ];
 
         $records = $DB->get_records_sql($sql, $params);
 

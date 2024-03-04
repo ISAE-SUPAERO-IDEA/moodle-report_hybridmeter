@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes;
 
@@ -55,11 +55,11 @@ abstract class test_scenario {
 
         global $CFG;
 
-        $path=$CFG->dataroot."/hybridmeter/config.json";
+        $path = $CFG->dataroot."/hybridmeter/config.json";
 
-        if (!file_exists($path))
+        if (!file_exists($path)) {
             echo "<p>It seems that there is no config.json file</p>";
-        else {
+        } else {
             $data = file_get_contents($path);
             echo "<p>Here is the raw file</p>";
             var_dump($data);
@@ -70,7 +70,7 @@ abstract class test_scenario {
 
     protected function test_student_archetype() {
         global $DB;
-        
+
         echo "<h3>Verification of the correct configuration of the roles</h3>";
 
         echo "<p>This is the student archetype defined in the settings:</p>";

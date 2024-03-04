@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,37 +32,38 @@ use report_hybridmeter\classes\data_provider as data_provider;
 use report_hybridmeter\classes\cache_manager as cache_manager;
 use report_hybridmeter\classes\logger as logger;
 
-function hybridation_calculus(string $type, array $activity_data): float {
+function hybridation_calculus(string $type, array $activitydata): float {
     $h = 0; // Hybridation value
     $c = 0; // Number of activity types
     $n = 0; // Nombre total d'activités
-    $sigma_pk = 0; // Sum of activity weights
-    $sigma_pk_vk = 0; // Sum of activity weight multiplicated by their hybridation value
-    $sigma_pk_vk = 0; // Sum of activity weight multiplicated by their hybridation value
+    $sigmapk = 0; // Sum of activity weights
+    $sigmapkvk = 0; // Sum of activity weight multiplicated by their hybridation value
+    $sigmapkvk = 0; // Sum of activity weight multiplicated by their hybridation value
     $m = 1; // Malus
-    foreach ($activity_data as $k => $nk) {
-        //Possibilité d'accéder à des valeurs hardcodées pour le diagnostic
+    foreach ($activitydata as $k => $nk) {
+        // Possibilité d'accéder à des valeurs hardcodées pour le diagnostic
         $vk = configurator::get_instance()->get_coeff($type, $k); // Activity hybridation value
-    
+
         if ($nk > 0 && $vk > 0) {
-            $c ++; 
+            $c ++;
             $n += $nk;
             $pk = $nk / ($nk + REPORT_HYBRIDMETER_ACTIVITY_INSTANCES_DEVIATOR_CONSTANT); // Activity weight
-            $sigma_pk += $pk;
-            $sigma_pk_vk += $pk * $vk;
+            $sigmapk += $pk;
+            $sigmapkvk += $pk * $vk;
         }
     }
-    if ($n <= 2) $m = 0.25;
-    if($sigma_pk != 0){
+    if ($n <= 2) { $m = 0.25;
+    }
+    if($sigmapk != 0){
         $p = $c / ($c + REPORT_HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT); // Course weight
-        $h = $m * $p * $sigma_pk_vk / $sigma_pk;
+        $h = $m * $p * $sigmapkvk / $sigmapk;
     }
     return round($h, 2);
 }
 
 function digitalisation_level(array $object, array $parameters): float {
-    $activity_data = data_provider::get_instance()->count_activities_per_type_of_course($object['id']);
-    return hybridation_calculus("digitalisation_coeffs", $activity_data);
+    $activitydata = data_provider::get_instance()->count_activities_per_type_of_course($object['id']);
+    return hybridation_calculus("digitalisation_coeffs", $activitydata);
 }
 
 function raw_data(array $object, array $parameters) {
@@ -71,45 +72,47 @@ function raw_data(array $object, array $parameters) {
 
 
 function usage_level(array $object, array $parameters): float {
-    $data_provider = data_provider::get_instance();
+    $dataprovider = data_provider::get_instance();
     $configurator = configurator::get_instance();
-    $indicator=0;
-    $total=0;
-    $activity_data=$data_provider->count_hits_on_activities_per_type(
-        $object['id'], 
+    $indicator = 0;
+    $total = 0;
+    $activitydata = $dataprovider->count_hits_on_activities_per_type(
+        $object['id'],
         $configurator->get_begin_timestamp(),
         $configurator->get_end_timestamp()
     );
-    return hybridation_calculus("usage_coeffs", $activity_data);
+    return hybridation_calculus("usage_coeffs", $activitydata);
 }
 
 function get_category_path(array $object, array $parameters): string {
-    $cache_manager = cache_manager::get_instance();
+    $cachemanager = cache_manager::get_instance();
 
-    if($cache_manager->is_category_path_calculated($object['category_id']))
-        return $cache_manager->get_category_path($object['category_id']);
+    if($cachemanager->is_category_path_calculated($object['category_id'])) {
+        return $cachemanager->get_category_path($object['category_id']);
+    }
 
-    $category_path = data_provider::get_instance()->get_category_path($object['category_id']);
+    $categorypath = data_provider::get_instance()->get_category_path($object['category_id']);
 
-    $cache_manager->update_category_path($object['category_id'], $category_path);
+    $cachemanager->update_category_path($object['category_id'], $categorypath);
 
-    return $category_path;
+    return $categorypath;
 }
 
 function is_course_active_last_month(array $object, array $parameters): int {
     $configurator = configurator::get_instance();
-    $data_provider = data_provider::get_instance();
+    $dataprovider = data_provider::get_instance();
 
-    $count=$data_provider->count_student_single_visitors_on_courses(
-        [$object['id']], 
+    $count = $dataprovider->count_student_single_visitors_on_courses(
+        [$object['id']],
         $configurator->get_begin_timestamp(),
         $configurator->get_end_timestamp()
     );
 
-    if ($count >= $configurator->get_data()["active_treshold"])
+    if ($count >= $configurator->get_data()["active_treshold"]) {
         return 1;
-    else 
+    } else {
         return 0;
+    }
 }
 
 function active_students (array $object, array $parameters): int {

@@ -53,10 +53,10 @@ EOT;
 echo html_writer::link(
     $url,
     get_string('back_to_plugin', 'report_hybridmeter'),
-    array(
+    [
         'class' => 'row btn btn-primary',
         'style' => 'margin-left: 5px; margin-top: 20px;',
-    )
+    ]
 );
 
 echo $OUTPUT->footer();

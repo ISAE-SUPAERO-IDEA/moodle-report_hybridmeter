@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes\tests\NU;
 
@@ -30,12 +30,12 @@ require_once(__DIR__."/../../utils.php");
 use report_hybridmeter\classes\utils as utils;
 
 class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstract {
-    function __construct(int $course_id) {
-        parent::__construct("nu", get_string('inconsistent_nu', 'report_hybridmeter'), $course_id);
+    function __construct(int $courseid) {
+        parent::__construct("nu", get_string('inconsistent_nu', 'report_hybridmeter'), $courseid);
     }
 
     public function specific_tests() {
-        //$this->test_nd();
+        // $this->test_nd();
         $this->test_coeffs();
         $this->test_hybridation_calculus();
         $this->test_timestamps();
@@ -47,34 +47,35 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
     private function test_nd() {
         echo "<h3>verification of the non-nullity of the digitisation level</h3>";
 
-        if ( $data_unserialized['data'][$this->course_id][REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL] == 0 ) {
+        if ( $dataunserialized['data'][$this->course_id][REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL] == 0 ) {
             echo "<h3>The level of digitisation seems to be zero, launch of a test set</h3>";
             echo "<div class='subtest'>";
-            $nd_nul = (new nd_nul_scenario($this->course_id))->test();
+            $ndnul = (new nd_nul_scenario($this->course_id))->test();
             echo "</div>";
 
-            if($nd_nul)
+            if($ndnul) {
                 echo "<p>The level of digitisation seems to be really zero, so it is normal that the level of use is also zero.</p>";
-            else
+            } else {
                 echo "<p>The level of digitisation is also an issue and it is necessary to analyse the test results.</p>";
+            }
         }
     }
 
     private function test_count_hits_on_activities_per_type() {
         echo "<h3>Checking database queries</h3>";
 
-        $data_provider = \report_hybridmeter\classes\data_provider::get_instance();
+        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
-        $begin_timestamp = $configurator->get_begin_timestamp();
-        $end_timestamp = $configurator->get_end_timestamp();
-        
-        echo "<p>begin and end timestamps are ".$begin_timestamp." and ".$end_timestamp."</p>";
+        $begintimestamp = $configurator->get_begin_timestamp();
+        $endtimestamp = $configurator->get_end_timestamp();
+
+        echo "<p>begin and end timestamps are ".$begintimestamp." and ".$endtimestamp."</p>";
 
         echo "<p>count_hits_on_activities_per_type function returns :</p>";
-        echo utils::data_grouped_by_to_html($data_provider->count_hits_on_activities_per_type(
-            $this->course_id, 
-            $begin_timestamp,
-            $end_timestamp
+        echo utils::data_grouped_by_to_html($dataprovider->count_hits_on_activities_per_type(
+            $this->course_id,
+            $begintimestamp,
+            $endtimestamp
         ));
     }
 
@@ -82,11 +83,11 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
         global $DB;
 
         echo "<h3>Dump of hits on course activities during the current capture period :</h3>";
-        
-        $data_provider = \report_hybridmeter\classes\data_provider::get_instance();
+
+        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
-        $begin_timestamp = $configurator->get_begin_timestamp();
-        $end_timestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_begin_timestamp();
+        $endtimestamp = $configurator->get_end_timestamp();
 
         $sql = "SELECT logs.*, role.shortname, role.archetype,
                        role.description, u.username,
@@ -99,11 +100,11 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
                    AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
               ORDER BY logs.timecreated DESC";
 
-        $params = array(
+        $params = [
             'courseid' => $this->course_id,
-            'begintimestamp' => $begin_timestamp,
-            'endtimestamp' => $end_timestamp,
-        );
+            'begintimestamp' => $begintimestamp,
+            'endtimestamp' => $endtimestamp,
+        ];
 
         $records = $DB->get_records_sql($sql, $params, 0, 1000);
 

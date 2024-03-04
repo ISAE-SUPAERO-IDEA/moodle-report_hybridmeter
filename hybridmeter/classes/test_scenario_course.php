@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes;
 
@@ -27,11 +27,11 @@ require_once(__DIR__."/test_scenario.php");
 require_once(__DIR__."/logger.php");
 
 abstract class test_scenario_course extends test_scenario {
-    public $course_id;
+    public $courseid;
 
-    protected function __construct(string $name, int $course_id) {
+    protected function __construct(string $name, int $courseid) {
         parent::__construct($name);
-        $this->course_id = $course_id;
+        $this->course_id = $courseid;
     }
 
     abstract public function inclusion();
@@ -40,12 +40,12 @@ abstract class test_scenario_course extends test_scenario {
 
     protected function test_timestamps() {
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
-        $begin_timestamp = $configurator->get_begin_timestamp();
-        $end_timestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_begin_timestamp();
+        $endtimestamp = $configurator->get_end_timestamp();
 
         echo "<h3>Checking the consistency of timestamps</h3>";
 
-        echo "<p>Begin and end timestamps are " . $begin_timestamp . " and " . $end_timestamp . "<br/>
-        That is, " . utils::timestamp_to_datetime($begin_timestamp) . " and " . utils::timestamp_to_datetime($end_timestamp) . "</p>";
+        echo "<p>Begin and end timestamps are " . $begintimestamp . " and " . $endtimestamp . "<br/>
+        That is, " . utils::timestamp_to_datetime($begintimestamp) . " and " . utils::timestamp_to_datetime($endtimestamp) . "</p>";
     }
 }

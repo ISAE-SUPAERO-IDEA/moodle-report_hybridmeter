@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,21 +38,22 @@ function make_dirs() {
 function rm_dir($dir) {
     global $CFG;
     $path = $CFG->dataroot.$dir;
-    
+
     if (is_dir($path)) {
         rm_dir_rec($path);
     }
 }
 
 function rm_dir_rec($path) {
-    $files = array_diff(scandir($path), array('.','..'));
+    $files = array_diff(scandir($path), ['.', '..']);
     foreach ($files as $file) {
         (is_dir("$path/$file")) ? rm_dir_rec("$path/$file") : unlink("$path/$file");
     }
-    return rmdir($path); 
+    return rmdir($path);
 }
 /**
  * Post-install script
+ * @package
  */
 function xmldb_report_hybridmeter_install() {
     make_dirs();

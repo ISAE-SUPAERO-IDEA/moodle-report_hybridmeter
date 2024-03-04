@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes;
 
@@ -35,9 +35,9 @@ use csv_export_writer;
  * This class allows you to export an array of tuples as a CSV string or as a
  * CSV file downloaded from the browser, with the possibility to customise
  * the visible fields
- * 
- * 
- * @package    report_hybridmeter
+ *
+ *
+ * @package
  * @since      Moodle 3.7
  * @copyright  2021 IDEA ISAE-Supaero
  * @author     Nassim Bennouar
@@ -49,14 +49,14 @@ class exporter {
     // The strings in this array correspond to the attributes of $data whose values will be exported
     protected $fields;
 
-    /* As PHP is weak typed, this attribute is a array which explicitly associate 
+    /* As PHP is weak typed, this attribute is a array which explicitly associate
      * a field with a type to force a certain behaviour.
-     * 
+     *
      * Associate a type to a field is not required to work correctly, but is useful
      * to deal with double variable processed as integer.
-     * 
+     *
      */
-    protected $fields_type;
+    protected $fieldstype;
 
     /* Human-readable strings associated with fields (and displayed in CSV)
      * If an alias exists then the alias is displayed, otherwise this is the raw field name
@@ -65,29 +65,31 @@ class exporter {
 
     /* Attribute containing data to be exported, array of arrays required,
      * please use formatter class to convert from array of objects
-     */ 
+     */
     protected $data;
 
     // Instance of csv_export_writer of moodle core
     protected $csv;
 
-    public function __construct(array $fields=array(), array $alias = array(), array $fields_type = array(), array $data = array(), $delimiter = 'comma'){
+    public function __construct(array $fields=[], array $alias = [], array $fieldstype = [], array $data = [], $delimiter = 'comma') {
         $this->set_data($data);
-        if(empty($fields) && !empty($this->data))
+        if(empty($fields) && !empty($this->data)) {
             $this->auto_fields();
-        else
+        } else {
             $this->set_fields($fields);
+        }
         $this->set_alias($alias);
-        $this->set_fields_type($fields_type);
+        $this->set_fields_type($fieldstype);
         $this->set_delimiter($delimiter);
     }
 
     // Gets the keys of the first tuple and sets them as fields of the outgoing file
-    public function auto_fields(){
-        $this->fields=array();
+    public function auto_fields() {
+        $this->fields = [];
 
-        if(!is_array($this->data) || sizeof($this->data)==0)
+        if(!is_array($this->data) || sizeof($this->data) == 0) {
             throw new Exception("Fields cannot be calculated automatically if there is no data");
+        }
 
         foreach ($this->data[array_keys($this->data)[0]] as $key => $value){
             array_push($this->fields, $key);
@@ -95,9 +97,9 @@ class exporter {
     }
 
     // Manually set fields of the CSV file
-    public function set_fields (array $fields){
-        $precondition_array = array_map('is_string', $fields);
-        if(in_array(false, $precondition_array)){
+    public function set_fields(array $fields) {
+        $preconditionarray = array_map('is_string', $fields);
+        if(in_array(false, $preconditionarray)){
             throw new Exception("\$fields must be an array of strings");
         }
 
@@ -105,41 +107,42 @@ class exporter {
     }
 
     // Add a tuple to the $data array
-    public function add_data(array $data){
+    public function add_data(array $data) {
         array_push($this->data, $data);
     }
 
     // Set $data array
-    public function set_data(array $data){
-        $precondition_array = array_map('is_array', $data);
-        if(in_array(false, $precondition_array)){
+    public function set_data(array $data) {
+        $preconditionarray = array_map('is_array', $data);
+        if(in_array(false, $preconditionarray)){
             throw new Exception("The data must be passed to the exporter in the form of a table of tables");
         }
 
         $this->data = $data;
     }
 
-    public function set_alias(array $alias){
+    public function set_alias(array $alias) {
         $this->alias = $alias;
     }
 
-    public function set_fields_type(array $fields_type) {
-        $this->fields_type = $fields_type;
+    public function set_fields_type(array $fieldstype) {
+        $this->fields_type = $fieldstype;
     }
 
-    public function set_delimiter(string $delimiter){
-        $this->delimiter=$delimiter;
-        $this->csv=new csv_export_writer($this->delimiter);
+    public function set_delimiter(string $delimiter) {
+        $this->delimiter = $delimiter;
+        $this->csv = new csv_export_writer($this->delimiter);
     }
 
     private function construct_fields_name(): array {
-        $output=array();
+        $output = [];
 
         foreach ($this->fields as $field){
-            if(array_key_exists($field,$this->alias))
+            if(array_key_exists($field, $this->alias)) {
                 $value = $this->alias[$field];
-            else
+            } else {
                 $value = $field;
+            }
 
             array_push($output, $value);
         }
@@ -154,9 +157,9 @@ class exporter {
         $this->csv->add_data($this->construct_fields_name());
 
         foreach ($this->data as $key => $record) {
-            $row = array();
+            $row = [];
             foreach ($this->fields as $key => $field) {
-                $value = $this->format_value($record,$key,$field);
+                $value = $this->format_value($record, $key, $field);
                 array_push($row, $value);
             }
             $this->csv->add_data($row);
@@ -173,8 +176,8 @@ class exporter {
 
         return $record[$field];
     }
-    
-    public function print_csv_data_standard(){
+
+    public function print_csv_data_standard() {
         return $this->csv->print_csv_data(false);
     }
 
@@ -182,7 +185,7 @@ class exporter {
         return $this->csv->print_csv_data(true);
     }
 
-    public function download_file(){
+    public function download_file() {
         $this->csv->download_file();
     }
 }

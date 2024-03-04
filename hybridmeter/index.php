@@ -89,7 +89,7 @@ if (file_exists($pathserializeddata)) {
     $intervalformat = null;
 }
 
-$task = optional_param('task', array(), PARAM_TEXT);
+$task = optional_param('task', [], PARAM_TEXT);
 
 if ($task == 'download') {
     $exporter = new exporter(FIELDS, ALIAS, FIELDS_TYPE);

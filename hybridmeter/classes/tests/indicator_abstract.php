@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes\tests;
 
@@ -35,8 +35,8 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
 
     protected $indicator;
 
-    public function __construct($indicator, $name, $course_id) {
-        parent::__construct($name, $course_id);
+    public function __construct($indicator, $name, $courseid) {
+        parent::__construct($name, $courseid);
         $this->indicator = $indicator;
     }
 
@@ -61,13 +61,13 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
 
         switch($this->indicator) {
             case "nu" :
-                $indicator_name = "usage level";
-                $indicator_index = REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL;
+                $indicatorname = "usage level";
+                $indicatorindex = REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL;
                 break;
 
             case "nd" :
-                $indicator_name = "digitalisation level";
-                $indicator_index = REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL;
+                $indicatorname = "digitalisation level";
+                $indicatorindex = REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL;
                 break;
 
             default :
@@ -76,27 +76,27 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
         }
 
         global $CFG;
-        $path_serialized_data = $CFG->dataroot."/hybridmeter/records/serialized_data";
+        $pathserializeddata = $CFG->dataroot."/hybridmeter/records/serialized_data";
 
-        $data_unserialized = unserialize(file_get_contents($path_serialized_data));
+        $dataunserialized = unserialize(file_get_contents($pathserializeddata));
 
-        if($data_unserialized === false) {
+        if($dataunserialized === false) {
             echo "<p>Unable to unserialize the results of the last calculation, could you restart the calculations for this course?</p>";
             return false;
         }
-        
-        if (!isset($data_unserialized['data'][$this->course_id])){
+
+        if (!isset($dataunserialized['data'][$this->course_id])){
             echo "<p>The course (id = ".$this->course_id.") cannot be found in the serialized data, can you restart the calculations for this course?</p>";
             return false;
         }
-        
-        if (!isset($data_unserialized['data'][$this->course_id][$indicator_index])) {
-            echo "<p>Can't find the ".$indicator_name." for this course (id = ".$this->course_id."), can you run the calculations again for this course?</p>";
+
+        if (!isset($dataunserialized['data'][$this->course_id][$indicatorindex])) {
+            echo "<p>Can't find the ".$indicatorname." for this course (id = ".$this->course_id."), can you run the calculations again for this course?</p>";
             return false;
         }
 
-        echo "<p>The ".$indicator_name." that was actually calculated for the course n°".$this->course_id.
-            " is ".$data_unserialized['data'][$this->course_id][$indicator_index]."</p>";
+        echo "<p>The ".$indicatorname." that was actually calculated for the course n°".$this->course_id.
+            " is ".$dataunserialized['data'][$this->course_id][$indicatorindex]."</p>";
 
         return true;
     }
@@ -123,9 +123,9 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
     }
 
     protected function test_hybridation_calculus() {
-        echo "<h3>Verification of the hybridation calculation function</h3>"; 
+        echo "<h3>Verification of the hybridation calculation function</h3>";
 
-        $test_dataset = array(
+        $testdataset = [
             "assign" => "4",
             "chat" => "1",
             "forum" => "1",
@@ -149,11 +149,11 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
             "url" => "4",
             "wiki" => "1",
             "workshop" => "1",
-        );
+        ];
 
         echo "<p>Here are the parameters that will be used for the calculation of the function: </p>";
 
-        echo utils::data_grouped_by_to_html($test_dataset);
+        echo utils::data_grouped_by_to_html($testdataset);
 
         switch($this->indicator) {
             case "nu" :
@@ -169,9 +169,9 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
                 break;
         }
 
-        $test = hybridation_calculus($mode, $test_dataset);
+        $test = hybridation_calculus($mode, $testdataset);
 
         echo "<p>The hybridation_calculus function returned the following result: ".$test."</p>";
     }
 }
-    
+

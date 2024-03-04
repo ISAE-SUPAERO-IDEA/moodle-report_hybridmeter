@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -48,13 +48,13 @@ defined('MOODLE_INTERNAL') || die();
     )
 );*/
 
-$capabilities = array(
-    'report/hybridmeter:all' => array(
+$capabilities = [
+    'report/hybridmeter:all' => [
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        ),
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
         'contextlevel' => CONTEXT_MODULE,
-    )
-);
+    ],
+];

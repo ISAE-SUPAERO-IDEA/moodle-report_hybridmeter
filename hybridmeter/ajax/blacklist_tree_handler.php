@@ -32,7 +32,7 @@ use report_hybridmeter\classes\logger as logger;
 
 header('Content-Type: text/json');
 
-//Checking authorizations (admin role required)
+// Checking authorizations (admin role required)
 
 require_login();
 $context = context_system::instance();
@@ -40,7 +40,7 @@ $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
 $configurator = configurator::get_instance();
-$data_provider = data_provider::get_instance();
+$dataprovider = data_provider::get_instance();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $task  = required_param('task', PARAM_ALPHAEXT);
@@ -51,17 +51,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $id = required_param('id', PARAM_INT);
         $configurator->set_blacklisted($type, $id, $value);
 
-        //Debugging feature, set debug value to 1 in configurations to display
+        // Debugging feature, set debug value to 1 in configurations to display
         logger::log("New manage_blacklist post request");
-        logger::log(array("value" => $value, "type" => $type, "id" => $id));
+        logger::log(["value" => $value, "type" => $type, "id" => $id]);
 
         $output = [ "blacklisted" => $value ];
     }
     else{
-        $output = array(
+        $output = [
             "error" => true,
             "message" => "Unknown task",
-        );
+        ];
     }
 }
 else if ($_SERVER['REQUEST_METHOD'] == "GET") {
@@ -69,38 +69,38 @@ else if ($_SERVER['REQUEST_METHOD'] == "GET") {
 
     if($task == "category_children") {
         $id = required_param('id', PARAM_INT);
-        $categories = $data_provider->get_children_categories_ordered($id);
+        $categories = $dataprovider->get_children_categories_ordered($id);
 
-        //In the case where the category id is 0, the child course that corresponds to the site is not returned
+        // In the case where the category id is 0, the child course that corresponds to the site is not returned
 
         if($id != 0){
-            $courses = $data_provider->get_children_courses_ordered($id);
+            $courses = $dataprovider->get_children_courses_ordered($id);
         }
         else{
-            $courses = array();
+            $courses = [];
         }
-        
-        $output = [ 
+
+        $output = [
             "categories" => $categories,
             "courses" => $courses,
         ];
     }
     else {
-        $output = array(
+        $output = [
             "error" => true,
             "message" => "Unknown task",
-        );
+        ];
     }
 }
 else {
     $task = "get";
-    $output = array(
+    $output = [
         "error" => true,
         "message" => "GET method not supported, please retry with a POST request",
-    );
+    ];
 }
 
 
-//Return response as JSON
+// Return response as JSON
 
 echo json_encode($output);

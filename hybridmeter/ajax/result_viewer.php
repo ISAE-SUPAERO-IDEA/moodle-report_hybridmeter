@@ -22,7 +22,7 @@
 require_once("../../../config.php");
 header('Content-Type: text/json');
 
-//Checking authorizations (admin role required)
+// Checking authorizations (admin role required)
 
 require_login();
 $context = context_system::instance();
@@ -30,8 +30,8 @@ $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 $id  = optional_param('id' , null, PARAM_INT);
 
-$path_serialized_data = $CFG->dataroot."/hybridmeter/records/serialized_data";
-$data_unserialized = unserialize(file_get_contents($path_serialized_data));
+$pathserializeddata = $CFG->dataroot."/hybridmeter/records/serialized_data";
+$dataunserialized = unserialize(file_get_contents($pathserializeddata));
 
 
-echo (json_encode($data_unserialized["data"][$id], JSON_PRETTY_PRINT));
+echo (json_encode($dataunserialized["data"][$id], JSON_PRETTY_PRINT));

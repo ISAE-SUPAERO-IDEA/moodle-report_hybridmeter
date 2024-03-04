@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,6 +17,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes\tests\course_count;
 
@@ -30,8 +30,8 @@ require_once(__DIR__."/../../utils.php");
 use report_hybridmeter\classes\utils as utils;
 
 class inconsistent_registered_students extends \report_hybridmeter\classes\tests\course_count_abstract {
-    public function __construct(int $course_id) {
-        parent::__construct(get_string('inconsistent_registered_students', 'report_hybridmeter'), $course_id);
+    public function __construct(int $courseid) {
+        parent::__construct(get_string('inconsistent_registered_students', 'report_hybridmeter'), $courseid);
     }
 
     public function dump_registered_students() {
