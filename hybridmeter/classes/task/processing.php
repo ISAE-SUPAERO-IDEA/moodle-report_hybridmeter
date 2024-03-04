@@ -27,7 +27,7 @@ require_once(dirname(__FILE__)."/../../../../config.php");
 require_once(dirname(__FILE__).'/../processing.php');
 require_once(dirname(__FILE__).'/../configurator.php');
 
-use \report_hybridmeter\classes\processing as class_processing;
+use report_hybridmeter\classes\processing as class_processing;
 
 // Adhoc task that produces hybridmeter's serialized data
 class processing extends \core\task\adhoc_task {

@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__."/formatter.php");
 
-use \report_hybridmeter\classes\formatter as formatter;
+use report_hybridmeter\classes\formatter as formatter;
 use Exception;
 use DateTime;
 

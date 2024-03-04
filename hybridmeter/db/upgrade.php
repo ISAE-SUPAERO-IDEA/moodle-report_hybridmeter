@@ -24,7 +24,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/install.php');
 require_once(dirname(__FILE__).'/../classes/configurator.php');
 
-use \report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\configurator as configurator;
 
 function xmldb_report_hybridmeter_upgrade($oldversion) {
     make_dirs();

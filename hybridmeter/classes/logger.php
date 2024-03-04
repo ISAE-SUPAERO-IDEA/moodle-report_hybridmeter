@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__."/configurator.php");
 
-use \report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\configurator as configurator;
 
 // Hybridmeter's logger
 class logger {

@@ -26,8 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__."/../test_scenario_course.php");
 require_once(__DIR__."/../utils.php");
 
-use \report_hybridmeter\classes\utils as utils;
-use \report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\configurator as configurator;
 
 abstract class course_count_abstract extends \report_hybridmeter\classes\test_scenario_course {
     

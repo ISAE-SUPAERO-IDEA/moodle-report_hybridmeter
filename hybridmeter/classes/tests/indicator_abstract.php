@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__."/../test_scenario_course.php");
 require_once(__DIR__."/../utils.php");
 
-use \report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\utils as utils;
 use Exception;
 
 define("INDICATOR_ERROR", "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");

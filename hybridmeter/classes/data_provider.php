@@ -28,10 +28,10 @@ require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/task/processing.php');
 require_once(dirname(__FILE__).'/utils.php');
 
-use \report_hybridmeter\classes\utils as utils;
-use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\task\processing as processing;
-use \report_hybridmeter\classes\logger as logger;
+use report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\task\processing as processing;
+use report_hybridmeter\classes\logger as logger;
 use Exception;
 
 class data_provider {

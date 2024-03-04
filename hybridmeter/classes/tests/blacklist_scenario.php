@@ -29,9 +29,9 @@ require_once(__DIR__."/../configurator.php");
 require_once(__DIR__."/../data_provider.php");
 require_once(__DIR__."/../utils.php");
 
-use \report_hybridmeter\classes\utils as utils;
-use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\data_provider as data_provider;
 use Exception;
 
 class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {

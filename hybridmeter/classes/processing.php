@@ -33,12 +33,12 @@ require_once(__DIR__."/formatter.php");
 require_once(__DIR__."/logger.php");
 require_once(__DIR__."/data/general_data.php");
 
-use \report_hybridmeter\classes\data\general_data as general_data;
-use \report_hybridmeter\classes\data_provider as data_provider;
-use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\exporter as exporter;
-use \report_hybridmeter\classes\formatter as formatter;
-use \report_hybridmeter\classes\logger as logger;
+use report_hybridmeter\classes\data\general_data as general_data;
+use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\exporter as exporter;
+use report_hybridmeter\classes\formatter as formatter;
+use report_hybridmeter\classes\logger as logger;
 use DateTime;
 
 class processing {

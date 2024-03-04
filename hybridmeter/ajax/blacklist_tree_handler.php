@@ -26,9 +26,9 @@ require_once(__DIR__."/../classes/configurator.php");
 require_once(__DIR__."/../classes/data_provider.php");
 require_once(__DIR__."/../classes/logger.php");
 
-use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\data_provider as data_provider;
-use \report_hybridmeter\classes\logger as logger;
+use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\classes\logger as logger;
 
 header('Content-Type: text/json');
 

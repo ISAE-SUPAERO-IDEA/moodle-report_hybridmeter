@@ -23,7 +23,7 @@
 require_once(dirname(__FILE__)."/../../../config.php");
 require_once(__DIR__."/../classes/configurator.php");
 
-use \report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\configurator as configurator;
 
 header('Content-Type: text/json');
 

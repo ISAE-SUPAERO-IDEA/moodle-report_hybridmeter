@@ -27,7 +27,7 @@ require_once(dirname(__FILE__)."/../../../../../config.php");
 require_once(__DIR__."/../indicator_abstract.php");
 require_once(__DIR__."/../../utils.php");
 
-use \report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\utils as utils;
 
 class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstract {
     function __construct(int $course_id) {

@@ -22,7 +22,7 @@
 require(dirname(__FILE__).'/../../config.php');
 require_once('classes/configurator.php');
 
-use \report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\configurator as configurator;
 
 require_login();
 $context = context_system::instance();

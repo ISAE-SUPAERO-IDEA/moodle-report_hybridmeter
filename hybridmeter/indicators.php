@@ -27,10 +27,10 @@ require_once(__DIR__.'/classes/logger.php');
 require_once(__DIR__.'/classes/data_provider.php');
 require_once(__DIR__.'/classes/cache_manager.php');
 
-use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\data_provider as data_provider;
-use \report_hybridmeter\classes\cache_manager as cache_manager;
-use \report_hybridmeter\classes\logger as logger;
+use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\classes\cache_manager as cache_manager;
+use report_hybridmeter\classes\logger as logger;
 
 function hybridation_calculus(string $type, array $activity_data): float {
     $h = 0; // Hybridation value

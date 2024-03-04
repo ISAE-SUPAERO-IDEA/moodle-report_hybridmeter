@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/../processing.php');
 require_once(dirname(__FILE__)."/../../../../config.php");
 
-use \report_hybridmeter\classes\processing as processing;
+use report_hybridmeter\classes\processing as processing;
 
 // Scheduled task that produces hybridmeter's serialized data
 class cron_processing extends \core\task\scheduled_task {

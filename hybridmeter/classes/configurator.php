@@ -28,8 +28,8 @@ require_once(__DIR__."/../constants.php");
 require_once(__DIR__."/utils.php");
 require_once(__DIR__."/data_provider.php");
 
-use \report_hybridmeter\classes\data_provider as data_provider;
-use \report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\classes\utils as utils;
 use DateTime;
 
 // Manage hybridmeter's configuration file

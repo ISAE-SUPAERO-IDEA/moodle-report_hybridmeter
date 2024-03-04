@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__."/formatter.php");
 require_once(__DIR__."/utils.php");
 
-use \report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\utils as utils;
 
 abstract class test_scenario {
 
