@@ -19,6 +19,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  */
+
 namespace report_hybridmeter\output;
 
 use renderable;
@@ -26,21 +27,21 @@ use renderer_base;
 use templatable;
 use stdClass;
 
- // TODO: see usefulness of this class
+// TODO: see usefulness of this class
 class index_page implements renderable, templatable {
 
-    var $buttontext = null;
-    var $link = null;
- 
+    private $buttontext = null;
+    private $link = null;
+
     public function __construct($buttontext, $link) {
         $this->buttontext = $buttontext;
         $this->link = $link;
     }
-                                                                                                             
+
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
         $data->buttontext = $this->buttontext;
-        $data->link=$this->link;
+        $data->link = $this->link;
         return $data;
     }
 }
