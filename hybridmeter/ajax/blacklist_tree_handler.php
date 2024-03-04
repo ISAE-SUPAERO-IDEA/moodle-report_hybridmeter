@@ -1,18 +1,18 @@
 <?php
 // This file is part of Moodle - http://moodle.org
 //
-//  Moodle is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  Moodle is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * AJAX endpoint to manage HybridMeter blacklist configuration
@@ -26,13 +26,13 @@ require_once(__DIR__."/../classes/configurator.php");
 require_once(__DIR__."/../classes/data_provider.php");
 require_once(__DIR__."/../classes/logger.php");
 
-use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\data_provider as data_provider;
-use \report_hybridmeter\classes\logger as logger;
+use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\classes\logger as logger;
 
 header('Content-Type: text/json');
 
-//Checking authorizations (admin role required)
+// Checking authorizations (admin role required)
 
 require_login();
 $context = context_system::instance();
@@ -40,7 +40,7 @@ $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
 $configurator = configurator::get_instance();
-$data_provider = data_provider::get_instance();
+$dataprovider = data_provider::get_instance();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $task  = required_param('task', PARAM_ALPHAEXT);
@@ -51,56 +51,51 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $id = required_param('id', PARAM_INT);
         $configurator->set_blacklisted($type, $id, $value);
 
-        //Debugging feature, set debug value to 1 in configurations to display
+        // Debugging feature, set debug value to 1 in configurations to display
         logger::log("New manage_blacklist post request");
-        logger::log(array("value" => $value, "type" => $type, "id" => $id));
+        logger::log(["value" => $value, "type" => $type, "id" => $id]);
 
         $output = [ "blacklisted" => $value ];
-    }
-    else{
-        $output = array(
+    } else {
+        $output = [
             "error" => true,
             "message" => "Unknown task",
-        );
+        ];
     }
-}
-else if ($_SERVER['REQUEST_METHOD'] == "GET") {
+} else if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
-    if($task == "category_children") {
+    if ($task == "category_children") {
         $id = required_param('id', PARAM_INT);
-        $categories = $data_provider->get_children_categories_ordered($id);
+        $categories = $dataprovider->get_children_categories_ordered($id);
 
-        //In the case where the category id is 0, the child course that corresponds to the site is not returned
+        // In the case where the category id is 0, the child course that corresponds to the site is not returned
 
-        if($id != 0){
-            $courses = $data_provider->get_children_courses_ordered($id);
+        if ($id != 0) {
+            $courses = $dataprovider->get_children_courses_ordered($id);
+        } else {
+            $courses = [];
         }
-        else{
-            $courses = array();
-        }
-        
-        $output = [ 
+
+        $output = [
             "categories" => $categories,
             "courses" => $courses,
         ];
-    }
-    else {
-        $output = array(
+    } else {
+        $output = [
             "error" => true,
             "message" => "Unknown task",
-        );
+        ];
     }
-}
-else {
+} else {
     $task = "get";
-    $output = array(
+    $output = [
         "error" => true,
         "message" => "GET method not supported, please retry with a POST request",
-    );
+    ];
 }
 
 
-//Return response as JSON
+// Return response as JSON
 
 echo json_encode($output);

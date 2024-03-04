@@ -1,18 +1,18 @@
 <?php
 // This file is part of Moodle - http://moodle.org
 //
-//  Moodle is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  Moodle is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * @author Nassim Bennouar, Bruno Ilponse
@@ -59,7 +59,7 @@ $string['measurement_period_intro'] = "Measurement period:";
 $string['measurement_period'] = "from %s to %s.";
 $string['measurement_disclaimer'] = "Mesures taken on older timestamps can vary depending of changes done since then (modification of courses content, registration, unregistration of students from courses and deletion of students from the platform)";
 $string['end_processing'] = "Processing completed on %s.";
-$string['processing_duration'] = "The processing lasted %s."; 
+$string['processing_duration'] = "The processing lasted %s.";
 
 $string['next_schedule'] = "Next scheduled calculation for %s at %s";
 $string['no_schedule'] = "No programmed calculation";

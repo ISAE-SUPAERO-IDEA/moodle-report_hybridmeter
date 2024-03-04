@@ -1,47 +1,46 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
-//  Moodle is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  Moodle is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * @author Nassim Bennouar, John Tranier
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes\data;
 
 use report_hybridmeter\classes\configurator as configurator;
 use report_hybridmeter\classes\data_provider as data_provider;
 
-class general_data
-{
-    protected $begin_timestamp;
-    protected $end_timestamp;
+class general_data {
+
+    protected $begintimestamp;
+    protected $endtimestamp;
 
     protected $courses;
-    protected $used_courses;
-    protected $digitalised_courses;
+    protected $usedcourses;
+    protected $digitalisedcourses;
 
-    protected $nb_students_concerned_digitalised;
-    protected $nb_students_concerned_used;
+    protected $nbstudentsconcerneddigitalised;
+    protected $nbstudentsconcernedused;
 
-    protected $nb_students_concerned_digitalised_active;
-    protected $nb_students_concerned_used_active;
+    protected $nbstudentsconcerneddigitalisedactive;
+    protected $nbstudentsconcernedusedactive;
 
-    public function __construct($courses, $configurator)
-    {
-        $data_provider = data_provider::get_instance();
+    public function __construct($courses, $configurator) {
+        $dataprovider = data_provider::get_instance();
 
         $this->begin_timestamp = $configurator->get_begin_timestamp();
         $this->end_timestamp = $configurator->get_end_timestamp();
@@ -68,48 +67,44 @@ class general_data
         );
 
         $this->nb_students_concerned_digitalised =
-            $data_provider->count_distinct_registered_students_of_courses(
+            $dataprovider->count_distinct_registered_students_of_courses(
                 $this->getIds($this->digitalised_courses)
             );
 
         $this->nb_students_concerned_used =
-            $data_provider->count_distinct_registered_students_of_courses(
+            $dataprovider->count_distinct_registered_students_of_courses(
                 $this->getIds($this->used_courses),
             );
 
         $this->nb_students_concerned_digitalised_active =
-            $data_provider->count_student_single_visitors_on_courses(
+            $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->digitalised_courses),
                 $configurator->get_begin_timestamp(),
                 $configurator->get_end_timestamp()
             );
 
         $this->nb_students_concerned_used_active =
-            $data_provider->count_student_single_visitors_on_courses(
+            $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->used_courses),
                 $configurator->get_begin_timestamp(),
                 $configurator->get_end_timestamp()
             );
     }
 
-    public function getNbCourseDigitalized()
-    {
+    public function getnbcoursedigitalized() {
         return count($this->digitalised_courses);
     }
 
-    public function getNbCourseUsed()
-    {
+    public function getnbcourseused() {
         return count($this->used_courses);
     }
 
-    public function getNbAnalyzedCourses()
-    {
+    public function getnbanalyzedcourses() {
         return count($this->courses);
     }
 
-    public function toMap()
-    {
-        return array(
+    public function tomap() {
+        return [
             REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES => $this->digitalised_courses,
             REPORT_HYBRIDMETER_GENERAL_USED_COURSES => $this->used_courses,
             REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES => $this->getNbCourseDigitalized(),
@@ -120,12 +115,11 @@ class general_data
             REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE => $this->nb_students_concerned_used_active,
             REPORT_HYBRIDMETER_GENERAL_BEGIN_CAPTURE_TIMESTAMP => $this->begin_timestamp,
             REPORT_HYBRIDMETER_GENERAL_END_CAPTURE_DATE => $this->end_timestamp,
-            REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES => $this->getNbAnalyzedCourses()
-        );
+            REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES => $this->getNbAnalyzedCourses(),
+        ];
     }
 
-    protected function getIds($courses)
-    {
+    protected function getids($courses) {
         return array_map(
             function ($cours) {
                 return intval($cours["id"]);

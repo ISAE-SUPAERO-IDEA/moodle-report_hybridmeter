@@ -1,18 +1,18 @@
 <?php
 // This file is part of Moodle - http://moodle.org
 //
-//  Moodle is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  Moodle is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * @author Nassim Bennouar
@@ -32,12 +32,12 @@ require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 
-use \report_hybridmeter\classes\utils as utils;
-use \report_hybridmeter\classes\formatter as formatter;
-use \report_hybridmeter\classes\exporter as exporter;
-use \report_hybridmeter\classes\configurator as configurator;
-use \report_hybridmeter\classes\data_provider as data_provider;
-use \report_hybridmeter\task\processing as processing;
+use report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\formatter as formatter;
+use report_hybridmeter\classes\exporter as exporter;
+use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\task\processing as processing;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -47,57 +47,64 @@ admin_externalpage_setup('report_hybridmeter');
 
 // TODO: Move to a class managing the serialized file
 
-$path_serialized_data = $CFG->dataroot."/hybridmeter/records/serialized_data";
+$pathserializeddata = $CFG->dataroot . "/hybridmeter/records/serialized_data";
 
-if (file_exists($path_serialized_data)) {
-    $data_available = true;
-    $data_unserialized = unserialize(file_get_contents($path_serialized_data));
-    $time = $data_unserialized['time'];
+if (file_exists($pathserializeddata)) {
+    $dataavailable = true;
+    $dataunserialized = unserialize(file_get_contents($pathserializeddata));
+    $time = $dataunserialized['time'];
 
-    $generaldata = $data_unserialized['generaldata'];
-    
-    $date_record = new DateTime();
-    $date_record->setTimestamp($time["begin_timestamp"]);
+    $generaldata = $dataunserialized['generaldata'];
 
-    $t=$data_unserialized['time']['diff'];
+    $daterecord = new DateTime();
+    $daterecord->setTimestamp($time["begin_timestamp"]);
 
-    if($t<60){
-        $intervalle_format = sprintf(get_string('template_seconds', 'report_hybridmeter'), $t);
+    $t = $dataunserialized['time']['diff'];
+
+    if ($t < 60) {
+        $intervalformat = sprintf(get_string('template_seconds', 'report_hybridmeter'), $t);
+    } else {
+        if ($t < 3600) {
+            $intervalformat = sprintf(
+                get_string('template_minutes_seconds', 'report_hybridmeter'),
+                ($t / 60),
+                utils::modulo_fixed($t, 60)
+            );
+        } else {
+            $intervalformat = sprintf(
+                get_string('template_hours_minutes_seconds', 'report_hybridmeter'),
+                ($t / 3600),
+                utils::modulo_fixed(($t / 60), 60),
+                utils::modulo_fixed($t, 60)
+            );
+        }
     }
-    else if ($t<3600){
-        $intervalle_format = sprintf(get_string('template_minutes_seconds', 'report_hybridmeter'), ($t/60), utils::modulo_fixed($t,60));
-    }
-    else{
-        $intervalle_format = sprintf(get_string('template_hours_minutes_seconds', 'report_hybridmeter'), ($t/3600), utils::modulo_fixed(($t/60),60), utils::modulo_fixed($t,60));
-    }
-    
-    $formatted_date = $date_record->format('d/m/Y à H:i:s');
-}
-else{
-    $data_available = false;
-    $formatted_date = REPORT_HYBRIDMETER_NA;
+
+    $formatteddate = $daterecord->format('d/m/Y à H:i:s');
+} else {
+    $dataavailable = false;
+    $formatteddate = REPORT_HYBRIDMETER_NA;
     $generaldata = null;
     $time = null;
-    $intervalle_format = null;
+    $intervalformat = null;
 }
 
-$task = optional_param('task', array(), PARAM_TEXT);
+$task = optional_param('task', [], PARAM_TEXT);
 
-if ($task=='download'){
+if ($task == 'download') {
     $exporter = new exporter(FIELDS, ALIAS, FIELDS_TYPE);
-    $exporter->set_data($data_unserialized['data']);
-    $exporter->create_csv($SITE->fullname."-".$formatted_date);
+    $exporter->set_data($dataunserialized['data']);
+    $exporter->create_csv($SITE->fullname . "-" . $formatteddate);
     $exporter->download_file();
 }
 
 $configurator = configurator::get_instance();
 
-if ($task=='calculate'){
+if ($task == 'calculate') {
     data_provider::get_instance()->clear_adhoc_tasks();
     $processing = new processing();
     \core\task\manager::queue_adhoc_task($processing);
-}
-else if ($task == "cleartasks"){
+} else if ($task == "cleartasks") {
     data_provider::get_instance()->clear_adhoc_tasks();
 }
 
@@ -113,36 +120,36 @@ $output = $PAGE->get_renderer('report_hybridmeter');
 $debug = optional_param('debug', 0, PARAM_INTEGER);
 $unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
 
-$is_unscheduling = 0;
+$isunscheduling = 0;
 
-if($unschedule == 1){
+if ($unschedule == 1) {
     $configurator->unschedule_calculation();
-    $is_unscheduling = 1;
+    $isunscheduling = 1;
 }
 
 echo $output->header();
 echo $output->heading($pagetitle);
 echo $output->general_indicators(
-    $data_available,
+    $dataavailable,
     $generaldata,
     $configurator->get_begin_timestamp(),
     $configurator->get_end_timestamp(),
-    $formatted_date,
-    $intervalle_format
+    $formatteddate,
+    $intervalformat
 );
 
 echo $output->next_schedule(
     $configurator->has_scheduled_calculation(),
     $configurator->get_scheduled_date(),
-    $is_unscheduling
+    $isunscheduling
 );
-echo $output->index_links($data_available);
+echo $output->index_links($dataavailable);
 
-if($debug != 0){
-    $count_adhoc = data_provider::get_instance()->count_adhoc_tasks();
-    $is_running=$configurator->get_running();
-    echo $output->is_task_planned($count_adhoc, $is_running);
-    echo $output->last_calculation($data_available, $formatted_date, $intervalle_format);
+if ($debug != 0) {
+    $countadhoc = data_provider::get_instance()->count_adhoc_tasks();
+    $isrunning = $configurator->get_running();
+    echo $output->is_task_planned($countadhoc, $isrunning);
+    echo $output->last_calculation($dataavailable, $formatteddate, $intervalformat);
 }
 
 echo $output->footer();

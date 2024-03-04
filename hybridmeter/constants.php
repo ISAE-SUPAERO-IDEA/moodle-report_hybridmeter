@@ -1,57 +1,57 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
-//  Moodle is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  Moodle is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
-//defined('MOODLE_INTERNAL') || die();
+// defined('MOODLE_INTERNAL') || die();
 
 define("REPORT_HYBRIDMETER_HYBRIDATION_COURS_TYPE_NAME", "cours");
 define("REPORT_HYBRIDMETER_HYBRIDATION_CATEGORIE_TYPE_NAME", "categorie");
 define("REPORT_HYBRIDMETER_MODULE_ASSIGN", "assign");
-define("REPORT_HYBRIDMETER_MODULE_ASSIGNMENT","assignment");
-define("REPORT_HYBRIDMETER_MODULE_BOOK","book");
-define("REPORT_HYBRIDMETER_MODULE_CHAT","chat");
-define("REPORT_HYBRIDMETER_MODULE_CHOICE","choice");
-define("REPORT_HYBRIDMETER_MODULE_DATA","data");
-define("REPORT_HYBRIDMETER_MODULE_FEEDBACK","feedback");
-define("REPORT_HYBRIDMETER_MODULE_FOLDER","folder");
-define("REPORT_HYBRIDMETER_MODULE_FORUM","forum");
-define("REPORT_HYBRIDMETER_MODULE_GLOSSARY","glossary");
-define("REPORT_HYBRIDMETER_MODULE_H5P","h5pactivity");
-define("REPORT_HYBRIDMETER_MODULE_IMSCP","imscp");
-define("REPORT_HYBRIDMETER_MODULE_LABEL","label");
-define("REPORT_HYBRIDMETER_MODULE_LESSON","lesson");
-define("REPORT_HYBRIDMETER_MODULE_LTI","lti");
-define("REPORT_HYBRIDMETER_MODULE_PAGE","page");
-define("REPORT_HYBRIDMETER_MODULE_QUIZ","quiz");
-define("REPORT_HYBRIDMETER_MODULE_RESOURCE","resource");
-define("REPORT_HYBRIDMETER_MODULE_SCORM","scorm");
-define("REPORT_HYBRIDMETER_MODULE_SURVEY","survey");
-define("REPORT_HYBRIDMETER_MODULE_URL","url");
-define("REPORT_HYBRIDMETER_MODULE_WIKI","wiki");
-define("REPORT_HYBRIDMETER_MODULE_WORKSHOP","workshop");
-define("REPORT_HYBRIDMETER_MODULE_QUESTIONNAIRE","questionnaire");
+define("REPORT_HYBRIDMETER_MODULE_ASSIGNMENT", "assignment");
+define("REPORT_HYBRIDMETER_MODULE_BOOK", "book");
+define("REPORT_HYBRIDMETER_MODULE_CHAT", "chat");
+define("REPORT_HYBRIDMETER_MODULE_CHOICE", "choice");
+define("REPORT_HYBRIDMETER_MODULE_DATA", "data");
+define("REPORT_HYBRIDMETER_MODULE_FEEDBACK", "feedback");
+define("REPORT_HYBRIDMETER_MODULE_FOLDER", "folder");
+define("REPORT_HYBRIDMETER_MODULE_FORUM", "forum");
+define("REPORT_HYBRIDMETER_MODULE_GLOSSARY", "glossary");
+define("REPORT_HYBRIDMETER_MODULE_H5P", "h5pactivity");
+define("REPORT_HYBRIDMETER_MODULE_IMSCP", "imscp");
+define("REPORT_HYBRIDMETER_MODULE_LABEL", "label");
+define("REPORT_HYBRIDMETER_MODULE_LESSON", "lesson");
+define("REPORT_HYBRIDMETER_MODULE_LTI", "lti");
+define("REPORT_HYBRIDMETER_MODULE_PAGE", "page");
+define("REPORT_HYBRIDMETER_MODULE_QUIZ", "quiz");
+define("REPORT_HYBRIDMETER_MODULE_RESOURCE", "resource");
+define("REPORT_HYBRIDMETER_MODULE_SCORM", "scorm");
+define("REPORT_HYBRIDMETER_MODULE_SURVEY", "survey");
+define("REPORT_HYBRIDMETER_MODULE_URL", "url");
+define("REPORT_HYBRIDMETER_MODULE_WIKI", "wiki");
+define("REPORT_HYBRIDMETER_MODULE_WORKSHOP", "workshop");
+define("REPORT_HYBRIDMETER_MODULE_QUESTIONNAIRE", "questionnaire");
 define("REPORT_HYBRIDMETER_MODULE_NUGGET", "naas");
 
 define("REPORT_HYBRIDMETER_NA", "N/A");
 
-define("REPORT_HYBRIDMETER_NOW",strtotime("now"));
+define("REPORT_HYBRIDMETER_NOW", strtotime("now"));
 
 define("REPORT_HYBRIDMETER_ACTIVE_TRESHOLD", 5);
 
@@ -146,7 +146,7 @@ const REPORT_HYBRIDMETER_DIGITALISATION_COEFFS = [
     REPORT_HYBRIDMETER_MODULE_H5P => 4,
     REPORT_HYBRIDMETER_MODULE_IMSCP => 4,
     REPORT_HYBRIDMETER_MODULE_LABEL => 2,
-    REPORT_HYBRIDMETER_MODULE_LESSON => 4, 
+    REPORT_HYBRIDMETER_MODULE_LESSON => 4,
     REPORT_HYBRIDMETER_MODULE_LTI => 4,
     REPORT_HYBRIDMETER_MODULE_PAGE => 2,
     REPORT_HYBRIDMETER_MODULE_QUIZ => 4,
@@ -174,7 +174,7 @@ const REPORT_HYBRIDMETER_USAGE_COEFFS = [
     REPORT_HYBRIDMETER_MODULE_H5P => 4,
     REPORT_HYBRIDMETER_MODULE_IMSCP => 4,
     REPORT_HYBRIDMETER_MODULE_LABEL => 2,
-    REPORT_HYBRIDMETER_MODULE_LESSON => 4, 
+    REPORT_HYBRIDMETER_MODULE_LESSON => 4,
     REPORT_HYBRIDMETER_MODULE_LTI => 4,
     REPORT_HYBRIDMETER_MODULE_PAGE => 2,
     REPORT_HYBRIDMETER_MODULE_QUIZ => 4,

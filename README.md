@@ -78,4 +78,4 @@ If you encounter any issues or have suggestions for improvements, please feel fr
 
 
 ## Copyright
-Copyright ISAE-SUPAERO for this plugin is licensed under [GNU AFFERO GENERAL PUBLIC LICENSE v3](LICENSE.md).
+Copyright ISAE-SUPAERO for this plugin is licensed under the GPLv3 license. [GNU AFFERO GENERAL PUBLIC LICENSE v3](LICENSE.md).

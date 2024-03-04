@@ -1,23 +1,23 @@
-<?php
 // This file is part of Moodle - http://moodle.org
 //
-//  Moodle is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  Moodle is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package
  */
 namespace report_hybridmeter\classes;
 
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__."/formatter.php");
 require_once(__DIR__."/utils.php");
 
-use \report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\classes\utils as utils;
 
 abstract class test_scenario {
 
@@ -55,11 +55,11 @@ abstract class test_scenario {
 
         global $CFG;
 
-        $path=$CFG->dataroot."/hybridmeter/config.json";
+        $path = $CFG->dataroot."/hybridmeter/config.json";
 
-        if (!file_exists($path))
+        if (!file_exists($path)) {
             echo "<p>It seems that there is no config.json file</p>";
-        else {
+        } else {
             $data = file_get_contents($path);
             echo "<p>Here is the raw file</p>";
             var_dump($data);
@@ -70,7 +70,7 @@ abstract class test_scenario {
 
     protected function test_student_archetype() {
         global $DB;
-        
+
         echo "<h3>Verification of the correct configuration of the roles</h3>";
 
         echo "<p>This is the student archetype defined in the settings:</p>";
