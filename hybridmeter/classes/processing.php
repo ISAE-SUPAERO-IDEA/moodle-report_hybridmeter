@@ -46,8 +46,8 @@ class processing {
 
     protected $formatter;
     protected $exporter;
-    protected $begindate;
-    protected $enddate;
+    protected $begin_date;
+    protected $end_date;
 
     function __construct() {
         logger::log("# Processing: initializing");

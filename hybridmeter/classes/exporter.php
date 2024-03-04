@@ -57,7 +57,7 @@ class exporter {
      * to deal with double variable processed as integer.
      *
      */
-    protected $fieldstype;
+    protected $fields_type;
 
     /* Human-readable strings associated with fields (and displayed in CSV)
      * If an alias exists then the alias is displayed, otherwise this is the raw field name

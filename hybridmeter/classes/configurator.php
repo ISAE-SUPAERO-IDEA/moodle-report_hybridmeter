@@ -39,9 +39,9 @@ class configurator {
 
     protected $data;
 
-    protected $begindate;
+    protected $begin_date;
 
-    protected $enddate;
+    protected $end_date;
 
     protected static $instance = null;
 
