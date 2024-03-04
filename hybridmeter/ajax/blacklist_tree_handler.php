@@ -56,27 +56,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         logger::log(["value" => $value, "type" => $type, "id" => $id]);
 
         $output = [ "blacklisted" => $value ];
-    }
-    else{
+    } else {
         $output = [
             "error" => true,
             "message" => "Unknown task",
         ];
     }
-}
-else if ($_SERVER['REQUEST_METHOD'] == "GET") {
+} else if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
-    if($task == "category_children") {
+    if ($task == "category_children") {
         $id = required_param('id', PARAM_INT);
         $categories = $dataprovider->get_children_categories_ordered($id);
 
         // In the case where the category id is 0, the child course that corresponds to the site is not returned
 
-        if($id != 0){
+        if ($id != 0) {
             $courses = $dataprovider->get_children_courses_ordered($id);
-        }
-        else{
+        } else {
             $courses = [];
         }
 
@@ -84,15 +81,13 @@ else if ($_SERVER['REQUEST_METHOD'] == "GET") {
             "categories" => $categories,
             "courses" => $courses,
         ];
-    }
-    else {
+    } else {
         $output = [
             "error" => true,
             "message" => "Unknown task",
         ];
     }
-}
-else {
+} else {
     $task = "get";
     $output = [
         "error" => true,
