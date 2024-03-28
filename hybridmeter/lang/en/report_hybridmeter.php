@@ -21,15 +21,13 @@
  */
 require_once(__DIR__."/../../constants.php");
 
-// Settings
-
+// Settings.
 $string['pluginname'] = "HybridMeter";
 
 $string["hybridmeter_settings"] = "Hybridmeter settings";
 $string["hybridmeter_settings_help"] = "There are no settings for the hybridmeter plugin";
 
-// In index.js or renderer.js
-
+// In index.js or renderer.js.
 $string['download_csv'] = "Download report";
 $string['config'] = "Configuration";
 $string['blacklistmanagement'] = "Configuration";
@@ -43,12 +41,17 @@ $string['last_updated'] = "Last calculation : %s en %s";
 $string['last_processing_results'] = "Results of the last processing";
 $string['indicator_name'] = "Name of the indicator";
 $string['number'] = "Number";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES] = "Hybrid courses according to their level of digitalisation";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES] =
+    "Hybrid courses according to their level of digitalisation";
 $string[REPORT_HYBRIDMETER_GENERAL_NB_USED_COURSES] = "Hybrid courses according to their level of use";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED] = "Students enrolled in at least one hybrid course according to its level of digitalisation the ";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE] = "Active students in at least one hybrid course according to its level of digitalisation";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED] = "Students enrolled in at least one hybrid course according to its level of use the";
-$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE] = "Active Students in at least one hybrid course according to its level of use";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED] =
+    "Students enrolled in at least one hybrid course according to its level of digitalisation the ";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE] =
+    "Active students in at least one hybrid course according to its level of digitalisation";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED] =
+    "Students enrolled in at least one hybrid course according to its level of use the";
+$string[REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE] =
+    "Active Students in at least one hybrid course according to its level of use";
 $string[REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES] = "Analysed courses";
 
 $string['template_seconds'] = "%02d seconds";
@@ -57,7 +60,9 @@ $string['template_hours_minutes_seconds'] = "%02d hours %02d minutes %02d second
 
 $string['measurement_period_intro'] = "Measurement period:";
 $string['measurement_period'] = "from %s to %s.";
-$string['measurement_disclaimer'] = "Mesures taken on older timestamps can vary depending of changes done since then (modification of courses content, registration, unregistration of students from courses and deletion of students from the platform)";
+$string['measurement_disclaimer'] = "Mesures taken on older timestamps can vary depending ".
+    "of changes done since then (modification of courses content, registration, ".
+    "unregistration of students from courses and deletion of students from the platform)";
 $string['end_processing'] = "Processing completed on %s.";
 $string['processing_duration'] = "The processing lasted %s.";
 
@@ -71,8 +76,7 @@ $string['successfully_unscheduled'] = "Launch successfully deprogrammed";
 $string['documentation'] = "Documentation";
 $string['changelog'] = "Change log";
 
-// Diagnostics names
-
+// Diagnostics names.
 $string['inconsistent_active_students'] = "Number of active students inconsistent";
 $string['inconsistent_registered_active_students'] = "Number of active students inconsistent with enrolment";
 $string['inconsistent_registered_students'] = "Inconsistent number of students enrolled";
@@ -80,8 +84,7 @@ $string['inconsistent_nd'] = "ND inconsistent";
 $string['inconsistent_nu'] = "NU inconsistent";
 $string['inconsistent_blacklist'] = "Blacklist inconsistent";
 
-// In management page
-
+// In management page.
 $string['module_name'] = "Module name";
 $string['coefficient'] = "Coefficient";
 $string['usage_coeff'] = "Usage coefficient";
@@ -138,5 +141,3 @@ $string['diagnostic_course'] = "Get a diagnosis for the course";
 $string['back_to_plugin'] = "Back to plugin";
 
 $string['save_modif'] = "Save modifications";
-
-// These variables can be accessed with the get_string('index', "report_hybridmeter") function;

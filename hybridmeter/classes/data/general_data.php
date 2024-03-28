@@ -27,27 +27,27 @@ use report_hybridmeter\classes\data_provider as data_provider;
 
 class general_data {
 
-    protected $begin_timestamp;
-    protected $end_timestamp;
+    protected $begintimestamp;
+    protected $endtimestamp;
 
     protected $courses;
-    protected $used_courses;
-    protected $digitalised_courses;
+    protected $usedcourses;
+    protected $digitalisedcourses;
 
-    protected $nb_students_concerned_digitalised;
-    protected $nb_students_concerned_used;
+    protected $nbstudentsconcerneddigitalised;
+    protected $nbstudentsconcernedused;
 
-    protected $nb_students_concerned_digitalised_active;
-    protected $nb_students_concerned_used_active;
+    protected $nbstudentsconcerneddigitalisedactive;
+    protected $nbstudentsconcernedusedactive;
 
     public function __construct($courses, $configurator) {
         $dataprovider = data_provider::get_instance();
 
-        $this->begin_timestamp = $configurator->get_begin_timestamp();
-        $this->end_timestamp = $configurator->get_end_timestamp();
+        $this->begintimestamp = $configurator->get_begin_timestamp();
+        $this->endtimestamp = $configurator->get_end_timestamp();
         $this->courses = $courses;
 
-        $this->digitalised_courses = array_values(
+        $this->digitalisedcourses = array_values(
             array_filter(
                 $courses,
                 function ($cours) {
@@ -57,7 +57,7 @@ class general_data {
             )
         );
 
-        $this->used_courses = array_values(
+        $this->usedcourses = array_values(
             array_filter(
                 $courses,
                 function ($cours) {
@@ -67,37 +67,37 @@ class general_data {
             )
         );
 
-        $this->nb_students_concerned_digitalised =
+        $this->nbstudentsconcerneddigitalised =
             $dataprovider->count_distinct_registered_students_of_courses(
-                $this->getIds($this->digitalised_courses)
+                $this->getIds($this->digitalisedcourses)
             );
 
-        $this->nb_students_concerned_used =
+        $this->nbstudentsconcernedused =
             $dataprovider->count_distinct_registered_students_of_courses(
-                $this->getIds($this->used_courses),
+                $this->getIds($this->usedcourses),
             );
 
-        $this->nb_students_concerned_digitalised_active =
+        $this->nbstudentsconcerneddigitalisedactive =
             $dataprovider->count_student_single_visitors_on_courses(
-                $this->getIds($this->digitalised_courses),
+                $this->getIds($this->digitalisedcourses),
                 $configurator->get_begin_timestamp(),
                 $configurator->get_end_timestamp()
             );
 
-        $this->nb_students_concerned_used_active =
+        $this->nbstudentsconcernedusedactive =
             $dataprovider->count_student_single_visitors_on_courses(
-                $this->getIds($this->used_courses),
+                $this->getIds($this->usedcourses),
                 $configurator->get_begin_timestamp(),
                 $configurator->get_end_timestamp()
             );
     }
 
     public function getnbcoursedigitalized() {
-        return count($this->digitalised_courses);
+        return count($this->digitalisedcourses);
     }
 
     public function getnbcourseused() {
-        return count($this->used_courses);
+        return count($this->usedcourses);
     }
 
     public function getnbanalyzedcourses() {
@@ -106,16 +106,16 @@ class general_data {
 
     public function tomap() {
         return [
-            REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES => $this->digitalised_courses,
-            REPORT_HYBRIDMETER_GENERAL_USED_COURSES => $this->used_courses,
+            REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES => $this->digitalisedcourses,
+            REPORT_HYBRIDMETER_GENERAL_USED_COURSES => $this->usedcourses,
             REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES => $this->getNbCourseDigitalized(),
             REPORT_HYBRIDMETER_GENERAL_NB_USED_COURSES => $this->getNbCourseUsed(),
-            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED => $this->nb_students_concerned_digitalised,
-            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE => $this->nb_students_concerned_digitalised_active,
-            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED => $this->nb_students_concerned_used,
-            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE => $this->nb_students_concerned_used_active,
-            REPORT_HYBRIDMETER_GENERAL_BEGIN_CAPTURE_TIMESTAMP => $this->begin_timestamp,
-            REPORT_HYBRIDMETER_GENERAL_END_CAPTURE_DATE => $this->end_timestamp,
+            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED => $this->nbstudentsconcerneddigitalised,
+            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE => $this->nbstudentsconcerneddigitalisedactive,
+            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED => $this->nbstudentsconcernedused,
+            REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE => $this->nbstudentsconcernedusedactive,
+            REPORT_HYBRIDMETER_GENERAL_BEGIN_CAPTURE_TIMESTAMP => $this->begintimestamp,
+            REPORT_HYBRIDMETER_GENERAL_END_CAPTURE_DATE => $this->endtimestamp,
             REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES => $this->getNbAnalyzedCourses(),
         ];
     }

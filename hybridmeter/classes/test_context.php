@@ -31,20 +31,18 @@ class test_context {
 
     protected static function fatal_handler() {
         $lasterror = error_get_last();
-        if($lasterror !== null) {
+        if ($lasterror !== null) {
             self::error_handler($lasterror['type'], $lasterror['str']);
         }
     }
 
     public static function launch(test_scenario $test) {
-        $this->launch_batch([$test]);
+        self::launch_batch([$test]);
     }
 
     public static function launch_batch(array $testset) {
         $olderrorreporting = ini_get('error_reporting');
         error_reporting(0);
-        // set_error_handler("diagnostic_component::error_handler");
-        // register_shutdown_function("diagnostic_component::fatal_handler");
         foreach ($testset as $test) {
             $test->test();
             echo "<hr/>";

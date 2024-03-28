@@ -34,29 +34,29 @@ use report_hybridmeter\classes\cache_manager as cache_manager;
 use report_hybridmeter\classes\logger as logger;
 
 function hybridation_calculus(string $type, array $activitydata): float {
-    $h = 0; // Hybridation value
-    $c = 0; // Number of activity types
-    $n = 0; // Nombre total d'activités
-    $sigmapk = 0; // Sum of activity weights
-    $sigmapkvk = 0; // Sum of activity weight multiplicated by their hybridation value
-    $sigmapkvk = 0; // Sum of activity weight multiplicated by their hybridation value
-    $m = 1; // Malus
+    $h = 0; // Hybridation value.
+    $c = 0; // Number of activity types.
+    $n = 0; // Nombre total d'activités.
+    $sigmapk = 0; // Sum of activity weights.
+    $sigmapkvk = 0; // Sum of activity weight multiplicated by their hybridation value.
+    $m = 1; // Malus.
     foreach ($activitydata as $k => $nk) {
-        // Possibilité d'accéder à des valeurs hardcodées pour le diagnostic
-        $vk = configurator::get_instance()->get_coeff($type, $k); // Activity hybridation value
+        // Possibilité d'accéder à des valeurs hardcodées pour le diagnostic.
+        $vk = configurator::get_instance()->get_coeff($type, $k); // Activity hybridation value.
 
         if ($nk > 0 && $vk > 0) {
             $c ++;
             $n += $nk;
-            $pk = $nk / ($nk + REPORT_HYBRIDMETER_ACTIVITY_INSTANCES_DEVIATOR_CONSTANT); // Activity weight
+            $pk = $nk / ($nk + REPORT_HYBRIDMETER_ACTIVITY_INSTANCES_DEVIATOR_CONSTANT); // Activity weight.
             $sigmapk += $pk;
             $sigmapkvk += $pk * $vk;
         }
     }
-    if ($n <= 2) { $m = 0.25;
+    if ($n <= 2) {
+        $m = 0.25;
     }
-    if($sigmapk != 0){
-        $p = $c / ($c + REPORT_HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT); // Course weight
+    if ($sigmapk != 0) {
+        $p = $c / ($c + REPORT_HYBRIDMETER_ACTIVITY_VARIETY_DEVIATOR_CONSTANT); // Course weight.
         $h = $m * $p * $sigmapkvk / $sigmapk;
     }
     return round($h, 2);
@@ -88,7 +88,7 @@ function usage_level(array $object, array $parameters): float {
 function get_category_path(array $object, array $parameters): string {
     $cachemanager = cache_manager::get_instance();
 
-    if($cachemanager->is_category_path_calculated($object['category_id'])) {
+    if ($cachemanager->is_category_path_calculated($object['category_id'])) {
         return $cachemanager->get_category_path($object['category_id']);
     }
 

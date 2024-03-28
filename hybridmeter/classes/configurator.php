@@ -24,24 +24,18 @@ namespace report_hybridmeter\classes;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../config.php");
 require_once(__DIR__."/../constants.php");
 require_once(__DIR__."/utils.php");
 require_once(__DIR__."/data_provider.php");
 
 use report_hybridmeter\classes\data_provider as data_provider;
-use report_hybridmeter\classes\utils as utils;
 use DateTime;
 
-// Manage hybridmeter's configuration file
+// Manage hybridmeter's configuration file.
 class configurator {
     protected $path;
 
     protected $data;
-
-    protected $begin_date;
-
-    protected $end_date;
 
     protected static $instance = null;
 
@@ -49,16 +43,14 @@ class configurator {
         global $CFG;
 
         $this->path = $CFG->dataroot."/hybridmeter/config.json";
-        // Initialize empty data if no configuration file exists
-        if (!file_exists($this->path)) {
+
+        if (!file_exists($this->path)) { // Initialize empty data if no configuration file exists.
             $this->data = [];
-        }
-        // Read data from configuration file if it exists
-        else{
+        } else { // Read data from configuration file if it exists.
             $data = file_get_contents($this->path);
             $this->data = json_decode($data, true);
         }
-        // Sanitize data
+        // Sanitize data.
         $now = new DateTime("now");
         $before = strtotime("-1 months");
         $this->set_default_value("begin_date", $before);
@@ -84,24 +76,16 @@ class configurator {
         $this->set_default_value("save_blacklist_courses", []);
         $this->set_default_value("save_blacklist_categories", []);
 
-        /*
-        $blacklist_loaded = (!array_key_exists("blacklisted_courses", $this->data)
-            || !array_key_exists("blacklisted_categories", $this->data));
-
-        if(!$blacklist_loaded)
-            $this->update_blacklisted_data();*/
-
-        // Should save only if changes have been made
         $this->save();
     }
-    // Get the singleton configuration instance
+    // Get the singleton configuration instance.
     public static function get_instance() {
         if (self::$instance == null) {
             self::$instance = new configurator();
         }
         return self::$instance;
     }
-    // Sets a default value for a configuration key
+    // Sets a default value for a configuration key.
     public function set_default_value($key, $value) {
         if (!array_key_exists($key, $this->data)) {
             $this->data[$key] = $value;
@@ -123,14 +107,13 @@ class configurator {
         $this->save();
     }
 
-    // Saves the data in the configuration file
+    // Saves the data in the configuration file.
     protected function save() {
         $fichier = fopen($this->path, 'w');
         fwrite($fichier, json_encode($this->data, JSON_FORCE_OBJECT));
         fclose($fichier);
     }
 
-    // Get debug status
     public function get_debug() {
         return $this->data['debug'];
     }
@@ -142,16 +125,15 @@ class configurator {
     public function unset_debug() {
         $this->update_key('debug', false);
     }
-    // Get autoscheduler status
+
     public function get_autoscheduler() {
         return $this->data['autoscheduler'];
     }
 
-    // Update coefficients for a given $type (dynamic or static)
     public function update_coeffs($key, $defaultcoeffs) {
         global $DB;
         $modulesshortname = array_map(
-            function($module){
+            function($module) {
                 return $module->name;
             },
             $DB->get_records("modules")
@@ -166,18 +148,15 @@ class configurator {
         }
     }
 
-    // Get a coefficient $key for a given $type
     public function get_coeff(string $key, string $item) {
         if (array_key_exists($item, $this->data[$key])) {
             return $this->data[$key][$item]["value"];
         }
         return 0;
     }
-    // Get a static coefficient for a $key
     public function get_static_coeff(string $key) {
         return $this->get_coeff("digitalisation_coeffs", $key);
     }
-    // Get a dynamic coefficient for a $key
     public function get_dynamic_coeff(string $key) {
         return $this->get_coeff("usage_coeffs", $key);
     }
@@ -232,7 +211,7 @@ class configurator {
             get_string('coefficient', 'report_hybridmeter'),
         ];
 
-        if(!isset($this->data[$key])){
+        if (!isset($this->data[$key])) {
             return json_encode(
                 [
                     "columns" => $columns,
@@ -243,7 +222,7 @@ class configurator {
 
         $rows = [];
         $i = 0;
-        foreach ($this->data[$key] as $coeff){
+        foreach ($this->data[$key] as $coeff) {
             $rows[$i][$columns[0]] = $coeff["name"];
             $rows[$i][$columns[1]] = $coeff["value"];
             $i++;
@@ -278,16 +257,14 @@ class configurator {
         ];
     }
 
-    // Get a dynamic coefficient far a $key
-
     public function update_usage_treshold($value) {
-        if(is_numeric($value)) {
+        if (is_numeric($value)) {
             $this->update_key("usage_treshold", $value);
         }
     }
 
     public function update_digitalisation_treshold($value) {
-        if(is_numeric($value)) {
+        if (is_numeric($value)) {
             $this->update_key("digitalisation_treshold", $value);
         }
     }
@@ -313,30 +290,28 @@ class configurator {
         $blacklistedcategories = &$this->data["blacklisted_categories"];
         if ($tree['data']) {
             logger::log("Update blacklist for course_id=".$tree['data']->id);
-            if(!array_key_exists($tree['data']->id, $blacklistedcategories)) {
-                error_log(print_r("aa", 1));
+            if (!array_key_exists($tree['data']->id, $blacklistedcategories)) {
                 $parentid = $tree['data']->parent;
-                if($parentid == 0){
+                if ($parentid == 0) {
                     $value = false;
-                }
-                else {
+                } else {
                     $value = $blacklistedcategories[$parentid];
                 }
                 $this->atomic_set_blacklisted("categories", $tree['data']->id, $value);
             }
         }
         if (in_array('children_courses', $tree)) {
-            foreach($tree['children_courses'] as &$course) {
+            foreach ($tree['children_courses'] as &$course) {
                 $id = $course->id;
 
-                if(!array_key_exists($id, $blacklistedcourses)){
+                if (!array_key_exists($id, $blacklistedcourses)) {
                     $categoryid = $course->category;
                     $this->atomic_set_blacklisted("courses", $id, $blacklistedcategories[$categoryid]);
                 }
             }
         }
         if (in_array('children_categories', $tree)) {
-            foreach($tree['children_categories'] as &$category) {
+            foreach ($tree['children_categories'] as &$category) {
                 $this->update_blacklisted_data_rec($category);
             }
         }
@@ -353,7 +328,7 @@ class configurator {
         $arraykey = "save_blacklist_" . $type;
         $array = &$this->data[$arraykey];
 
-        if(!in_array(strval($id), $array)) {
+        if (!in_array(strval($id), $array)) {
             array_push($array, strval($id));
         }
     }
@@ -362,7 +337,7 @@ class configurator {
         $arraykey = "save_blacklist_" . $type;
         $array = &$this->data[$arraykey];
 
-        if(in_array(strval($id), $array)){
+        if (in_array(strval($id), $array)) {
             $categoryindex = array_search(strval($id), $array);
             unset($array[$categoryindex]);
             $array = array_values($array);
@@ -379,21 +354,21 @@ class configurator {
         $array[$id] = $value;
     }
 
-    // Set a blacklisted $value (true/false) for a course or category ($type) of the given $id
+    // Set a blacklisted $value (true/false) for a course or category ($type) of the given $id.
     public function set_blacklisted(string $type, int $id, bool $value, bool $rec = false) {
         $dataprovider = data_provider::get_instance();
 
         $this->atomic_set_blacklisted($type, $id, $value);
 
-        if($type == "categories") {
+        if ($type == "categories") {
             $blacklistedcategories = &$this->data["blacklisted_categories"];
 
             $idcategories = $dataprovider->get_children_categories_ids($id);
             $idcourses = $dataprovider->get_children_courses_ids($id);
 
-            if($value) {
+            if ($value) {
                 foreach ($idcourses as &$course) {
-                    if($this->is_blacklisted_element("courses", $course)) {
+                    if ($this->is_blacklisted_element("courses", $course)) {
                         $this->save_blacklisted_element("courses", $course);
                     }
                     $this->atomic_set_blacklisted("courses", $course, true);
@@ -402,33 +377,31 @@ class configurator {
                 foreach ($idcategories as &$category) {
                     $isblacklisted = (isset($blacklistedcategories[$category]) && $blacklistedcategories[$category]);
 
-                    if($isblacklisted) {
+                    if ($isblacklisted) {
                         $this->save_blacklisted_element("categories", $category);
                     } else {
                         $this->set_blacklisted("categories", $category, true, true);
                     }
                 }
-            }
-            else {
+            } else {
                 foreach ($idcourses as &$course) {
-                    if(!$this->is_saved_element("courses", $course)){
+                    if (!$this->is_saved_element("courses", $course)) {
                         $this->atomic_set_blacklisted("courses", $course, false);
                     }
                     $this->remove_blacklisted_element_from_save("courses", $course);
                 }
 
                 foreach ($idcategories as &$category) {
-                    if(!$this->is_saved_element("categories", $category)) {
+                    if (!$this->is_saved_element("categories", $category)) {
                         $this->set_blacklisted("categories", $category, false, true);
-                    }
-                    else {
+                    } else {
                         $this->remove_blacklisted_element_from_save("categories", $category);
                     }
                 }
             }
         }
 
-        if(!$rec) {
+        if (!$rec) {
             $this->save();
         }
     }
@@ -445,14 +418,12 @@ class configurator {
         return $this->data['running'];
     }
 
-    // Get begin date in DateTime format
     public function get_begin_date(): DateTime {
         $output = new DateTime();
         $output->setTimestamp($this->data['begin_date']);
         return $output;
     }
 
-    // Get end date in DateTime format
     public function get_end_date(): DateTime {
         $output = new DateTime();
         $output->setTimestamp($this->data['end_date']);
@@ -471,7 +442,7 @@ class configurator {
         return $this->data["student_archetype"];
     }
 
-    // Returns raw configuration data
+    // Returns raw configuration data.
     public function get_data(): array {
         return $this->data;
     }

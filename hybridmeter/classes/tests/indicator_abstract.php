@@ -42,13 +42,14 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
     }
 
     public function inclusion() {
-        require_once(__DIR__."/../../../../config.php");
         include_once(__DIR__."/../data_provider.php");
         include_once(__DIR__."/../processing.php");
         include_once(__DIR__."/../configurator.php");
         include_once(__DIR__."/../exporter.php");
         include_once(__DIR__."/../indicators.php");
         include_once(__DIR__."/../../constants.php");
+
+
     }
 
     public function common_tests() {
@@ -81,18 +82,21 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
 
         $dataunserialized = unserialize(file_get_contents($pathserializeddata));
 
-        if($dataunserialized === false) {
-            echo "<p>Unable to unserialize the results of the last calculation, could you restart the calculations for this course?</p>";
+        if ($dataunserialized === false) {
+            echo "<p>Unable to unserialize the results of the last calculation, ".
+                "could you restart the calculations for this course?</p>";
             return false;
         }
 
-        if (!isset($dataunserialized['data'][$this->course_id])){
-            echo "<p>The course (id = ".$this->course_id.") cannot be found in the serialized data, can you restart the calculations for this course?</p>";
+        if (!isset($dataunserialized['data'][$this->course_id])) {
+            echo "<p>The course (id = ".$this->course_id.") cannot be found in the serialized data, ".
+                "can you restart the calculations for this course?</p>";
             return false;
         }
 
         if (!isset($dataunserialized['data'][$this->course_id][$indicatorindex])) {
-            echo "<p>Can't find the ".$indicatorname." for this course (id = ".$this->course_id."), can you run the calculations again for this course?</p>";
+            echo "<p>Can't find the ".$indicatorname." for this course (id = ".$this->course_id."), ".
+                "can you run the calculations again for this course?</p>";
             return false;
         }
 
@@ -111,7 +115,9 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
                 break;
 
             case "nd" :
-                $coeffs = \report_hybridmeter\classes\configurator::get_instance()->get_coeffs_grid("digitalisation_coeffs");
+                $coeffs = \report_hybridmeter\classes\configurator::get_instance()->get_coeffs_grid(
+                    "digitalisation_coeffs"
+                );
                 break;
 
             default :

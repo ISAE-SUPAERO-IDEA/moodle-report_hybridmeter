@@ -33,7 +33,7 @@ use DateTime;
 class utils {
     public static function object_to_array(object $object) {
         $array = [];
-        foreach ($object as $key => $value){
+        foreach ($object as $key => $value) {
             $array[$key] = $value;
         }
         return $array;
@@ -54,7 +54,7 @@ class utils {
             },
             true
         );
-        if(!$accumulatedprecondition) {
+        if (!$accumulatedprecondition) {
             throw new Exception("IDs must be integers");
         }
     }
@@ -65,7 +65,8 @@ class utils {
     }
 
     public static function objects_array_to_html(array $array): string {
-        if (empty($array)) { return "No data";
+        if (empty($array)) {
+            return "No data";
         }
         $array = (new formatter($array))->get_array();
 
@@ -136,7 +137,7 @@ class utils {
         $length = count($array);
         $i = 0;
         $output .= "<tr class=\"n_uplets\">";
-        while($i < $length) {
+        while ($i < $length) {
             if ($i != 0 && ($i % $n) === 0) {
                 $output .= "</tr><tr>";
             }
@@ -159,8 +160,7 @@ class utils {
 
     public static function modulo_fixed($x, int $n): int {
         $r = $x % $n;
-        if ($r < 0)
-        {
+        if ($r < 0) {
             $r += abs($n);
         }
         return $r;

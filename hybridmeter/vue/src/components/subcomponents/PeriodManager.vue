@@ -67,7 +67,7 @@ export default{
         });
 
         const ui_to_timestamp = (text, is_end_date = false) => {
-            if(is_end_date){
+            if (is_end_date) {
                 text = text+' 23:59:59';
             }
             let date = new Date(text);
@@ -82,7 +82,7 @@ export default{
             if (begin_timestamp>end_timestamp) {
                 message.display = displayParam("error_begin_date");
             }
-            else if(dates.begin_date == begin_timestamp && dates.end_date == end_timestamp) {
+            else if (dates.begin_date == begin_timestamp && dates.end_date == end_timestamp) {
                 message.display = displayParam("success");
             }
             else {
@@ -93,7 +93,7 @@ export default{
                 data.append('end_date', end_timestamp);
                 data.append('debug', store.state.debug);
 
-                if(!loading.value) {
+                if (!loading.value) {
                     loading.value = true;
                     store.dispatch('beginLoading');
                 }
@@ -110,7 +110,7 @@ export default{
         }
 
         const dispatchDates = (dates) => {
-            if(dates != undefined) {
+            if (dates != undefined) {
                 begin_date.value = timestamp_to_ui(dates.begin_date);
                 end_date.value = timestamp_to_ui(dates.end_date);
             }
@@ -130,7 +130,7 @@ export default{
 
         store.watch(state => state.programmedDates, dates => {
             dispatchDates(dates)
-            if(loading.value) {
+            if (loading.value) {
                 loading.value = false;
                 store.dispatch('endLoading');
                 message.display = displayParam("success");

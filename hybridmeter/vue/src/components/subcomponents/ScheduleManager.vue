@@ -120,7 +120,7 @@ export default{
                 data.append('scheduled_timestamp', ui_timestamp);
                 data.append('debug', store.state.debug);
 
-                if(!loading.value) {
+                if (!loading.value) {
                     loading.value = true;
                     store.dispatch('beginLoading');
                 }
@@ -141,13 +141,13 @@ export default{
             if ( scheduledTime != undefined && !scheduledTime.scheduled) {
                 message.display = displayParam("success_unschedule");
             } 
-            else{
+            else {
                 let action="unschedule";
                 var data = new FormData();
                 data.append('action', action);
                 data.append('debug', store.state.debug);
 
-                if(!loading.value) {
+                if (!loading.value) {
                     loading.value = true;
                     store.dispatch('beginLoading');
                 }
@@ -157,10 +157,10 @@ export default{
         }
 
         const dispatchScheduledTime = (data) => {
-            if(data != undefined) {
+            if (data != undefined) {
                 scheduled.value = data.scheduled;
 
-                if(data.scheduled) {
+                if (data.scheduled) {
                     scheduled_timestamp = data.scheduled_timestamp;
                     scheduled_time.value = timestamp_to_time(scheduled_timestamp);
                     scheduled_date.value = timestamp_to_ui(scheduled_timestamp);
@@ -190,7 +190,7 @@ export default{
 
         store.watch(state => state.scheduledTime, data => {
             dispatchScheduledTime(data);
-            if(loading.value) {
+            if (loading.value) {
                 loading.value = false;
                 store.dispatch('endLoading');
                 let success = (data.scheduled) ? "success_schedule" : "success_unschedule"

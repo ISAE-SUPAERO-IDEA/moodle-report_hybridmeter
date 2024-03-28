@@ -88,7 +88,7 @@ export default new Vuex.Store({
     },
     actions: {
         beginLoading(context) {
-            if(!context.getters['isPageLoading']) {
+            if (!context.getters['isPageLoading']) {
                 context.commit('BEGIN_LOADING');
                 NProgress.start();
             }
@@ -97,7 +97,7 @@ export default new Vuex.Store({
             }
         },
         endLoading(context) {
-            if(context.getters['howManyComponentsLoading'] <= 1) {
+            if (context.getters['howManyComponentsLoading'] <= 1) {
                 context.commit('END_LOADING');
                 NProgress.done();
             }

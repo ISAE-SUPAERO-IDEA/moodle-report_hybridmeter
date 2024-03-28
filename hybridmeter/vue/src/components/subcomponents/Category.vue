@@ -102,7 +102,7 @@ export default {
         }
 
         const updateDisplayedBlacklist = blacklistData => {
-            if(blacklistData != undefined) {
+            if (blacklistData != undefined) {
                 let is_blacklisted_category = isBlacklistedCategory(blacklistData, props.category_id);
                 blacklisted.value = is_blacklisted_category;
                 

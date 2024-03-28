@@ -24,7 +24,6 @@ namespace report_hybridmeter\classes\tests;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../../config.php");
 require_once(__DIR__."/../test_scenario.php");
 require_once(__DIR__."/../configurator.php");
 require_once(__DIR__."/../data_provider.php");
@@ -46,9 +45,6 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
     }
 
     public function common_tests() {
-        /*$this->dump_config_blacklist("blacklist");
-        $this->dump_config_blacklist("savelist_courses");
-        $this->dump_config_blacklist("savelist_categories");*/
         $this->test_student_archetype();
         $this->dump_courses_with_student_activity_during_period();
     }
@@ -58,8 +54,6 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
 
     protected function dump_whitelisted_courses() {
         echo "<h2>Dump of whitelisted courses</h2>";
-
-        // TODO
     }
 
     protected function dump_config_blacklist(string $type="blacklist") {
@@ -101,7 +95,7 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
 
         print_r($array);
 
-        if($type == "blacklist") {
+        if ($type == "blacklist") {
             $array = array_keys($array);
         }
 
@@ -109,8 +103,7 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
 
         if ($length == 0) {
             echo "<p>It seems that there is no ".$name."</p>";
-        }
-        else {
+        } else {
             echo "<p>Here are the ids of the ".$name." in the configuration:</p>";
 
             echo utils::array_to_n_uplets_table_html($array);
@@ -118,7 +111,7 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
             utils::precondition_ids(array_keys($array));
 
             $where = "where id in (".$array[0];
-            for($i = 1; $i < $length; $i++){
+            for ($i = 1; $i < $length; $i++) {
                 $where .= ", ".$array[$i];
             }
             $where .= ")";
@@ -158,6 +151,4 @@ class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
 
         print_r($records);
     }
-
-    /*TODO : create more specific blacklist scenarios and make this class abstract*/
 }

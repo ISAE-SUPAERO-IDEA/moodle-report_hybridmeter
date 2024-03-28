@@ -15,7 +15,7 @@ export default function utils() {
 
     function buildStringsArgument(keys, component) {
         let output = [];
-        for(let i = 0; i < keys.length; i++) {
+        for (let i = 0; i < keys.length; i++) {
             output.push({
                 key: keys[i],
                 component: component
@@ -26,7 +26,7 @@ export default function utils() {
     
     function buildStringsObject(keys, strings) {
         let output = new Object();
-        for(let i = 0; i < keys.length; i++) {
+        for (let i = 0; i < keys.length; i++) {
             output[keys[i]] = strings[i];
         }
         return output;
@@ -53,11 +53,11 @@ export default function utils() {
         let data = ""
         let separator = "?"
 
-        params.forEach(
+        params.foreach (
             param => {
                 let [key, value] = Object.entries(param)[0];
                 data += separator + key + "=" + value;
-                if(separator == "?")
+                if (separator == "?")
                     separator = "&"
             }
         )
@@ -112,7 +112,7 @@ export default function utils() {
         return date_to_ui(date)
     }
 
-    function pad(val){
+    function pad(val) {
         return (val<10) ? '0' + val : val;
     }
 

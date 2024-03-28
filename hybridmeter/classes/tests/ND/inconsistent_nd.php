@@ -24,7 +24,6 @@ namespace report_hybridmeter\classes\tests\ND;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../../../config.php");
 require_once(__DIR__."/../indicator_abstract.php");
 require_once(__DIR__."/../../utils.php");
 
@@ -56,7 +55,7 @@ class inconsistent_nd extends \report_hybridmeter\classes\tests\indicator_abstra
 
         echo "<h3>Dump of course activities</h3>";
 
-        $sql = "SELECT cm.id, mo.name, cm.*  FROM mdl_course_modules AS cm 
+        $sql = "SELECT cm.id, mo.name, cm.*  FROM mdl_course_modules AS cm
                   JOIN mdl_modules mo ON cm.module = mo.id
                  WHERE course = ?";
 

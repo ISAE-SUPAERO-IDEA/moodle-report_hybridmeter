@@ -24,7 +24,6 @@ namespace report_hybridmeter\classes;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../config.php");
 require_once(dirname(__FILE__).'/configurator.php');
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
@@ -44,10 +43,10 @@ use csv_export_writer;
  * @author     Nassim Bennouar
  */
 class exporter {
-    // Delimitation character
+    // Delimitation character.
     protected $delimiter;
 
-    // The strings in this array correspond to the attributes of $data whose values will be exported
+    // The strings in this array correspond to the attributes of $data whose values will be exported.
     protected $fields;
 
     /* As PHP is weak typed, this attribute is a array which explicitly associate
@@ -55,9 +54,8 @@ class exporter {
      *
      * Associate a type to a field is not required to work correctly, but is useful
      * to deal with double variable processed as integer.
-     *
      */
-    protected $fields_type;
+    protected $fieldstype;
 
     /* Human-readable strings associated with fields (and displayed in CSV)
      * If an alias exists then the alias is displayed, otherwise this is the raw field name
@@ -69,53 +67,56 @@ class exporter {
      */
     protected $data;
 
-    // Instance of csv_export_writer of moodle core
+    // Instance of csv_export_writer of moodle core.
     protected $csv;
 
-    public function __construct(array $fields=[], array $alias = [], array $fieldstype = [], array $data = [], $delimiter = 'comma') {
+    public function __construct(array $fields=[],
+                                array $alias = [],
+                                array $fieldstype = [],
+                                array $data = [],
+                                $delimiter = 'comma') {
         $this->set_data($data);
-        if(empty($fields) && !empty($this->data)) {
+        if (empty($fields) && !empty($this->data)) {
             $this->auto_fields();
         } else {
             $this->set_fields($fields);
         }
         $this->set_alias($alias);
-        $this->set_fields_type($fieldstype);
+        $this->set_fieldstype($fieldstype);
         $this->set_delimiter($delimiter);
     }
 
-    // Gets the keys of the first tuple and sets them as fields of the outgoing file
+    // Gets the keys of the first tuple and sets them as fields of the outgoing file.
     public function auto_fields() {
         $this->fields = [];
 
-        if(!is_array($this->data) || sizeof($this->data) == 0) {
+        if (!is_array($this->data) || count($this->data) == 0) {
             throw new Exception("Fields cannot be calculated automatically if there is no data");
         }
 
-        foreach ($this->data[array_keys($this->data)[0]] as $key => $value){
+        foreach ($this->data[array_keys($this->data)[0]] as $key => $value) {
             array_push($this->fields, $key);
         }
     }
 
-    // Manually set fields of the CSV file
+    // Manually set fields of the CSV file.
     public function set_fields(array $fields) {
         $preconditionarray = array_map('is_string', $fields);
-        if(in_array(false, $preconditionarray)){
+        if (in_array(false, $preconditionarray)) {
             throw new Exception("\$fields must be an array of strings");
         }
 
         $this->fields = $fields;
     }
 
-    // Add a tuple to the $data array
+    // Add a tuple to the $data array.
     public function add_data(array $data) {
         array_push($this->data, $data);
     }
 
-    // Set $data array
     public function set_data(array $data) {
         $preconditionarray = array_map('is_array', $data);
-        if(in_array(false, $preconditionarray)){
+        if (in_array(false, $preconditionarray)) {
             throw new Exception("The data must be passed to the exporter in the form of a table of tables");
         }
 
@@ -126,8 +127,8 @@ class exporter {
         $this->alias = $alias;
     }
 
-    public function set_fields_type(array $fieldstype) {
-        $this->fields_type = $fieldstype;
+    public function set_fieldstype(array $fieldstype) {
+        $this->fieldstype = $fieldstype;
     }
 
     public function set_delimiter(string $delimiter) {
@@ -138,8 +139,8 @@ class exporter {
     private function construct_fields_name(): array {
         $output = [];
 
-        foreach ($this->fields as $field){
-            if(array_key_exists($field, $this->alias)) {
+        foreach ($this->fields as $field) {
+            if (array_key_exists($field, $this->alias)) {
                 $value = $this->alias[$field];
             } else {
                 $value = $field;
@@ -169,8 +170,8 @@ class exporter {
 
     protected function format_value(array $record, $key, $field) {
         if (
-            in_array($field, array_keys($this->fields_type))
-            && ($this->fields_type[$field] == REPORT_HYBRIDMETER_DOUBLE || $this->fields_type[$field] == REPORT_HYBRIDMETER_FLOAT)
+            in_array($field, array_keys($this->fieldstype))
+            && ($this->fieldstype[$field] == REPORT_HYBRIDMETER_DOUBLE || $this->fieldstype[$field] == REPORT_HYBRIDMETER_FLOAT)
         ) {
             return sprintf("%.2f", $record[$field]);
         }

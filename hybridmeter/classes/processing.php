@@ -24,7 +24,6 @@ namespace report_hybridmeter\classes;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../../../config.php');
 require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
 require_once(__DIR__."/configurator.php");
@@ -37,7 +36,6 @@ require_once(__DIR__."/data/general_data.php");
 use report_hybridmeter\classes\data\general_data as general_data;
 use report_hybridmeter\classes\data_provider as data_provider;
 use report_hybridmeter\classes\configurator as configurator;
-use report_hybridmeter\classes\exporter as exporter;
 use report_hybridmeter\classes\formatter as formatter;
 use report_hybridmeter\classes\logger as logger;
 use DateTime;
@@ -45,11 +43,10 @@ use DateTime;
 class processing {
 
     protected $formatter;
-    protected $exporter;
     protected $begin_date;
     protected $end_date;
 
-    function __construct() {
+    public function __construct() {
         logger::log("# Processing: initializing");
         $timestamp = REPORT_HYBRIDMETER_NOW;
 
@@ -59,7 +56,11 @@ class processing {
         $whitelistids = $dataprovider->get_whitelisted_courses_ids();
         logger::log("Whitelisted course ids: ".implode(", ", $whitelistids));
 
-        $filtered = $dataprovider->filter_living_courses_on_period($whitelistids, $configurator->get_begin_timestamp(), $configurator->get_end_timestamp());
+        $filtered = $dataprovider->filter_living_courses_on_period(
+            $whitelistids,
+            $configurator->get_begin_timestamp(),
+            $configurator->get_end_timestamp()
+        );
         $filteredids = array_map(function ($a) { return $a->id;
         }, $filtered);
         logger::log("Active course ids: ".implode(", ", $filteredids));
@@ -72,24 +73,22 @@ class processing {
         $this->end_date = new DateTime();
     }
 
-    function launch() {
+    public function launch() {
         global $CFG;
-        global $SITE;
         logger::log("# Processing: blacklist computation");
 
         $configurator = configurator::get_instance();
-        $dataprovider = data_provider::get_instance();
 
         $configurator->set_as_running($this->begin_date);
 
         $configurator->update_blacklisted_data();
 
-        // Calculation of detailed indicators
+        // Calculation of detailed indicators.
 
         logger::log("# Processing: course indicators computation");
 
         $this->formatter->calculate_new_indicator(
-            function($object, $parameters){
+            function($object) {
                 return $object['id'];
             },
             REPORT_HYBRIDMETER_FIELD_ID_MOODLE
@@ -101,14 +100,14 @@ class processing {
         );
 
         $this->formatter->calculate_new_indicator(
-            function($object, $parameters){
+            function($object) {
                 return $object['idnumber'];
             },
             REPORT_HYBRIDMETER_FIELD_ID_NUMBER
         );
 
         $this->formatter->calculate_new_indicator(
-            function($object, $parameters){
+            function($object, $parameters) {
                 return $parameters["www_root"]."/course/view.php?id=".$object['id'];
             },
             REPORT_HYBRIDMETER_FIELD_URL,
@@ -183,12 +182,12 @@ class processing {
 
         $dataout = $this->formatter->get_array();
 
-        // Calculation of general indicators
+        // Calculation of general indicators.
         logger::log("# Processing: global indicators computation");
 
         $generaldata = new general_data($dataout,  $configurator);
 
-        // Data exportation
+        // Data exportation.
         logger::log("# Processing: serializing results");
 
         $this->end_date->setTimestamp(strtotime("now"));
@@ -222,8 +221,7 @@ class processing {
          * fwrite($backup, $this->exporter->print_csv_data(true));
          */
 
-        // Log and task management
-
+        // Log and task management.
         $configurator->unset_as_running();
         logger::log("# Processing: done");
 

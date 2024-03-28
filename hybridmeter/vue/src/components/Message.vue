@@ -24,7 +24,7 @@ export default {
         const params = ref([]);
 
         const message = computed(() => {
-            if (display.value != undefined){
+            if (display.value != undefined) {
                 let raw_message = messages.value[display.value.name].message;
                 return vsprintf(raw_message, params.value);
             }
@@ -33,7 +33,7 @@ export default {
         });
 
         const classname = computed(() => {
-            if (display.value != undefined){
+            if (display.value != undefined) {
                 let semantic = messages.value[display.value.name].semantic
                 let pulse_class = pulsation.value ? "hybridmeter-pulse" : "";
                 return "hybridmeter-message-" + semantic + " " + pulse_class;
