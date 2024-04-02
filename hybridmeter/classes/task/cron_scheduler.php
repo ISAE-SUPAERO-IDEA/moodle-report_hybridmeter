@@ -27,8 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/../configurator.php');
 require_once(dirname(__FILE__)."/../../../../config.php");
 
-require_login();
-
 // Scheduled task that creates an adhoc processing task with capture period.
 class cron_scheduler extends \core\task\scheduled_task {
     public function get_name() {
