@@ -458,7 +458,7 @@ class data_provider {
         return $DB->delete_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
 
-    public function get_adhoc_tasks_list(): int {
+    public function get_adhoc_tasks_list(): array {
         global $DB;
 
         return array_values(
