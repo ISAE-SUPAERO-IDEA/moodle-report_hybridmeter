@@ -39,7 +39,7 @@ class formatter {
 
     protected function objects_array_to_2d_array(array $data): array {
         return (array) array_map(
-            function($element){
+            function($element) {
                 return (array) $element;
             },
             $data
@@ -62,7 +62,7 @@ class formatter {
 
     public function calculate_new_indicator($lambda, string $indicatorname, array $parameters = []) {
         $i = 1;
-        foreach($this->data as $key => $value){
+        foreach ($this->data as $key => $value) {
             logger::log("Computing indicator ".$indicatorname." for course id=". $key." (".$i."/".count($this->data).")");
             $this->data[$key][$indicatorname] = $lambda($value, $parameters);
             $i++;

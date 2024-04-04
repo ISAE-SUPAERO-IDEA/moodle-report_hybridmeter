@@ -88,7 +88,7 @@ export default {
         })
 
         const saveOtherData = () => {
-            if(store.state.student_archetype == student_archetype.value
+            if (store.state.student_archetype == student_archetype.value
             && store.state.debug == debug.value) {
                 message.display = displayParam("success");
             }

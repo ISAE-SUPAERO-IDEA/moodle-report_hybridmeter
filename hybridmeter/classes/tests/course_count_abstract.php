@@ -37,10 +37,11 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
     }
 
     public function inclusion() {
-        require_once(__DIR__."/../../../../config.php");
         include_once(__DIR__."/../indicators.php");
         include_once(__DIR__."/../data_provider.php");
         include_once(__DIR__."/../configurator.php");
+
+
     }
 
     public function common_tests() {
@@ -112,7 +113,8 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
                        role.description, u.username,
                        u.firstname, u.lastname
                   FROM ".$DB->get_prefix()."logstore_standard_log logs
-             LEFT JOIN ".$DB->get_prefix()."role_assignments assignments ON (logs.userid = assignments.userid AND logs.contextid = assignments.contextid)
+             LEFT JOIN ".$DB->get_prefix()."role_assignments assignments
+                ON (logs.userid = assignments.userid AND logs.contextid = assignments.contextid)
              LEFT JOIN ".$DB->get_prefix()."role role ON assignments.roleid = role.id
                   JOIN ".$DB->get_prefix()."user u ON logs.userid = u.id
                  WHERE logs.courseid = :courseid
@@ -144,7 +146,15 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
         $studentarchetype = configurator::get_instance()->get_student_archetype();
 
-        $sql = "SELECT logs.id, timecreated, logs.target, assign.id as assign_id, role.id as role_id, role.archetype, context.id as context_id, logs.userid, logs.courseid, context.instanceid, context.contextlevel
+        $sql = "SELECT logs.id,
+                    timecreated,
+                    logs.target,
+                    assign.id as assign_id,
+                    role.id as role_id,
+                    role.archetype,
+                    context.id as context_id,
+                    logs.userid, logs.courseid,
+                    context.instanceid, context.contextlevel
                   FROM {logstore_standard_log} logs
                   JOIN {role_assignments} assign ON logs.userid = assign.userid
                   JOIN {role} role ON assign.roleid = role.id
@@ -162,7 +172,7 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
             'begintimestamp' => $begintimestamp,
             'endtimestamp' => $endtimestamp,
         ];
-        error_log(print_r(CONTEXT_COURSE, 1));
+        debugging(print_r(CONTEXT_COURSE, 1));
 
         $records = $DB->get_records_sql($sql, $params, 0, 1000);
 

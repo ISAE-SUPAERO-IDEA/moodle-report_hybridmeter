@@ -33,7 +33,6 @@ require_once($CFG->libdir.'/adminlib.php');
 require_login();
 
 use report_hybridmeter\classes\utils as utils;
-use report_hybridmeter\classes\formatter as formatter;
 use report_hybridmeter\classes\exporter as exporter;
 use report_hybridmeter\classes\configurator as configurator;
 use report_hybridmeter\classes\data_provider as data_provider;
@@ -44,8 +43,6 @@ $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
 admin_externalpage_setup('report_hybridmeter');
-
-// TODO: Move to a class managing the serialized file
 
 $pathserializeddata = $CFG->dataroot . "/hybridmeter/records/serialized_data";
 

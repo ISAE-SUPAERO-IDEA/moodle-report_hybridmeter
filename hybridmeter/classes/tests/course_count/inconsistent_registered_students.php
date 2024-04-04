@@ -24,7 +24,6 @@ namespace report_hybridmeter\classes\tests\course_count;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../../../config.php");
 require_once(__DIR__."/../course_count_abstract.php");
 require_once(__DIR__."/../../utils.php");
 

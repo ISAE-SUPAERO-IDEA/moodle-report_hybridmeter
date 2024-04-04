@@ -27,8 +27,7 @@ use report_hybridmeter\classes\configurator as configurator;
 
 header('Content-Type: text/json');
 
-// Checking authorizations (admin role required)
-
+// Checking authorizations (admin role required).
 require_login();
 
 $context = \context_system::instance();
@@ -39,7 +38,6 @@ $configurator = configurator::get_instance();
 $dataprovider = configurator::get_instance();
 $output = "";
 
-// Writing
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $action = optional_param('action', 'nothing', PARAM_ALPHAEXT);
     $debug = optional_param('debug', null, PARAM_BOOL);
@@ -67,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 } else if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
-    // Reading
     if ($task == "get_usage_coeffs") {
         $output = $configurator->get_coeffs_grid("usage_coeffs");
     } else if ($task == "get_digitalisation_coeffs") {

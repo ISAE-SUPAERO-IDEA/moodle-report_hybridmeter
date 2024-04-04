@@ -22,9 +22,9 @@
 require_once("../../../config.php");
 header('Content-Type: text/json');
 
-// Checking authorizations (admin role required)
-
+// Checking authorizations (admin role required).
 require_login();
+
 $context = context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();

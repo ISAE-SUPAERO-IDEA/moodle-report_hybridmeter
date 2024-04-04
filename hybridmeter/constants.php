@@ -20,8 +20,6 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-// defined('MOODLE_INTERNAL') || die();
-
 define("REPORT_HYBRIDMETER_HYBRIDATION_COURS_TYPE_NAME", "cours");
 define("REPORT_HYBRIDMETER_HYBRIDATION_CATEGORIE_TYPE_NAME", "categorie");
 define("REPORT_HYBRIDMETER_MODULE_ASSIGN", "assign");

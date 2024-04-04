@@ -24,19 +24,17 @@ namespace report_hybridmeter\classes\tests\NU;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../../../config.php");
 require_once(__DIR__."/../indicator_abstract.php");
 require_once(__DIR__."/../../utils.php");
 
 use report_hybridmeter\classes\utils as utils;
 
 class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstract {
-    function __construct(int $courseid) {
+    public function __construct(int $courseid) {
         parent::__construct("nu", get_string('inconsistent_nu', 'report_hybridmeter'), $courseid);
     }
 
     public function specific_tests() {
-        // $this->test_nd();
         $this->test_coeffs();
         $this->test_hybridation_calculus();
         $this->test_timestamps();
@@ -54,10 +52,12 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
             $ndnul = (new nd_nul_scenario($this->course_id))->test();
             echo "</div>";
 
-            if($ndnul) {
-                echo "<p>The level of digitisation seems to be really zero, so it is normal that the level of use is also zero.</p>";
+            if ($ndnul) {
+                echo "<p>The level of digitisation seems to be really zero,".
+                    " so it is normal that the level of use is also zero.</p>";
             } else {
-                echo "<p>The level of digitisation is also an issue and it is necessary to analyse the test results.</p>";
+                echo "<p>The level of digitisation is also an issue ".
+                "and it is necessary to analyse the test results.</p>";
             }
         }
     }
@@ -85,7 +85,6 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
 
         echo "<h3>Dump of hits on course activities during the current capture period :</h3>";
 
-        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
         $configurator = \report_hybridmeter\classes\configurator::get_instance();
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();
@@ -94,7 +93,8 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
                        role.description, u.username,
                        u.firstname, u.lastname
                   FROM ".$DB->get_prefix()."logstore_standard_log logs
-             LEFT JOIN ".$DB->get_prefix()."role_assignments assignments ON (logs.userid = assignments.userid AND logs.contextid = assignments.contextid)
+             LEFT JOIN ".$DB->get_prefix()."role_assignments assignments
+                ON (logs.userid = assignments.userid AND logs.contextid = assignments.contextid)
              LEFT JOIN ".$DB->get_prefix()."role role ON assignments.roleid = role.id
                   JOIN ".$DB->get_prefix()."user u ON logs.userid = u.id
                  WHERE logs.courseid = :courseid

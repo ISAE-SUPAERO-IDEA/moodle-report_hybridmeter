@@ -25,9 +25,9 @@ namespace report_hybridmeter\classes;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__."/configurator.php");
-require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/task/processing.php');
 require_once(dirname(__FILE__).'/utils.php');
+
 
 use report_hybridmeter\classes\utils as utils;
 use report_hybridmeter\classes\configurator as configurator;
@@ -43,7 +43,7 @@ class data_provider {
     }
 
     public static function get_instance() {
-        if (self::$instance == null){
+        if (self::$instance == null) {
             self::$instance = new data_provider();
         }
 
@@ -51,8 +51,6 @@ class data_provider {
     }
 
     /* Indicator functions */
-
-    // @return the number of activities for each activity type for the ID course $id_course
     public function count_activities_per_type_of_course(int $idcourse): array {
         global $DB;
         $output = [];
@@ -65,7 +63,7 @@ class data_provider {
 
         $records = $DB->get_records_sql($sql, [$idcourse]);
 
-        foreach($records as $key => $object){
+        foreach ($records as $key => $object) {
             $output[$object->name] = $object->count;
         }
 
@@ -81,14 +79,13 @@ class data_provider {
 
         $records = $DB->get_records_sql($sql, [$idcourse]);
 
-        foreach($records as $key => $object){
+        foreach ($records as $key => $object) {
             $output[$object->name] = $object->count;
         }
 
         return $output;
     }
 
-    // @return the number of student visits to the ID course $id_course during the period from $begin_timestamp to $end_timestamp
     public function count_student_visits_on_course(int $idcourse, int $begintimestamp, int $endtimestamp): int {
         global $DB;
         $studentarchetype = configurator::get_instance()->get_student_archetype();
@@ -117,7 +114,7 @@ class data_provider {
         return $record->count;
     }
 
-    // Counts the number of unique users according to the course and the period chosen
+    // Counts the number of unique users according to the course and the period chosen.
     public function count_student_single_visitors_on_courses(array $idscourses, int $begintimestamp, int $endtimestamp): int {
         global $DB;
 
@@ -127,12 +124,12 @@ class data_provider {
 
         $length = count($idscourses);
 
-        if($length === 0) {
+        if ($length === 0) {
             return 0;
         }
 
         $wherecompil = "(".$idscourses[0];
-        for($i = 1; $i < $length; $i++){
+        for ($i = 1; $i < $length; $i++) {
             $wherecompil .= ", ".$idscourses[$i];
         }
         $wherecompil .= ")";
@@ -159,7 +156,7 @@ class data_provider {
         return $record->count;
     }
 
-    // @return the number of registrants in the ID course $id_course according to the assignment table
+    // Return the number of registrants in the ID course $id_course according to the assignment table.
     public function count_registered_students_of_course(int $idcourse): int {
         global $DB;
         $studentarchetype = configurator::get_instance()->get_student_archetype();
@@ -183,7 +180,7 @@ class data_provider {
         return $record->count;
     }
 
-    // @return the distinct number of students enrolled in at least one course whose ID is an element of the $ids_courses list
+    // Return the distinct number of students enrolled in at least one course whose ID is an element of the $ids_courses list.
     public function count_distinct_registered_students_of_courses(array $idscourses): int {
         global $DB;
 
@@ -191,14 +188,14 @@ class data_provider {
 
         $length = count($idscourses);
 
-        if($length === 0) {
+        if ($length === 0) {
             return 0;
         }
 
         $wherecourseid = "enrol.courseid in (" . $idscourses[0];
 
-        for($i = 1; $i < $length; $i++){
-            if(!is_int($idscourses[$i])) {
+        for ($i = 1; $i < $length; $i++) {
+            if (!is_int($idscourses[$i])) {
                 throw new Exception("Course IDs must be integers");
             }
 
@@ -256,7 +253,7 @@ class data_provider {
 
     /*Course retrieval function*/
 
-    // @returns the courses of a category in the order chosen in the moodle settings
+    // Returns the courses of a category in the order chosen in the moodle settings.
     public function get_children_courses_ordered(int $idcategory): array {
         global $DB;
 
@@ -277,12 +274,12 @@ class data_provider {
         return $output;
     }
 
-    // @returns the sub-categories of a category in the order chosen in the moodle settings
+    // Returns the sub-categories of a category in the order chosen in the moodle settings.
     public function get_children_categories_ordered(int $idcategory): array {
         global $DB;
 
         $sql = "SELECT * from {course_categories}
-                 WHERE parent = ? 
+                 WHERE parent = ?
               ORDER BY sortorder ASC";
 
         $records = $DB->get_records_sql($sql, [$idcategory]);
@@ -338,7 +335,7 @@ class data_provider {
         $catdata = [];
         $catdata['data'] = $DB->get_record("course_categories", ["id" => $idcategory]);
 
-        if(!$root) {
+        if (!$root) {
             $childrencourses = $this->get_children_courses_ordered($idcategory);
             $catdata['children_courses'] = $childrencourses;
         }
@@ -354,7 +351,7 @@ class data_provider {
         return $catdata;
     }
 
-    // @returns the full path of the category $id_category
+    // Returns the full path of the category $id_category.
     public function get_category_path(int $idcategory): string {
         return $this->get_category_path_rec($idcategory, "");
     }
@@ -365,28 +362,29 @@ class data_provider {
 
         $record = $DB->get_record("course_categories", ["id" => $idcategory]);
 
-        if($record->parent == 0) {
+        if ($record->parent == 0) {
             return $output . $record->name;
         } else {
             return $this->get_category_path_rec($record->parent, $output . $record->name . "/");
         }
     }
 
-    // @returns the ids of the visible active non-blacklisted courses in an array
+    // Returns the ids of the visible active non-blacklisted courses in an array.
     public function get_whitelisted_courses_ids(): array {
         global $DB;
 
         $config = configurator::get_instance();
         $data = $config->get_data();
 
-        // the course that matches the site is blacklisted by default
+        // The course that matches the site is blacklisted by default.
         $blacklistedcourses = [1];
-        foreach($data["blacklisted_courses"] as $courseid => $value) {
-            if ($value == 1) { $blacklistedcourses[] = $courseid;
+        foreach ($data["blacklisted_courses"] as $courseid => $value) {
+            if ($value == 1) {
+                $blacklistedcourses[] = $courseid;
             }
         }
 
-        $sql = "SELECT course.id AS id 
+        $sql = "SELECT course.id AS id
                   FROM {course} AS course
                  WHERE true";
         if (count($blacklistedcourses) > 0) {
@@ -404,7 +402,7 @@ class data_provider {
         return $output;
     }
 
-    /* returns in an array of objects the id, idnumber, full name and class name of the courses
+    /* Returns in an array of objects the id, idnumber, full name and class name of the courses
      * whose id is an element of the $ids array and which have been visited by at least one learner
      * during the period from timestamp $begin_date to timestamp $end_date.
      */
@@ -415,7 +413,7 @@ class data_provider {
 
         utils::precondition_ids($idscourses);
 
-        if(count($idscourses) === 0) {
+        if (count($idscourses) === 0) {
             return [];
         }
 
@@ -438,7 +436,7 @@ class data_provider {
         ];
 
         $records = $DB->get_records_sql($sql, $params);
-        foreach($records as &$record) {
+        foreach ($records as &$record) {
             $record->id = intval($record->id);
             $record->category_id = intval($record->category_id);
         }
@@ -448,24 +446,24 @@ class data_provider {
 
     /* Adhoc task management */
 
-    // counts the number of adhoc tasks
+    // Counts the number of adhoc tasks.
     public function count_adhoc_tasks(): int {
         global $DB;
         return $DB->count_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
 
-    // unschedule all ahdoc tasks
+    // Unschedule all ahdoc tasks.
     public function clear_adhoc_tasks() {
         global $DB;
         return $DB->delete_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
 
-    public function get_adhoc_tasks_list(): int {
+    public function get_adhoc_tasks_list(): array {
         global $DB;
 
         return array_values(
             array_map(
-                function($task){
+                function($task) {
                     return [
                         'id' => intval($task->id),
                         'nextruntime' => $task->nextruntime,
@@ -476,7 +474,7 @@ class data_provider {
         );
     }
 
-    // schedule an adhoc task at timestamp $timestamp
+    // Schedule an adhoc task at timestamp $timestamp.
     public function schedule_adhoc_task($timestamp) {
         $task = new processing();
         $task->set_next_run_time($timestamp);

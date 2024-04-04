@@ -32,9 +32,9 @@ use report_hybridmeter\classes\logger as logger;
 
 header('Content-Type: text/json');
 
-// Checking authorizations (admin role required)
-
+// Checking authorizations (admin role required).
 require_login();
+
 $context = context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
@@ -44,14 +44,14 @@ $dataprovider = data_provider::get_instance();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $task  = required_param('task', PARAM_ALPHAEXT);
-    // manage blacklist of a category or course
+    // Manage blacklist of a category or course.
     if ($task == "manage_blacklist") {
         $type = required_param('type', PARAM_ALPHAEXT);
         $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
         $id = required_param('id', PARAM_INT);
         $configurator->set_blacklisted($type, $id, $value);
 
-        // Debugging feature, set debug value to 1 in configurations to display
+        // Debugging feature, set debug value to 1 in configurations to display.
         logger::log("New manage_blacklist post request");
         logger::log(["value" => $value, "type" => $type, "id" => $id]);
 
@@ -69,8 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $id = required_param('id', PARAM_INT);
         $categories = $dataprovider->get_children_categories_ordered($id);
 
-        // In the case where the category id is 0, the child course that corresponds to the site is not returned
-
+        // In the case where the category id is 0, the child course that corresponds to the site is not returned.
         if ($id != 0) {
             $courses = $dataprovider->get_children_courses_ordered($id);
         } else {
@@ -96,6 +95,5 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 }
 
 
-// Return response as JSON
-
+// Return response as JSON.
 echo json_encode($output);

@@ -20,8 +20,6 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-defined('MOODLE_INTERNAL') || die();
-
 function make_dir($dir) {
     global $CFG;
     $path = $CFG->dataroot.$dir;

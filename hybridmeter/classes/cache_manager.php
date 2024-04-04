@@ -24,11 +24,8 @@ namespace report_hybridmeter\classes;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../config.php");
 require_once(__DIR__."/../constants.php");
 require_once(__DIR__."/utils.php");
-
-defined('MOODLE_INTERNAL') || die();
 
 use Exception;
 
@@ -42,7 +39,7 @@ class cache_manager {
     }
 
     public static function get_instance() {
-        if(self::$instance == null){
+        if (self::$instance == null) {
             self::$instance = new cache_manager();
         }
 
@@ -50,11 +47,11 @@ class cache_manager {
     }
 
     public function append_stack_key(string $key, $data) {
-        if(isset($this->cache[$key]) && !is_array($this->cache[$key])) {
+        if (isset($this->cache[$key]) && !is_array($this->cache[$key])) {
             throw new Exception("The key is already associated with a variable that is not an array");
         }
 
-        if(!isset($this->cache[$key])){
+        if (!isset($this->cache[$key])) {
             $this->cache[$key] = [];
         }
 
@@ -62,11 +59,11 @@ class cache_manager {
     }
 
     public function update_associative_array_key(string $key, string $subkey, $data) {
-        if(isset($this->cache[$key]) && !is_array($this->cache[$key])) {
+        if (isset($this->cache[$key]) && !is_array($this->cache[$key])) {
             throw new Exception("The key is already associated with a variable that is not an array");
         }
 
-        if(!isset($this->cache[$key])){
+        if (!isset($this->cache[$key])) {
             $this->cache[$key] = [];
         }
 
