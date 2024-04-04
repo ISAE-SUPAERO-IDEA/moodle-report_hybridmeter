@@ -53,7 +53,7 @@ export default function utils() {
         let data = ""
         let separator = "?"
 
-        params.foreach (
+        params.forEach (
             param => {
                 let [key, value] = Object.entries(param)[0];
                 data += separator + key + "=" + value;
