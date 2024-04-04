@@ -23,12 +23,6 @@ require_once(dirname(__FILE__)."/../../config.php");
 
 defined('MOODLE_INTERNAL') || die;
 
-// Checking authorizations (admin role required).
-require_login();
-$context = context_system::instance();
-$PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
-
 $ADMIN->add(
     'reports',
     new admin_externalpage('report_hybridmeter',
