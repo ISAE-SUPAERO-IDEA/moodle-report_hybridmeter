@@ -23,14 +23,14 @@ require_once(dirname(__FILE__)."/../../config.php");
 
 defined('MOODLE_INTERNAL') || die;
 
-$ADMIN->add(
-    'reports',
-    new admin_externalpage('report_hybridmeter',
-        get_string('pluginname', 'report_hybridmeter'),
-        "$CFG->wwwroot/report/hybridmeter/index.php")
-);
-
 if ($hassiteconfig) {
+    $ADMIN->add(
+        'reports',
+        new admin_externalpage('report_hybridmeter',
+            get_string('pluginname', 'report_hybridmeter'),
+            "$CFG->wwwroot/report/hybridmeter/index.php")
+    );
+
     $settings->add(new admin_setting_heading(
         'hybridmeter',
         get_string('hybridmeter_settings', 'report_hybridmeter'),
