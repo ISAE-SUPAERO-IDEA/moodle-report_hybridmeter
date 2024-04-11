@@ -24,12 +24,11 @@ namespace report_hybridmeter\task;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__)."/../../../../config.php");
-
+use core\task\adhoc_task;
 use report_hybridmeter\processing as class_processing;
 
 // Adhoc task that produces hybridmeter's serialized data.
-class processing extends \core\task\adhoc_task {
+class processing extends adhoc_task {
     public function get_name() {
         return get_string('pluginname', 'report_hybridmeter');
     }

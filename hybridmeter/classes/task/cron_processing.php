@@ -22,14 +22,14 @@
  */
 namespace report_hybridmeter\task;
 
-defined('MOODLE_INTERNAL') || die();
+use core\task\scheduled_task;
 
-require_once(dirname(__FILE__)."/../../../../config.php");
+defined('MOODLE_INTERNAL') || die();
 
 use report_hybridmeter\processing as processing;
 
 // Scheduled task that produces hybridmeter's serialized data.
-class cron_processing extends \core\task\scheduled_task {
+class cron_processing extends scheduled_task {
     public function get_name() {
         return get_string('pluginname', 'report_hybridmeter');
     }
