@@ -20,11 +20,10 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes;
+namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/test_scenario.php");
 require_once(__DIR__."/logger.php");
 
 abstract class test_scenario_course extends test_scenario {
@@ -40,7 +39,7 @@ abstract class test_scenario_course extends test_scenario {
     abstract public function specific_tests();
 
     protected function test_timestamps() {
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+        $configurator = \report_hybridmeter\configurator::get_instance();
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();
 

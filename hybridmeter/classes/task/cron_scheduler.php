@@ -24,7 +24,6 @@ namespace report_hybridmeter\task;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../configurator.php');
 require_once(dirname(__FILE__)."/../../../../config.php");
 
 // Scheduled task that creates an adhoc processing task with capture period.
@@ -40,7 +39,7 @@ class cron_scheduler extends \core\task\scheduled_task {
 
     }
     public function execute() {
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+        $configurator = \report_hybridmeter\configurator::get_instance();
         $autoscheduler = $configurator->get_autoscheduler();
 
         if ($autoscheduler != "none" && !$configurator->has_scheduled_calculation()) {

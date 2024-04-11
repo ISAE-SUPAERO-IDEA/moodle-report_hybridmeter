@@ -20,17 +20,14 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes\tests;
+namespace report_hybridmeter\tests;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/../test_scenario_course.php");
-require_once(__DIR__."/../utils.php");
+use report_hybridmeter\utils as utils;
+use report_hybridmeter\configurator as configurator;
 
-use report_hybridmeter\classes\utils as utils;
-use report_hybridmeter\classes\configurator as configurator;
-
-abstract class course_count_abstract extends \report_hybridmeter\classes\test_scenario_course {
+abstract class course_count_abstract extends \report_hybridmeter\test_scenario_course {
 
     protected function __construct(string $name, int $courseid) {
         parent::__construct($name, $courseid);
@@ -52,8 +49,8 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
     abstract public function specific_tests();
 
     protected function test_count_student_single_visitors_on_course() {
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
-        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
+        $configurator = configurator::get_instance();
+        $dataprovider = \report_hybridmeter\data_provider::get_instance();
 
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();
@@ -72,7 +69,7 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
     }
 
     protected function test_count_registered_students_of_course() {
-        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
+        $dataprovider = \report_hybridmeter\data_provider::get_instance();
 
         echo "<h3>Testing the count_registered_students_of_course function</h3>";
 
@@ -104,7 +101,7 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
         echo "<h3>Dump of the first thousand entries in the course logs during the activity period</h3>";
 
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+        $configurator = configurator::get_instance();
 
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();
@@ -139,7 +136,7 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
         echo "<h3>Dump of the first thousand entries in the course logs during the activity period</h3>";
 
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+        $configurator = configurator::get_instance();
 
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();
@@ -186,7 +183,7 @@ abstract class course_count_abstract extends \report_hybridmeter\classes\test_sc
 
         echo "<h3>Dump the module activity during the activity period</h3>";
 
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+        $configurator = configurator::get_instance();
 
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();

@@ -20,21 +20,15 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes\tests;
+namespace report_hybridmeter\tests;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/../test_scenario.php");
-require_once(__DIR__."/../configurator.php");
-require_once(__DIR__."/../data_provider.php");
-require_once(__DIR__."/../utils.php");
-
-use report_hybridmeter\classes\utils as utils;
-use report_hybridmeter\classes\configurator as configurator;
-use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\utils as utils;
+use report_hybridmeter\configurator as configurator;
 use Exception;
 
-class blacklist_scenario extends \report_hybridmeter\classes\test_scenario {
+class blacklist_scenario extends \report_hybridmeter\test_scenario {
     public function __construct() {
         parent::__construct(get_string('inconsistent_blacklist', 'report_hybridmeter'));
     }

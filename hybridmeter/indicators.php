@@ -23,15 +23,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/constants.php');
-require_once(__DIR__.'/classes/configurator.php');
-require_once(__DIR__.'/classes/logger.php');
-require_once(__DIR__.'/classes/data_provider.php');
-require_once(__DIR__.'/classes/cache_manager.php');
 
-use report_hybridmeter\classes\configurator as configurator;
-use report_hybridmeter\classes\data_provider as data_provider;
-use report_hybridmeter\classes\cache_manager as cache_manager;
-use report_hybridmeter\classes\logger as logger;
+use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\data_provider as data_provider;
+use report_hybridmeter\cache_manager as cache_manager;
 
 function hybridation_calculus(string $type, array $activitydata): float {
     $h = 0; // Hybridation value.

@@ -20,13 +20,12 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes;
+namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/formatter.php");
 
-use report_hybridmeter\classes\formatter as formatter;
+use report_hybridmeter\formatter as formatter;
 use Exception;
 use DateTime;
 

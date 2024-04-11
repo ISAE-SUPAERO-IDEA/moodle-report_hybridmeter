@@ -20,10 +20,10 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes\data;
+namespace report_hybridmeter\data;
 
-use report_hybridmeter\classes\configurator as configurator;
-use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\data_provider as data_provider;
 
 class general_data {
 

@@ -20,22 +20,16 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  */
 require(dirname(__FILE__).'/../../config.php');
-require_once(dirname(__FILE__).'/classes/task/processing.php');
 require_once(dirname(__FILE__).'/output/renderer.php');
 require_once(dirname(__FILE__).'/constants.php');
-require_once(dirname(__FILE__).'/classes/utils.php');
-require_once(dirname(__FILE__).'/classes/formatter.php');
-require_once(dirname(__FILE__).'/classes/exporter.php');
-require_once(dirname(__FILE__).'/classes/configurator.php');
-require_once(dirname(__FILE__).'/classes/data_provider.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 
-use report_hybridmeter\classes\utils as utils;
-use report_hybridmeter\classes\exporter as exporter;
-use report_hybridmeter\classes\configurator as configurator;
-use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\utils as utils;
+use report_hybridmeter\exporter as exporter;
+use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\data_provider as data_provider;
 use report_hybridmeter\task\processing as processing;
 
 $context = context_system::instance();

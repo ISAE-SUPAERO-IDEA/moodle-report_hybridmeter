@@ -22,7 +22,7 @@
 require(dirname(__FILE__).'/../../config.php');
 require_once('classes/data_provider.php');
 
-use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\data_provider as data_provider;
 
 require_login();
 $context = context_system::instance();
