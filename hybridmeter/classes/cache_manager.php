@@ -25,7 +25,6 @@ namespace report_hybridmeter;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__."/../constants.php");
-require_once(__DIR__."/utils.php");
 
 use Exception;
 

@@ -24,7 +24,6 @@ namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/configurator.php');
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
 

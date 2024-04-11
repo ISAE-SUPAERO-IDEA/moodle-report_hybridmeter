@@ -24,8 +24,6 @@ namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/logger.php");
-
 abstract class test_scenario_course extends test_scenario {
     public $courseid;
 

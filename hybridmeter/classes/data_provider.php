@@ -24,11 +24,6 @@ namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/configurator.php");
-require_once(dirname(__FILE__).'/task/processing.php');
-require_once(dirname(__FILE__).'/utils.php');
-
-
 use report_hybridmeter\utils as utils;
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\task\processing as processing;

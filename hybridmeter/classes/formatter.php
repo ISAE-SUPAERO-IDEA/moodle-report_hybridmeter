@@ -24,8 +24,6 @@ namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/logger.php');
-
 use Exception;
 
 class formatter {
