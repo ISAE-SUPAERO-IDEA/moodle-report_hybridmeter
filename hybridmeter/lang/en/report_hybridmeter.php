@@ -60,7 +60,7 @@ $string['template_hours_minutes_seconds'] = "%02d hours %02d minutes %02d second
 
 $string['measurement_period_intro'] = "Measurement period:";
 $string['measurement_period'] = "from %s to %s.";
-$string['measurement_disclaimer'] = "Mesures taken on older timestamps can vary depending ".
+$string['measurement_disclaimer'] = "Measures taken on older timestamps can vary depending ".
     "of changes done since then (modification of courses content, registration, ".
     "unregistration of students from courses and deletion of students from the platform)";
 $string['end_processing'] = "Processing completed on %s.";
