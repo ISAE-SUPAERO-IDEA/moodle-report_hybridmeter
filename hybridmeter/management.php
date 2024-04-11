@@ -19,6 +19,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  */
+
 require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
