@@ -11,6 +11,7 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 - Fix classes to ensure autoloading
 - Fix typo in messages
 - Fix settings.php : check $hassiteconfig first
+- Do not import config.php in tasks
 
 
 ## Hybridmeter version 1.1.11 (2024-04-04)
