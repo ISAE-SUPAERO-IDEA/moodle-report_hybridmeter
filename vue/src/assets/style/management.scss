@@ -1,0 +1,203 @@
+/**
+ * @author Nassim Bennouar
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ */
+
+$breakpoints: (
+    "large" : 2000px,
+    "medium" : 1200px,
+    "small" : 800px,
+    "mobile" : 500px,
+);
+
+@mixin media-min($_key) {
+    @media screen and (min-width: map-get($breakpoints, $_key)) {
+        &{ @content; }
+    }
+}
+
+@mixin media-max($_key) {
+    @media screen and (max-width: (map-get($breakpoints, $_key) - 1)) {
+        &{ @content; }
+    }
+}
+
+@mixin media-between($_keymin, $_keymax) {
+    @media screen and (min-width: map-get($breakpoints, $_keymin)) and (max-width: (map-get($breakpoints, $_keymax) - 1)) {
+        &{ @content; }
+    }
+}
+
+#hybridmeter-app > h3 {
+    margin-bottom : 20px;
+    margin-left : 2px;
+    margin-top : 15px;
+}
+
+.hybridmeter-component {
+    margin-bottom : 15px;
+}
+
+@mixin blacklist-element{
+    border: 1px rgb(214, 214, 214) solid;
+    padding-left : 13px;
+    padding-right : 13px;
+    line-height: 40px;
+    vertical-align: middle;
+    margin-top : -1px;
+}
+
+.hybrid-category {
+    @include blacklist-element;
+    & > div {
+        margin-bottom : 10px;
+    }
+}
+
+.hybrid-course {
+    @include blacklist-element
+}
+
+$offset-large : 15%;
+$offset-medium : 20%;
+$offset-small : 30%;
+
+.hybridmeter-field {
+    @include media-max("mobile") {
+        text-align : center;
+    }
+    & > input, select {
+        width : 250px;
+        display : inline-block;
+        @include media-max("mobile") {
+            width : 150px;
+            display : inline;
+            margin-bottom : 10px;
+        }
+    }
+    & > label {
+        margin-right : 20px;
+        text-align : end;
+        @include media-min("large") {
+            width : $offset-large;
+        }
+        @include media-between("medium", "large") {
+            width : $offset-medium;
+        }
+        @include media-between("mobile", "medium") {
+            width : $offset-small;
+        }
+        @include media-max("mobile") {
+            width : 100%;
+            text-align : center;
+        }
+    }
+    margin-bottom : 10px;
+}
+
+.hybridmeter-date {
+    @include media-max("mobile") {
+        text-align : center;
+    }
+}
+
+.hybridmeter-control {
+    margin-bottom : 20px;
+    padding-left : 20px;
+    & > button {
+        margin-right : 10px;
+    }
+    @include media-min("large") {
+        margin-left : $offset-large;
+    }
+    @include media-between("medium", "large") {
+        margin-left : $offset-medium;
+    }
+    @include media-between("mobile", "medium") {
+        margin-left : $offset-small;
+    }
+    @include media-max("mobile") {
+        width : 100%;
+        text-align : center;
+    }
+}
+
+.hybridmeter-message {
+    color: #fff;
+    border : 2px solid;
+    width : 99%;
+    margin-left : 13px;
+    margin-bottom : 20px;
+    padding-left : 10px;
+    padding-right : 10px;
+    padding-top : 15px;
+    padding-bottom : 15px;
+    border-radius : 5px;
+    span {
+        vertical-align : center;
+        display : inline-block;
+        padding-left : 3%;
+        @include media-min("large") {
+            width : 98%;
+            padding-left : 2%;
+        }
+        @include media-between("small", "large") {
+            width : 96%;
+        }
+        @include media-between("mobile", "small") {
+            width : 94%;
+        }
+        @include media-max("mobile") {
+            width : 90%;
+        }
+    }
+    i {
+        width : 15px;
+        display : inline-block;
+        vertical-align : end;
+        &:hover  {
+           color : rgb(104, 103, 103) 
+        }
+    }
+}
+
+.hybridmeter-message-error {
+    background-color : #af5a50;
+}
+
+.hybridmeter-message-success {
+    background-color : #3a6938;
+}
+
+.hybridmeter-message-warning {
+    background-color : #ecbc77
+}
+
+.hybridmeter-message-info {
+    background-color : #298c9b;
+}
+
+.hybridmeter-pulse {
+    animation : pulse 1s 1;
+}
+  
+@keyframes pulse {
+      0% {
+          box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+      }
+  
+      70% {
+          box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+      }
+  
+      100% {
+          box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+      }
+  }
+
+.hybridmeter-th {
+    color: #fff;
+    background-color: #343a40;
+    border-color: #454d55;
+}
