@@ -43,8 +43,6 @@ abstract class indicator_abstract extends \report_hybridmeter\test_scenario_cour
         include_once(__DIR__."/../exporter.php");
         include_once(__DIR__."/../indicators.php");
         include_once(__DIR__."/../../constants.php");
-
-
     }
 
     public function common_tests() {
