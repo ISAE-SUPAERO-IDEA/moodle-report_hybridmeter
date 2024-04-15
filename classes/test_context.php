@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter;
 
-defined('MOODLE_INTERNAL') || die();
-
 class test_context {
     protected static function error_handler($errno, $errstr, $errfile, $errline) {
         echo "<p><strong>ERROR : ".$errno." ".$errstr." ".$errfile." ".$errline."</strong></p><br/><br/>";

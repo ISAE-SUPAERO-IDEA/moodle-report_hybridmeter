@@ -24,8 +24,6 @@ namespace report_hybridmeter\task;
 
 use core\task\scheduled_task;
 
-defined('MOODLE_INTERNAL') || die();
-
 use report_hybridmeter\processing as processing;
 
 // Scheduled task that produces hybridmeter's serialized data.

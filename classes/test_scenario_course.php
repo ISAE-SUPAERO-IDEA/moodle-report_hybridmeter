@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter;
 
-defined('MOODLE_INTERNAL') || die();
-
 abstract class test_scenario_course extends test_scenario {
     public $courseid;
 

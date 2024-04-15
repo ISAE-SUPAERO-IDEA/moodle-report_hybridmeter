@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter;
 
-defined('MOODLE_INTERNAL') || die();
-
 use report_hybridmeter\utils as utils;
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\task\processing as processing;

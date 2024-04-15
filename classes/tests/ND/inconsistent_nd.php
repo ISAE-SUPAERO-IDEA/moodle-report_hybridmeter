@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter\tests\ND;
 
-defined('MOODLE_INTERNAL') || die();
-
 use report_hybridmeter\utils as utils;
 
 class inconsistent_nd extends \report_hybridmeter\tests\indicator_abstract {

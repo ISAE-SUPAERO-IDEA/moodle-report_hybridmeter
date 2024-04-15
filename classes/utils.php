@@ -22,9 +22,6 @@
  */
 namespace report_hybridmeter;
 
-defined('MOODLE_INTERNAL') || die();
-
-
 use report_hybridmeter\formatter as formatter;
 use Exception;
 use DateTime;

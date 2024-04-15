@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core\task\adhoc_task;
 use report_hybridmeter\processing as class_processing;
 

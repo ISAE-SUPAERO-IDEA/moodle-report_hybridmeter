@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter;
 
-defined('MOODLE_INTERNAL') || die();
-
 require_once(__DIR__."/../constants.php");
 
 use report_hybridmeter\data_provider as data_provider;

@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter;
 
-defined('MOODLE_INTERNAL') || die();
-
 require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
 

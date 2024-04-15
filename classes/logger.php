@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter;
 
-defined('MOODLE_INTERNAL') || die();
-
 use report_hybridmeter\configurator as configurator;
 
 // Hybridmeter's logger.

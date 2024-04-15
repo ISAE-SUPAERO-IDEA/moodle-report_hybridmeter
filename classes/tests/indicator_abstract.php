@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter\tests;
 
-defined('MOODLE_INTERNAL') || die();
-
 use report_hybridmeter\utils as utils;
 use Exception;
 

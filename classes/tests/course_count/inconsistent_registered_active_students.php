@@ -22,8 +22,6 @@
  */
 namespace report_hybridmeter\tests\course_count;
 
-defined('MOODLE_INTERNAL') || die();
-
 class inconsistent_registered_active_students extends \report_hybridmeter\tests\course_count_abstract {
     public function __construct(int $courseid) {
         parent::__construct(get_string('inconsistent_registered_active_students', 'report_hybridmeter'), $courseid);

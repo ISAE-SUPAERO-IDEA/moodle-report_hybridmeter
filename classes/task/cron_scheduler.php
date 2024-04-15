@@ -24,8 +24,6 @@ namespace report_hybridmeter\task;
 
 use core\task\scheduled_task;
 
-defined('MOODLE_INTERNAL') || die();
-
 // Scheduled task that creates an adhoc processing task with capture period.
 class cron_scheduler extends scheduled_task {
     public function get_name() {
