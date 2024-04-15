@@ -6,6 +6,12 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.1.13 (2024-04-15)
+### Chore
+- Update plugin structure to meet Moodle standards
+-  Improve code style fixing some PHPCS errors and warnings
+
+
 ## Hybridmeter version 1.1.12 (2024-04-11)
 ### Chore
 - Fix classes to ensure autoloading
