@@ -43,7 +43,6 @@ then
         exit ${error_code}
     fi
 fi
-#rm -R $2/hybridmeter/* && cp -R $1 $2 && rm -R $2/hybridmeter/vue
 rsync -r --exclude "vue" $1 $2
 error_code=$?
 if [ ${error_code} -eq 0 ]
