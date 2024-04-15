@@ -19,7 +19,7 @@
 
 set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-export HYBRIDMETER=$DIR/../hybridmeter
+export HYBRIDMETER=$DIR/..
 export VUE=$HYBRIDMETER/vue
 export TMP=/tmp
 export TMP_HYBRIDMETER=$TMP/report_hybridmeter
@@ -33,6 +33,10 @@ npm install && npm run build
 rm -rf $TMP_HYBRIDMETER
 cp -r $HYBRIDMETER $TMP_HYBRIDMETER
 rm -rf $TMP_HYBRIDMETER/vue
+rm -rf $TMP_HYBRIDMETER/devtools
+rm -rf $TMP_HYBRIDMETER/.idea
+rm -rf $TMP_HYBRIDMETER/.git
+rm -f $TMP_HYBRIDMETER/.gitignore
 
 # Build zip
 cd $TMP

@@ -88,7 +88,7 @@ moodle_root_undefined=0
 
 if [ -d "${HYBRIDMETER_GIT_ROOT}" ]
 then
-    SOURCE_PATH="${HYBRIDMETER_GIT_ROOT}/hybridmeter"
+    SOURCE_PATH="${HYBRIDMETER_GIT_ROOT}"
     DEVTOOLS_PATH="${HYBRIDMETER_GIT_ROOT}/devtools"
     VUE_PATH="${SOURCE_PATH}/vue"
     VUE_STYLE_PATH="${VUE_PATH}/src/assets/style"
@@ -102,7 +102,7 @@ if [ -d "${HYBRIDMETER_MOODLE_ROOT}" ]
 then
     MOODLE_ROOT=${HYBRIDMETER_MOODLE_ROOT}
     REPORT_PATH="${MOODLE_ROOT}/report"
-    HYBRIDMETER_PATH="${REPORT_PATH}/hybridmeter"
+    HYBRIDMETER_PATH="${REPORT_PATH}"
     THEME_PATH="${MOODLE_ROOT}/theme"
 else
     moodle_root_undefined=1
@@ -128,7 +128,7 @@ then
     boost_scss_path=$(readlink -f "${moodle_root}/theme/boost/scss")
     git_root=$(readlink -f "${SCRIPT_DIR}/../")
     env_file="${SCRIPT_DIR}/hybrid_dev.env"
-    #vue_env_file="${git_root}/hybridmeter/vue/.env"
+    #vue_env_file="${git_root}/vue/.env"
 
     if [ -f ${env_file} ]
     then
