@@ -20,15 +20,13 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes;
+namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__."/../constants.php");
-require_once(__DIR__."/utils.php");
-require_once(__DIR__."/data_provider.php");
 
-use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\data_provider as data_provider;
 use DateTime;
 
 // Manage hybridmeter's configuration file.

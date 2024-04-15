@@ -20,19 +20,16 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes\tests;
+namespace report_hybridmeter\tests;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/../test_scenario_course.php");
-require_once(__DIR__."/../utils.php");
-
-use report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\utils as utils;
 use Exception;
 
 define("INDICATOR_ERROR", "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");
 
-abstract class indicator_abstract extends \report_hybridmeter\classes\test_scenario_course {
+abstract class indicator_abstract extends \report_hybridmeter\test_scenario_course {
 
     protected $indicator;
 
@@ -111,11 +108,11 @@ abstract class indicator_abstract extends \report_hybridmeter\classes\test_scena
 
         switch($this->indicator) {
             case "nu" :
-                $coeffs = \report_hybridmeter\classes\configurator::get_instance()->get_coeffs_grid("usage_coeffs");
+                $coeffs = \report_hybridmeter\configurator::get_instance()->get_coeffs_grid("usage_coeffs");
                 break;
 
             case "nd" :
-                $coeffs = \report_hybridmeter\classes\configurator::get_instance()->get_coeffs_grid(
+                $coeffs = \report_hybridmeter\configurator::get_instance()->get_coeffs_grid(
                     "digitalisation_coeffs"
                 );
                 break;

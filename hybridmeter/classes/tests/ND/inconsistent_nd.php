@@ -20,16 +20,13 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes\tests\ND;
+namespace report_hybridmeter\tests\ND;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/../indicator_abstract.php");
-require_once(__DIR__."/../../utils.php");
+use report_hybridmeter\utils as utils;
 
-use report_hybridmeter\classes\utils as utils;
-
-class inconsistent_nd extends \report_hybridmeter\classes\tests\indicator_abstract {
+class inconsistent_nd extends \report_hybridmeter\tests\indicator_abstract {
     public function __construct(int $courseid) {
         parent::__construct("nd", get_string('inconsistent_nd', 'report_hybridmeter'), $courseid);
     }
@@ -44,7 +41,7 @@ class inconsistent_nd extends \report_hybridmeter\classes\tests\indicator_abstra
     private function test_count_activities_per_type_of_course() {
         echo "<h3>Verification of data retrieved from the database :</h3>";
 
-        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
+        $dataprovider = \report_hybridmeter\data_provider::get_instance();
 
         echo "<p>The function count_activities_per_type_of_course returns :</p>";
         echo utils::data_grouped_by_to_html($dataprovider->count_activities_per_type_of_course($this->course_id));

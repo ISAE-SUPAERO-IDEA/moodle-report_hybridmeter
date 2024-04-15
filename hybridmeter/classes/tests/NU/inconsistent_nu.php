@@ -20,16 +20,13 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes\tests\NU;
+namespace report_hybridmeter\tests\NU;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/../indicator_abstract.php");
-require_once(__DIR__."/../../utils.php");
+use report_hybridmeter\utils as utils;
 
-use report_hybridmeter\classes\utils as utils;
-
-class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstract {
+class inconsistent_nu extends \report_hybridmeter\tests\indicator_abstract {
     public function __construct(int $courseid) {
         parent::__construct("nu", get_string('inconsistent_nu', 'report_hybridmeter'), $courseid);
     }
@@ -65,8 +62,8 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
     private function test_count_hits_on_activities_per_type() {
         echo "<h3>Checking database queries</h3>";
 
-        $dataprovider = \report_hybridmeter\classes\data_provider::get_instance();
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+        $dataprovider = \report_hybridmeter\data_provider::get_instance();
+        $configurator = \report_hybridmeter\configurator::get_instance();
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();
 
@@ -85,7 +82,7 @@ class inconsistent_nu extends \report_hybridmeter\classes\tests\indicator_abstra
 
         echo "<h3>Dump of hits on course activities during the current capture period :</h3>";
 
-        $configurator = \report_hybridmeter\classes\configurator::get_instance();
+        $configurator = \report_hybridmeter\configurator::get_instance();
         $begintimestamp = $configurator->get_begin_timestamp();
         $endtimestamp = $configurator->get_end_timestamp();
 

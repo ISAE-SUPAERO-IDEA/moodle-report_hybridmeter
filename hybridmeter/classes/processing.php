@@ -20,24 +20,18 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes;
+namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
-require_once(__DIR__."/configurator.php");
-require_once(__DIR__."/data_provider.php");
-require_once(__DIR__."/exporter.php");
-require_once(__DIR__."/formatter.php");
-require_once(__DIR__."/logger.php");
-require_once(__DIR__."/data/general_data.php");
 
-use report_hybridmeter\classes\data\general_data as general_data;
-use report_hybridmeter\classes\data_provider as data_provider;
-use report_hybridmeter\classes\configurator as configurator;
-use report_hybridmeter\classes\formatter as formatter;
-use report_hybridmeter\classes\logger as logger;
+use report_hybridmeter\data\general_data as general_data;
+use report_hybridmeter\data_provider as data_provider;
+use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\formatter as formatter;
+use report_hybridmeter\logger as logger;
 use DateTime;
 
 class processing {

@@ -21,14 +21,12 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  */
-require_once("../../../config.php");
-require_once(__DIR__."/../classes/configurator.php");
-require_once(__DIR__."/../classes/data_provider.php");
-require_once(__DIR__."/../classes/logger.php");
 
-use report_hybridmeter\classes\configurator as configurator;
-use report_hybridmeter\classes\data_provider as data_provider;
-use report_hybridmeter\classes\logger as logger;
+require_once("../../../config.php");
+
+use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\data_provider as data_provider;
+use report_hybridmeter\logger as logger;
 
 header('Content-Type: text/json');
 

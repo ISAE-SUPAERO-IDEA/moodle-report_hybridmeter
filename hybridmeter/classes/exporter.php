@@ -20,11 +20,10 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes;
+namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/configurator.php');
 global $CFG;
 require_once($CFG->libdir . '/csvlib.class.php');
 
@@ -43,13 +42,17 @@ use csv_export_writer;
  * @author     Nassim Bennouar
  */
 class exporter {
-    // Delimitation character.
+    /**
+     * Delimitation character.
+     */
     protected $delimiter;
 
-    // The strings in this array correspond to the attributes of $data whose values will be exported.
+    /**
+     * The strings in this array correspond to the attributes of $data whose values will be exported.
+     */
     protected $fields;
 
-    /* As PHP is weak typed, this attribute is a array which explicitly associate
+    /** As PHP is weak typed, this attribute is a array which explicitly associate
      * a field with a type to force a certain behaviour.
      *
      * Associate a type to a field is not required to work correctly, but is useful
@@ -57,17 +60,19 @@ class exporter {
      */
     protected $fieldstype;
 
-    /* Human-readable strings associated with fields (and displayed in CSV)
+    /** Human-readable strings associated with fields (and displayed in CSV)
      * If an alias exists then the alias is displayed, otherwise this is the raw field name
      */
     protected $alias;
 
-    /* Attribute containing data to be exported, array of arrays required,
+    /** Attribute containing data to be exported, array of arrays required,
      * please use formatter class to convert from array of objects
      */
     protected $data;
 
-    // Instance of csv_export_writer of moodle core.
+    /**
+     * Instance of csv_export_writer of moodle core.
+     */
     protected $csv;
 
     public function __construct(array $fields=[],
@@ -86,7 +91,9 @@ class exporter {
         $this->set_delimiter($delimiter);
     }
 
-    // Gets the keys of the first tuple and sets them as fields of the outgoing file.
+    /**
+     * Gets the keys of the first tuple and sets them as fields of the outgoing file.
+     */
     public function auto_fields() {
         $this->fields = [];
 
@@ -99,7 +106,9 @@ class exporter {
         }
     }
 
-    // Manually set fields of the CSV file.
+    /**
+     * Manually set fields of the CSV file.
+     */
     public function set_fields(array $fields) {
         $preconditionarray = array_map('is_string', $fields);
         if (in_array(false, $preconditionarray)) {
@@ -109,7 +118,9 @@ class exporter {
         $this->fields = $fields;
     }
 
-    // Add a tuple to the $data array.
+    /**
+     * Add a tuple to the $data array.
+     */
     public function add_data(array $data) {
         array_push($this->data, $data);
     }
@@ -151,8 +162,6 @@ class exporter {
 
         return $output;
     }
-
-    /* TODO : improve workflow */
 
     public function create_csv(string $filename) {
         $this->csv->set_filename($filename);

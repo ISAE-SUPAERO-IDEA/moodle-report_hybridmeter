@@ -19,10 +19,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  */
+
 require(dirname(__FILE__).'/../../config.php');
 require_once('classes/data_provider.php');
 
-use report_hybridmeter\classes\data_provider as data_provider;
+use report_hybridmeter\data_provider as data_provider;
 
 require_login();
 $context = context_system::instance();

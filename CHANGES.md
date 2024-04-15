@@ -6,6 +6,15 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.1.12 (2024-04-11)
+### Chore
+- Fix classes to ensure autoloading
+- Fix typo in messages
+- Fix settings.php : check $hassiteconfig first
+- Do not import config.php in tasks
+- Fix comments format
+
+
 ## Hybridmeter version 1.1.11 (2024-04-04)
 ### Fix
 - Remove security check in settings.php that breaks plugin setup

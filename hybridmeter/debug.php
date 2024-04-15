@@ -19,10 +19,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  */
+
 require(dirname(__FILE__).'/../../config.php');
 require_once('classes/configurator.php');
 
-use report_hybridmeter\classes\configurator as configurator;
+use report_hybridmeter\configurator as configurator;
 
 require_login();
 $context = context_system::instance();

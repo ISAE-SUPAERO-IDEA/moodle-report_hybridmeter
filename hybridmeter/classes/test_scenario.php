@@ -20,14 +20,11 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes;
+namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__."/formatter.php");
-require_once(__DIR__."/utils.php");
-
-use report_hybridmeter\classes\utils as utils;
+use report_hybridmeter\utils as utils;
 
 abstract class test_scenario {
 
@@ -76,7 +73,7 @@ abstract class test_scenario {
 
         echo "<p>This is the student archetype defined in the settings:</p>";
 
-        var_dump(\report_hybridmeter\classes\configurator::get_instance()->get_student_archetype());
+        var_dump(\report_hybridmeter\configurator::get_instance()->get_student_archetype());
 
         echo "<p>The following roles are available on the moodle server: </p>";
 

@@ -20,11 +20,9 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package
  */
-namespace report_hybridmeter\classes;
+namespace report_hybridmeter;
 
 defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/logger.php');
 
 use Exception;
 
