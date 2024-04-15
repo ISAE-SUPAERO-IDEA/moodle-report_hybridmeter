@@ -18,7 +18,7 @@
  * @author Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
- * @package
+ * @package report_hybridmeter
  */
 namespace report_hybridmeter\task;
 

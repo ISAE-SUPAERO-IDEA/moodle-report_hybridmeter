@@ -18,7 +18,7 @@
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
- * @package
+ * @package report_hybridmeter
  */
 namespace report_hybridmeter;
 
@@ -34,7 +34,7 @@ use csv_export_writer;
  * the visible fields
  *
  *
- * @package
+ * @package report_hybridmeter
  * @since      Moodle 3.7
  * @copyright  2021 IDEA ISAE-Supaero
  * @author     Nassim Bennouar

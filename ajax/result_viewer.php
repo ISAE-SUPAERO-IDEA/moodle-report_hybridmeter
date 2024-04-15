@@ -18,6 +18,7 @@
  * @author Bruno Ilponse, Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
+ * @package report_hybridmeter
  */
 
 require_once("../../../config.php");
