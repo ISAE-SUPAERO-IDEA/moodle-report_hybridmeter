@@ -55,8 +55,12 @@ class processing {
             $configurator->get_begin_timestamp(),
             $configurator->get_end_timestamp()
         );
-        $filteredids = array_map(function ($a) { return $a->id;
-        }, $filtered);
+        $filteredids = array_map(
+            function ($course) {
+                return $course->id;
+            },
+            $filtered
+        );
         logger::log("Active course ids: ".implode(", ", $filteredids));
 
         $this->formatter = new formatter($filtered);
@@ -72,13 +76,10 @@ class processing {
         logger::log("# Processing: blacklist computation");
 
         $configurator = configurator::get_instance();
-
         $configurator->set_as_running($this->begin_date);
-
         $configurator->update_blacklisted_data();
 
         // Calculation of detailed indicators.
-
         logger::log("# Processing: course indicators computation");
 
         $this->formatter->calculate_new_indicator(
