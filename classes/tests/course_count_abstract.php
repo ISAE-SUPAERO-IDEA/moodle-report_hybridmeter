@@ -35,8 +35,6 @@ abstract class course_count_abstract extends \report_hybridmeter\test_scenario_c
         include_once(__DIR__."/../indicators.php");
         include_once(__DIR__."/../data_provider.php");
         include_once(__DIR__."/../configurator.php");
-
-
     }
 
     public function common_tests() {

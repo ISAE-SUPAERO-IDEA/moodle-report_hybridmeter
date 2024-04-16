@@ -1,7 +1,7 @@
 # HybridMeter
 
 ## Description
-![](https://t2594656.p.clickup-attachments.com/t2594656/854d3d35-d9ec-4232-b8e0-1ed8b00accfc/image.png)
+![Logo](doc/images/hybridmeter-logo.png)
 
 HybridMeter is a plugin dedicated to monitor the use of digital teaching tools within a Moodle LMS platform,
 in order to collect standardized hybridization indicators on a regular basis. 
@@ -15,15 +15,15 @@ It is assumed that Moodle is used as the school's teaching hub.
 It is assumed that the platform will centralize all the courses in the institution's training programs.
 
 Two complementary indicators are computed:
-* The level of digitization : this is a measure calculated on the basis of activities in course spaces. 
+* _The level of digitalization_ : this is a measure calculated on the basis of activities in course spaces. 
 It is based on their number, diversity and hybrid nature. 
 A threshold determines whether the course is then counted as "digital hybrid" or not.
-* The level of use : this is the level of digitalization coupled with the use of activities by the course's students. 
+* _The level of use_ : this is the level of digitalization coupled with the use of activities by the course's students. 
 Each course space included in the measurement is analyzed, and the indicator now includes not only the activities, 
 but also the use of the activities by the students in each course.
 
 These indicators are used to calculate :
-* the number of hybrid courses according to level of digitalization, 
+* The number of hybrid courses according to level of digitalization, 
 applying a threshold below which courses are not counted.
 * The number of hybrid courses according to level of use, by applying a threshold below which courses are not counted.
 
@@ -34,7 +34,7 @@ No information is stored in the local database, and no information leaves the pl
 
 As a result, a set of aggregated results concerning the analysis of the platform's course spaces is displayed 
 directly on the plugin page:
-![](https://t2594656.p.clickup-attachments.com/t2594656/6bc28d99-c15a-4e43-ab3d-026c12ef5fd3/image.png)
+![Aggregated results](doc/images/hybridmeter-agregated-results.png)
 
 The software is delivered free of charge, along with the source code and this documentation, 
 as part of a best-effort approach on the part of the development team. 
@@ -62,18 +62,17 @@ The following doc resources are currently available only in French :
 * [FAQ](doc/faq.md)
 
 ## Web site
-The french website of HybridMeter is available at : [https://online.isae-supaero.fr/hybridmeter](https://online.isae-supaero.fr/hybridmeter) \
-[![](https://t2594656.p.clickup-attachments.com/t2594656/02a2acc8-fd84-4d24-9e1a-299262ff2ce0/HybridmeterWebsite.png)](https://online.isae-supaero.fr/hybridmeter)
+The French website of HybridMeter is available at : [https://online.isae-supaero.fr/hybridmeter](https://online.isae-supaero.fr/hybridmeter) \
+[![Logo](doc/images/hybridmeter-logo.png)](https://online.isae-supaero.fr/hybridmeter)
 
 ## Source code
-The source code of HybridMeter is publicly available at https://gitlab.isae-supaero.fr/idea/xdash/hybridmeter.
+The source code of HybridMeter is publicly available on [GitHub](https://github.com/ISAE-SUPAERO-IDEA/moodle-report_hybridmeter).
 
 ## ChangeLog
-The change log is available [here](https://doc.clickup.com/d/h/2f5v0-8568/7b507d8c7c54778).
+The change log is available [here](CHANGES.md).
 
 ## Support and Suggestion
-If you encounter any issues or have suggestions for improvements, please feel free to contact us through this
-[form](https://forms.clickup.com/f/2f5v0-8508/5SDCGICT8X4L037TAF).
+If you encounter any issues or have suggestions for improvements, please feel free to [open issues on GitHub](https://github.com/ISAE-SUPAERO-IDEA/moodle-report_hybridmeter/issues).
 
 
 
