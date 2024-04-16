@@ -15,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Define the lambdas computing the various indicators
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
- * @package
+ * @package report_hybridmeter
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,13 +32,12 @@ use report_hybridmeter\cache_manager as cache_manager;
 function hybridation_calculus(string $type, array $activitydata): float {
     $h = 0; // Hybridation value.
     $c = 0; // Number of activity types.
-    $n = 0; // Nombre total d'activités.
+    $n = 0; // Total number of activities.
     $sigmapk = 0; // Sum of activity weights.
-    $sigmapkvk = 0; // Sum of activity weight multiplicated by their hybridation value.
+    $sigmapkvk = 0; // Sum of activity weight multiplied by their hybridisation value.
     $m = 1; // Malus.
     foreach ($activitydata as $k => $nk) {
-        // Possibilité d'accéder à des valeurs hardcodées pour le diagnostic.
-        $vk = configurator::get_instance()->get_coeff($type, $k); // Activity hybridation value.
+        $vk = configurator::get_instance()->get_coeff($type, $k); // Activity hybridisation value.
 
         if ($nk > 0 && $vk > 0) {
             $c ++;
