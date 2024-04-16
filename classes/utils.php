@@ -28,20 +28,10 @@ use report_hybridmeter\formatter as formatter;
 use Exception;
 use DateTime;
 
+/**
+ * Facilities functions.
+ */
 class utils {
-    public static function object_to_array(object $object) {
-        $array = [];
-        foreach ($object as $key => $value) {
-            $array[$key] = $value;
-        }
-        return $array;
-    }
-
-    public static function id_objects_array_to_array(array $array) {
-        return array_values(array_map(function($obj) {
-            return $obj->id;
-        }, $array));
-    }
 
     /**
      * Checks that an array contains only int values.
