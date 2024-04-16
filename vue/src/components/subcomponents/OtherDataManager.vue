@@ -76,10 +76,9 @@ export default {
                 message.messages.success.message = strings.value.student_archetype_updated;
             });
 
-            let data = [{ task : "roles" }];
-            dispatchCurrentDebug(store.state.debug) 
+            dispatchCurrentDebug(store.state.debug)
 
-            get("moodle_data", data).then(data => roles.value = data).then(() => {
+            get("moodle_roles").then(data => roles.value = data).then(() => {
                 dispatchCurrentArchetype(store.state.student_archetype)
             });
         }
