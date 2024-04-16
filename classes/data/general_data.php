@@ -76,7 +76,8 @@ class general_data {
      */
     protected $nbstudentsconcernedusedactive;
 
-    public function __construct($courses, $configurator) {
+    public function __construct($courses) {
+        $configurator = configurator::get_instance();
         $dataprovider = data_provider::get_instance();
 
         $this->begintimestamp = $configurator->get_begin_timestamp();

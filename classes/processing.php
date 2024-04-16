@@ -180,7 +180,7 @@ class processing {
         // Calculation of general indicators.
         logger::log("# Processing: global indicators computation");
 
-        $generaldata = new general_data($dataout,  $configurator);
+        $generaldata = new general_data($dataout);
 
         // Data exportation.
         logger::log("# Processing: serializing results");
