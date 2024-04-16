@@ -64,6 +64,12 @@ class utils {
         return $tomorrowmidnight;
     }
 
+    /**
+     * Render an array of objects as HTML.
+     *
+     * @param array $array
+     * @return string
+     */
     public static function objects_array_to_html(array $array): string {
         if (empty($array)) {
             return "No data";
