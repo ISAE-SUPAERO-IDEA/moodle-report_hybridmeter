@@ -29,12 +29,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__.'/../indicators.php');
 require_once(__DIR__.'/../constants.php');
 
-use report_hybridmeter\data\general_data as general_data;
-use report_hybridmeter\data_provider as data_provider;
-use report_hybridmeter\configurator as configurator;
-use report_hybridmeter\formatter as formatter;
-use report_hybridmeter\logger as logger;
 use DateTime;
+use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\data_provider as data_provider;
+use report_hybridmeter\formatter as formatter;
+use report_hybridmeter\general_data as general_data;
+use report_hybridmeter\logger as logger;
 
 /**
  * Produce HybridMeter report.

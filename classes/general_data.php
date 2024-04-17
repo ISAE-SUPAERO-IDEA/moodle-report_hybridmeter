@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * General (or aggregated) data produced by HybridMeter processing.
+ * General data produced by HybridMeter processing.
  *
  * @author Nassim Bennouar, John Tranier
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
-namespace report_hybridmeter\data;
+namespace report_hybridmeter;
 
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\data_provider as data_provider;
