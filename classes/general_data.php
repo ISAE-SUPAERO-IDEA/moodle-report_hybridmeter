@@ -159,8 +159,8 @@ class general_data {
 
     protected function getids($courses) {
         return array_map(
-            function ($cours) {
-                return intval($cours["id"]);
+            function ($course) {
+                return intval($course["id"]);
             }, $courses);
     }
 }

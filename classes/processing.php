@@ -32,7 +32,6 @@ require_once(__DIR__.'/../constants.php');
 use DateTime;
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\data_provider as data_provider;
-use report_hybridmeter\formatter as formatter;
 use report_hybridmeter\general_data as general_data;
 use report_hybridmeter\logger as logger;
 
@@ -58,20 +57,18 @@ class processing {
         $whitelistids = $dataprovider->get_whitelisted_courses_ids();
         logger::log("Whitelisted course ids: ".implode(", ", $whitelistids));
 
-        $filtered = $dataprovider->filter_living_courses_on_period(
+        $courses = $dataprovider->filter_living_courses_on_period(
             $whitelistids,
             $configurator->get_begin_timestamp(),
             $configurator->get_end_timestamp()
         );
-        $filteredids = array_map(
+        $courseids = array_map(
             function ($course) {
                 return $course->id;
             },
-            $filtered
+            $courses
         );
-        logger::log("Active course ids: ".implode(", ", $filteredids));
-
-        $formatter = new formatter($filtered);
+        logger::log("Active course ids: ".implode(", ", $courseids));
 
         $begin_date = new DateTime();
         $begin_date->setTimestamp($timestamp);
@@ -87,100 +84,35 @@ class processing {
         // Calculation of detailed indicators.
         logger::log("# Processing: course indicators computation");
 
-        $formatter->calculate_new_indicator(
-            function($object) {
-                return $object['id'];
+        $processeddata = array_map(
+            function ($course) {
+                global $CFG;
+                return new course_data($course, $CFG->wwwroot);
             },
-            REPORT_HYBRIDMETER_FIELD_ID_MOODLE
-        );
-
-        $formatter->calculate_new_indicator(
-            "get_category_path",
-            REPORT_HYBRIDMETER_FIELD_CATEGORY_PATH
-        );
-
-        $formatter->calculate_new_indicator(
-            function($object) {
-                return $object['idnumber'];
-            },
-            REPORT_HYBRIDMETER_FIELD_ID_NUMBER
-        );
-
-        $formatter->calculate_new_indicator(
-            function($object, $parameters) {
-                return $parameters["www_root"]."/course/view.php?id=".$object['id'];
-            },
-            REPORT_HYBRIDMETER_FIELD_URL,
-            [
-                "www_root" => $CFG->wwwroot,
-            ]
-        );
-
-        $formatter->calculate_new_indicator(
-            "digitalisation_level",
-            REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL,
-            [
-                "nb_cours" => $formatter->get_length_array(),
-            ]
-        );
-
-        $formatter->calculate_new_indicator(
-            "usage_level",
-            REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL,
-            [
-                "nb_cours" => $formatter->get_length_array(),
-            ]
-        );
-
-        $formatter->calculate_new_indicator(
-            "is_course_active_last_month",
-            REPORT_HYBRIDMETER_FIELD_ACTIVE_COURSE
-        );
-
-        $formatter->calculate_new_indicator(
-            "active_students",
-            REPORT_HYBRIDMETER_FIELD_NB_ACTIVE_USERS
-        );
-
-        $formatter->calculate_new_indicator(
-            "nb_registered_students",
-            REPORT_HYBRIDMETER_FIELD_NB_REGISTERED_STUDENTS
+            $courses
         );
 
         $begindate = new DateTime();
         $begindate->setTimestamp($configurator->get_begin_timestamp());
         $begindate = $begindate->format('d/m/Y');
 
-        $formatter->calculate_new_indicator(
-            function ($object, $parameters) {
-                return $parameters['begin_date'];
-            },
-            REPORT_HYBRIDMETER_FIELD_BEGIN_DATE,
-            [
-                "begin_date" => $begindate,
-            ]
-        );
 
         $enddate = new DateTime();
         $enddate->setTimestamp($configurator->get_end_timestamp());
         $enddate = $enddate->format('d/m/Y');
 
-        $formatter->calculate_new_indicator(
-            function ($object, $parameters) {
-                return $parameters['end_date'];
+        foreach ($processeddata as $coursedata) {
+            $coursedata->set_begindate($begindate);
+            $coursedata->set_enddate($enddate);
+
+        }
+
+        $dataout = array_map(
+            function ($coursedata) {
+                return $coursedata->to_map();
             },
-            REPORT_HYBRIDMETER_FIELD_END_DATE,
-            [
-                "end_date" => $enddate,
-            ]
+            $processeddata
         );
-
-        $formatter->calculate_new_indicator(
-            'raw_data',
-            'raw_data'
-        );
-
-        $dataout = $formatter->get_array();
 
         // Calculation of general indicators.
         logger::log("# Processing: global indicators computation");
