@@ -15,15 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Render moodle roles as JSON.
+ *
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
 
-require(dirname(__FILE__).'/../../config.php');
+require_once(dirname(__FILE__)."/../../../config.php");
 
+header('Content-Type: text/json');
+
+// Checking authorizations (admin role required).
 require_login();
-$context = context_system::instance();
+
+$context = \context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
+
+$roles = $DB->get_records("role");
+echo json_encode($roles);

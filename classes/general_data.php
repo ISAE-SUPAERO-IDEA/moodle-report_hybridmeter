@@ -15,32 +15,69 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * General data produced by HybridMeter processing.
+ *
  * @author Nassim Bennouar, John Tranier
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
-namespace report_hybridmeter\data;
+namespace report_hybridmeter;
 
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\data_provider as data_provider;
 
+/**
+ * General (or aggregated) data produced by HybridMeter processing.
+ */
 class general_data {
 
+    /**
+     * @var $begintimestamp : Beginning of the analyzed period.
+     */
     protected $begintimestamp;
+
+    /**
+     * @var $endtimestamp : End of the analyzed period.
+     */
     protected $endtimestamp;
 
+    /**
+     * @var array $courses : List of analyzed courses.
+     */
     protected $courses;
-    protected $usedcourses;
-    protected $digitalisedcourses;
 
+    /**
+     * @var array $usedcourses : List of analysed courses that pass the "used" threshold.
+     */
+    protected $usedcourses;
+
+    /**
+     * @var array $digitalisedcourses : List of analysed courses that pass the "digitalized" threshold.
+     */    protected $digitalisedcourses;
+
+    /**
+     * @var int Number of students registered on digitalized courses.
+     */
     protected $nbstudentsconcerneddigitalised;
+
+    /**
+     * @var int Number of students registered on used courses.
+     */
     protected $nbstudentsconcernedused;
 
+    /**
+     * @var int Number of active students on digitalized courses.
+     */
     protected $nbstudentsconcerneddigitalisedactive;
+
+    /**
+     * @var int Number of active students on used coursed.
+     */
     protected $nbstudentsconcernedusedactive;
 
-    public function __construct($courses, $configurator) {
+    public function __construct($courses) {
+        $configurator = configurator::get_instance();
         $dataprovider = data_provider::get_instance();
 
         $this->begintimestamp = $configurator->get_begin_timestamp();
@@ -122,8 +159,8 @@ class general_data {
 
     protected function getids($courses) {
         return array_map(
-            function ($cours) {
-                return intval($cours["id"]);
+            function ($course) {
+                return intval($course["id"]);
             }, $courses);
     }
 }

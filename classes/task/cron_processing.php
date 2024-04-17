@@ -33,7 +33,6 @@ class cron_processing extends scheduled_task {
     }
 
     public function execute() {
-        $processing = new processing();
-        $processing->launch();
+        processing::launch();
     }
 }

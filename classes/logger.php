@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin logger.
+ *
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -24,32 +26,19 @@ namespace report_hybridmeter;
 
 use report_hybridmeter\configurator as configurator;
 
-// Hybridmeter's logger.
+/**
+ * Plugin logger.
+ */
 class logger {
-    private static function var_dump_ret($object) {
-        ob_start();
-        var_dump($object);
-        $content = ob_get_contents();
-        ob_end_clean();
-        return $content;
-    }
 
-    public static function log_var_dump($object) {
-        if (configurator::get_instance()->get_debug()) {
-            debugging("[Hybridmeter] ".self::var_dump_ret($object));
-        }
-    }
-
+    /**
+     * Print an object if debug mode is enabled.
+     * @param $object
+     * @return void
+     */
     public static function log($object) {
         if (configurator::get_instance()->get_debug()) {
             debugging("[Hybridmeter] ".print_r($object, 1));
-        }
-    }
-
-    public static function file_log($object, $filename) {
-        if (configurator::get_instance()->get_debug()) {
-            $file = fopen(dirname(__FILE__).'/../'.$filename, 'a');
-            fwrite($file, print_r($object, 1));
         }
     }
 }

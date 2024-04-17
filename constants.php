@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin constants.
+ *
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -131,6 +133,9 @@ const ALIAS = [
     REPORT_HYBRIDMETER_FIELD_END_DATE => 'Fin de la période de capture',
 ];
 
+/**
+ * Coefficient to be applied to each type of module to calculate the "digitalization" indicator
+ */
 const REPORT_HYBRIDMETER_DIGITALISATION_COEFFS = [
     REPORT_HYBRIDMETER_MODULE_ASSIGN => 4,
     REPORT_HYBRIDMETER_MODULE_ASSIGNMENT => 4,
@@ -159,6 +164,9 @@ const REPORT_HYBRIDMETER_DIGITALISATION_COEFFS = [
     REPORT_HYBRIDMETER_MODULE_NUGGET => 5,
 ];
 
+/**
+ * Coefficient to be applied to each type of module to calculate the "usage" indicator
+ */
 const REPORT_HYBRIDMETER_USAGE_COEFFS = [
     REPORT_HYBRIDMETER_MODULE_ASSIGN => 4,
     REPORT_HYBRIDMETER_MODULE_ASSIGNMENT => 4,
