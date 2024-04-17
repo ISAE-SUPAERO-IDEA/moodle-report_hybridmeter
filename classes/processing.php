@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Produce HybridMeter report.
+ *
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -34,8 +36,16 @@ use report_hybridmeter\formatter as formatter;
 use report_hybridmeter\logger as logger;
 use DateTime;
 
+/**
+ * Produce HybridMeter report.
+ */
 class processing {
 
+    /**
+     * Launch the computations to produce HybridMeter report.
+     *
+     * @return array
+     */
     public static function launch() {
         global $CFG;
 
