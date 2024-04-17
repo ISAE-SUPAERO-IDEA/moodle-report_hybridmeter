@@ -31,7 +31,6 @@ $context = context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
-$processing = new report_hybridmeter\processing();
-$data = $processing->launch();
+$data = report_hybridmeter\processing::launch();
 
 echo json_encode($data);

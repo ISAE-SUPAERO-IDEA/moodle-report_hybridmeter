@@ -36,11 +36,7 @@ use DateTime;
 
 class processing {
 
-    protected $formatter;
-    protected $begin_date;
-    protected $end_date;
-
-    public function launch() {
+    public static function launch() {
         global $CFG;
 
         logger::log("# Processing: initializing");
@@ -65,42 +61,42 @@ class processing {
         );
         logger::log("Active course ids: ".implode(", ", $filteredids));
 
-        $this->formatter = new formatter($filtered);
+        $formatter = new formatter($filtered);
 
-        $this->begin_date = new DateTime();
-        $this->begin_date->setTimestamp($timestamp);
+        $begin_date = new DateTime();
+        $begin_date->setTimestamp($timestamp);
 
-        $this->end_date = new DateTime();
+        $end_date = new DateTime();
 
         logger::log("# Processing: blacklist computation");
 
         $configurator = configurator::get_instance();
-        $configurator->set_as_running($this->begin_date);
+        $configurator->set_as_running($begin_date);
         $configurator->update_blacklisted_data();
 
         // Calculation of detailed indicators.
         logger::log("# Processing: course indicators computation");
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             function($object) {
                 return $object['id'];
             },
             REPORT_HYBRIDMETER_FIELD_ID_MOODLE
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             "get_category_path",
             REPORT_HYBRIDMETER_FIELD_CATEGORY_PATH
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             function($object) {
                 return $object['idnumber'];
             },
             REPORT_HYBRIDMETER_FIELD_ID_NUMBER
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             function($object, $parameters) {
                 return $parameters["www_root"]."/course/view.php?id=".$object['id'];
             },
@@ -110,33 +106,33 @@ class processing {
             ]
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             "digitalisation_level",
             REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL,
             [
-                "nb_cours" => $this->formatter->get_length_array(),
+                "nb_cours" => $formatter->get_length_array(),
             ]
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             "usage_level",
             REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL,
             [
-                "nb_cours" => $this->formatter->get_length_array(),
+                "nb_cours" => $formatter->get_length_array(),
             ]
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             "is_course_active_last_month",
             REPORT_HYBRIDMETER_FIELD_ACTIVE_COURSE
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             "active_students",
             REPORT_HYBRIDMETER_FIELD_NB_ACTIVE_USERS
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             "nb_registered_students",
             REPORT_HYBRIDMETER_FIELD_NB_REGISTERED_STUDENTS
         );
@@ -145,7 +141,7 @@ class processing {
         $begindate->setTimestamp($configurator->get_begin_timestamp());
         $begindate = $begindate->format('d/m/Y');
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             function ($object, $parameters) {
                 return $parameters['begin_date'];
             },
@@ -159,7 +155,7 @@ class processing {
         $enddate->setTimestamp($configurator->get_end_timestamp());
         $enddate = $enddate->format('d/m/Y');
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             function ($object, $parameters) {
                 return $parameters['end_date'];
             },
@@ -169,12 +165,12 @@ class processing {
             ]
         );
 
-        $this->formatter->calculate_new_indicator(
+        $formatter->calculate_new_indicator(
             'raw_data',
             'raw_data'
         );
 
-        $dataout = $this->formatter->get_array();
+        $dataout = $formatter->get_array();
 
         // Calculation of general indicators.
         logger::log("# Processing: global indicators computation");
@@ -184,13 +180,13 @@ class processing {
         // Data exportation.
         logger::log("# Processing: serializing results");
 
-        $this->end_date->setTimestamp(strtotime("now"));
+        $end_date->setTimestamp(strtotime("now"));
 
-        $interval = $this->end_date->getTimestamp() - $this->begin_date->getTimestamp();
+        $interval = $end_date->getTimestamp() - $begin_date->getTimestamp();
 
         $time = [
-            "begin_timestamp" => $this->begin_date->getTimestamp(),
-            "end_timestamp" => $this->end_date->getTimestamp(),
+            "begin_timestamp" => $begin_date->getTimestamp(),
+            "end_timestamp" => $end_date->getTimestamp(),
             "diff" => $interval,
         ];
 
@@ -209,10 +205,10 @@ class processing {
         fclose($fileexporter);
 
         /* We have deactivated CSV logging for RGPD reasons (we need to renegotiate the conditions with the DPO to include them)
-         * $formatted_date = $this->begin_date->format('Y-m-d H:i:s');
+         * $formatted_date = $begin_date->format('Y-m-d H:i:s');
          * $filename = $CFG->dataroot."/hybridmeter/records/backup/record_".$formatted_date.".csv";
          * $backup=fopen($filename,"w");
-         * fwrite($backup, $this->exporter->print_csv_data(true));
+         * fwrite($backup, $exporter->print_csv_data(true));
          */
 
         // Log and task management.
