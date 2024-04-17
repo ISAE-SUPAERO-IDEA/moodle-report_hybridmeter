@@ -40,7 +40,9 @@ class processing {
     protected $begin_date;
     protected $end_date;
 
-    public function __construct() {
+    public function launch() {
+        global $CFG;
+
         logger::log("# Processing: initializing");
         $timestamp = REPORT_HYBRIDMETER_NOW;
 
@@ -69,10 +71,7 @@ class processing {
         $this->begin_date->setTimestamp($timestamp);
 
         $this->end_date = new DateTime();
-    }
 
-    public function launch() {
-        global $CFG;
         logger::log("# Processing: blacklist computation");
 
         $configurator = configurator::get_instance();
