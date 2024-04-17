@@ -24,7 +24,6 @@
  */
 namespace report_hybridmeter;
 
-use report_hybridmeter\formatter as formatter;
 use Exception;
 use DateTime;
 
@@ -74,7 +73,13 @@ class utils {
         if (empty($array)) {
             return "No data";
         }
-        $array = (new formatter($array))->get_array();
+
+        $array = array_map(
+            function($element) {
+                return (array) $element;
+            },
+            $array
+        );
 
         $output = "<table>";
         $output .= "<thead><tr>";
