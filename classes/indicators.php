@@ -20,7 +20,7 @@ class indicators {
 
     public static function digitalisation_level($courseid): float {
         $activitydata = data_provider::get_instance()->count_activities_per_type_of_course($courseid);
-        return hybridation_calculus("digitalisation_coeffs", $activitydata);
+        return self::hybridation_calculus("digitalisation_coeffs", $activitydata);
     }
 
     public static function usage_level($courseid): float {
@@ -33,7 +33,7 @@ class indicators {
             $configurator->get_begin_timestamp(),
             $configurator->get_end_timestamp()
         );
-        return hybridation_calculus("usage_coeffs", $activitydata);
+        return self::hybridation_calculus("usage_coeffs", $activitydata);
     }
 
     public static function is_course_active_last_month($courseid): int {
