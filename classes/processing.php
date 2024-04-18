@@ -48,7 +48,8 @@ class processing {
         global $CFG;
 
         logger::log("# Processing: initializing");
-        $timestamp = REPORT_HYBRIDMETER_NOW;
+        $startcomputationdate = new DateTime();
+        $startcomputationdate->setTimestamp(strtotime("now"));
 
         $dataprovider = data_provider::get_instance();
         $configurator = configurator::get_instance();
@@ -68,16 +69,10 @@ class processing {
             $courses
         );
         logger::log("Active course ids: ".implode(", ", $courseids));
-
-        $begin_date = new DateTime();
-        $begin_date->setTimestamp($timestamp);
-
-        $end_date = new DateTime();
-
         logger::log("# Processing: blacklist computation");
 
         $configurator = configurator::get_instance();
-        $configurator->set_as_running($begin_date);
+        $configurator->set_as_running($startcomputationdate);
         $configurator->update_blacklisted_data();
 
         // Calculation of detailed indicators.
@@ -95,14 +90,13 @@ class processing {
         $begindate->setTimestamp($configurator->get_begin_timestamp());
         $begindate = $begindate->format('d/m/Y');
 
-
         $enddate = new DateTime();
         $enddate->setTimestamp($configurator->get_end_timestamp());
         $enddate = $enddate->format('d/m/Y');
 
         foreach ($processeddata as $coursedata) {
-            $coursedata->set_begindate($begindate);
-            $coursedata->set_enddate($enddate);
+            $coursedata->set_begindate($begindate->format('d/m/Y'));
+            $coursedata->set_enddate($enddate->format('d/m/Y'));
 
         }
 
@@ -121,13 +115,14 @@ class processing {
         // Data exportation.
         logger::log("# Processing: serializing results");
 
-        $end_date->setTimestamp(strtotime("now"));
+        $endcomputationdate = new DateTime();
+        $endcomputationdate->setTimestamp(strtotime("now"));
 
-        $interval = $end_date->getTimestamp() - $begin_date->getTimestamp();
+        $interval = $endcomputationdate->getTimestamp() - $startcomputationdate->getTimestamp();
 
         $time = [
-            "begin_timestamp" => $begin_date->getTimestamp(),
-            "end_timestamp" => $end_date->getTimestamp(),
+            "begin_timestamp" => $startcomputationdate->getTimestamp(),
+            "end_timestamp" => $endcomputationdate->getTimestamp(),
             "diff" => $interval,
         ];
 
