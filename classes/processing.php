@@ -78,10 +78,10 @@ class processing {
         // Calculation of detailed indicators.
         logger::log("# Processing: course indicators computation");
 
+        $categoriespathcache = [];
         $processeddata = array_map(
-            function ($course) {
-                global $CFG;
-                return new course_data($course, $CFG->wwwroot);
+            function ($course) use ($CFG, &$categoriespathcache) {
+                return new course_data($course, $CFG->wwwroot, $categoriespathcache);
             },
             $courses
         );

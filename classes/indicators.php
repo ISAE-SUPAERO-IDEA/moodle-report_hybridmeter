@@ -33,17 +33,15 @@ class indicators {
      * Get the category path from a category ID
      * @param $categoryid
      * @return string
+     * @param $categoriespathcache array associating to each encountered category its category path name
      */
-    public static function get_category_path($categoryid): string {
-        $cachemanager = cache_manager::get_instance();
-
-        if ($cachemanager->is_category_path_calculated($categoryid)) {
-            return $cachemanager->get_category_path($categoryid);
+    public static function get_category_path($categoryid, &$categoriespathcache): string {
+        if (isset($categoriespathcache[$categoryid])) {
+            return $categoriespathcache[$categoryid];
         }
 
         $categorypath = data_provider::get_instance()->get_category_path($categoryid);
-
-        $cachemanager->update_category_path($categoryid, $categorypath);
+        $categoriespathcache[$categoryid] = $categorypath;
 
         return $categorypath;
     }

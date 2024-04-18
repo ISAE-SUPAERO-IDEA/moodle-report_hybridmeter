@@ -425,8 +425,11 @@ class data_provider {
             return [];
         }
 
-        $sql = "SELECT DISTINCT course.id AS id, course.idnumber AS idnumber, course.fullname AS fullname,
-                       category.id AS category_id, category.name AS category_name
+        $sql = "SELECT DISTINCT course.id AS id, 
+                                course.idnumber AS idnumber, 
+                                course.fullname AS fullname,
+                                category.id AS category_id, 
+                                category.name AS category_name
                   FROM {course} course
                   JOIN {logstore_standard_log} logs ON course.id = logs.courseid
                   JOIN {role_assignments} assign ON logs.userid = assign.userid
