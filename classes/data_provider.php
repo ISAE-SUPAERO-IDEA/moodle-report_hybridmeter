@@ -31,9 +31,6 @@ class data_provider {
 
     protected static $instance = null;
 
-    public function __construct() {
-    }
-
     public static function get_instance() {
         if (self::$instance == null) {
             self::$instance = new data_provider();
@@ -448,22 +445,6 @@ class data_provider {
     public function clear_adhoc_tasks() {
         global $DB;
         return $DB->delete_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
-    }
-
-    public function get_adhoc_tasks_list(): array {
-        global $DB;
-
-        return array_values(
-            array_map(
-                function($task) {
-                    return [
-                        'id' => intval($task->id),
-                        'nextruntime' => $task->nextruntime,
-                    ];
-                },
-                $DB->get_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing'])
-            )
-        );
     }
 
     // Schedule an adhoc task at timestamp $timestamp.
