@@ -38,7 +38,7 @@ class logger {
      */
     public static function log($object) {
         if (configurator::get_instance()->get_debug()) {
-            debugging("[Hybridmeter] ".print_r($object, 1));
+            debugging("[Hybridmeter] ".var_export($object, true));
         }
     }
 }
