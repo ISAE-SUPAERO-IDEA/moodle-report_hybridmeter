@@ -95,8 +95,8 @@ class processing {
         $enddate = $enddate->format('d/m/Y');
 
         foreach ($processeddata as $coursedata) {
-            $coursedata->set_begindate($begindate->format('d/m/Y'));
-            $coursedata->set_enddate($enddate->format('d/m/Y'));
+            $coursedata->set_begindate($begindate);
+            $coursedata->set_enddate($enddate);
 
         }
 
