@@ -22,10 +22,10 @@
  */
 namespace report_hybridmeter\tests;
 
-use report_hybridmeter\utils as utils;
 use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\utils as utils;
 
-abstract class course_count_abstract extends \report_hybridmeter\test_scenario_course {
+abstract class course_count_abstract extends \report_hybridmeter\tests\test_scenario_course {
 
     protected function __construct(string $name, int $courseid) {
         parent::__construct($name, $courseid);

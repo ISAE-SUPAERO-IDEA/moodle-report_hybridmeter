@@ -22,12 +22,12 @@
  */
 namespace report_hybridmeter\tests;
 
-use report_hybridmeter\utils as utils;
 use Exception;
+use report_hybridmeter\utils as utils;
 
 define("INDICATOR_ERROR", "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");
 
-abstract class indicator_abstract extends \report_hybridmeter\test_scenario_course {
+abstract class indicator_abstract extends \report_hybridmeter\tests\test_scenario_course {
 
     protected $indicator;
 

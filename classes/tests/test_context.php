@@ -20,7 +20,7 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
-namespace report_hybridmeter;
+namespace report_hybridmeter\tests;
 
 class test_context {
     protected static function error_handler($errno, $errstr, $errfile, $errline) {

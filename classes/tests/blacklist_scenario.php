@@ -22,11 +22,11 @@
  */
 namespace report_hybridmeter\tests;
 
-use report_hybridmeter\utils as utils;
-use report_hybridmeter\configurator as configurator;
 use Exception;
+use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\utils as utils;
 
-class blacklist_scenario extends \report_hybridmeter\test_scenario {
+class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
     public function __construct() {
         parent::__construct(get_string('inconsistent_blacklist', 'report_hybridmeter'));
     }

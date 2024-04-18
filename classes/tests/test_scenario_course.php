@@ -20,7 +20,9 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
-namespace report_hybridmeter;
+namespace report_hybridmeter\tests;
+
+use report_hybridmeter\utils;
 
 abstract class test_scenario_course extends test_scenario {
     public $courseid;

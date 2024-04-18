@@ -20,7 +20,7 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
-namespace report_hybridmeter;
+namespace report_hybridmeter\tests;
 
 use report_hybridmeter\utils as utils;
 

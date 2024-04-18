@@ -23,11 +23,10 @@
 
 require(dirname(__FILE__) . '/../../../config.php');
 
+use report_hybridmeter\tests\blacklist_scenario as blacklist_scenario;
+use report_hybridmeter\tests\course_count\inconsistent_registered_active_students as inconsistent_registered_active_students;
 use report_hybridmeter\tests\ND\inconsistent_nd as inconsistent_nd;
 use report_hybridmeter\tests\NU\inconsistent_nu as inconsistent_nu;
-use report_hybridmeter\tests\course_count\inconsistent_registered_active_students
-    as inconsistent_registered_active_students;
-use report_hybridmeter\tests\blacklist_scenario as blacklist_scenario;
 
 require_login();
 $context = context_system::instance();
@@ -67,6 +66,6 @@ switch ($task) {
         break;
 }
 
-\report_hybridmeter\test_context::launch_batch($testsset);
+\report_hybridmeter\tests\test_context::launch_batch($testsset);
 
 echo $backlink;
