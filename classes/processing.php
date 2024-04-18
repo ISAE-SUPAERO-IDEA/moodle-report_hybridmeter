@@ -31,7 +31,7 @@ require_once(__DIR__.'/../constants.php');
 use DateTime;
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\data_provider as data_provider;
-use report_hybridmeter\general_data as general_data;
+use report_hybridmeter\report_data as general_data;
 use report_hybridmeter\logger as logger;
 
 /**
@@ -110,7 +110,7 @@ class processing {
         // Calculation of general indicators.
         logger::log("# Processing: global indicators computation");
 
-        $generaldata = new general_data($dataout);
+        $generaldata = new report_data($dataout);
 
         // Data exportation.
         logger::log("# Processing: serializing results");

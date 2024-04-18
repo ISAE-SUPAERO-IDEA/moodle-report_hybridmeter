@@ -27,12 +27,12 @@ class course_data {
         $this->fullname = $course->fullname;
         $this->category_id = $course->category_id;
         $this->category_name = $course->category_name;
-        $this->categorypath = indicators::get_category_path($course);
+        $this->categorypath = indicators::get_category_path($course->category_id);
         $this->idnumber = $course->idnumber;
         $this->url = $wwwroot."/course/view.php?id=".$this->id;
         $this->digitalisationlevel = indicators::digitalisation_level($this->id);
         $this->usagelevel = indicators::usage_level($this->id);
-        $this->activelastmonth = indicators::is_course_active_last_month($this->id);
+        $this->activelastmonth = indicators::is_course_active_on_period($this->id);
         $this->activestudents = indicators::active_students($this->id);
         $this->nbregisteredstudents = indicators::nb_registered_students($this->id);
         $this->rawdata = indicators::raw_data($this->id);
