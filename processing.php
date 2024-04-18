@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Launch manually the computation of indicators.
+ *
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -29,7 +31,6 @@ $context = context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
-$processing = new report_hybridmeter\processing();
-$data = $processing->launch();
+$data = report_hybridmeter\processing::launch();
 
 echo json_encode($data);

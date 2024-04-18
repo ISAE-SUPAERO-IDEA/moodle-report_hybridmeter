@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Facilities functions.
+ *
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -22,25 +24,21 @@
  */
 namespace report_hybridmeter;
 
-use report_hybridmeter\formatter as formatter;
 use Exception;
 use DateTime;
 
+/**
+ * Facilities functions.
+ */
 class utils {
-    public static function object_to_array(object $object) {
-        $array = [];
-        foreach ($object as $key => $value) {
-            $array[$key] = $value;
-        }
-        return $array;
-    }
 
-    public static function id_objects_array_to_array(array $array) {
-        return array_values(array_map(function($obj) {
-            return $obj->id;
-        }, $array));
-    }
-
+    /**
+     * Checks that an array contains only int values.
+     *
+     * @param array $idscourses
+     * @return void
+     * @throws Exception
+     */
     public static function precondition_ids(array $idscourses) {
 
         $accumulatedprecondition = array_reduce(
@@ -55,16 +53,33 @@ class utils {
         }
     }
 
+    /**
+     * Returns the timestamp for tomorrow at midnight.
+     *
+     * @return false|int
+     */
     public static function tomorrow_midnight() {
         $tomorrowmidnight = strtotime("tomorrow 00:00");
         return $tomorrowmidnight;
     }
 
+    /**
+     * Render an array of objects as HTML.
+     *
+     * @param array $array
+     * @return string
+     */
     public static function objects_array_to_html(array $array): string {
         if (empty($array)) {
             return "No data";
         }
-        $array = (new formatter($array))->get_array();
+
+        $array = array_map(
+            function($element) {
+                return (array) $element;
+            },
+            $array
+        );
 
         $output = "<table>";
         $output .= "<thead><tr>";
@@ -87,6 +102,12 @@ class utils {
         return $output;
     }
 
+    /**
+     * Display an associative array as an HTML table.
+     *
+     * @param array $array
+     * @return string
+     */
     public static function data_grouped_by_to_html(array $array): string {
         $output = "<table>";
         $output .= "<tbody>";
@@ -106,6 +127,12 @@ class utils {
         return $output;
     }
 
+    /**
+     * Display an array as an HTML table with headers.
+     *
+     * @param array $array
+     * @return string
+     */
     public static function columns_rows_array_to_html(array $array): string {
         $output = "<table>";
         $output .= "<thead><tr>";
@@ -127,6 +154,13 @@ class utils {
         return $output;
     }
 
+    /**
+     * Render an array in HTML using n_uplets style.
+     *
+     * @param array $array
+     * @param int $n
+     * @return string
+     */
     public static function array_to_n_uplets_table_html(array $array, int $n = 10): string {
         $output = "<table>";
         $output .= "<tbody>";
@@ -147,6 +181,13 @@ class utils {
         return $output;
     }
 
+    /**
+     * Convert a timestamp to a datetime.
+     *
+     * @param int $timestamp
+     * @param string $format
+     * @return string
+     */
     public static function timestamp_to_datetime(int $timestamp, string $format = 'd/m/Y H:i:s e'): string {
         $datetime = new DateTime();
         $datetime->setTimestamp($timestamp);
@@ -154,6 +195,13 @@ class utils {
         return $datetime->format($format);
     }
 
+    /**
+     * Modulo operation ensuring a positive result.
+     *
+     * @param $x
+     * @param int $n
+     * @return int
+     */
     public static function modulo_fixed($x, int $n): int {
         $r = $x % $n;
         if ($r < 0) {

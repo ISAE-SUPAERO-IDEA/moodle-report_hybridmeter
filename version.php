@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin version information.
+ *
  * @author Nassim Bennouar, Bruno Ilponse, John Tranier
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -23,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = "report_hybridmeter";
-$plugin->version = 2024041600;
+$plugin->version = 2024041700;
 $plugin->requires = 2018051700; // Moodle 3.5.7 minimum.
-$plugin->release = "1.1.14";
+$plugin->release = "1.2.0";
 $plugin->maturity = MATURITY_STABLE;

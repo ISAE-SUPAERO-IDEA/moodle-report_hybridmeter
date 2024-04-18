@@ -21,7 +21,7 @@
  * @package report_hybridmeter
  */
 
-require(dirname(__FILE__) . '/../../config.php');
+require(dirname(__FILE__) . '/../../../config.php');
 
 use report_hybridmeter\tests\ND\inconsistent_nd as inconsistent_nd;
 use report_hybridmeter\tests\NU\inconsistent_nu as inconsistent_nu;

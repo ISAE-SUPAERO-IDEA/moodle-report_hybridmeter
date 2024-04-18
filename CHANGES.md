@@ -6,6 +6,12 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.2.0 (2024-04-17)
+### Chore
+- Add inline documentation
+- Rewrite indicators computation (introducing explicit types)
+- Remove unnecessary code
+
 ## Hybridmeter version 1.1.14 (2024-04-16)
 ### Chore
 - Publish source code on GitHub and update the README accordingly 

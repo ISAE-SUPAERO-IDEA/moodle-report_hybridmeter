@@ -33,7 +33,6 @@ class processing extends adhoc_task {
 
     public function execute() {
         \report_hybridmeter\configurator::get_instance()->unschedule_calculation();
-        $processing = new class_processing();
-        $processing->launch();
+        class_processing::launch();
     }
 }
