@@ -31,12 +31,23 @@ use Exception;
 class cache_manager {
     protected $cache;
 
+    /**
+     * Singleton instance.
+     * @var cache_manager
+     */
     protected static $instance = null;
 
+    /**
+     * Init an empty cache.
+     */
     public function __construct() {
         $this->cache = [];
     }
 
+    /**
+     * Get the singleton instance.
+     * @return cache_manager
+     */
     public static function get_instance() {
         if (self::$instance == null) {
             self::$instance = new cache_manager();

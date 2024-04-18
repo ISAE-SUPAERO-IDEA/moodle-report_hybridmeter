@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * HybridMeter configuration.
+ *
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -29,25 +31,32 @@ require_once(__DIR__."/../constants.php");
 use report_hybridmeter\data_provider as data_provider;
 use DateTime;
 
-// Manage hybridmeter's configuration file.
+/**
+ * HybridMeter configuration.
+ */
 class configurator {
-    protected $path;
+    protected $filepath;
 
     protected $data;
 
+    /**
+     * Singleton instance
+     * @var configurator
+     */
     protected static $instance = null;
 
     public function __construct() {
         global $CFG;
 
-        $this->path = $CFG->dataroot."/hybridmeter/config.json";
+        $this->filepath = $CFG->dataroot."/hybridmeter/config.json";
 
-        if (!file_exists($this->path)) { // Initialize empty data if no configuration file exists.
+        if (!file_exists($this->filepath)) { // Initialize empty data if no configuration file exists.
             $this->data = [];
         } else { // Read data from configuration file if it exists.
-            $data = file_get_contents($this->path);
+            $data = file_get_contents($this->filepath);
             $this->data = json_decode($data, true);
         }
+
         // Sanitize data.
         $now = new DateTime("now");
         $before = strtotime("-1 months");
@@ -76,14 +85,20 @@ class configurator {
 
         $this->save();
     }
-    // Get the singleton configuration instance.
+
+    /**
+     * Get the singleton configuration instance.
+     */
     public static function get_instance() {
         if (self::$instance == null) {
             self::$instance = new configurator();
         }
         return self::$instance;
     }
-    // Sets a default value for a configuration key.
+
+    /**
+     * Sets a default value for a configuration key.
+     */
     public function set_default_value($key, $value) {
         if (!array_key_exists($key, $this->data)) {
             $this->data[$key] = $value;
@@ -105,11 +120,13 @@ class configurator {
         $this->save();
     }
 
-    // Saves the data in the configuration file.
+    /**
+     * Saves the data in the configuration file.
+     */
     protected function save() {
-        $fichier = fopen($this->path, 'w');
-        fwrite($fichier, json_encode($this->data, JSON_FORCE_OBJECT));
-        fclose($fichier);
+        $file = fopen($this->filepath, 'w');
+        fwrite($file, json_encode($this->data, JSON_FORCE_OBJECT));
+        fclose($file);
     }
 
     public function get_debug() {
