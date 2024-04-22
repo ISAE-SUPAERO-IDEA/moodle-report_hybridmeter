@@ -240,10 +240,10 @@ class config {
 
     /**
      * Setter that saves the config.
-     * @param int $running
+     * @param int $timestamp
      */
-    public function set_running(int $running): void {
-        $this->running = $running;
+    public function set_running(int $timestamp): void {
+        $this->running = $timestamp;
         $this->save();
     }
 

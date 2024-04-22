@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__."/../constants.php");
 
 use report_hybridmeter\data_provider as data_provider;
-use DateTime;
 
 /**
  * HybridMeter configuration manager.
@@ -165,14 +164,6 @@ class configurator {
             "columns" => $columns,
             "rows" => $rows,
         ];
-    }
-
-    public function set_as_running(DateTime $datetime) {
-        $this->config->set_running($datetime->getTimestamp());
-    }
-
-    public function unset_as_running() {
-        $this->config->set_running(REPORT_HYBRIDMETER_NON_RUNNING);
     }
 
     public function unschedule_calculation() {

@@ -72,7 +72,7 @@ class processing {
         logger::log("# Processing: blacklist computation");
 
         $configurator = configurator::get_instance();
-        $configurator->set_as_running($startcomputationdate);
+        $configurator->get_config()->set_running($startcomputationdate->getTimestamp());
         $configurator->get_config()->update_blacklisted_data();
 
         // Calculation of detailed indicators.
@@ -148,7 +148,7 @@ class processing {
          */
 
         // Log and task management.
-        $configurator->unset_as_running();
+        $configurator->get_config()->set_running(REPORT_HYBRIDMETER_NON_RUNNING);
         logger::log("# Processing: done");
 
         return $dataout;
