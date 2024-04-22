@@ -169,12 +169,6 @@ class configurator {
         }
         return 0;
     }
-    public function get_static_coeff(string $key) {
-        return $this->get_coeff("digitalisation_coeffs", $key);
-    }
-    public function get_dynamic_coeff(string $key) {
-        return $this->get_coeff("usage_coeffs", $key);
-    }
 
     public function get_all_coeffs_rows(): array {
         $keys = array_keys($this->data["usage_coeffs"]);
