@@ -23,6 +23,7 @@
 namespace report_hybridmeter\tests;
 
 use Exception;
+use report_hybridmeter\ouput\config_output;
 use report_hybridmeter\utils as utils;
 
 define("INDICATOR_ERROR", "Incorrect parameter, \$indicator must be \"nu\" or \"nd\"");
@@ -101,14 +102,15 @@ abstract class indicator_abstract extends \report_hybridmeter\tests\test_scenari
 
     protected function test_coeffs() {
         echo "<h3>Coefficients checking</h3>";
+        $config_output = new config_output(\report_hybridmeter\configurator::get_instance()->get_config());
 
         switch($this->indicator) {
             case "nu" :
-                $coeffs = \report_hybridmeter\configurator::get_instance()->get_coeffs_grid("usage_coeffs");
+                $coeffs = $config_output->get_coeffs_grid("usage_coeffs");
                 break;
 
             case "nd" :
-                $coeffs = \report_hybridmeter\configurator::get_instance()->get_coeffs_grid(
+                $coeffs = $config_output->get_coeffs_grid(
                     "digitalisation_coeffs"
                 );
                 break;

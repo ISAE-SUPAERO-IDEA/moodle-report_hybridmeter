@@ -26,6 +26,7 @@
 require_once(dirname(__FILE__)."/../../../config.php");
 
 use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\ouput\config_output;
 
 header('Content-Type: text/json');
 
@@ -37,7 +38,6 @@ $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
 $configurator = configurator::get_instance();
-$dataprovider = configurator::get_instance();
 $output = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -62,18 +62,21 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $config->update_additionnal_config($studentarchetype, $debug);
     }
 } else if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    $configoutput = new config_output($configurator->get_config());
+
+
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
     if ($task == "get_usage_coeffs") {
-        $output = $configurator->get_coeffs_grid("usage_coeffs");
+        $output = $configoutput->get_coeffs_grid("usage_coeffs");
     } else if ($task == "get_digitalisation_coeffs") {
-        $output = $configurator->get_coeffs_grid("digitalisation_coeffs");
+        $output = $configoutput->get_coeffs_grid("digitalisation_coeffs");
     } else if ($task == "get_all_coeffs") {
-        $output = $configurator->get_all_coeffs_rows();
+        $output = $configoutput->get_all_modulenames_rows();
     } else if ($task == "get_seuils") {
-        $output = $configurator->get_treshold_grid();
+        $output = $configoutput->get_treshold_grid();
     } else if ($task == "get_tresholds") {
-        $output = $configurator->get_tresholds_rows();
+        $output = $configoutput->get_tresholds_rows();
     } else {
         $output = $configurator->get_config();
     }
