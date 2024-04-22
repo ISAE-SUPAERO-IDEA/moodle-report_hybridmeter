@@ -59,8 +59,8 @@ class processing {
 
         $courses = $dataprovider->filter_living_courses_on_period(
             $whitelistids,
-            $configurator->get_begin_timestamp(),
-            $configurator->get_end_timestamp()
+            $configurator->get_config()->get_begin_date(),
+            $configurator->get_config()->get_end_date(),
         );
         $courseids = array_map(
             function ($course) {
@@ -73,7 +73,7 @@ class processing {
 
         $configurator = configurator::get_instance();
         $configurator->set_as_running($startcomputationdate);
-        $configurator->update_blacklisted_data();
+        $configurator->get_config()->update_blacklisted_data();
 
         // Calculation of detailed indicators.
         logger::log("# Processing: course indicators computation");
@@ -87,11 +87,11 @@ class processing {
         );
 
         $begindate = new DateTime();
-        $begindate->setTimestamp($configurator->get_begin_timestamp());
+        $begindate->setTimestamp($configurator->get_config()->get_begin_date());
         $begindate = $begindate->format('d/m/Y');
 
         $enddate = new DateTime();
-        $enddate->setTimestamp($configurator->get_end_timestamp());
+        $enddate->setTimestamp($configurator->get_config()->get_end_date());
         $enddate = $enddate->format('d/m/Y');
 
         foreach ($processeddata as $coursedata) {

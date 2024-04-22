@@ -87,8 +87,8 @@ class report_data {
         $configurator = configurator::get_instance();
         $dataprovider = data_provider::get_instance();
 
-        $this->begintimestamp = $configurator->get_begin_timestamp();
-        $this->endtimestamp = $configurator->get_end_timestamp();
+        $this->begintimestamp = $configurator->get_config()->get_begin_date();
+        $this->endtimestamp = $configurator->get_config()->get_end_date();
         $this->courses = $courses;
 
         $this->digitalisedcourses = array_values(
@@ -96,7 +96,7 @@ class report_data {
                 $courses,
                 function ($course) {
                     return $course[REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL] >=
-                        configurator::get_instance()->get_data()["digitalisation_treshold"];
+                        configurator::get_instance()->get_config()->get_digitalisation_treshold();
                 }
             )
         );
@@ -106,7 +106,7 @@ class report_data {
                 $courses,
                 function ($course) {
                     return $course[REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL] >=
-                        configurator::get_instance()->get_data()["usage_treshold"];
+                        configurator::get_instance()->get_config()->get_usage_treshold();
                 }
             )
         );
@@ -124,15 +124,15 @@ class report_data {
         $this->nbstudentsconcerneddigitalisedactive =
             $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->digitalisedcourses),
-                $configurator->get_begin_timestamp(),
-                $configurator->get_end_timestamp()
+                $configurator->get_config()->get_begin_date(),
+                $configurator->get_config()->get_end_date()
             );
 
         $this->nbstudentsconcernedusedactive =
             $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->usedcourses),
-                $configurator->get_begin_timestamp(),
-                $configurator->get_end_timestamp()
+                $configurator->get_config()->get_begin_date(),
+                $configurator->get_config()->get_end_date()
             );
     }
 

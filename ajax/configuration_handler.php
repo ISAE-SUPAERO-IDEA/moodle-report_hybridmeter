@@ -47,22 +47,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if ($action == "measurement_period") {
         $begindate = required_param('begin_date', PARAM_INT);
         $enddate = required_param('end_date', PARAM_INT);
-        $configurator->update([
-            "begin_date" => $begindate,
-            "end_date" => $enddate,
-        ]);
+
+        $config = $configurator->get_config();
+        $config->update_period($begindate, $enddate);
     } else if ($action == "schedule") {
         $scheduledtimestamp = required_param('scheduled_timestamp', PARAM_INT);
         $configurator->schedule_calculation($scheduledtimestamp);
     } else if ($action == "unschedule") {
         $configurator->unschedule_calculation();
-        $configurator->update_key("debug", $debug);
+        $configurator->get_config()->set_debug($debug);
     } else if ($action == "additional_config") {
         $studentarchetype = required_param('student_archetype', PARAM_ALPHAEXT);
-        $configurator->update([
-            "student_archetype" => $studentarchetype,
-            "debug" => $debug,
-        ]);
+        $config = $configurator->get_config();
+        $config->update_additionnal_config($studentarchetype, $debug);
     }
 } else if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
@@ -78,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     } else if ($task == "get_tresholds") {
         $output = $configurator->get_tresholds_rows();
     } else {
-        $output = $configurator->get_data();
+        $output = $configurator->get_config();
     }
 } else {
     $output = [

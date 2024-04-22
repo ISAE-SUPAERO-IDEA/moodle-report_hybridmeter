@@ -31,12 +31,11 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
 
     if ($oldversion < 2022020103) {
         $configurator = configurator::get_instance();
-        $configurator->unset_key("digitalisation_coeffs");
-        $configurator->unset_key("usage_coeffs");
-
-        $configurator->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
-        $configurator->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
-
+        $config = $configurator->get_config();
+        $config->update_coeffs(
+            REPORT_HYBRIDMETER_USAGE_COEFFS,
+            REPORT_HYBRIDMETER_DIGITALISATION_COEFFS
+        );
         upgrade_plugin_savepoint(true, 2022020103, 'report', 'hybridmeter');
     }
 
@@ -47,7 +46,7 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
 
     if ($oldversion < 2022092303) {
         $configurator = configurator::get_instance();
-        $configurator->update_blacklisted_data();
+        $configurator->get_config()->update_blacklisted_data();
         upgrade_plugin_savepoint(true, 2022092303, 'report', 'hybridmeter');
     }
 

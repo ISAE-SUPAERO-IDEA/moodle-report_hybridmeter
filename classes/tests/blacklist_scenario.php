@@ -51,40 +51,31 @@ class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
     protected function dump_config_blacklist(string $type="blacklist") {
         global $DB;
 
+        $config = configurator::get_instance()->get_config();
         switch($type) {
             case "savelist_courses" :
                 $name = "courses in savelist";
                 $sqltable = "course";
-                $index = "save_blacklist_courses";
+                $array = $config->get_save_blacklist_courses();
                 break;
 
             case "savelist_categories" :
                 $name = "categories in savelist";
                 $sqltable = "course_categories";
-                $index = "save_blacklist_categories";
+                $array = $config->get_save_blacklist_categories();
                 break;
 
             case "blacklist" :
                 $name = "blacklisted courses";
                 $sqltable = "course";
-                $index = "blacklisted_courses";
+                $array = $config->get_blacklisted_courses();
                 break;
 
             default :
                 throw new Exception("The parameter \$type can only be (savelist_courses|savelist_categories|blacklist)");
-                return;
-                break;
         }
 
         echo "<h3>Dump of ".$name."</h3>";
-
-        $config = configurator::get_instance();
-        $data = $config->get_data();
-
-        $array = $data[$index];
-
-        print_r($data[$index]);
-
         print_r($array);
 
         if ($type == "blacklist") {
@@ -120,7 +111,7 @@ class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
         echo "<h3>Dump of courses that received activity in the current period</h3>";
         global $DB;
 
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
 
         $sql = "SELECT DISTINCT course.id AS id, course.idnumber AS idnumber, course.fullname AS fullname,
                                 category.id AS category_id, category.name AS category_name

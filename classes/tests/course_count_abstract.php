@@ -48,8 +48,8 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
         $configurator = configurator::get_instance();
         $dataprovider = \report_hybridmeter\data_provider::get_instance();
 
-        $begintimestamp = $configurator->get_begin_timestamp();
-        $endtimestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_config()->get_begin_date();
+        $endtimestamp = $configurator->get_config()->get_end_date();
 
         echo "<h3>Testing the count_student_single_visitors_on_course function</h3>";
 
@@ -99,8 +99,8 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
 
         $configurator = configurator::get_instance();
 
-        $begintimestamp = $configurator->get_begin_timestamp();
-        $endtimestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_config()->get_begin_date();
+        $endtimestamp = $configurator->get_config()->get_end_date();
 
         $sql = "SELECT logs.*, role.shortname, role.archetype,
                        role.description, u.username,
@@ -134,10 +134,10 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
 
         $configurator = configurator::get_instance();
 
-        $begintimestamp = $configurator->get_begin_timestamp();
-        $endtimestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_config()->get_begin_date();
+        $endtimestamp = $configurator->get_config()->get_end_date();
 
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
 
         $sql = "SELECT logs.id,
                     timecreated,
@@ -181,10 +181,10 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
 
         $configurator = configurator::get_instance();
 
-        $begintimestamp = $configurator->get_begin_timestamp();
-        $endtimestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_config()->get_begin_date();
+        $endtimestamp = $configurator->get_config()->get_end_date();
 
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM {logstore_standard_log} logs

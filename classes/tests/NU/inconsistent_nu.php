@@ -61,8 +61,8 @@ class inconsistent_nu extends \report_hybridmeter\tests\indicator_abstract {
 
         $dataprovider = \report_hybridmeter\data_provider::get_instance();
         $configurator = \report_hybridmeter\configurator::get_instance();
-        $begintimestamp = $configurator->get_begin_timestamp();
-        $endtimestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_config()->get_begin_date();
+        $endtimestamp = $configurator->get_config()->get_end_date();
 
         echo "<p>begin and end timestamps are ".$begintimestamp." and ".$endtimestamp."</p>";
 
@@ -80,8 +80,8 @@ class inconsistent_nu extends \report_hybridmeter\tests\indicator_abstract {
         echo "<h3>Dump of hits on course activities during the current capture period :</h3>";
 
         $configurator = \report_hybridmeter\configurator::get_instance();
-        $begintimestamp = $configurator->get_begin_timestamp();
-        $endtimestamp = $configurator->get_end_timestamp();
+        $begintimestamp = $configurator->get_config()->get_begin_date();
+        $endtimestamp = $configurator->get_config()->get_end_date();
 
         $sql = "SELECT logs.*, role.shortname, role.archetype,
                        role.description, u.username,

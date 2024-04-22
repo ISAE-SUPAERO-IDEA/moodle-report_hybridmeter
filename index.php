@@ -128,22 +128,22 @@ echo $output->heading($pagetitle);
 echo $output->general_indicators(
     $dataavailable,
     $generaldata,
-    $configurator->get_begin_timestamp(),
-    $configurator->get_end_timestamp(),
+    $configurator->get_config()->get_begin_date(),
+    $configurator->get_config()->get_end_date(),
     $formatteddate,
     $intervalformat
 );
 
 echo $output->next_schedule(
-    $configurator->has_scheduled_calculation(),
-    $configurator->get_scheduled_date(),
+    $configurator->get_config()->get_has_scheduled_calculation(),
+    $configurator->get_config()->get_scheduled_date(),
     $isunscheduling
 );
 echo $output->index_links($dataavailable);
 
 if ($debug != 0) {
     $countadhoc = data_provider::get_instance()->count_adhoc_tasks();
-    $isrunning = $configurator->get_running();
+    $isrunning = $configurator->get_config()->is_running();
     echo $output->is_task_planned($countadhoc, $isrunning);
     echo $output->last_calculation($dataavailable, $formatteddate, $intervalformat);
 }

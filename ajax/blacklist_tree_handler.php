@@ -48,7 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $type = required_param('type', PARAM_ALPHAEXT);
         $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
         $id = required_param('id', PARAM_INT);
-        $configurator->set_blacklisted($type, $id, $value);
+
+        if($type == "courses") {
+            $configurator->get_config()->set_blacklisted_course($id, $value, true);
+        }
+        else if($type == "categories") {
+            $configurator->get_config()->set_blacklisted_category_subtree($id, $value);
+        }
+        else {
+            throw new Exception("Unknown type param: $type");
+        }
 
         // Debugging feature, set debug value to 1 in configurations to display.
         logger::log("New manage_blacklist post request");
