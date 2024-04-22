@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * CSV report exporter.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -31,11 +32,7 @@ use Exception;
 use csv_export_writer;
 
 /**
- * This class allows you to export an array of tuples as a CSV string or as a
- * CSV file downloaded from the browser, with the possibility to customise
- * the visible fields
- *
- *
+ * CSV report exporter.
  * @package report_hybridmeter
  * @since      Moodle 3.7
  * @copyright  2021 IDEA ISAE-Supaero
@@ -44,42 +41,60 @@ use csv_export_writer;
 class exporter {
     /**
      * Delimitation character.
+     * @var string
      */
     protected $delimiter;
 
     /**
      * The strings in this array correspond to the attributes of $data whose values will be exported.
+     * @var array
      */
     protected $fields;
 
-    /** As PHP is weak typed, this attribute is a array which explicitly associate
+    /**
+     * As PHP is weak typed, this attribute is a array which explicitly associate
      * a field with a type to force a certain behaviour.
      *
      * Associate a type to a field is not required to work correctly, but is useful
      * to deal with double variable processed as integer.
+     * @var array
      */
     protected $fieldstype;
 
-    /** Human-readable strings associated with fields (and displayed in CSV)
+    /**
+     * Human-readable strings associated with fields (and displayed in CSV)
      * If an alias exists then the alias is displayed, otherwise this is the raw field name
+     * @var array
      */
     protected $alias;
 
-    /** Attribute containing data to be exported, array of arrays required,
+    /**
+     * Attribute containing data to be exported, array of arrays required,
      * please use formatter class to convert from array of objects
+     * @var array
      */
     protected $data;
 
     /**
      * Instance of csv_export_writer of moodle core.
+     * @var csv_export_writer
      */
     protected $csv;
 
-    public function __construct(array $fields=[],
-                                array $alias = [],
-                                array $fieldstype = [],
-                                array $data = [],
-                                $delimiter = 'comma') {
+    /**
+     * Construct an exporter.
+     * @param array $fields
+     * @param array $alias
+     * @param array $fieldstype
+     * @param array $data
+     * @param string $delimiter
+     * @throws Exception
+     */
+    public function __construct(array  $fields=[],
+                                array  $alias = [],
+                                array  $fieldstype = [],
+                                array  $data = [],
+                                string $delimiter = 'comma') {
         $this->set_data($data);
         if (empty($fields) && !empty($this->data)) {
             $this->auto_fields();
@@ -125,6 +140,12 @@ class exporter {
         array_push($this->data, $data);
     }
 
+    /**
+     * Setter of "data".
+     * @param array $data
+     * @return void
+     * @throws Exception
+     */
     public function set_data(array $data) {
         $preconditionarray = array_map('is_array', $data);
         if (in_array(false, $preconditionarray)) {
@@ -134,19 +155,38 @@ class exporter {
         $this->data = $data;
     }
 
+    /**
+     * Setter of "alias".
+     * @param array $alias
+     * @return void
+     */
     public function set_alias(array $alias) {
         $this->alias = $alias;
     }
 
+    /**
+     * Setter of "fieldstype".
+     * @param array $fieldstype
+     * @return void
+     */
     public function set_fieldstype(array $fieldstype) {
         $this->fieldstype = $fieldstype;
     }
 
+    /**
+     * Setter of "delimiter".
+     * @param string $delimiter
+     * @return void
+     */
     public function set_delimiter(string $delimiter) {
         $this->delimiter = $delimiter;
         $this->csv = new csv_export_writer($this->delimiter);
     }
 
+    /**
+     * Construct the header using alias.
+     * @return array
+     */
     private function construct_fields_name(): array {
         $output = [];
 
@@ -163,6 +203,11 @@ class exporter {
         return $output;
     }
 
+    /**
+     * Export the CSV file.
+     * @param string $filename
+     * @return void
+     */
     public function create_csv(string $filename) {
         $this->csv->set_filename($filename);
         $this->csv->add_data($this->construct_fields_name());
@@ -177,6 +222,13 @@ class exporter {
         }
     }
 
+    /**
+     * Format a value.
+     * @param array $record
+     * @param $key
+     * @param $field
+     * @return mixed|string
+     */
     protected function format_value(array $record, $key, $field) {
         if (
             in_array($field, array_keys($this->fieldstype))
@@ -188,14 +240,11 @@ class exporter {
         return $record[$field];
     }
 
-    public function print_csv_data_standard() {
-        return $this->csv->print_csv_data(false);
-    }
 
-    public function csv_data_to_string(): string {
-        return $this->csv->print_csv_data(true);
-    }
-
+    /**
+     * Download the CSV file.
+     * @return void
+     */
     public function download_file() {
         $this->csv->download_file();
     }

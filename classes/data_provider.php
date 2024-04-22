@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Provide data that will serve as a basis to compute indicators.
+ * Provide data that required to compute HybridMeter indicators.
  *
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -318,6 +318,10 @@ class data_provider {
         );
     }
 
+    /**
+     * Retrieve the courses tree.
+     * @return array
+     */
     public function get_courses_tree(): array {
         global $DB;
 
@@ -326,6 +330,12 @@ class data_provider {
         return $this->get_courses_tree_rec($lowestparent, true);
     }
 
+    /**
+     * Retrieve the courses subtree rooted by "idcategory".
+     * @param int $idcategory
+     * @param bool $root
+     * @return array
+     */
     public function get_courses_tree_rec(int $idcategory, bool $root = false): array {
         global $DB;
 
@@ -425,10 +435,10 @@ class data_provider {
             return [];
         }
 
-        $sql = "SELECT DISTINCT course.id AS id, 
-                                course.idnumber AS idnumber, 
+        $sql = "SELECT DISTINCT course.id AS id,
+                                course.idnumber AS idnumber,
                                 course.fullname AS fullname,
-                                category.id AS category_id, 
+                                category.id AS category_id,
                                 category.name AS category_name
                   FROM {course} course
                   JOIN {logstore_standard_log} logs ON course.id = logs.courseid
@@ -455,21 +465,25 @@ class data_provider {
         return $records;
     }
 
-    /* Adhoc task management */
-
-    // Counts the number of adhoc tasks.
+    /**
+     * Counts the number of adhoc tasks.
+     */
     public function count_adhoc_tasks(): int {
         global $DB;
         return $DB->count_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
 
-    // Unschedule all ahdoc tasks.
+    /**
+     * Unschedule all ahdoc tasks.
+     */
     public function clear_adhoc_tasks() {
         global $DB;
         return $DB->delete_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
 
-    // Schedule an adhoc task at timestamp $timestamp.
+    /**
+     * Schedule an adhoc task at timestamp $timestamp.
+     */
     public function schedule_adhoc_task($timestamp) {
         $task = new processing();
         $task->set_next_run_time($timestamp);

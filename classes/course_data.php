@@ -59,6 +59,10 @@ class course_data {
      */
     protected $categorypath;
 
+    /**
+     * Course ID number.
+     * @var string
+     */
     protected $idnumber;
 
     /**
