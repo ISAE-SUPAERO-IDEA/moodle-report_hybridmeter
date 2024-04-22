@@ -26,6 +26,8 @@ namespace report_hybridmeter;
 
 use report_hybridmeter\data_provider as data_provider;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(__DIR__."/../constants.php");
 
 /**
@@ -33,50 +35,128 @@ require_once(__DIR__."/../constants.php");
  */
 class config {
 
+    /**
+     * Filepath of the config file.
+     * @var string
+     */
     private $filepath;
 
+    /**
+     * Timestamp of the beginning of the report period.
+     * @var int
+     */
     public $begin_date;
+
+    /**
+     * Timestamp of the end of the report period.
+     * @var int
+     */
     public $end_date;
+
+    /**
+     * Student archetype.
+     * @var string
+     */
     public $student_archetype = "student";
+
+    /**
+     * Debug mode.
+     * @var bool
+     */
     public $debug = false;
+
+    /**
+     * Is the report being computed.
+     * @var int
+     */
     public $running = REPORT_HYBRIDMETER_NON_RUNNING;
 
+    /**
+     * Has a report computation been scheduled?
+     * @var int
+     */
     public $has_scheduled_calculation = 0;
+
+    /**
+     * Timestamp of the next scheduled computation.
+     * @var int
+     */
     public $scheduled_date = 0;
 
+    /**
+     * Threshold to consider a course as active.
+     * @var int
+     */
     public $active_treshold = REPORT_HYBRIDMETER_ACTIVE_TRESHOLD;
+
+    /**
+     * Threshold to consider a course as used.
+     * @var int
+     */
     public $usage_treshold = REPORT_HYBRIDMETER_USAGE_TRESHOLD;
+
+    /**
+     * Threshold to consider a course as digitalized.
+     * @var int
+     */
     public $digitalisation_treshold = REPORT_HYBRIDMETER_DIGITALISATION_TRESHOLD;
+
+    /**
+     * Coefficients applied on module for the "usage" perspective.
+     * @var array
+     */
     public $usage_coeffs = [];
+
+    /**
+     * Coefficients applied on module for the "digitalized" perspective.
+     * @var array
+     */
     public $digitalisation_coeffs = [];
+
+
+    /**
+     * Autoscheduled mode.
+     * @var string
+     */
     public $autoscheduler = "none";
 
+    /**
+     * Blacklist of courses.
+     * @var array
+     */
     public $blacklisted_courses = [];
-    public $blacklisted_categories = [];
-    public $save_blacklist_courses = [];
-    public $save_blacklist_categories = [];
 
+    /**
+     * Blacklist of categories.
+     * @var array
+     */
+    public $blacklisted_categories = [];
+
+    /**
+     * Create the config loading the config if it exists.
+     * @param $filepath
+     */
     public function __construct($filepath) {
         $this->filepath = $filepath;
 
         $this->begin_date = strtotime("-1 months");
         $this->end_date = strtotime("now");
 
-        if(file_exists($this->filepath)) {
+        if (file_exists($this->filepath)) {
             $data = file_get_contents($this->filepath);
             $storedconfig = json_decode($data, true);
-            foreach($storedconfig as $key => $val) {
+            foreach ($storedconfig as $key => $val) {
                 $this->$key = $val;
             }
         }
 
-        if(empty($this->usage_coeffs)) {
+        if (empty($this->usage_coeffs)) {
             $this->usage_coeffs = $this->generate_coeffs_config(
                 REPORT_HYBRIDMETER_USAGE_COEFFS
             );
         }
 
-        if(empty($this->digitalisation_coeffs)) {
+        if (empty($this->digitalisation_coeffs)) {
             $this->digitalisation_coeffs = $this->generate_coeffs_config(
                 REPORT_HYBRIDMETER_DIGITALISATION_COEFFS
             );
@@ -119,6 +199,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function get_begin_date() {
@@ -126,6 +207,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function get_end_date() {
@@ -133,6 +215,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return string
      */
     public function get_student_archetype(): string {
@@ -140,6 +223,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return bool
      */
     public function is_debug(): bool {
@@ -147,6 +231,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function is_running(): int {
@@ -154,6 +239,7 @@ class config {
     }
 
     /**
+     * Setter that saves the config.
      * @param int $running
      */
     public function set_running(int $running): void {
@@ -162,6 +248,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function get_has_scheduled_calculation(): int {
@@ -169,6 +256,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function get_scheduled_date(): int {
@@ -176,14 +264,19 @@ class config {
     }
 
     /**
+     * Set a scheduled date and save the config.
      * @param int $scheduled_date
      */
-    public function set_scheduled_date(int $scheduled_date): void {
-        $this->scheduled_date = $scheduled_date;
+    public function set_scheduled_date(int $scheduleddate): void {
+        $this->scheduled_date = $scheduleddate;
         $this->has_scheduled_calculation = 1;
         $this->save();
     }
 
+    /**
+     * Unschedule the report computation and save the config.
+     * @return void
+     */
     public function unschedule_calculation(): void {
         $this->has_scheduled_calculation = 0;
         $this->scheduled_date = 0;
@@ -191,6 +284,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function get_active_treshold(): int {
@@ -198,6 +292,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function get_usage_treshold(): int {
@@ -205,6 +300,7 @@ class config {
     }
 
     /**
+     * Getter.
      * @return int
      */
     public function get_digitalisation_treshold(): int {
@@ -217,7 +313,7 @@ class config {
      * @return int
      */
     public function get_usage_coeff($modulename): int {
-        if(!array_key_exists($modulename, $this->usage_coeffs)) {
+        if (!array_key_exists($modulename, $this->usage_coeffs)) {
             return 0;
         }
         return $this->usage_coeffs[$modulename]["value"];
@@ -229,7 +325,7 @@ class config {
      * @return int
      */
     public function get_digitalisation_coeffs($modulename): int {
-        if(!array_key_exists($modulename, $this->digitalisation_coeffs)) {
+        if (!array_key_exists($modulename, $this->digitalisation_coeffs)) {
             return 0;
         }
         return $this->digitalisation_coeffs[$modulename]["value"];
@@ -255,6 +351,12 @@ class config {
         }
     }
 
+    /**
+     * Gets the coeffs associated to module names either for "usage" or for "digitalization"
+     * @param $type
+     * @return array
+     * @throws \Exception
+     */
     public function get_coeffs($type): array {
         switch($type) {
             case "digitalisation_coeffs":
@@ -278,43 +380,19 @@ class config {
     }
 
     /**
+     * Getter.
      * @return string
      */
-    public function get_autoscheduler(): string
-    {
+    public function get_autoscheduler(): string {
         return $this->autoscheduler;
     }
 
     /**
+     * Getter.
      * @return array
      */
-    public function get_blacklisted_courses(): array
-    {
+    public function get_blacklisted_courses(): array {
         return $this->blacklisted_courses;
-    }
-
-    /**
-     * @return array
-     */
-    public function get_blacklisted_categories(): array
-    {
-        return $this->blacklisted_categories;
-    }
-
-    /**
-     * @return array
-     */
-    public function get_save_blacklist_courses(): array
-    {
-        return $this->save_blacklist_courses;
-    }
-
-    /**
-     * @return array
-     */
-    public function get_save_blacklist_categories(): array
-    {
-        return $this->save_blacklist_categories;
     }
 
     /**
@@ -338,7 +416,7 @@ class config {
     private function generate_coeffs_config($coeffs): array {
         $coeffsconfig = [];
 
-        foreach($coeffs as $modulename => $coeff) {
+        foreach ($coeffs as $modulename => $coeff) {
             $coeffsconfig[$modulename] = [
                 "value" => $coeff,
                 "name" => $modulename,
@@ -348,17 +426,37 @@ class config {
         return $coeffsconfig;
     }
 
+    /**
+     * Add or remove a course from the blacklist.
+     * @param int $courseid
+     * @param bool $value
+     * @param bool $save
+     * @return void
+     */
     public function set_blacklisted_course(int $courseid, bool $value, bool $save = false): void {
         $this->blacklisted_courses[$courseid] = $value;
-        if($save) {
+        if ($save) {
             $this->save();
         }
     }
 
+    /**
+     * Add or remove a single category from the blacklist.
+     * @param int $categoryid
+     * @param bool $value
+     * @return void
+     */
     public function set_blacklisted_category(int $categoryid, bool $value): void {
         $this->blacklisted_categories[$categoryid] = $value;
     }
 
+    /**
+     * Add or remove a category and all its subtree for the blacklist
+     * @param int $categoryid
+     * @param bool $value
+     * @param bool $root
+     * @return void
+     */
     public function set_blacklisted_category_subtree(int $categoryid, bool $value, bool $root = true): void {
         $dataprovider = data_provider::get_instance();
         $this->blacklisted_categories[$categoryid] = $value;
@@ -376,6 +474,10 @@ class config {
         }
     }
 
+    /**
+     * Update the blacklist with the actual tree of courses to integrate new courses and categories.
+     * @return void
+     */
     public function update_blacklisted_data() {
         logger::log("Update blacklist");
         $dataprovider = data_provider::get_instance();
@@ -385,6 +487,11 @@ class config {
         $this->update_blacklisted_data_rec($coursestree);
     }
 
+    /**
+     * Update the blacklist with the provided tree of courses to integrate new courses and categories.
+     * @param $tree
+     * @return void
+     */
     public function update_blacklisted_data_rec($tree) {
         if ($tree['data']) {
             logger::log("Update blacklist for course_id=".$tree['data']->id);

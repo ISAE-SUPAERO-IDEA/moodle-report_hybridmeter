@@ -35,7 +35,10 @@ use DateTime;
  * HybridMeter configuration manager.
  */
 class configurator {
-    protected $filepath;
+    /**
+     * HybridMeter config
+     * @var config
+     */
     protected $config;
 
 
@@ -48,8 +51,7 @@ class configurator {
     public function __construct() {
         global $CFG;
 
-        $this->filepath = $CFG->dataroot."/hybridmeter/config.json";
-        $this->config = new config($this->filepath);
+        $this->config = new config($CFG->dataroot."/hybridmeter/config.json");
     }
 
     /**

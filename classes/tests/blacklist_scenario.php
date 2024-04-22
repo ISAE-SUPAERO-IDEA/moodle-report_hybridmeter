@@ -53,18 +53,6 @@ class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
 
         $config = configurator::get_instance()->get_config();
         switch($type) {
-            case "savelist_courses" :
-                $name = "courses in savelist";
-                $sqltable = "course";
-                $array = $config->get_save_blacklist_courses();
-                break;
-
-            case "savelist_categories" :
-                $name = "categories in savelist";
-                $sqltable = "course_categories";
-                $array = $config->get_save_blacklist_categories();
-                break;
-
             case "blacklist" :
                 $name = "blacklisted courses";
                 $sqltable = "course";
