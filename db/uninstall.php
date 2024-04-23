@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Uninstall plugin.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -24,6 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/install.php');
 
+/**
+ * Uninstall plugin.
+ * @return void
+ */
 function xmldb_report_hybridmeter_uninstall() {
     rm_dir("/hybridmeter");
     rm_dir("/hybridmetrics");

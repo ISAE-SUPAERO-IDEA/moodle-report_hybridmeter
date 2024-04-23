@@ -25,7 +25,7 @@
 
 require_once("../../../config.php");
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config;
 use report_hybridmeter\data_provider as data_provider;
 use report_hybridmeter\logger as logger;
 
@@ -38,8 +38,8 @@ $context = context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
-$configurator = configurator::get_instance();
 $dataprovider = data_provider::get_instance();
+$config = config::get_instance();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $task  = required_param('task', PARAM_ALPHAEXT);
@@ -48,7 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $type = required_param('type', PARAM_ALPHAEXT);
         $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
         $id = required_param('id', PARAM_INT);
-        $configurator->set_blacklisted($type, $id, $value);
+
+        if ($type == "courses") {
+            $config->set_blacklisted_course($id, $value, true);
+        } else if ($type == "categories") {
+            $config->set_blacklisted_category_subtree($id, $value);
+        } else {
+            throw new Exception("Unknown type param: $type");
+        }
 
         // Debugging feature, set debug value to 1 in configurations to display.
         logger::log("New manage_blacklist post request");

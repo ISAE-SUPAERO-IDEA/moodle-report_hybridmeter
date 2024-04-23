@@ -15,7 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * General data produced by HybridMeter processing.
+ * Report data produced by HybridMeter processing, that comes from the aggregation of the indicators
+ * computed on every course.
  *
  * @author Nassim Bennouar, John Tranier
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -24,13 +25,13 @@
  */
 namespace report_hybridmeter;
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config as config;
 use report_hybridmeter\data_provider as data_provider;
 
 /**
- * General (or aggregated) data produced by HybridMeter processing.
+ * Report data produced by HybridMeter processing.
  */
-class general_data {
+class report_data {
 
     /**
      * @var $begintimestamp : Beginning of the analyzed period.
@@ -54,7 +55,8 @@ class general_data {
 
     /**
      * @var array $digitalisedcourses : List of analysed courses that pass the "digitalized" threshold.
-     */    protected $digitalisedcourses;
+     */
+    protected $digitalisedcourses;
 
     /**
      * @var int Number of students registered on digitalized courses.
@@ -76,20 +78,25 @@ class general_data {
      */
     protected $nbstudentsconcernedusedactive;
 
+    /**
+     * Construct the report based on courses data.
+     * @param $courses
+     * @throws \Exception
+     */
     public function __construct($courses) {
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
         $dataprovider = data_provider::get_instance();
 
-        $this->begintimestamp = $configurator->get_begin_timestamp();
-        $this->endtimestamp = $configurator->get_end_timestamp();
+        $this->begintimestamp = $config->get_begin_date();
+        $this->endtimestamp = $config->get_end_date();
         $this->courses = $courses;
 
         $this->digitalisedcourses = array_values(
             array_filter(
                 $courses,
-                function ($cours) {
-                    return $cours[REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL] >=
-                        configurator::get_instance()->get_data()["digitalisation_treshold"];
+                function ($course) {
+                    return $course[REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL] >=
+                        config::get_instance()->get_digitalisation_treshold();
                 }
             )
         );
@@ -97,9 +104,9 @@ class general_data {
         $this->usedcourses = array_values(
             array_filter(
                 $courses,
-                function ($cours) {
-                    return $cours[REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL] >=
-                        configurator::get_instance()->get_data()["usage_treshold"];
+                function ($course) {
+                    return $course[REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL] >=
+                        config::get_instance()->get_usage_treshold();
                 }
             )
         );
@@ -117,30 +124,46 @@ class general_data {
         $this->nbstudentsconcerneddigitalisedactive =
             $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->digitalisedcourses),
-                $configurator->get_begin_timestamp(),
-                $configurator->get_end_timestamp()
+                $config->get_begin_date(),
+                $config->get_end_date()
             );
 
         $this->nbstudentsconcernedusedactive =
             $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->usedcourses),
-                $configurator->get_begin_timestamp(),
-                $configurator->get_end_timestamp()
+                $config->get_begin_date(),
+                $config->get_end_date()
             );
     }
 
+    /**
+     * Count the number of digitalized courses on the period.
+     * @return int
+     */
     public function getnbcoursedigitalized() {
         return count($this->digitalisedcourses);
     }
 
+    /**
+     * Count the number of used courses on the period.
+     * @return int
+     */
     public function getnbcourseused() {
         return count($this->usedcourses);
     }
 
+    /**
+     * Count the number of analyzed courses.
+     * @return int
+     */
     public function getnbanalyzedcourses() {
         return count($this->courses);
     }
 
+    /**
+     * Represent the report as an associative array.
+     * @return array
+     */
     public function tomap() {
         return [
             REPORT_HYBRIDMETER_GENERAL_DIGITALISED_COURSES => $this->digitalisedcourses,
@@ -157,6 +180,11 @@ class general_data {
         ];
     }
 
+    /**
+     * Get the list of course ids.
+     * @param $courses
+     * @return array|int[]
+     */
     protected function getids($courses) {
         return array_map(
             function ($course) {

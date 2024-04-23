@@ -52,8 +52,6 @@ define("REPORT_HYBRIDMETER_MODULE_NUGGET", "naas");
 
 define("REPORT_HYBRIDMETER_NA", "N/A");
 
-define("REPORT_HYBRIDMETER_NOW", strtotime("now"));
-
 define("REPORT_HYBRIDMETER_ACTIVE_TRESHOLD", 5);
 
 define("REPORT_HYBRIDMETER_DIGITALISATION_TRESHOLD", 2);
@@ -97,11 +95,17 @@ define("REPORT_HYBRIDMETER_GENERAL_END_CAPTURE_DATE", "end_capture_timestamp");
 define("REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES", "nb_analysed_courses");
 
 
+/**
+ * Associate a field to its type (for rendering format).
+ */
 const FIELDS_TYPE = [
     REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL => REPORT_HYBRIDMETER_DOUBLE,
     REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL => REPORT_HYBRIDMETER_DOUBLE,
 ];
 
+/**
+ * Report fields
+ */
 const FIELDS = [
     REPORT_HYBRIDMETER_FIELD_ID_MOODLE,
     REPORT_HYBRIDMETER_FIELD_ID_NUMBER,
@@ -118,6 +122,9 @@ const FIELDS = [
     REPORT_HYBRIDMETER_FIELD_END_DATE,
 ];
 
+/**
+ * Fields displayed label (note: this should be i18ned).
+ */
 const ALIAS = [
     REPORT_HYBRIDMETER_FIELD_ID_NUMBER => 'Identifiant du cours',
     REPORT_HYBRIDMETER_FIELD_CATEGORY_NAME => 'Catégorie',

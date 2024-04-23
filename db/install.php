@@ -15,10 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Install plugin.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
+ */
+
+/**
+ * Create a directory.
+ * @param $dir
+ * @return void
  */
 function make_dir($dir) {
     global $CFG;
@@ -28,12 +35,23 @@ function make_dir($dir) {
     }
 }
 
+/**
+ * Create directory structure for plugin local storage.
+ * @return void
+ * @package report_hybridmeter
+ */
 function make_dirs() {
     make_dir("/hybridmeter");
     make_dir("/hybridmeter/records");
     make_dir("/hybridmeter/records/backup");
 }
 
+/**
+ * Remove a directory and all its content.
+ * @param $dir
+ * @return void
+ * @package report_hybridmeter
+ */
 function rm_dir($dir) {
     global $CFG;
     $path = $CFG->dataroot.$dir;
@@ -43,6 +61,12 @@ function rm_dir($dir) {
     }
 }
 
+/**
+ * Remove a directory and all its content.
+ * @param $path
+ * @return bool
+ * @package report_hybridmeter
+ */
 function rm_dir_rec($path) {
     $files = array_diff(scandir($path), ['.', '..']);
     foreach ($files as $file) {

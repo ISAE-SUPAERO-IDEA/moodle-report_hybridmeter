@@ -25,7 +25,9 @@
 
 require_once(dirname(__FILE__)."/../../../config.php");
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config;
+use report_hybridmeter\output\config_output;
+use report_hybridmeter\task\scheduler;
 
 header('Content-Type: text/json');
 
@@ -36,8 +38,9 @@ $context = \context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
-$configurator = configurator::get_instance();
-$dataprovider = configurator::get_instance();
+$config = config::get_instance();
+$scheduler = scheduler::get_instance();
+
 $output = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -47,38 +50,36 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if ($action == "measurement_period") {
         $begindate = required_param('begin_date', PARAM_INT);
         $enddate = required_param('end_date', PARAM_INT);
-        $configurator->update([
-            "begin_date" => $begindate,
-            "end_date" => $enddate,
-        ]);
+
+        $config->update_period($begindate, $enddate);
     } else if ($action == "schedule") {
         $scheduledtimestamp = required_param('scheduled_timestamp', PARAM_INT);
-        $configurator->schedule_calculation($scheduledtimestamp);
+        $scheduler->schedule_calculation($scheduledtimestamp, $config);
     } else if ($action == "unschedule") {
-        $configurator->unschedule_calculation();
-        $configurator->update_key("debug", $debug);
+        $scheduler->unschedule_calculation($config);
+        $config->set_debug($debug);
     } else if ($action == "additional_config") {
         $studentarchetype = required_param('student_archetype', PARAM_ALPHAEXT);
-        $configurator->update([
-            "student_archetype" => $studentarchetype,
-            "debug" => $debug,
-        ]);
+        $config->update_additionnal_config($studentarchetype, $debug);
     }
 } else if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    $configoutput = new config_output($config);
+
+
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
 
     if ($task == "get_usage_coeffs") {
-        $output = $configurator->get_coeffs_grid("usage_coeffs");
+        $output = $configoutput->get_coeffs_grid("usage_coeffs");
     } else if ($task == "get_digitalisation_coeffs") {
-        $output = $configurator->get_coeffs_grid("digitalisation_coeffs");
+        $output = $configoutput->get_coeffs_grid("digitalisation_coeffs");
     } else if ($task == "get_all_coeffs") {
-        $output = $configurator->get_all_coeffs_rows();
+        $output = $configoutput->get_all_modulenames_rows();
     } else if ($task == "get_seuils") {
-        $output = $configurator->get_treshold_grid();
+        $output = $configoutput->get_treshold_grid();
     } else if ($task == "get_tresholds") {
-        $output = $configurator->get_tresholds_rows();
+        $output = $configoutput->get_tresholds_rows();
     } else {
-        $output = $configurator->get_data();
+        $output = $config;
     }
 } else {
     $output = [
