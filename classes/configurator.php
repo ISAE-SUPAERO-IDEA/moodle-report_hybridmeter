@@ -47,6 +47,9 @@ class configurator {
      */
     protected static $instance = null;
 
+    /**
+     * Initialize the config.
+     */
     public function __construct() {
         global $CFG;
 
@@ -64,20 +67,10 @@ class configurator {
     }
 
     /**
+     * Get the config.
      * @return config
      */
     public function get_config() {
         return $this->config;
-    }
-
-    public function unschedule_calculation() {
-        data_provider::get_instance()->clear_adhoc_tasks();
-        $this->config->unschedule_calculation();
-    }
-
-    public function schedule_calculation($timestamp) {
-        data_provider::get_instance()->clear_adhoc_tasks();
-        $this->config->set_scheduled_date($timestamp);
-        data_provider::get_instance()->schedule_adhoc_task($timestamp);
     }
 }

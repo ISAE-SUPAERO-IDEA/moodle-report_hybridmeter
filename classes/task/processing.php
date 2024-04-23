@@ -23,6 +23,7 @@
 namespace report_hybridmeter\task;
 
 use core\task\adhoc_task;
+use report_hybridmeter\configurator;
 use report_hybridmeter\processing as class_processing;
 
 // Adhoc task that produces hybridmeter's serialized data.
@@ -32,7 +33,9 @@ class processing extends adhoc_task {
     }
 
     public function execute() {
-        \report_hybridmeter\configurator::get_instance()->unschedule_calculation();
+        scheduler::get_instance()->unschedule_calculation(
+            configurator::get_instance()->get_config()
+        );
         class_processing::launch();
     }
 }

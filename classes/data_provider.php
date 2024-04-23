@@ -484,6 +484,7 @@ class data_provider {
      * Schedule an adhoc task at timestamp $timestamp.
      */
     public function schedule_adhoc_task($timestamp) {
+        $this->clear_adhoc_tasks();
         $task = new processing();
         $task->set_next_run_time($timestamp);
         \core\task\manager::queue_adhoc_task($task);

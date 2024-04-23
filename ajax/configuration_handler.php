@@ -27,6 +27,7 @@ require_once(dirname(__FILE__)."/../../../config.php");
 
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\ouput\config_output;
+use report_hybridmeter\task\scheduler;
 
 header('Content-Type: text/json');
 
@@ -38,6 +39,8 @@ $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
 $configurator = configurator::get_instance();
+$scheduler = scheduler::get_instance();
+
 $output = "";
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -52,9 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $config->update_period($begindate, $enddate);
     } else if ($action == "schedule") {
         $scheduledtimestamp = required_param('scheduled_timestamp', PARAM_INT);
-        $configurator->schedule_calculation($scheduledtimestamp);
+        $scheduler->schedule_calculation($scheduledtimestamp, $configurator->get_config());
     } else if ($action == "unschedule") {
-        $configurator->unschedule_calculation();
+        $scheduler->unschedule_calculation($configurator->get_config());
         $configurator->get_config()->set_debug($debug);
     } else if ($action == "additional_config") {
         $studentarchetype = required_param('student_archetype', PARAM_ALPHAEXT);

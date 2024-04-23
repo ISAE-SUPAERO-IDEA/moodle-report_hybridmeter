@@ -31,6 +31,7 @@ require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 
+use report_hybridmeter\task\scheduler;
 use report_hybridmeter\utils as utils;
 use report_hybridmeter\exporter as exporter;
 use report_hybridmeter\configurator as configurator;
@@ -95,6 +96,7 @@ if ($task == 'download') {
 }
 
 $configurator = configurator::get_instance();
+$scheduler = scheduler::get_instance();
 
 if ($task == 'calculate') {
     data_provider::get_instance()->clear_adhoc_tasks();
@@ -119,7 +121,7 @@ $unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
 $isunscheduling = 0;
 
 if ($unschedule == 1) {
-    $configurator->unschedule_calculation();
+    $scheduler->unschedule_calculation($configurator->get_config());
     $isunscheduling = 1;
 }
 
