@@ -25,8 +25,8 @@
 namespace report_hybridmeter;
 
 use report_hybridmeter\utils as utils;
-use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\task\processing as processing;
+use report_hybridmeter\config as config;
 use Exception;
 
 /**
@@ -100,7 +100,7 @@ class data_provider {
 
         utils::precondition_ids($idscourses);
 
-        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         $length = count($idscourses);
 
@@ -141,7 +141,7 @@ class data_provider {
      */
     public function count_registered_students_of_course(int $idcourse): int {
         global $DB;
-        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         $sql = "SELECT count(DISTINCT assign.userid) AS count
                   FROM {context} context
@@ -204,7 +204,7 @@ class data_provider {
     public function count_hits_on_activities_per_type(int $idcourse, int $begintimestamp, int $endtimestamp): array {
         global $DB;
 
-        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM {logstore_standard_log} logs
@@ -390,7 +390,7 @@ class data_provider {
     public function get_whitelisted_courses_ids(): array {
         global $DB;
 
-        $config = configurator::get_instance()->get_config();
+        $config = config::get_instance();
 
         // The course that matches the site is blacklisted by default.
         $blacklistedcourses = [1];
@@ -426,7 +426,7 @@ class data_provider {
     public function filter_living_courses_on_period(array $idscourses, int $begintimestamp, int $endtimestamp): array {
         global $DB;
 
-        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         utils::precondition_ids($idscourses);
 

@@ -22,7 +22,7 @@
  */
 namespace report_hybridmeter\tests;
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config;
 use report_hybridmeter\utils as utils;
 
 abstract class course_count_abstract extends \report_hybridmeter\tests\test_scenario_course {
@@ -34,7 +34,6 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
     public function inclusion() {
         include_once(__DIR__."/../indicators.php");
         include_once(__DIR__."/../data_provider.php");
-        include_once(__DIR__."/../configurator.php");
     }
 
     public function common_tests() {
@@ -45,11 +44,11 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
     abstract public function specific_tests();
 
     protected function test_count_student_single_visitors_on_course() {
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
         $dataprovider = \report_hybridmeter\data_provider::get_instance();
 
-        $begintimestamp = $configurator->get_config()->get_begin_date();
-        $endtimestamp = $configurator->get_config()->get_end_date();
+        $begintimestamp = $config->get_begin_date();
+        $endtimestamp = $config->get_end_date();
 
         echo "<h3>Testing the count_student_single_visitors_on_course function</h3>";
 
@@ -97,10 +96,10 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
 
         echo "<h3>Dump of the first thousand entries in the course logs during the activity period</h3>";
 
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
 
-        $begintimestamp = $configurator->get_config()->get_begin_date();
-        $endtimestamp = $configurator->get_config()->get_end_date();
+        $begintimestamp = $config->get_begin_date();
+        $endtimestamp = $config->get_end_date();
 
         $sql = "SELECT logs.*, role.shortname, role.archetype,
                        role.description, u.username,
@@ -132,12 +131,12 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
 
         echo "<h3>Dump of the first thousand entries in the course logs during the activity period</h3>";
 
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
 
-        $begintimestamp = $configurator->get_config()->get_begin_date();
-        $endtimestamp = $configurator->get_config()->get_end_date();
+        $begintimestamp = $config->get_begin_date();
+        $endtimestamp = $config->get_end_date();
 
-        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
+        $studentarchetype = $config->get_student_archetype();
 
         $sql = "SELECT logs.id,
                     timecreated,
@@ -179,12 +178,12 @@ abstract class course_count_abstract extends \report_hybridmeter\tests\test_scen
 
         echo "<h3>Dump the module activity during the activity period</h3>";
 
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
 
-        $begintimestamp = $configurator->get_config()->get_begin_date();
-        $endtimestamp = $configurator->get_config()->get_end_date();
+        $begintimestamp = $config->get_begin_date();
+        $endtimestamp = $config->get_end_date();
 
-        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
+        $studentarchetype = $config->get_student_archetype();
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM {logstore_standard_log} logs

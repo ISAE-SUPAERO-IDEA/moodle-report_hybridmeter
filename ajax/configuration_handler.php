@@ -25,7 +25,7 @@
 
 require_once(dirname(__FILE__)."/../../../config.php");
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config;
 use report_hybridmeter\ouput\config_output;
 use report_hybridmeter\task\scheduler;
 
@@ -38,7 +38,7 @@ $context = \context_system::instance();
 $PAGE->set_context($context);
 has_capability('report/hybridmeter:all', $context) || die();
 
-$configurator = configurator::get_instance();
+$config = config::get_instance();
 $scheduler = scheduler::get_instance();
 
 $output = "";
@@ -51,21 +51,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $begindate = required_param('begin_date', PARAM_INT);
         $enddate = required_param('end_date', PARAM_INT);
 
-        $config = $configurator->get_config();
         $config->update_period($begindate, $enddate);
     } else if ($action == "schedule") {
         $scheduledtimestamp = required_param('scheduled_timestamp', PARAM_INT);
-        $scheduler->schedule_calculation($scheduledtimestamp, $configurator->get_config());
+        $scheduler->schedule_calculation($scheduledtimestamp, $config);
     } else if ($action == "unschedule") {
-        $scheduler->unschedule_calculation($configurator->get_config());
-        $configurator->get_config()->set_debug($debug);
+        $scheduler->unschedule_calculation($config);
+        $config->set_debug($debug);
     } else if ($action == "additional_config") {
         $studentarchetype = required_param('student_archetype', PARAM_ALPHAEXT);
-        $config = $configurator->get_config();
         $config->update_additionnal_config($studentarchetype, $debug);
     }
 } else if ($_SERVER['REQUEST_METHOD'] == "GET") {
-    $configoutput = new config_output($configurator->get_config());
+    $configoutput = new config_output($config);
 
 
     $task  = optional_param('task', 'nothing', PARAM_ALPHAEXT);
@@ -81,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     } else if ($task == "get_tresholds") {
         $output = $configoutput->get_tresholds_rows();
     } else {
-        $output = $configurator->get_config();
+        $output = $config;
     }
 } else {
     $output = [

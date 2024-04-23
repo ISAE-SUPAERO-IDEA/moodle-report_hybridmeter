@@ -37,11 +37,11 @@ class cron_scheduler extends scheduled_task {
 
     }
     public function execute() {
-        $configurator = \report_hybridmeter\configurator::get_instance();
-        $autoscheduler = $configurator->get_config()->get_autoscheduler();
+        $config = \report_hybridmeter\config::get_instance();
+        $autoscheduler = $config->get_autoscheduler();
         $scheduler = scheduler::get_instance();
 
-        if ($autoscheduler != "none" && !$configurator->get_config()->get_has_scheduled_calculation()) {
+        if ($autoscheduler != "none" && !$config->get_has_scheduled_calculation()) {
             $now = new \DateTime('now');
             $configured = false;
             $month = $now->format("n");
@@ -64,7 +64,6 @@ class cron_scheduler extends scheduled_task {
                 $configured = true;
             }
             if ($configured) {
-                $config = $configurator->get_config();
                 $config->update_period($begin, $end - 1);
                 $scheduler->schedule_calculation($end, $config);
             }

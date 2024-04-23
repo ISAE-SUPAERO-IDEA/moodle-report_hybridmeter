@@ -52,15 +52,15 @@ class processing {
         $startcomputationdate->setTimestamp(strtotime("now"));
 
         $dataprovider = data_provider::get_instance();
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
 
         $whitelistids = $dataprovider->get_whitelisted_courses_ids();
         logger::log("Whitelisted course ids: ".implode(", ", $whitelistids));
 
         $courses = $dataprovider->filter_living_courses_on_period(
             $whitelistids,
-            $configurator->get_config()->get_begin_date(),
-            $configurator->get_config()->get_end_date(),
+            $config->get_begin_date(),
+            $config->get_end_date(),
         );
         $courseids = array_map(
             function ($course) {
@@ -71,9 +71,9 @@ class processing {
         logger::log("Active course ids: ".implode(", ", $courseids));
         logger::log("# Processing: blacklist computation");
 
-        $configurator = configurator::get_instance();
-        $configurator->get_config()->set_running($startcomputationdate->getTimestamp());
-        $configurator->get_config()->update_blacklisted_data();
+        $config = config::get_instance();
+        $config->set_running($startcomputationdate->getTimestamp());
+        $config->update_blacklisted_data();
 
         // Calculation of detailed indicators.
         logger::log("# Processing: course indicators computation");
@@ -87,11 +87,11 @@ class processing {
         );
 
         $begindate = new DateTime();
-        $begindate->setTimestamp($configurator->get_config()->get_begin_date());
+        $begindate->setTimestamp($config->get_begin_date());
         $begindate = $begindate->format('d/m/Y');
 
         $enddate = new DateTime();
-        $enddate->setTimestamp($configurator->get_config()->get_end_date());
+        $enddate->setTimestamp($config->get_end_date());
         $enddate = $enddate->format('d/m/Y');
 
         foreach ($processeddata as $coursedata) {
@@ -148,7 +148,7 @@ class processing {
          */
 
         // Log and task management.
-        $configurator->get_config()->set_running(REPORT_HYBRIDMETER_NON_RUNNING);
+        $config->set_running(REPORT_HYBRIDMETER_NON_RUNNING);
         logger::log("# Processing: done");
 
         return $dataout;

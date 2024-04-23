@@ -63,13 +63,11 @@ class indicators {
      */
     public static function usage_level($courseid): float {
         $dataprovider = data_provider::get_instance();
-        $configurator = configurator::get_instance();
-        $indicator = 0;
-        $total = 0;
+        $config = config::get_instance();
         $activitydata = $dataprovider->count_hits_on_activities_per_type(
             $courseid,
-            $configurator->get_config()->get_begin_date(),
-            $configurator->get_config()->get_end_date(),
+            $config->get_begin_date(),
+            $config->get_end_date(),
         );
         return self::hybridation_calculus("usage_coeffs", $activitydata);
     }
@@ -80,16 +78,16 @@ class indicators {
      * @return int 1 if the course has been used ; 0 otherwise.
      */
     public static function is_course_active_on_period($courseid): int {
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
         $dataprovider = data_provider::get_instance();
 
         $count = $dataprovider->count_student_single_visitors_on_courses(
             [$courseid],
-            $configurator->get_config()->get_begin_date(),
-            $configurator->get_config()->get_end_date(),
+            $config->get_begin_date(),
+            $config->get_end_date(),
         );
 
-        if ($count >= $configurator->get_config()->get_active_treshold()) {
+        if ($count >= $config->get_active_treshold()) {
             return 1;
         } else {
             return 0;
@@ -102,11 +100,11 @@ class indicators {
      * @return int
      */
     public static function active_students($courseid): int {
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
         return data_provider::get_instance()->count_student_single_visitors_on_courses(
             [$courseid],
-            $configurator->get_config()->get_begin_date(),
-            $configurator->get_config()->get_end_date(),
+            $config->get_begin_date(),
+            $config->get_end_date(),
         );
     }
 
@@ -142,7 +140,7 @@ class indicators {
         $sigmapkvk = 0; // Sum of activity weight multiplied by their hybridisation value.
         $m = 1; // Malus.
         foreach ($activitydata as $k => $nk) {
-            $vk = configurator::get_instance()->get_config()->get_coeff($type, $k); // Activity hybridisation value.
+            $vk = config::get_instance()->get_coeff($type, $k); // Activity hybridisation value.
 
             if ($nk > 0 && $vk > 0) {
                 $c ++;

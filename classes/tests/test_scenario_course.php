@@ -37,9 +37,9 @@ abstract class test_scenario_course extends test_scenario {
     abstract public function specific_tests();
 
     protected function test_timestamps() {
-        $configurator = \report_hybridmeter\configurator::get_instance();
-        $begintimestamp = $configurator->get_config()->get_begin_date();
-        $endtimestamp = $configurator->get_config()->get_end_date();
+        $config = \report_hybridmeter\config::get_instance();
+        $begintimestamp = $config ->get_begin_date();
+        $endtimestamp = $config ->get_end_date();
 
         echo "<h3>Checking the consistency of timestamps</h3>";
 

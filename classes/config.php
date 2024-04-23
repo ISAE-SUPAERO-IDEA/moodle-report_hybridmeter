@@ -36,6 +36,12 @@ require_once(__DIR__."/../constants.php");
 class config {
 
     /**
+     * Singleton instance.
+     * @var config
+     */
+    private static $instance;
+
+    /**
      * Filepath of the config file.
      * @var string
      */
@@ -134,10 +140,11 @@ class config {
 
     /**
      * Create the config loading the config if it exists.
-     * @param $filepath
      */
-    public function __construct($filepath) {
-        $this->filepath = $filepath;
+    public function __construct() {
+        global $CFG;
+
+        $this->filepath = $CFG->dataroot."/hybridmeter/config.json";
 
         $this->begin_date = strtotime("-1 months");
         $this->end_date = strtotime("now");
@@ -163,6 +170,17 @@ class config {
         }
 
         $this->save();
+    }
+
+    /**
+     * Get the singleton instance.
+     * @return config
+     */
+    public static function get_instance() {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     /**
@@ -228,6 +246,16 @@ class config {
      */
     public function is_debug(): bool {
         return $this->debug;
+    }
+
+    /**
+     * Set the debug mode and save the config.
+     * @param bool $debug
+     * @return void
+     */
+    public function set_debug(bool $debug) {
+       $this->debug = $debug;
+       $this->save();
     }
 
     /**

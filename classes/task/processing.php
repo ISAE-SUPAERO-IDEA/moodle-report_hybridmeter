@@ -23,6 +23,7 @@
 namespace report_hybridmeter\task;
 
 use core\task\adhoc_task;
+use report_hybridmeter\config;
 use report_hybridmeter\configurator;
 use report_hybridmeter\processing as class_processing;
 
@@ -33,9 +34,7 @@ class processing extends adhoc_task {
     }
 
     public function execute() {
-        scheduler::get_instance()->unschedule_calculation(
-            configurator::get_instance()->get_config()
-        );
+        scheduler::get_instance()->unschedule_calculation(config::get_instance());
         class_processing::launch();
     }
 }

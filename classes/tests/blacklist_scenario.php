@@ -23,7 +23,7 @@
 namespace report_hybridmeter\tests;
 
 use Exception;
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config;
 use report_hybridmeter\utils as utils;
 
 class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
@@ -32,7 +32,6 @@ class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
     }
 
     public function inclusion() {
-        include_once(__DIR__."/../configurator.php");
         include_once(__DIR__."/../data_provider.php");
     }
 
@@ -51,7 +50,7 @@ class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
     protected function dump_config_blacklist(string $type="blacklist") {
         global $DB;
 
-        $config = configurator::get_instance()->get_config();
+        $config = config::get_instance();
         switch($type) {
             case "blacklist" :
                 $name = "blacklisted courses";
@@ -99,7 +98,7 @@ class blacklist_scenario extends \report_hybridmeter\tests\test_scenario {
         echo "<h3>Dump of courses that received activity in the current period</h3>";
         global $DB;
 
-        $studentarchetype = configurator::get_instance()->get_config()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         $sql = "SELECT DISTINCT course.id AS id, course.idnumber AS idnumber, course.fullname AS fullname,
                                 category.id AS category_id, category.name AS category_name

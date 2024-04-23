@@ -24,14 +24,13 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/install.php');
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config;
 
 function xmldb_report_hybridmeter_upgrade($oldversion) {
     make_dirs();
 
     if ($oldversion < 2022020103) {
-        $configurator = configurator::get_instance();
-        $config = $configurator->get_config();
+        $config = config::get_instance();
         $config->update_coeffs(
             REPORT_HYBRIDMETER_USAGE_COEFFS,
             REPORT_HYBRIDMETER_DIGITALISATION_COEFFS
@@ -45,8 +44,7 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022092303) {
-        $configurator = configurator::get_instance();
-        $configurator->get_config()->update_blacklisted_data();
+        config::get_instance()->update_blacklisted_data();
         upgrade_plugin_savepoint(true, 2022092303, 'report', 'hybridmeter');
     }
 

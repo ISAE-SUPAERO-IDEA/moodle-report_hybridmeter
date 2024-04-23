@@ -25,7 +25,7 @@
  */
 namespace report_hybridmeter;
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config as config;
 use report_hybridmeter\data_provider as data_provider;
 
 /**
@@ -84,11 +84,11 @@ class report_data {
      * @throws \Exception
      */
     public function __construct($courses) {
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
         $dataprovider = data_provider::get_instance();
 
-        $this->begintimestamp = $configurator->get_config()->get_begin_date();
-        $this->endtimestamp = $configurator->get_config()->get_end_date();
+        $this->begintimestamp = $config->get_begin_date();
+        $this->endtimestamp = $config->get_end_date();
         $this->courses = $courses;
 
         $this->digitalisedcourses = array_values(
@@ -96,7 +96,7 @@ class report_data {
                 $courses,
                 function ($course) {
                     return $course[REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL] >=
-                        configurator::get_instance()->get_config()->get_digitalisation_treshold();
+                        config::get_instance()->get_digitalisation_treshold();
                 }
             )
         );
@@ -106,7 +106,7 @@ class report_data {
                 $courses,
                 function ($course) {
                     return $course[REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL] >=
-                        configurator::get_instance()->get_config()->get_usage_treshold();
+                        config::get_instance()->get_usage_treshold();
                 }
             )
         );
@@ -124,15 +124,15 @@ class report_data {
         $this->nbstudentsconcerneddigitalisedactive =
             $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->digitalisedcourses),
-                $configurator->get_config()->get_begin_date(),
-                $configurator->get_config()->get_end_date()
+                $config->get_begin_date(),
+                $config->get_end_date()
             );
 
         $this->nbstudentsconcernedusedactive =
             $dataprovider->count_student_single_visitors_on_courses(
                 $this->getIds($this->usedcourses),
-                $configurator->get_config()->get_begin_date(),
-                $configurator->get_config()->get_end_date()
+                $config->get_begin_date(),
+                $config->get_end_date()
             );
     }
 

@@ -40,7 +40,6 @@ abstract class indicator_abstract extends \report_hybridmeter\tests\test_scenari
     public function inclusion() {
         include_once(__DIR__."/../data_provider.php");
         include_once(__DIR__."/../processing.php");
-        include_once(__DIR__."/../configurator.php");
         include_once(__DIR__."/../exporter.php");
         include_once(__DIR__."/../indicators.php");
         include_once(__DIR__."/../../constants.php");
@@ -102,7 +101,7 @@ abstract class indicator_abstract extends \report_hybridmeter\tests\test_scenari
 
     protected function test_coeffs() {
         echo "<h3>Coefficients checking</h3>";
-        $config_output = new config_output(\report_hybridmeter\configurator::get_instance()->get_config());
+        $config_output = new config_output(\report_hybridmeter\config::get_instance());
 
         switch($this->indicator) {
             case "nu" :

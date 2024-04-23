@@ -71,7 +71,7 @@ abstract class test_scenario {
 
         echo "<p>This is the student archetype defined in the settings:</p>";
 
-        var_dump(\report_hybridmeter\configurator::get_instance()->get_config()->get_student_archetype());
+        var_dump(\report_hybridmeter\config::get_instance()->get_student_archetype());
 
         echo "<p>The following roles are available on the moodle server: </p>";
 

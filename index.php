@@ -31,10 +31,10 @@ require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 
+use report_hybridmeter\config;
 use report_hybridmeter\task\scheduler;
 use report_hybridmeter\utils as utils;
 use report_hybridmeter\exporter as exporter;
-use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\data_provider as data_provider;
 use report_hybridmeter\task\processing as processing;
 
@@ -95,7 +95,7 @@ if ($task == 'download') {
     $exporter->download_file();
 }
 
-$configurator = configurator::get_instance();
+$config = config::get_instance();
 $scheduler = scheduler::get_instance();
 
 if ($task == 'calculate') {
@@ -121,7 +121,7 @@ $unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
 $isunscheduling = 0;
 
 if ($unschedule == 1) {
-    $scheduler->unschedule_calculation($configurator->get_config());
+    $scheduler->unschedule_calculation($config);
     $isunscheduling = 1;
 }
 
@@ -130,22 +130,22 @@ echo $output->heading($pagetitle);
 echo $output->general_indicators(
     $dataavailable,
     $generaldata,
-    $configurator->get_config()->get_begin_date(),
-    $configurator->get_config()->get_end_date(),
+    $config->get_begin_date(),
+    $config->get_end_date(),
     $formatteddate,
     $intervalformat
 );
 
 echo $output->next_schedule(
-    $configurator->get_config()->get_has_scheduled_calculation(),
-    $configurator->get_config()->get_scheduled_date(),
+    $config->get_has_scheduled_calculation(),
+    $config->get_scheduled_date(),
     $isunscheduling
 );
 echo $output->index_links($dataavailable);
 
 if ($debug != 0) {
     $countadhoc = data_provider::get_instance()->count_adhoc_tasks();
-    $isrunning = $configurator->get_config()->is_running();
+    $isrunning = $config->is_running();
     echo $output->is_task_planned($countadhoc, $isrunning);
     echo $output->last_calculation($dataavailable, $formatteddate, $intervalformat);
 }
