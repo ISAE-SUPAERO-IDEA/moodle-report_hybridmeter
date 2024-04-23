@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Provide data that required to compute HybridMeter indicators.
+ *
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -23,17 +25,25 @@
 namespace report_hybridmeter;
 
 use report_hybridmeter\utils as utils;
-use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\task\processing as processing;
+use report_hybridmeter\config as config;
 use Exception;
 
+/**
+ * Provide data that will serve as a basis to compute indicators.
+ */
 class data_provider {
 
+    /**
+     * Singleton instance.
+     * @var data_provider
+     */
     protected static $instance = null;
 
-    public function __construct() {
-    }
-
+    /**
+     * Get the singleton instance.
+     * @return data_provider
+     */
     public static function get_instance() {
         if (self::$instance == null) {
             self::$instance = new data_provider();
@@ -42,7 +52,11 @@ class data_provider {
         return self::$instance;
     }
 
-    /* Indicator functions */
+    /**
+     * Count the number of activities per type in a course.
+     * @param int $idcourse
+     * @return array
+     */
     public function count_activities_per_type_of_course(int $idcourse): array {
         global $DB;
         $output = [];
@@ -78,41 +92,15 @@ class data_provider {
         return $output;
     }
 
-    public function count_student_visits_on_course(int $idcourse, int $begintimestamp, int $endtimestamp): int {
-        global $DB;
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
-
-        $sql = "SELECT count(DISTINCT logs.id) AS count
-                  FROM {logstore_standard_log} logs
-                  JOIN {role_assignments} assign ON logs.userid = assign.userid
-                  JOIN {role} role ON assign.roleid = role.id
-                 WHERE role.archetype = :archetype
-                       AND logs.eventname like '%course_viewed'
-                       AND logs.courseid = :courseid
-                       AND logs.contextlevel= :contextcourse
-                       AND timecreated BETWEEN :begintimestamp AND :endtimestamp";
-
-        $parameters = [
-            'archetype' => $studentarchetype,
-            'courseid' => $idcourse,
-            'instanceid' => $idcourse,
-            'contextcourse' => CONTEXT_COURSE,
-            'begintimestamp' => $begintimestamp,
-            'endtimestamp' => $endtimestamp,
-        ];
-
-        $record = $DB->get_record_sql($sql, $parameters);
-
-        return $record->count;
-    }
-
-    // Counts the number of unique users according to the course and the period chosen.
+    /**
+     * Counts the number of unique users according to the course and the period chosen.
+     */
     public function count_student_single_visitors_on_courses(array $idscourses, int $begintimestamp, int $endtimestamp): int {
         global $DB;
 
         utils::precondition_ids($idscourses);
 
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         $length = count($idscourses);
 
@@ -148,10 +136,12 @@ class data_provider {
         return $record->count;
     }
 
-    // Return the number of registrants in the ID course $id_course according to the assignment table.
+    /**
+     * Return the number of registrants in the ID course $id_course according to the assignment table.
+     */
     public function count_registered_students_of_course(int $idcourse): int {
         global $DB;
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         $sql = "SELECT count(DISTINCT assign.userid) AS count
                   FROM {context} context
@@ -172,7 +162,9 @@ class data_provider {
         return $record->count;
     }
 
-    // Return the distinct number of students enrolled in at least one course whose ID is an element of the $ids_courses list.
+    /**
+     * Return the distinct number of students enrolled in at least one course whose ID is an element of the $ids_courses list.
+     */
     public function count_distinct_registered_students_of_courses(array $idscourses): int {
         global $DB;
 
@@ -205,13 +197,14 @@ class data_provider {
         return $record->count;
     }
 
-    /* Counts the number of clicks on activities in the $id_course ID space
+    /**
+     * Counts the number of clicks on activities in the $id_course ID space
      * by activity type and over the period from $begin_timestamp to $end_timestamp
      */
     public function count_hits_on_activities_per_type(int $idcourse, int $begintimestamp, int $endtimestamp): array {
         global $DB;
 
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM {logstore_standard_log} logs
@@ -243,9 +236,9 @@ class data_provider {
     }
 
 
-    /*Course retrieval function*/
-
-    // Returns the courses of a category in the order chosen in the moodle settings.
+    /**
+     * Returns the courses of a category in the order chosen in the moodle settings.
+     */
     public function get_children_courses_ordered(int $idcategory): array {
         global $DB;
 
@@ -266,7 +259,9 @@ class data_provider {
         return $output;
     }
 
-    // Returns the sub-categories of a category in the order chosen in the moodle settings.
+    /**
+     * Returns the sub-categories of a category in the order chosen in the moodle settings.
+     */
     public function get_children_categories_ordered(int $idcategory): array {
         global $DB;
 
@@ -287,6 +282,11 @@ class data_provider {
         return $output;
     }
 
+    /**
+     * Get the children courses ids of a specific parent category.
+     * @param int $idcategory
+     * @return array
+     */
     public function get_children_courses_ids(int $idcategory): array {
         global $DB;
 
@@ -300,6 +300,11 @@ class data_provider {
         );
     }
 
+    /**
+     * Get the children categories IDs of a specific parent category.
+     * @param int $idcategory
+     * @return array
+     */
     public function get_children_categories_ids(int $idcategory): array {
         global $DB;
 
@@ -313,6 +318,10 @@ class data_provider {
         );
     }
 
+    /**
+     * Retrieve the courses tree.
+     * @return array
+     */
     public function get_courses_tree(): array {
         global $DB;
 
@@ -321,6 +330,12 @@ class data_provider {
         return $this->get_courses_tree_rec($lowestparent, true);
     }
 
+    /**
+     * Retrieve the courses subtree rooted by "idcategory".
+     * @param int $idcategory
+     * @param bool $root
+     * @return array
+     */
     public function get_courses_tree_rec(int $idcategory, bool $root = false): array {
         global $DB;
 
@@ -343,12 +358,20 @@ class data_provider {
         return $catdata;
     }
 
-    // Returns the full path of the category $id_category.
+    /**
+     * Returns the full path of the category $id_category.
+     */
     public function get_category_path(int $idcategory): string {
         return $this->get_category_path_rec($idcategory, "");
     }
 
 
+    /**
+     * Get recursively all the ancestors of a category
+     * @param int $idcategory
+     * @param string $output
+     * @return string
+     */
     protected function get_category_path_rec(int $idcategory, string $output): string {
         global $DB;
 
@@ -361,16 +384,17 @@ class data_provider {
         }
     }
 
-    // Returns the ids of the visible active non-blacklisted courses in an array.
+    /**
+     * Returns the ids of the visible active non-blacklisted courses in an array.
+     */
     public function get_whitelisted_courses_ids(): array {
         global $DB;
 
-        $config = configurator::get_instance();
-        $data = $config->get_data();
+        $config = config::get_instance();
 
         // The course that matches the site is blacklisted by default.
         $blacklistedcourses = [1];
-        foreach ($data["blacklisted_courses"] as $courseid => $value) {
+        foreach ($config->get_blacklisted_courses() as $courseid => $value) {
             if ($value == 1) {
                 $blacklistedcourses[] = $courseid;
             }
@@ -394,14 +418,15 @@ class data_provider {
         return $output;
     }
 
-    /* Returns in an array of objects the id, idnumber, full name and class name of the courses
+    /**
+     * Returns in an array of objects the id, idnumber, full name and class name of the courses
      * whose id is an element of the $ids array and which have been visited by at least one learner
      * during the period from timestamp $begin_date to timestamp $end_date.
      */
     public function filter_living_courses_on_period(array $idscourses, int $begintimestamp, int $endtimestamp): array {
         global $DB;
 
-        $studentarchetype = configurator::get_instance()->get_student_archetype();
+        $studentarchetype = config::get_instance()->get_student_archetype();
 
         utils::precondition_ids($idscourses);
 
@@ -409,8 +434,11 @@ class data_provider {
             return [];
         }
 
-        $sql = "SELECT DISTINCT course.id AS id, course.idnumber AS idnumber, course.fullname AS fullname,
-                       category.id AS category_id, category.name AS category_name
+        $sql = "SELECT DISTINCT course.id AS id,
+                                course.idnumber AS idnumber,
+                                course.fullname AS fullname,
+                                category.id AS category_id,
+                                category.name AS category_name
                   FROM {course} course
                   JOIN {logstore_standard_log} logs ON course.id = logs.courseid
                   JOIN {role_assignments} assign ON logs.userid = assign.userid
@@ -436,38 +464,27 @@ class data_provider {
         return $records;
     }
 
-    /* Adhoc task management */
-
-    // Counts the number of adhoc tasks.
+    /**
+     * Counts the number of adhoc tasks.
+     */
     public function count_adhoc_tasks(): int {
         global $DB;
         return $DB->count_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
 
-    // Unschedule all ahdoc tasks.
+    /**
+     * Unschedule all ahdoc tasks.
+     */
     public function clear_adhoc_tasks() {
         global $DB;
         return $DB->delete_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
 
-    public function get_adhoc_tasks_list(): array {
-        global $DB;
-
-        return array_values(
-            array_map(
-                function($task) {
-                    return [
-                        'id' => intval($task->id),
-                        'nextruntime' => $task->nextruntime,
-                    ];
-                },
-                $DB->get_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing'])
-            )
-        );
-    }
-
-    // Schedule an adhoc task at timestamp $timestamp.
+    /**
+     * Schedule an adhoc task at timestamp $timestamp.
+     */
     public function schedule_adhoc_task($timestamp) {
+        $this->clear_adhoc_tasks();
         $task = new processing();
         $task->set_next_run_time($timestamp);
         \core\task\manager::queue_adhoc_task($task);

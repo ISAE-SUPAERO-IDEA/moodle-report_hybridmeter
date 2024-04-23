@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Upgrade plugin.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -24,19 +25,22 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/install.php');
 
-use report_hybridmeter\configurator as configurator;
+use report_hybridmeter\config;
 
+/**
+ * Upgrade plugin.
+ * @param $oldversion
+ * @return true
+ */
 function xmldb_report_hybridmeter_upgrade($oldversion) {
     make_dirs();
 
     if ($oldversion < 2022020103) {
-        $configurator = configurator::get_instance();
-        $configurator->unset_key("digitalisation_coeffs");
-        $configurator->unset_key("usage_coeffs");
-
-        $configurator->update_coeffs("usage_coeffs", REPORT_HYBRIDMETER_USAGE_COEFFS);
-        $configurator->update_coeffs("digitalisation_coeffs", REPORT_HYBRIDMETER_DIGITALISATION_COEFFS);
-
+        $config = config::get_instance();
+        $config->update_coeffs(
+            REPORT_HYBRIDMETER_USAGE_COEFFS,
+            REPORT_HYBRIDMETER_DIGITALISATION_COEFFS
+        );
         upgrade_plugin_savepoint(true, 2022020103, 'report', 'hybridmeter');
     }
 
@@ -46,8 +50,7 @@ function xmldb_report_hybridmeter_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022092303) {
-        $configurator = configurator::get_instance();
-        $configurator->update_blacklisted_data();
+        config::get_instance()->update_blacklisted_data();
         upgrade_plugin_savepoint(true, 2022092303, 'report', 'hybridmeter');
     }
 

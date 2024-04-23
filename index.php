@@ -25,17 +25,18 @@
  */
 
 require(dirname(__FILE__).'/../../config.php');
-require_once(dirname(__FILE__).'/output/renderer.php');
 require_once(dirname(__FILE__).'/constants.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 require_login();
 
+use report_hybridmeter\config;
+use report_hybridmeter\task\scheduler;
 use report_hybridmeter\utils as utils;
 use report_hybridmeter\exporter as exporter;
-use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\data_provider as data_provider;
 use report_hybridmeter\task\processing as processing;
+use report_hybridmeter\output\renderer;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -94,7 +95,8 @@ if ($task == 'download') {
     $exporter->download_file();
 }
 
-$configurator = configurator::get_instance();
+$config = config::get_instance();
+$scheduler = scheduler::get_instance();
 
 if ($task == 'calculate') {
     data_provider::get_instance()->clear_adhoc_tasks();
@@ -119,7 +121,7 @@ $unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
 $isunscheduling = 0;
 
 if ($unschedule == 1) {
-    $configurator->unschedule_calculation();
+    $scheduler->unschedule_calculation($config);
     $isunscheduling = 1;
 }
 
@@ -128,22 +130,22 @@ echo $output->heading($pagetitle);
 echo $output->general_indicators(
     $dataavailable,
     $generaldata,
-    $configurator->get_begin_timestamp(),
-    $configurator->get_end_timestamp(),
+    $config->get_begin_date(),
+    $config->get_end_date(),
     $formatteddate,
     $intervalformat
 );
 
 echo $output->next_schedule(
-    $configurator->has_scheduled_calculation(),
-    $configurator->get_scheduled_date(),
+    $config->get_has_scheduled_calculation(),
+    $config->get_scheduled_date(),
     $isunscheduling
 );
 echo $output->index_links($dataavailable);
 
 if ($debug != 0) {
     $countadhoc = data_provider::get_instance()->count_adhoc_tasks();
-    $isrunning = $configurator->get_running();
+    $isrunning = $config->is_running();
     echo $output->is_task_planned($countadhoc, $isrunning);
     echo $output->last_calculation($dataavailable, $formatteddate, $intervalformat);
 }

@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Adhoc test page.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -23,11 +24,10 @@
 
 require(dirname(__FILE__) . '/../../../config.php');
 
+use report_hybridmeter\tests\blacklist_scenario as blacklist_scenario;
+use report_hybridmeter\tests\course_count\inconsistent_registered_active_students as inconsistent_registered_active_students;
 use report_hybridmeter\tests\ND\inconsistent_nd as inconsistent_nd;
 use report_hybridmeter\tests\NU\inconsistent_nu as inconsistent_nu;
-use report_hybridmeter\tests\course_count\inconsistent_registered_active_students
-    as inconsistent_registered_active_students;
-use report_hybridmeter\tests\blacklist_scenario as blacklist_scenario;
 
 require_login();
 $context = context_system::instance();
@@ -67,6 +67,6 @@ switch ($task) {
         break;
 }
 
-\report_hybridmeter\test_context::launch_batch($testsset);
+\report_hybridmeter\tests\test_context::launch_batch($testsset);
 
 echo $backlink;

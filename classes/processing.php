@@ -31,7 +31,7 @@ require_once(__DIR__.'/../constants.php');
 use DateTime;
 use report_hybridmeter\configurator as configurator;
 use report_hybridmeter\data_provider as data_provider;
-use report_hybridmeter\general_data as general_data;
+use report_hybridmeter\report_data as general_data;
 use report_hybridmeter\logger as logger;
 
 /**
@@ -48,18 +48,19 @@ class processing {
         global $CFG;
 
         logger::log("# Processing: initializing");
-        $timestamp = REPORT_HYBRIDMETER_NOW;
+        $startcomputationdate = new DateTime();
+        $startcomputationdate->setTimestamp(strtotime("now"));
 
         $dataprovider = data_provider::get_instance();
-        $configurator = configurator::get_instance();
+        $config = config::get_instance();
 
         $whitelistids = $dataprovider->get_whitelisted_courses_ids();
         logger::log("Whitelisted course ids: ".implode(", ", $whitelistids));
 
         $courses = $dataprovider->filter_living_courses_on_period(
             $whitelistids,
-            $configurator->get_begin_timestamp(),
-            $configurator->get_end_timestamp()
+            $config->get_begin_date(),
+            $config->get_end_date(),
         );
         $courseids = array_map(
             function ($course) {
@@ -68,36 +69,29 @@ class processing {
             $courses
         );
         logger::log("Active course ids: ".implode(", ", $courseids));
-
-        $begin_date = new DateTime();
-        $begin_date->setTimestamp($timestamp);
-
-        $end_date = new DateTime();
-
         logger::log("# Processing: blacklist computation");
 
-        $configurator = configurator::get_instance();
-        $configurator->set_as_running($begin_date);
-        $configurator->update_blacklisted_data();
+        $config = config::get_instance();
+        $config->set_running($startcomputationdate->getTimestamp());
+        $config->update_blacklisted_data();
 
         // Calculation of detailed indicators.
         logger::log("# Processing: course indicators computation");
 
+        $categoriespathcache = [];
         $processeddata = array_map(
-            function ($course) {
-                global $CFG;
-                return new course_data($course, $CFG->wwwroot);
+            function ($course) use ($CFG, &$categoriespathcache) {
+                return new course_data($course, $CFG->wwwroot, $categoriespathcache);
             },
             $courses
         );
 
         $begindate = new DateTime();
-        $begindate->setTimestamp($configurator->get_begin_timestamp());
+        $begindate->setTimestamp($config->get_begin_date());
         $begindate = $begindate->format('d/m/Y');
 
-
         $enddate = new DateTime();
-        $enddate->setTimestamp($configurator->get_end_timestamp());
+        $enddate->setTimestamp($config->get_end_date());
         $enddate = $enddate->format('d/m/Y');
 
         foreach ($processeddata as $coursedata) {
@@ -116,18 +110,19 @@ class processing {
         // Calculation of general indicators.
         logger::log("# Processing: global indicators computation");
 
-        $generaldata = new general_data($dataout);
+        $generaldata = new report_data($dataout);
 
         // Data exportation.
         logger::log("# Processing: serializing results");
 
-        $end_date->setTimestamp(strtotime("now"));
+        $endcomputationdate = new DateTime();
+        $endcomputationdate->setTimestamp(strtotime("now"));
 
-        $interval = $end_date->getTimestamp() - $begin_date->getTimestamp();
+        $interval = $endcomputationdate->getTimestamp() - $startcomputationdate->getTimestamp();
 
         $time = [
-            "begin_timestamp" => $begin_date->getTimestamp(),
-            "end_timestamp" => $end_date->getTimestamp(),
+            "begin_timestamp" => $startcomputationdate->getTimestamp(),
+            "end_timestamp" => $endcomputationdate->getTimestamp(),
             "diff" => $interval,
         ];
 
@@ -153,7 +148,7 @@ class processing {
          */
 
         // Log and task management.
-        $configurator->unset_as_running();
+        $config->set_running(REPORT_HYBRIDMETER_NON_RUNNING);
         logger::log("# Processing: done");
 
         return $dataout;

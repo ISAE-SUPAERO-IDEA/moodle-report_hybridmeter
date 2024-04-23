@@ -25,12 +25,11 @@ namespace report_hybridmeter\output;
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once(dirname(__FILE__) . '/../constants.php');
-
-use plugin_renderer_base;
+require_once(__DIR__.'/../../constants.php');
+use DateTime;
 use html_writer;
 use moodle_url;
-use DateTime;
+use plugin_renderer_base;
 
 class renderer extends plugin_renderer_base {
 
