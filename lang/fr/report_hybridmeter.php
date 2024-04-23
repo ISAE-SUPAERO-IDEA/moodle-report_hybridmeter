@@ -29,6 +29,7 @@ $string['pluginname'] = "HybridMeter";
 $string["hybridmeter_settings"] = "Paramètres hybridmeter";
 $string["hybridmeter_settings_help"] = "Il n'y a pas de paramètres pour le plugin hybridmeter";
 
+// Dans index.php ou renderer.php.
 $string['download_csv'] = "Télécharger le compte rendu";
 $string['config'] = "Configuration";
 $string['blacklistmanagement'] = "Configuration";

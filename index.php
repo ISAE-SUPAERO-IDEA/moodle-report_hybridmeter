@@ -25,6 +25,7 @@
  */
 
 require(dirname(__FILE__).'/../../config.php');
+require_once(dirname(__FILE__).'/output/renderer.php');
 require_once(dirname(__FILE__).'/constants.php');
 require_once($CFG->libdir.'/adminlib.php');
 
