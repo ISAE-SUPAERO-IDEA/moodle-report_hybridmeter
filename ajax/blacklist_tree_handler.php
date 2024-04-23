@@ -49,13 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
         $id = required_param('id', PARAM_INT);
 
-        if($type == "courses") {
+        if ($type == "courses") {
             $config->set_blacklisted_course($id, $value, true);
-        }
-        else if($type == "categories") {
+        } else if ($type == "categories") {
             $config->set_blacklisted_category_subtree($id, $value);
-        }
-        else {
+        } else {
             throw new Exception("Unknown type param: $type");
         }
 
