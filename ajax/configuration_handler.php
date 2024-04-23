@@ -26,7 +26,7 @@
 require_once(dirname(__FILE__)."/../../../config.php");
 
 use report_hybridmeter\config;
-use report_hybridmeter\ouput\config_output;
+use report_hybridmeter\output\config_output;
 use report_hybridmeter\task\scheduler;
 
 header('Content-Type: text/json');

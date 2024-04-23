@@ -22,7 +22,7 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
-namespace report_hybridmeter\ouput;
+namespace report_hybridmeter\output;
 
 use report_hybridmeter\config;
 

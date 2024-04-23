@@ -25,7 +25,6 @@
  */
 
 require(dirname(__FILE__).'/../../config.php');
-require_once(dirname(__FILE__).'/output/renderer.php');
 require_once(dirname(__FILE__).'/constants.php');
 require_once($CFG->libdir.'/adminlib.php');
 
@@ -37,6 +36,7 @@ use report_hybridmeter\utils as utils;
 use report_hybridmeter\exporter as exporter;
 use report_hybridmeter\data_provider as data_provider;
 use report_hybridmeter\task\processing as processing;
+use report_hybridmeter\output\renderer;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
