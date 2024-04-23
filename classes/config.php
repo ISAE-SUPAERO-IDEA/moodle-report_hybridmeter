@@ -254,8 +254,8 @@ class config {
      * @return void
      */
     public function set_debug(bool $debug) {
-       $this->debug = $debug;
-       $this->save();
+        $this->debug = $debug;
+        $this->save();
     }
 
     /**

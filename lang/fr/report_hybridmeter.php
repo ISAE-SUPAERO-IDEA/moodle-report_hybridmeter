@@ -15,14 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * French messages.
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
+
 require_once(__DIR__.'/../../constants.php');
 
-// Configuration.
 $string['pluginname'] = "HybridMeter";
 
 $string["hybridmeter_settings"] = "Paramètres hybridmeter";

@@ -24,11 +24,17 @@
  */
 namespace report_hybridmeter\ouput;
 
+use report_hybridmeter\config;
+
 /**
  * Format config data to be exposed as JSON.
  */
 class config_output {
 
+    /**
+     * The config
+     * @var config
+     */
     private $config;
 
     /**
@@ -130,7 +136,7 @@ class config_output {
     public function get_treshold_grid() {
         $columns = [
             get_string('treshold_name', 'report_hybridmeter'),
-            get_string('treshold_value', 'report_hybridmeter')
+            get_string('treshold_value', 'report_hybridmeter'),
         ];
         $rows = [
             [

@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Scheduled task that produces hybridmeter's serialized data.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -26,12 +27,23 @@ use core\task\scheduled_task;
 
 use report_hybridmeter\processing as processing;
 
-// Scheduled task that produces hybridmeter's serialized data.
+/**
+ * Scheduled task that produces hybridmeter's serialized data.
+ */
 class cron_processing extends scheduled_task {
+
+    /**
+     * Task name.
+     * @return string
+     */
     public function get_name() {
         return get_string('pluginname', 'report_hybridmeter');
     }
 
+    /**
+     * Task execution.
+     * @return void
+     */
     public function execute() {
         processing::launch();
     }

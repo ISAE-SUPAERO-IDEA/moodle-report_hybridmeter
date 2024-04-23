@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Scheduled task that creates an adhoc processing task with capture period.
  * @author Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -24,11 +25,25 @@ namespace report_hybridmeter\task;
 
 use core\task\scheduled_task;
 
-// Scheduled task that creates an adhoc processing task with capture period.
+/**
+ * Scheduled task that creates an adhoc processing task with capture period.
+ */
 class cron_scheduler extends scheduled_task {
+
+    /**
+     * Task name.
+     * @return string
+     */
     public function get_name() {
         return get_string('pluginname', 'report_hybridmeter');
     }
+
+    /**
+     * Return the timestamp of the beginning of a month.
+     * @param $month
+     * @param $year
+     * @return int
+     */
     private function month_to_timestamp($month, $year) {
         return \DateTime::createFromFormat(
             "d n Y G i s",
@@ -36,6 +51,11 @@ class cron_scheduler extends scheduled_task {
             ->getTimestamp();
 
     }
+
+    /**
+     * Task execution.
+     * @return void
+     */
     public function execute() {
         $config = \report_hybridmeter\config::get_instance();
         $autoscheduler = $config->get_autoscheduler();

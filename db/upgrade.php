@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Upgrade plugin.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -26,6 +27,11 @@ require_once(dirname(__FILE__).'/install.php');
 
 use report_hybridmeter\config;
 
+/**
+ * Upgrade plugin.
+ * @param $oldversion
+ * @return true
+ */
 function xmldb_report_hybridmeter_upgrade($oldversion) {
     make_dirs();
 

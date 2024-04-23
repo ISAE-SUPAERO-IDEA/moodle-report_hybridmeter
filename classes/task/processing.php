@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Adhoc task that produces hybridmeter's serialized data.
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -27,12 +28,23 @@ use report_hybridmeter\config;
 use report_hybridmeter\configurator;
 use report_hybridmeter\processing as class_processing;
 
-// Adhoc task that produces hybridmeter's serialized data.
+/**
+ * Adhoc task that produces hybridmeter's serialized data.
+ */
 class processing extends adhoc_task {
+
+    /**
+     * Task name
+     * @return string
+     */
     public function get_name() {
         return get_string('pluginname', 'report_hybridmeter');
     }
 
+    /**
+     * Task execution.
+     * @return void
+     */
     public function execute() {
         scheduler::get_instance()->unschedule_calculation(config::get_instance());
         class_processing::launch();
