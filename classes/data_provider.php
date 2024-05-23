@@ -165,7 +165,7 @@ class data_provider {
     /**
      * Return the distinct number of students enrolled in at least one course whose ID is an element of the $ids_courses list.
      */
-    public function count_distinct_registered_students_of_courses(array $idscourses): int {
+    public function count_distinct_registered_students_of_courses(array $idscourses, $studentrole): int {
         global $DB;
 
         utils::precondition_ids($idscourses);
@@ -188,11 +188,19 @@ class data_provider {
         $wherecourseid .= ")";
 
         $sql = "SELECT count(DISTINCT user_enrolments.userid) AS count
-                  FROM mdl_user_enrolments user_enrolments
-                  JOIN mdl_enrol enrol ON user_enrolments.enrolid = enrol.id
-                 WHERE ".$wherecourseid." AND (enrol.enrolenddate > ? OR enrol.enrolenddate = 0)";
+                  FROM {user_enrolments} user_enrolments
+                  JOIN {enrol} enrol ON user_enrolments.enrolid = enrol.id
+                  JOIN {user} user ON user.id = user_enrolments.userid
+                  JOIN {role_assignments} roleassignments ON roleassignments.userid = user.id    
+                  JOIN {role} role ON roleassignments.roleid = role.id
+                 WHERE ".$wherecourseid." AND role.shortname = :studentrole AND (enrol.enrolenddate > :enddate OR enrol.enrolenddate = 0)";
 
-        $record = $DB->get_record_sql($sql, [strtotime("now")]);
+        $params = [
+            'enddate' => strtotime("now"),
+            'studentrole' => $studentrole,
+        ];
+
+        $record = $DB->get_record_sql($sql, $params);
 
         return $record->count;
     }
