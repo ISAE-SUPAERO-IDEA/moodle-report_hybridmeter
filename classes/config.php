@@ -60,10 +60,10 @@ class config {
     public $end_date;
 
     /**
-     * Student archetype.
+     * Student .
      * @var string
      */
-    public $student_archetype = "student";
+    public $student_role = "student";
 
     /**
      * Debug mode.
@@ -211,7 +211,7 @@ class config {
      * @return void
      */
     public function update_additionnal_config($studentarchetype, $debug) {
-        $this->student_archetype = $studentarchetype;
+        $this->student_role = $studentarchetype;
         $this->debug = $debug;
         $this->save();
     }
@@ -236,8 +236,8 @@ class config {
      * Getter.
      * @return string
      */
-    public function get_student_archetype(): string {
-        return $this->student_archetype;
+    public function get_student_role(): string {
+        return $this->student_role;
     }
 
     /**

@@ -100,7 +100,7 @@ class data_provider {
 
         utils::precondition_ids($idscourses);
 
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentrole = config::get_instance()->get_student_role();
 
         $length = count($idscourses);
 
@@ -118,14 +118,14 @@ class data_provider {
                   FROM {logstore_standard_log} logs
                   JOIN {role_assignments} assign ON (logs.userid = assign.userid AND logs.contextid = assign.contextid)
                   JOIN {role} role ON assign.roleid = role.id
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname = :roleshortname
                        AND eventname like '%course_viewed'
                        AND logs.contextlevel = :coursecontext
                        AND logs.courseid in ".$wherecompil."
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp";
 
         $params = [
-            'archetype' => $studentarchetype,
+            'roleshortname' => $studentrole,
             'coursecontext' => CONTEXT_COURSE,
             'begintimestamp' => $begintimestamp,
             'endtimestamp' => $endtimestamp,
@@ -141,18 +141,18 @@ class data_provider {
      */
     public function count_registered_students_of_course(int $idcourse): int {
         global $DB;
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentrole = config::get_instance()->get_student_role();
 
         $sql = "SELECT count(DISTINCT assign.userid) AS count
                   FROM {context} context
                   JOIN {role_assignments} assign ON context.id = assign.contextid
                   JOIN {role} role ON assign.roleid = role.id
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname = :roleshortname
                        AND context.instanceid = :instanceid
                        AND context.contextlevel = :coursecontext";
 
         $params = [
-            'archetype' => $studentarchetype,
+            'roleshortname' => $studentrole,
             'instanceid' => $idcourse,
             'coursecontext' => CONTEXT_COURSE,
         ];
@@ -204,21 +204,21 @@ class data_provider {
     public function count_hits_on_activities_per_type(int $idcourse, int $begintimestamp, int $endtimestamp): array {
         global $DB;
 
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentrole = config::get_instance()->get_student_role();
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM {logstore_standard_log} logs
                   JOIN {role_assignments} assign ON logs.userid = assign.userid
                   JOIN {role} role ON assign.roleid = role.id
                   JOIN {context} context ON logs.contextid = context.id
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname = :roleshortname
                        AND logs.courseid = :courseid
                        AND logs.target = 'course_module'
                        AND (context.contextlevel = " . CONTEXT_COURSE . " OR context.contextlevel = " . CONTEXT_MODULE . ")
               GROUP BY logs.objecttable";
 
         $params = [
-            'archetype' => $studentarchetype,
+            'roleshortname' => $studentrole,
             'courseid' => $idcourse,
             'instanceid' => $idcourse,
             'coursecontext' => CONTEXT_COURSE,
@@ -426,7 +426,7 @@ class data_provider {
     public function filter_living_courses_on_period(array $idscourses, int $begintimestamp, int $endtimestamp): array {
         global $DB;
 
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentrole = config::get_instance()->get_student_role();
 
         utils::precondition_ids($idscourses);
 
@@ -444,13 +444,13 @@ class data_provider {
                   JOIN {role_assignments} assign ON logs.userid = assign.userid
                   JOIN {role} role ON assign.roleid = role.id
                   JOIN {course_categories} category ON category.id = course.category
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname = :roleshortname
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
                        AND logs.eventname like '%course_viewed'
                        AND course.id IN (".implode(",", $idscourses).")";
 
         $params = [
-            'archetype' => $studentarchetype,
+            'roleshortname' => $studentrole,
             'begintimestamp' => $begintimestamp,
             'endtimestamp' => $endtimestamp,
         ];

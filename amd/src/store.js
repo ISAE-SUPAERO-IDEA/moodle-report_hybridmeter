@@ -21,7 +21,7 @@ export default new Vuex.Store({
         blacklistData : undefined,
         scheduledTime : undefined,
         debug : undefined,
-        student_archetype : undefined,
+        student_role : undefined,
     },
     getters: {
         isSomethingStillLoading: state => {
@@ -68,7 +68,7 @@ export default new Vuex.Store({
             };
 
             state.debug = config.debug;
-            state.student_archetype = config.student_archetype;
+            state.student_role = config.student_role;
         },
         UPDATE_BLACKLIST(state, blacklistData) {
             state.blacklistData = blacklistData
@@ -79,8 +79,8 @@ export default new Vuex.Store({
         UPDATE_PROGRAMMED_DATES(state, programmedDates) {
             state.programmedDates = programmedDates
         },
-        UPDATE_STUDENT_ARCHETYPE(state, student_archetype) {
-            state.student_archetype = student_archetype
+        UPDATE_STUDENT_ARCHETYPE(state, student_role) {
+            state.student_role = student_role
         },
         UPDATE_DEBUG(state, debug) {
             state.debug = debug
@@ -133,7 +133,7 @@ export default new Vuex.Store({
             context.commit('UPDATE_PROGRAMMED_DATES', programmedDates);
         },
         updateOtherData(context, config) {
-            context.commit('UPDATE_STUDENT_ARCHETYPE', config.student_archetype);
+            context.commit('UPDATE_STUDENT_ROLE', config.student_role);
             context.commit('UPDATE_DEBUG', config.debug);
         },
     }
