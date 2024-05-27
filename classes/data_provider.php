@@ -434,7 +434,7 @@ class data_provider
         }
 
         $sql = "SELECT course.id AS id
-                  FROM {course} AS course
+                  FROM {course} course
                  WHERE true";
         if (count($blacklistedcourses) > 0) {
             $sql .= " AND course.id NOT IN (" . implode(",", $blacklistedcourses) . ")";
