@@ -60,10 +60,11 @@ class config {
     public $end_date;
 
     /**
-     * Student .
-     * @var string
+     * Student roles
+     * coma separated list of role short names
+     * @var array
      */
-    public $student_role = "student";
+    public $student_roles = ["student"];
 
     /**
      * Debug mode.
@@ -206,12 +207,12 @@ class config {
 
     /**
      * Update the additional info of the config.
-     * @param $studentarchetype
+     * @param $studentroles
      * @param $debug
      * @return void
      */
-    public function update_additionnal_config($studentarchetype, $debug) {
-        $this->student_role = $studentarchetype;
+    public function update_additionnal_config($studentroles, $debug) {
+        $this->student_roles = $studentroles;
         $this->debug = $debug;
         $this->save();
     }
@@ -234,10 +235,11 @@ class config {
 
     /**
      * Getter.
-     * @return string
+     * @return array
      */
-    public function get_student_role(): string {
-        return $this->student_role;
+    public function get_student_roles(): array {
+
+        return $this->student_roles;
     }
 
     /**

@@ -7,8 +7,8 @@
     <div id="rolemanager">
         <Message :messages="message.messages" :display="message.display" :params="message.params"/>
         <div class="hybridmeter-field">
-            <label>{{ strings.student_role }}</label>
-            <select v-model="student_role" class="custom-select">
+            <label>{{ strings.student_roles }}</label>
+            <select v-model="student_roles" class="custom-select" multiple>
                 <option v-for="role in roles" :key="role.id" :value="role.shortname">{{ role.shortname }}</option>
             </select>
         </div>
@@ -34,7 +34,7 @@ export default {
 
         const store = useStore();
 
-        const student_role = ref(undefined);
+        const student_roles = ref([]);
 
         const debug = ref(undefined);
 
@@ -57,49 +57,55 @@ export default {
             params : [],
         });
 
-        const dispatchCurrentRoleShortName = (roleShortName) => {
-          student_role.value = roleShortName;
+        const dispatchCurrentRolesShortName = (rolesShortName) => {
+          student_roles.value = rolesShortName;
         };
         const dispatchCurrentDebug = (d) => {
             debug.value = d;
         };
 
-        store.watch(state => state.student_role, data => {
-            dispatchCurrentRoleShortName(data);
+        store.watch(state => state.student_roles, data => {
+            dispatchCurrentRolesShortName(data);
         })
 
         const load = () => {
-            let keys = ["student_role", "save_modif", "student_archetype_updated", "error_occured", "debug_mode"];
+            let keys = ["student_roles", "save_modif", "student_roles_updated", "error_occured", "debug_mode"];
             getStrings(keys).then(output => {
                 strings.value = output;
                 message.messages.error.message = strings.value.error_occured;
-                message.messages.success.message = strings.value.student_archetype_updated;
+                message.messages.success.message = strings.value.student_roles_updated;
             });
 
             dispatchCurrentDebug(store.state.debug)
 
             get("moodle_roles").then(data => roles.value = data).then(() => {
-                dispatchCurrentRoleShortName(store.state.student_role)
+                dispatchCurrentRolesShortName(store.state.student_roles)
             });
         }
+
         store.watch(state => state.debug, debug => {
-            dispatchCurrentDebug(debug ? true : false) 
+            dispatchCurrentDebug(debug)
         })
 
         const saveOtherData = () => {
-            if (store.state.student_archetype === student_role.value
-            && store.state.debug == debug.value) {
+            if (store.state.student_roles === student_roles.value
+            && store.state.debug === !!debug.value) {
                 message.display = displayParam("success");
             }
             else {
-                let action="additional_config";
-                var data = new FormData();
+                const action="additional_config";
+                const data = new FormData();
                 data.append('action', action);
-                data.append('student_role', student_role.value);
+
+              Object.values(student_roles.value).forEach((role) => {
+                data.append('student_roles[]', role);
+              })
+
                 data.append('debug', debug.value ? 1 : 0);
 
                 post(`configuration_handler`, data)
                 .then(async () => {
+
                     await updateOtherData();
                     message.display = displayParam("success");
                 });
@@ -107,7 +113,7 @@ export default {
         }
 
         return {
-            student_role,
+            student_roles,
             debug,
             strings,
             roles,

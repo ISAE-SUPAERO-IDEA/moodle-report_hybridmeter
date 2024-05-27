@@ -130,8 +130,8 @@ $string['success_schedule'] = "Lancement programmé avec succès";
 $string['success_unschedule'] = "Lancement déprogrammé avec succès";
 $string['error_past_schedule'] = "La date de lancement soumise est dans le passé";
 
-$string['student_role'] = "Rôle étudiant";
-$string['student_archetype_updated'] = "Les données ont bien été mises à jour";
+$string['student_roles'] = "Rôles étudiant";
+$string['student_roles_updated'] = "Les données ont bien été mises à jour";
 
 $string['debug_mode'] = "Mode debug";
 
