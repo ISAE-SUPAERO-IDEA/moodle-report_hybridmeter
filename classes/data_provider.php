@@ -22,6 +22,7 @@
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
  * @package report_hybridmeter
  */
+
 namespace report_hybridmeter;
 
 use report_hybridmeter\utils as utils;
@@ -32,7 +33,8 @@ use Exception;
 /**
  * Provide data that will serve as a basis to compute indicators.
  */
-class data_provider {
+class data_provider
+{
 
     /**
      * Singleton instance.
@@ -44,7 +46,8 @@ class data_provider {
      * Get the singleton instance.
      * @return data_provider
      */
-    public static function get_instance() {
+    public static function get_instance()
+    {
         if (self::$instance == null) {
             self::$instance = new data_provider();
         }
@@ -57,7 +60,8 @@ class data_provider {
      * @param int $idcourse
      * @return array
      */
-    public function count_activities_per_type_of_course(int $idcourse): array {
+    public function count_activities_per_type_of_course(int $idcourse): array
+    {
         global $DB;
         $output = [];
 
@@ -95,12 +99,14 @@ class data_provider {
     /**
      * Counts the number of unique users according to the course and the period chosen.
      */
-    public function count_student_single_visitors_on_courses(array $idscourses, int $begintimestamp, int $endtimestamp): int {
+    public function count_student_single_visitors_on_courses(array $idscourses, int $begintimestamp, int $endtimestamp): int
+    {
         global $DB;
 
         utils::precondition_ids($idscourses);
 
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentroles = config::get_instance()->get_student_roles();
+        list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
         $length = count($idscourses);
 
@@ -108,9 +114,9 @@ class data_provider {
             return 0;
         }
 
-        $wherecompil = "(".$idscourses[0];
+        $wherecompil = "(" . $idscourses[0];
         for ($i = 1; $i < $length; $i++) {
-            $wherecompil .= ", ".$idscourses[$i];
+            $wherecompil .= ", " . $idscourses[$i];
         }
         $wherecompil .= ")";
 
@@ -118,18 +124,19 @@ class data_provider {
                   FROM {logstore_standard_log} logs
                   JOIN {role_assignments} assign ON (logs.userid = assign.userid AND logs.contextid = assign.contextid)
                   JOIN {role} role ON assign.roleid = role.id
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname $rolessql
                        AND eventname like '%course_viewed'
                        AND logs.contextlevel = :coursecontext
-                       AND logs.courseid in ".$wherecompil."
+                       AND logs.courseid in " . $wherecompil . "
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp";
 
-        $params = [
-            'archetype' => $studentarchetype,
-            'coursecontext' => CONTEXT_COURSE,
-            'begintimestamp' => $begintimestamp,
-            'endtimestamp' => $endtimestamp,
-        ];
+        $params = array_merge($rolesparams,
+            [
+                'coursecontext' => CONTEXT_COURSE,
+                'begintimestamp' => $begintimestamp,
+                'endtimestamp' => $endtimestamp,
+            ]
+        );
 
         $record = $DB->get_record_sql($sql, $params);
 
@@ -139,23 +146,26 @@ class data_provider {
     /**
      * Return the number of registrants in the ID course $id_course according to the assignment table.
      */
-    public function count_registered_students_of_course(int $idcourse): int {
+    public function count_registered_students_of_course(int $idcourse): int
+    {
         global $DB;
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentroles = config::get_instance()->get_student_roles();
+        list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
         $sql = "SELECT count(DISTINCT assign.userid) AS count
                   FROM {context} context
                   JOIN {role_assignments} assign ON context.id = assign.contextid
                   JOIN {role} role ON assign.roleid = role.id
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname $rolessql
                        AND context.instanceid = :instanceid
                        AND context.contextlevel = :coursecontext";
 
-        $params = [
-            'archetype' => $studentarchetype,
-            'instanceid' => $idcourse,
-            'coursecontext' => CONTEXT_COURSE,
-        ];
+        $params = array_merge($rolesparams,
+            [
+                'instanceid' => $idcourse,
+                'coursecontext' => CONTEXT_COURSE,
+            ]
+        );
 
         $record = $DB->get_record_sql($sql, $params);
 
@@ -165,7 +175,8 @@ class data_provider {
     /**
      * Return the distinct number of students enrolled in at least one course whose ID is an element of the $ids_courses list.
      */
-    public function count_distinct_registered_students_of_courses(array $idscourses): int {
+    public function count_distinct_registered_students_of_courses(array $idscourses, array $studentroles): int
+    {
         global $DB;
 
         utils::precondition_ids($idscourses);
@@ -187,12 +198,22 @@ class data_provider {
         }
         $wherecourseid .= ")";
 
-        $sql = "SELECT count(DISTINCT user_enrolments.userid) AS count
-                  FROM mdl_user_enrolments user_enrolments
-                  JOIN mdl_enrol enrol ON user_enrolments.enrolid = enrol.id
-                 WHERE ".$wherecourseid." AND (enrol.enrolenddate > ? OR enrol.enrolenddate = 0)";
+        list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
-        $record = $DB->get_record_sql($sql, [strtotime("now")]);
+        $sql = "SELECT count(DISTINCT user_enrolments.userid) AS count
+                  FROM {user_enrolments} user_enrolments
+                  JOIN {enrol} enrol ON user_enrolments.enrolid = enrol.id
+                  JOIN {user} user ON user.id = user_enrolments.userid
+                  JOIN {role_assignments} roleassignments ON roleassignments.userid = user.id    
+                  JOIN {role} role ON roleassignments.roleid = role.id
+                 WHERE " . $wherecourseid . " AND role.shortname $rolessql AND (enrol.enrolenddate > :enddate OR enrol.enrolenddate = 0)";
+
+        $params = array_merge($rolesparams, [
+                'enddate' => strtotime("now"),
+            ]
+        );
+
+        $record = $DB->get_record_sql($sql, $params);
 
         return $record->count;
     }
@@ -201,34 +222,37 @@ class data_provider {
      * Counts the number of clicks on activities in the $id_course ID space
      * by activity type and over the period from $begin_timestamp to $end_timestamp
      */
-    public function count_hits_on_activities_per_type(int $idcourse, int $begintimestamp, int $endtimestamp): array {
+    public function count_hits_on_activities_per_type(int $idcourse, int $begintimestamp, int $endtimestamp): array
+    {
         global $DB;
 
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentroles = config::get_instance()->get_student_roles();
+        list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
                   FROM {logstore_standard_log} logs
                   JOIN {role_assignments} assign ON logs.userid = assign.userid
                   JOIN {role} role ON assign.roleid = role.id
                   JOIN {context} context ON logs.contextid = context.id
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname $rolessql
                        AND logs.courseid = :courseid
                        AND logs.target = 'course_module'
                        AND (context.contextlevel = " . CONTEXT_COURSE . " OR context.contextlevel = " . CONTEXT_MODULE . ")
               GROUP BY logs.objecttable";
 
-        $params = [
-            'archetype' => $studentarchetype,
-            'courseid' => $idcourse,
-            'instanceid' => $idcourse,
-            'coursecontext' => CONTEXT_COURSE,
-            'begintimestamp' => $begintimestamp,
-            'endtimestamp' => $endtimestamp,
-        ];
+        $params = array_merge($rolesparams,
+            [
+                'courseid' => $idcourse,
+                'instanceid' => $idcourse,
+                'coursecontext' => CONTEXT_COURSE,
+                'begintimestamp' => $begintimestamp,
+                'endtimestamp' => $endtimestamp,
+            ]
+        );
 
         $records = $DB->get_records_sql($sql, $params);
 
-        $output = array_map(function($obj): int {
+        $output = array_map(function ($obj): int {
             return $obj->count;
         }, $records);
 
@@ -239,7 +263,8 @@ class data_provider {
     /**
      * Returns the courses of a category in the order chosen in the moodle settings.
      */
-    public function get_children_courses_ordered(int $idcategory): array {
+    public function get_children_courses_ordered(int $idcategory): array
+    {
         global $DB;
 
         $sql = "SELECT * from {course}
@@ -262,7 +287,8 @@ class data_provider {
     /**
      * Returns the sub-categories of a category in the order chosen in the moodle settings.
      */
-    public function get_children_categories_ordered(int $idcategory): array {
+    public function get_children_categories_ordered(int $idcategory): array
+    {
         global $DB;
 
         $sql = "SELECT * from {course_categories}
@@ -287,13 +313,14 @@ class data_provider {
      * @param int $idcategory
      * @return array
      */
-    public function get_children_courses_ids(int $idcategory): array {
+    public function get_children_courses_ids(int $idcategory): array
+    {
         global $DB;
 
         $records = $DB->get_records("course", ["category" => $idcategory]);
 
         return array_map(
-            function($course) {
+            function ($course) {
                 return intval($course->id);
             },
             $records
@@ -305,13 +332,14 @@ class data_provider {
      * @param int $idcategory
      * @return array
      */
-    public function get_children_categories_ids(int $idcategory): array {
+    public function get_children_categories_ids(int $idcategory): array
+    {
         global $DB;
 
         $records = $DB->get_records("course_categories", ["parent" => $idcategory]);
 
         return array_map(
-            function($category) {
+            function ($category) {
                 return intval($category->id);
             },
             $records
@@ -322,7 +350,8 @@ class data_provider {
      * Retrieve the courses tree.
      * @return array
      */
-    public function get_courses_tree(): array {
+    public function get_courses_tree(): array
+    {
         global $DB;
 
         $lowestparent = $DB->get_field_sql('SELECT MIN(parent) FROM {course_categories}');
@@ -336,7 +365,8 @@ class data_provider {
      * @param bool $root
      * @return array
      */
-    public function get_courses_tree_rec(int $idcategory, bool $root = false): array {
+    public function get_courses_tree_rec(int $idcategory, bool $root = false): array
+    {
         global $DB;
 
         $catdata = [];
@@ -361,7 +391,8 @@ class data_provider {
     /**
      * Returns the full path of the category $id_category.
      */
-    public function get_category_path(int $idcategory): string {
+    public function get_category_path(int $idcategory): string
+    {
         return $this->get_category_path_rec($idcategory, "");
     }
 
@@ -372,7 +403,8 @@ class data_provider {
      * @param string $output
      * @return string
      */
-    protected function get_category_path_rec(int $idcategory, string $output): string {
+    protected function get_category_path_rec(int $idcategory, string $output): string
+    {
         global $DB;
 
         $record = $DB->get_record("course_categories", ["id" => $idcategory]);
@@ -387,7 +419,8 @@ class data_provider {
     /**
      * Returns the ids of the visible active non-blacklisted courses in an array.
      */
-    public function get_whitelisted_courses_ids(): array {
+    public function get_whitelisted_courses_ids(): array
+    {
         global $DB;
 
         $config = config::get_instance();
@@ -401,16 +434,16 @@ class data_provider {
         }
 
         $sql = "SELECT course.id AS id
-                  FROM {course} AS course
+                  FROM {course} course
                  WHERE true";
         if (count($blacklistedcourses) > 0) {
-            $sql .= " AND course.id NOT IN (".implode(",", $blacklistedcourses).")";
+            $sql .= " AND course.id NOT IN (" . implode(",", $blacklistedcourses) . ")";
         }
 
         $records = $DB->get_records_sql($sql);
 
         $output = array_map(
-            function($course) {
+            function ($course) {
                 return intval($course->id);
             },
             $records
@@ -423,10 +456,12 @@ class data_provider {
      * whose id is an element of the $ids array and which have been visited by at least one learner
      * during the period from timestamp $begin_date to timestamp $end_date.
      */
-    public function filter_living_courses_on_period(array $idscourses, int $begintimestamp, int $endtimestamp): array {
+    public function filter_living_courses_on_period(array $idscourses, int $begintimestamp, int $endtimestamp): array
+    {
         global $DB;
 
-        $studentarchetype = config::get_instance()->get_student_archetype();
+        $studentroles = config::get_instance()->get_student_roles();
+        list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
         utils::precondition_ids($idscourses);
 
@@ -444,16 +479,17 @@ class data_provider {
                   JOIN {role_assignments} assign ON logs.userid = assign.userid
                   JOIN {role} role ON assign.roleid = role.id
                   JOIN {course_categories} category ON category.id = course.category
-                 WHERE role.archetype = :archetype
+                 WHERE role.shortname $rolessql
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
                        AND logs.eventname like '%course_viewed'
-                       AND course.id IN (".implode(",", $idscourses).")";
+                       AND course.id IN (" . implode(",", $idscourses) . ")";
 
-        $params = [
-            'archetype' => $studentarchetype,
-            'begintimestamp' => $begintimestamp,
-            'endtimestamp' => $endtimestamp,
-        ];
+        $params = array_merge($rolesparams,
+            [
+                'begintimestamp' => $begintimestamp,
+                'endtimestamp' => $endtimestamp,
+            ]
+        );
 
         $records = $DB->get_records_sql($sql, $params);
         foreach ($records as &$record) {
@@ -467,7 +503,8 @@ class data_provider {
     /**
      * Counts the number of adhoc tasks.
      */
-    public function count_adhoc_tasks(): int {
+    public function count_adhoc_tasks(): int
+    {
         global $DB;
         return $DB->count_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
@@ -475,7 +512,8 @@ class data_provider {
     /**
      * Unschedule all ahdoc tasks.
      */
-    public function clear_adhoc_tasks() {
+    public function clear_adhoc_tasks()
+    {
         global $DB;
         return $DB->delete_records("task_adhoc", ['classname' => '\\report_hybridmeter\\task\\processing']);
     }
@@ -483,7 +521,8 @@ class data_provider {
     /**
      * Schedule an adhoc task at timestamp $timestamp.
      */
-    public function schedule_adhoc_task($timestamp) {
+    public function schedule_adhoc_task($timestamp)
+    {
         $this->clear_adhoc_tasks();
         $task = new processing();
         $task->set_next_run_time($timestamp);

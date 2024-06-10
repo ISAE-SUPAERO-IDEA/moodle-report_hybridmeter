@@ -113,12 +113,14 @@ class report_data {
 
         $this->nbstudentsconcerneddigitalised =
             $dataprovider->count_distinct_registered_students_of_courses(
-                $this->getIds($this->digitalisedcourses)
+                $this->getIds($this->digitalisedcourses),
+                $config->get_student_roles()
             );
 
         $this->nbstudentsconcernedused =
             $dataprovider->count_distinct_registered_students_of_courses(
                 $this->getIds($this->usedcourses),
+                $config->get_student_roles()
             );
 
         $this->nbstudentsconcerneddigitalisedactive =

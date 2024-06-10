@@ -59,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $scheduler->unschedule_calculation($config);
         $config->set_debug($debug);
     } else if ($action == "additional_config") {
-        $studentarchetype = required_param('student_archetype', PARAM_ALPHAEXT);
-        $config->update_additionnal_config($studentarchetype, $debug);
+        $studentroles = required_param_array('student_roles', PARAM_ALPHAEXT);
+        $config->update_additionnal_config($studentroles, $debug);
     }
 } else if ($_SERVER['REQUEST_METHOD'] == "GET") {
     $configoutput = new config_output($config);
