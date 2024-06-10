@@ -6,6 +6,13 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.3.0 (2024-06-10)$
+### Feature
+- Allow to configure multiple roles instead of one role archetype
+
+### Fix
+- Count only registered students having one of the configured role
+
 ## Hybridmeter version 1.2.1 (2024-04-23)
 ### Chore
 - Adding inline documentation
