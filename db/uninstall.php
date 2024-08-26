@@ -23,13 +23,12 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/install.php');
+use report_hybridmeter\utils as utils;
 
 /**
  * Uninstall plugin.
  * @return void
  */
 function xmldb_report_hybridmeter_uninstall() {
-    rm_dir("/hybridmeter");
-    rm_dir("/hybridmetrics");
+    utils::rm_hybridmeter_dirs();
 }

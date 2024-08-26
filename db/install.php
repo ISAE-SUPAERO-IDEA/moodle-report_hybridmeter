@@ -22,62 +22,12 @@
  * @package report_hybridmeter
  */
 
-/**
- * Create a directory.
- * @param $dir
- * @return void
- */
-function make_dir($dir) {
-    global $CFG;
-    $path = $CFG->dataroot.$dir;
-    if (!file_exists($path)) {
-        mkdir($path);
-    }
-}
+use report_hybridmeter\utils as utils;
 
-/**
- * Create directory structure for plugin local storage.
- * @return void
- * @package report_hybridmeter
- */
-function make_dirs() {
-    make_dir("/hybridmeter");
-    make_dir("/hybridmeter/records");
-    make_dir("/hybridmeter/records/backup");
-}
-
-/**
- * Remove a directory and all its content.
- * @param $dir
- * @return void
- * @package report_hybridmeter
- */
-function rm_dir($dir) {
-    global $CFG;
-    $path = $CFG->dataroot.$dir;
-
-    if (is_dir($path)) {
-        rm_dir_rec($path);
-    }
-}
-
-/**
- * Remove a directory and all its content.
- * @param $path
- * @return bool
- * @package report_hybridmeter
- */
-function rm_dir_rec($path) {
-    $files = array_diff(scandir($path), ['.', '..']);
-    foreach ($files as $file) {
-        (is_dir("$path/$file")) ? rm_dir_rec("$path/$file") : unlink("$path/$file");
-    }
-    return rmdir($path);
-}
 /**
  * Post-install script
  * @package report_hybridmeter
  */
 function xmldb_report_hybridmeter_install() {
-    make_dirs();
+    utils::create_hybridmeter_dirs();
 }
