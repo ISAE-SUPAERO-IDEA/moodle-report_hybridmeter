@@ -115,8 +115,8 @@ $PAGE->set_heading($title);
 
 $output = $PAGE->get_renderer('report_hybridmeter');
 
-$debug = optional_param('debug', 0, PARAM_INTEGER);
-$unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
+$debug = optional_param('debug', 0, PARAM_INT);
+$unschedule = optional_param('unschedule', 0, PARAM_INT);
 
 $isunscheduling = 0;
 
