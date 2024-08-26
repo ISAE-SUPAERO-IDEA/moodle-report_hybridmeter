@@ -89,7 +89,7 @@ if (file_exists($pathserializeddata)) {
 $task = optional_param('task', [], PARAM_TEXT);
 
 if ($task == 'download') {
-    $exporter = new exporter(FIELDS, ALIAS, FIELDS_TYPE);
+    $exporter = new exporter(REPORT_HYBRIDMETER_FIELDS, REPORT_HYBRIDMETER_ALIAS, REPORT_HYBRIDMETER_FIELDS_TYPE);
     $exporter->set_data($dataunserialized['data']);
     $exporter->create_csv($SITE->fullname . "-" . $formatteddate);
     $exporter->download_file();
