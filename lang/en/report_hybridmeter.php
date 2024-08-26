@@ -32,7 +32,7 @@ $string["hybridmeter_settings_help"] = "There are no settings for the hybridmete
 // In index.js or renderer.js.
 $string['download_csv'] = "Download report";
 $string['config'] = "Configuration";
-$string['blacklistmanagement'] = "Configuration";
+$string['exclusions_management'] = "Configuration";
 
 $string['recalculate'] = "Re-calculate";
 $string['task_pending'] = "A task is pending";
@@ -82,7 +82,7 @@ $string['inconsistent_registered_active_students'] = "Number of active students 
 $string['inconsistent_registered_students'] = "Inconsistent number of students enrolled";
 $string['inconsistent_nd'] = "ND inconsistent";
 $string['inconsistent_nu'] = "NU inconsistent";
-$string['inconsistent_blacklist'] = "Blacklist inconsistent";
+$string['inconsistent_exclusions'] = "Exclusions inconsistent";
 
 // In management page.
 $string['module_name'] = "Module name";
@@ -101,7 +101,7 @@ $string['active_treshold'] = "Minimum number of active students to categorise a 
 $string['boxokstring'] = "The capture period has been successfully changed";
 $string['boxnotokstring'] = "The period change did not work";
 
-$string['blacklist_title'] = "Selection of courses/categories";
+$string['exclusions_title'] = "Selection of courses/categories";
 $string['period_title'] = "Capture period configuration";
 $string['next_schedule_title'] = "Schedule next calculation";
 $string['additional_config_title'] = "Additional configuration";
@@ -132,8 +132,8 @@ $string['student_roles_updated'] = "Data successfully updated";
 
 $string['debug_mode'] = "Debug mode";
 
-$string['blacklist'] = "Blacklist";
-$string['whitelist'] = "Whitelist";
+$string['excluded_list'] = "Exclude";
+$string['included_list'] = "Include";
 $string['x_category'] = "%s the category";
 $string['x_course'] = "%s the course";
 $string['diagnostic_course'] = "Get a diagnosis for the course";

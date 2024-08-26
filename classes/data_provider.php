@@ -415,27 +415,27 @@ class data_provider
     }
 
     /**
-     * Returns the ids of the visible active non-blacklisted courses in an array.
+     * Returns the ids of the visible active non-excluded courses in an array.
      */
-    public function get_whitelisted_courses_ids(): array
+    public function get_allowed_courses_ids(): array
     {
         global $DB;
 
         $config = config::get_instance();
 
-        // The course that matches the site is blacklisted by default.
-        $blacklistedcourses = [1];
-        foreach ($config->get_blacklisted_courses() as $courseid => $value) {
+        // The course that matches the site is excluded by default.
+        $excludedcourses = [1];
+        foreach ($config->get_excluded_courses() as $courseid => $value) {
             if ($value == 1) {
-                $blacklistedcourses[] = $courseid;
+                $excludedcourses[] = $courseid;
             }
         }
 
         $sql = "SELECT course.id AS id
                   FROM {course} course
                  WHERE true";
-        if (count($blacklistedcourses) > 0) {
-            $sql .= " AND course.id NOT IN (" . implode(",", $blacklistedcourses) . ")";
+        if (count($excludedcourses) > 0) {
+            $sql .= " AND course.id NOT IN (" . implode(",", $excludedcourses) . ")";
         }
 
         $records = $DB->get_records_sql($sql);

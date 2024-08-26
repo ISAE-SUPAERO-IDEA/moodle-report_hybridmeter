@@ -31,7 +31,7 @@ $string["hybridmeter_settings_help"] = "Il n'y a pas de paramètres pour le plug
 // index.php or renderer.php.
 $string['download_csv'] = "Télécharger le compte rendu";
 $string['config'] = "Configuration";
-$string['blacklistmanagement'] = "Configuration";
+$string['exclusions_management'] = "Configuration";
 
 $string['recalculate'] = "Re-calculer";
 $string['task_pending'] = "Une tâche est prête à être lancée";
@@ -82,7 +82,7 @@ $string['inconsistent_registered_active_students'] =
 $string['inconsistent_registered_students'] = "Nombre d'étudiants inscrits incohérent";
 $string['inconsistent_nd'] = "ND incohérent";
 $string['inconsistent_nu'] = "NU incohérent";
-$string['inconsistent_blacklist'] = "Blacklist incohérent";
+$string['inconsistent_exclusions'] = "Liste d'exclusion incohérente";
 
 // Management page.
 $string['module_name'] = "Nom du module";
@@ -101,7 +101,7 @@ $string['active_treshold'] = "Nombre d'étudiants actifs minimum pour catégoris
 $string['boxokstring'] = "La période de capture a été changée avec succès";
 $string['boxnotokstring'] = "Le changement de période n'a pas fonctionné";
 
-$string['blacklist_title'] = "Sélection des cours/catégories";
+$string['exclusions_title'] = "Sélection des cours/catégories";
 $string['period_title'] = "Paramétrage de la période de la capture";
 $string['next_schedule_title'] = "Prochain lancement";
 $string['additional_config_title'] = "Configuration additionnelle";
@@ -132,8 +132,8 @@ $string['student_roles_updated'] = "Les données ont bien été mises à jour";
 
 $string['debug_mode'] = "Mode debug";
 
-$string['blacklist'] = "Blacklister";
-$string['whitelist'] = "Whitelister";
+$string['excluded_list'] = "Exclure";
+$string['included_list'] = "Inclure";
 $string['x_category'] = "%s la catégorie";
 $string['x_course'] = "%s le cours";
 $string['diagnostic_course'] = "Obtenir un diagnostic pour le cours";

@@ -128,16 +128,16 @@ class config {
     public $autoscheduler = "none";
 
     /**
-     * Blacklist of courses.
+     * List of excluded courses.
      * @var array
      */
-    public $blacklisted_courses = [];
+    public $excluded_courses = [];
 
     /**
-     * Blacklist of categories.
+     * List of excluded of categories.
      * @var array
      */
-    public $blacklisted_categories = [];
+    public $excluded_categories = [];
 
     /**
      * Create the config loading the config if it exists.
@@ -421,8 +421,8 @@ class config {
      * Getter.
      * @return array
      */
-    public function get_blacklisted_courses(): array {
-        return $this->blacklisted_courses;
+    public function get_excluded_courses(): array {
+        return $this->excluded_courses;
     }
 
     /**
@@ -457,46 +457,46 @@ class config {
     }
 
     /**
-     * Add or remove a course from the blacklist.
+     * Add or remove a course from the excluded list.
      * @param int $courseid
      * @param bool $value
      * @param bool $save
      * @return void
      */
-    public function set_blacklisted_course(int $courseid, bool $value, bool $save = false): void {
-        $this->blacklisted_courses[$courseid] = $value;
+    public function set_excluded_course(int $courseid, bool $value, bool $save = false): void {
+        $this->excluded_courses[$courseid] = $value;
         if ($save) {
             $this->save();
         }
     }
 
     /**
-     * Add or remove a single category from the blacklist.
+     * Add or remove a single category from the excluded list.
      * @param int $categoryid
      * @param bool $value
      * @return void
      */
-    public function set_blacklisted_category(int $categoryid, bool $value): void {
-        $this->blacklisted_categories[$categoryid] = $value;
+    public function set_excluded_category(int $categoryid, bool $value): void {
+        $this->excluded_categories[$categoryid] = $value;
     }
 
     /**
-     * Add or remove a category and all its subtree for the blacklist
+     * Add or remove a category and all its subtree to the excluded list
      * @param int $categoryid
      * @param bool $value
      * @param bool $root
      * @return void
      */
-    public function set_blacklisted_category_subtree(int $categoryid, bool $value, bool $root = true): void {
+    public function set_excluded_category_subtree(int $categoryid, bool $value, bool $root = true): void {
         $dataprovider = data_provider::get_instance();
-        $this->blacklisted_categories[$categoryid] = $value;
+        $this->excluded_categories[$categoryid] = $value;
 
         foreach ($dataprovider->get_children_courses_ids($categoryid) as $courseid) {
-            $this->set_blacklisted_course($courseid, $value);
+            $this->set_excluded_course($courseid, $value);
         }
 
         foreach ($dataprovider->get_children_categories_ids($categoryid) as $categoryid) {
-            $this->set_blacklisted_category_subtree($categoryid, $value, false);
+            $this->set_excluded_category_subtree($categoryid, $value, false);
         }
 
         if ($root) {
@@ -505,50 +505,50 @@ class config {
     }
 
     /**
-     * Update the blacklist with the actual tree of courses to integrate new courses and categories.
+     * Update the excluded list with the actual tree of courses to integrate new courses and categories.
      * @return void
      */
-    public function update_blacklisted_data() {
-        logger::log("Update blacklist");
+    public function update_excluded_data() {
+        logger::log("Update exclusions");
         $dataprovider = data_provider::get_instance();
         $coursestree = $dataprovider->get_courses_tree();
         logger::log($coursestree);
 
-        $this->update_blacklisted_data_rec($coursestree);
+        $this->update_excluded_data_rec($coursestree);
     }
 
     /**
-     * Update the blacklist with the provided tree of courses to integrate new courses and categories.
+     * Update the excluded list with the provided tree of courses to integrate new courses and categories.
      * @param $tree
      * @return void
      */
-    public function update_blacklisted_data_rec($tree) {
+    public function update_excluded_data_rec($tree) {
         if ($tree['data']) {
-            logger::log("Update blacklist for course_id=".$tree['data']->id);
-            if (!array_key_exists($tree['data']->id, $this->blacklisted_categories)) {
+            logger::log("Update excluded list for course_id=".$tree['data']->id);
+            if (!array_key_exists($tree['data']->id, $this->excluded_categories)) {
                 $parentid = $tree['data']->parent;
                 if ($parentid == 0) {
                     $value = false;
                 } else {
-                    $value = $this->blacklisted_categories[$parentid];
+                    $value = $this->excluded_categories[$parentid];
                 }
-                $this->set_blacklisted_category($tree['data']->id, $value);
+                $this->set_excluded_category($tree['data']->id, $value);
             }
 
             if (in_array('children_courses', $tree)) {
                 foreach ($tree['children_courses'] as $course) {
                     $id = $course->id;
 
-                    if (!array_key_exists($id, $this->blacklisted_courses)) {
+                    if (!array_key_exists($id, $this->excluded_courses)) {
                         $categoryid = $course->category;
-                        $this->set_blacklisted_course($id, $this->blacklisted_categories[$categoryid]);
+                        $this->set_excluded_course($id, $this->excluded_categories[$categoryid]);
                     }
                 }
             }
 
             if (in_array('children_categories', $tree)) {
                 foreach ($tree['children_categories'] as $category) {
-                    $this->update_blacklists($category);
+                    $this->update_excluded_data_rec($category);
                 }
             }
         }

@@ -6,7 +6,7 @@
 
 
 <template>
-    <div id="blacklistmanager" class="hybridmeter-component">
+    <div id="exclusionsmanager" class="hybridmeter-component">
         <div v-for="category in categories" :key="category.id">
             <Category parent_id="0" :category_id="category.id" :category_name="category.name" :strings="strings"></Category>
         </div>
@@ -20,13 +20,13 @@ import Category from './Category.vue'
 
 export default {
     setup() {
-        const { get, getStrings, updateBlacklist } = utils();
+        const { get, getStrings, updateExclusions } = utils();
 
         const strings = ref([]);
         const categories = ref([]);
 
         const loadStrings = () => {
-            let keys = ["blacklist", "whitelist", "x_category", "x_course", "diagnostic_course"];
+            let keys = ["excluded_list", "included_list", "x_category", "x_course", "diagnostic_course"];
             return getStrings(keys).then(output => strings.value = output);
         }
 
@@ -36,7 +36,7 @@ export default {
                 { id : 0 },
             ];
 
-            return get('blacklist_tree_handler', data).then(data => {
+            return get('exclusions_tree_handler', data).then(data => {
                 categories.value = data.categories;
             });
         }
@@ -45,16 +45,16 @@ export default {
             strings,
             categories,
             loadCategories,
-            updateBlacklist,
+            updateExclusions,
             loadStrings,
         }
     },
     created() {
         this.loadStrings()
         this.loadCategories()
-        this.updateBlacklist()
+        this.updateExclusions()
     },
     components : { Category },
-    name : "BlacklistManager",
+    name : "ExclusionsManager",
 }
 </script>

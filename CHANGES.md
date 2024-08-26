@@ -117,7 +117,7 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 ### Fonctionnalités
 *   Affichage du chemin complet des catégories dans le CSV
 *   Affichage du nom fonctionnel des activités dans les tableaux de coefficients et non le nom technique
-*   Possibilité de "whitelister" des cours appartenant à une catégorie blacklistée
+*   Possibilité de sélectionner des cours appartenant à une catégorie exclue
 
 ### Améliorations techniques
 *   Refactorisation des classes exporter, data\_provider, configurator et logger
@@ -125,7 +125,7 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 ### Correction de bugs
 *   Correction des problèmes de type quand les indicateurs décimaux coïncidaient avec des nombres entiers dans le CSV
-*   Cours affichés dans l'ordre sur l'interface de gestion de la blacklist
+*   Cours affichés dans l'ordre sur l'interface de gestion des exclusions
 
 
 ## HybridMeter version 1.1.0 (28 Janvier 2022)

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * AJAX endpoint to manage HybridMeter blacklist configuration
+ * AJAX endpoint to manage HybridMeter exclusions configuration
  *
  * @author Nassim Bennouar
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -43,25 +43,25 @@ $config = config::get_instance();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $task  = required_param('task', PARAM_ALPHAEXT);
-    // Manage blacklist of a category or course.
-    if ($task == "manage_blacklist") {
+    // Manage exclusion of a category or course.
+    if ($task == "manage_exclusions") {
         $type = required_param('type', PARAM_ALPHAEXT);
         $value = required_param('value', PARAM_ALPHAEXT) == "true" ? 1 : 0;
         $id = required_param('id', PARAM_INT);
 
         if ($type == "courses") {
-            $config->set_blacklisted_course($id, $value, true);
+            $config->set_excluded_course($id, $value, true);
         } else if ($type == "categories") {
-            $config->set_blacklisted_category_subtree($id, $value);
+            $config->set_excluded_category_subtree($id, $value);
         } else {
             throw new Exception("Unknown type param: $type");
         }
 
         // Debugging feature, set debug value to 1 in configurations to display.
-        logger::log("New manage_blacklist post request");
+        logger::log("New manage_exclusions post request");
         logger::log(["value" => $value, "type" => $type, "id" => $id]);
 
-        $output = [ "blacklisted" => $value ];
+        $output = [ "excluded" => $value ];
     } else {
         $output = [
             "error" => true,

@@ -18,7 +18,7 @@ export default new Vuex.Store({
         componentsLoadingStatus : 0,
         pageLoadingStatus : LoadingStatus.NotLoading,
         programmedDates : undefined,
-        blacklistData : undefined,
+        exclusionData : undefined,
         scheduledTime : undefined,
         debug : undefined,
         student_roles : undefined,
@@ -55,11 +55,11 @@ export default new Vuex.Store({
                 end_date : config.end_date,
             };
 
-            state.blacklistData = {
-                blacklisted_courses : config.blacklisted_courses,
-                blacklisted_categories : config.blacklisted_categories,
-                save_blacklist_courses : config.save_blacklist_courses,
-                save_blacklist_categories : config.save_blacklist_categories,
+            state.exclusionData = {
+                excluded_courses : config.excluded_courses,
+                excluded_categories : config.excluded_categories,
+                save_excluded_courses : config.save_excluded_courses,
+                save_excluded_categories : config.save_excluded_categories,
             };
 
             state.scheduledTime = {
@@ -70,8 +70,8 @@ export default new Vuex.Store({
             state.debug = config.debug;
             state.student_roles = config.student_roles;
         },
-        UPDATE_BLACKLIST(state, blacklistData) {
-            state.blacklistData = blacklistData
+        UPDATE_EXCLUSIONS(state, exclusionData) {
+            state.exclusionData = exclusionData
         },
         UPDATE_SCHEDULED_DATA(state, scheduledTime) {
             state.scheduledTime = scheduledTime
@@ -109,14 +109,14 @@ export default new Vuex.Store({
         loadConfig(context, config) {
             context.commit('LOAD_CONFIG', config);
         },
-        updateBlacklistFromConfig(context, config) {
-            let blacklistData = {
-                blacklisted_courses : config.blacklisted_courses,
-                blacklisted_categories : config.blacklisted_categories,
-                save_blacklist_courses : config.save_blacklist_courses,
-                save_blacklist_categories : config.save_blacklist_categories,
+        updateExclusionsFromConfig(context, config) {
+            let exclusionData = {
+                excluded_courses : config.excluded_courses,
+                excluded_categories : config.excluded_categories,
+                save_excluded_courses : config.excluded_courses,
+                save_excluded_categories : config.excluded_categories,
             };
-            context.commit('UPDATE_BLACKLIST', blacklistData);
+            context.commit('UPDATE_EXCLUSIONS', exclusionData);
         },
         updateScheduledTimeFromConfig(context, config) {
             let scheduledTime = {

@@ -39,7 +39,7 @@ $breakpoints: (
     margin-bottom : 15px;
 }
 
-@mixin blacklist-element{
+@mixin excluded-element {
     border: 1px rgb(214, 214, 214) solid;
     padding-left : 13px;
     padding-right : 13px;
@@ -49,14 +49,14 @@ $breakpoints: (
 }
 
 .hybrid-category {
-    @include blacklist-element;
+    @include excluded-element;
     & > div {
         margin-bottom : 10px;
     }
 }
 
 .hybrid-course {
-    @include blacklist-element
+    @include excluded-element
 }
 
 $offset-large : 15%;
