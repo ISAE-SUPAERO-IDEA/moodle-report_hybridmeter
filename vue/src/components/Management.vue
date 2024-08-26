@@ -5,8 +5,8 @@
  -->
 <template>
     <div id="hybridmeter-app">
-        <h3 class="main">{{ strings["blacklist_title"] }}</h3>
-        <BlacklistManager />
+        <h3 class="main">{{ strings["exclusion_title"] }}</h3>
+        <ExclusionManager />
         <hr/>
         <h3 class="main">{{ strings["period_title"] }}</h3>
         <PeriodManager/>
@@ -30,7 +30,7 @@
 import { ref } from 'vue'
 import PeriodManager from './subcomponents/PeriodManager.vue'
 import utils from '../utils.js'
-import BlacklistManager from './subcomponents/BlacklistManager.vue'
+import ExclusionManager from './subcomponents/ExclusionManager.vue'
 import ScheduleManager from './subcomponents/ScheduleManager.vue'
 import OtherDataManager from './subcomponents/OtherDataManager.vue'
 import CoeffsManager from './subcomponents/CoeffsManager.vue'
@@ -50,13 +50,13 @@ export default {
     },
     created() {
         this.loadConfig();
-        const keys = [ "blacklist_title", "period_title", "next_schedule_title", "additional_config_title", 
+        const keys = [ "exclusions_title", "period_title", "next_schedule_title", "additional_config_title",
                 "coeff_value_title", "treshold_value_title", "back_to_plugin" ];
         this.getStrings(keys).then(strings => this.strings = strings)
     },
     components : { 
         PeriodManager,
-        BlacklistManager,
+        ExclusionManager: ExclusionManager,
         ScheduleManager,
         OtherDataManager,
         CoeffsManager,

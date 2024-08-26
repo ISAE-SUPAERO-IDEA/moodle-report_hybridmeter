@@ -54,11 +54,11 @@ class processing {
         $dataprovider = data_provider::get_instance();
         $config = config::get_instance();
 
-        $whitelistids = $dataprovider->get_whitelisted_courses_ids();
-        logger::log("Whitelisted course ids: ".implode(", ", $whitelistids));
+        $allowedcoursesids = $dataprovider->get_allowed_courses_ids();
+        logger::log("Allowed course ids: ".implode(", ", $allowedcoursesids));
 
         $courses = $dataprovider->filter_living_courses_on_period(
-            $whitelistids,
+            $allowedcoursesids,
             $config->get_begin_date(),
             $config->get_end_date(),
         );
@@ -69,11 +69,11 @@ class processing {
             $courses
         );
         logger::log("Active course ids: ".implode(", ", $courseids));
-        logger::log("# Processing: blacklist computation");
+        logger::log("# Processing: exclusions computation");
 
         $config = config::get_instance();
         $config->set_running($startcomputationdate->getTimestamp());
-        $config->update_blacklisted_data();
+        $config->update_excluded_data();
 
         // Calculation of detailed indicators.
         logger::log("# Processing: course indicators computation");

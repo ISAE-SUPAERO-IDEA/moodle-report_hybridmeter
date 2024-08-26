@@ -6,7 +6,7 @@
 
 <template>
     <div class="hybrid-category">
-        <i :title="title_category" class="icon fa fa-fw " :class="class_eye_blacklist" @click="manage_category_blacklist()" ></i>
+        <i :title="title_category" class="icon fa fa-fw " :class="class_eye_exclusion" @click="manage_category_exclusion()" ></i>
         <i v-if="loadedChildren && hasChildren" class="icon fa fa-fw " :class="category_caret" @click="expanded = !expanded"></i>
         <i v-else-if="!loadedChildren" class="icon fa fa-fw " :class="category_caret"></i>
         <i v-else class="icon fa"></i>
@@ -16,7 +16,7 @@
                 <category :parent_id="category_id" :category_id="category.id" :category_name="category.name" :strings="strings"></category>
             </div>
             <div v-for="course in tree.courses" :key="course.id" class="hybrid-course" >
-                <i :title="title_course(course)" class="icon fa fa-fw " :class="course_class_eye_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
+                <i :title="title_course(course)" class="icon fa fa-fw " :class="course_class_eye_exclusion(course)" @click="manage_course_exclusion(course)" ></i>
                 <a :title="strings['diagnostic_course']" :href="'tests.php?task=course&id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
                 {{course.id}} {{course.fullname}}
             </div>
@@ -32,7 +32,7 @@ import { sprintf } from 'sprintf-js'
 
 export default {
     setup(props) {
-        const { get, post, updateBlacklist } = utils();
+        const { get, post, updateExclusions } = utils();
         
         const strings = ref(props.strings);
 
@@ -47,7 +47,7 @@ export default {
 
         const store = useStore()
 
-        const blacklisted = ref(false)
+        const excluded = ref(false)
 
         const loadedChildren = ref(false)
 
@@ -66,88 +66,87 @@ export default {
                 { id : props.category_id },
             ];
 
-            return get('blacklist_tree_handler', data).then(data => {
+            return get('exclusions_tree_handler', data).then(data => {
                 tree.value = data;
                 loadedChildren.value = true
             });
         }
 
-        const isBlacklistedCategory = (blacklistData, category) => {
-            if (blacklistData == undefined) {
-                throw new Error('blacklist data in unavailable');
+        const isExcludedCategory = (exclusionData, category) => {
+            if (exclusionData == undefined) {
+                throw new Error('exclusions data in unavailable');
             }
             
-            if (Object.keys(blacklistData.blacklisted_categories).includes(category)) {
-                return blacklistData.blacklisted_categories[category];
+            if (Object.keys(exclusionData.excluded_categories).includes(category)) {
+                return exclusionData.excluded_categories[category];
             }
             else if (props.parent_id == 0) {
                 return false;
             }
             else {
-                return isBlacklistedCategory(blacklistData, props.parent_id);
+                return isExcludedCategory(exclusionData, props.parent_id);
             }
         }
 
-        const isBlacklistedCourse = (blacklistData, course) => {
-            if (blacklistData == undefined) {
-                throw new Error('blacklist data in unavailable');
+        const isExcludedCourse = (exclusionData, course) => {
+            if (exclusionData == undefined) {
+                throw new Error('exclusions data is unavailable');
             }
 
-            if (Object.keys(blacklistData.blacklisted_courses).includes(course)) {
-                return blacklistData.blacklisted_courses[course];
+            if (Object.keys(exclusionData.excluded_courses).includes(course)) {
+                return exclusionData.excluded_courses[course];
             }
             else {
-                return isBlacklistedCategory(blacklistData, props.category_id);
+                return isExcludedCategory(exclusionData, props.category_id);
             }
         }
 
-        const updateDisplayedBlacklist = blacklistData => {
-            if (blacklistData != undefined) {
-                let is_blacklisted_category = isBlacklistedCategory(blacklistData, props.category_id);
-                blacklisted.value = is_blacklisted_category;
+        const updateDisplayedExclusions = exclusionData => {
+            if (exclusionData != undefined) {
+                excluded.value = isExcludedCategory(exclusionData, props.category_id);
                 
                 let courses = tree.value.courses
                 for (let i = 0; i<courses.length; i++) {
-                    courses[i].blacklisted = isBlacklistedCourse(blacklistData, courses[i].id);
+                    courses[i].excluded = isExcludedCourse(exclusionData, courses[i].id);
                 }
             }
         }
 
-        const loadBlacklist = () => {
+        const loadExclusions = () => {
             loadChildren().then(() => {
                 
-                updateDisplayedBlacklist(store.state.blacklistData)
+                updateDisplayedExclusions(store.state.exclusionData)
             })
         }
 
-        function manage_element_blacklist(type, value, id) {
+        function manage_element_exclusion(type, value, id) {
             var data = new FormData();
-            data.append('task', 'manage_blacklist');
+            data.append('task', 'manage_exclusions');
             data.append('id', id);
             data.append('type', type);
             data.append('value', value);
-            return post('blacklist_tree_handler', data)
-            .then(() => updateBlacklist())
+            return post('exclusions_tree_handler', data)
+            .then(() => updateExclusions())
         }
 
-        const manage_course_blacklist = (course) => {
-            manage_element_blacklist("courses", !course.blacklisted, course.id)
+        const manage_course_exclusion = (course) => {
+            manage_element_exclusion("courses", !course.excluded, course.id)
         }
 
-        store.watch(state => state.blacklistData, blacklistData => {
-            updateDisplayedBlacklist(blacklistData);
+        store.watch(state => state.exclusionData, exclusionData => {
+            updateDisplayedExclusions(exclusionData);
         })
 
-        const manage_category_blacklist = () => {
-            manage_element_blacklist("categories", !blacklisted.value, props.category_id)
+        const manage_category_exclusion = () => {
+            manage_element_exclusion("categories", !excluded.value, props.category_id)
         }
 
-        const class_eye_blacklist = computed(() => {
-            return (blacklisted.value ? "fa-eye-slash" : "fa-eye")
+        const class_eye_exclusion = computed(() => {
+            return (excluded.value ? "fa-eye-slash" : "fa-eye")
         });
 
-        const course_class_eye_blacklist = (course) => {
-            return (course.blacklisted ? "fa-eye-slash" : "fa-eye")
+        const course_class_eye_exclusion = (course) => {
+            return (course.excluded ? "fa-eye-slash" : "fa-eye")
         };
 
         const category_caret = computed(() => {
@@ -155,12 +154,12 @@ export default {
         })
 
         const title_category = computed(() => {
-            let x = blacklisted.value ? strings.value["whitelist"] : strings.value["blacklist"]
+            let x = excluded.value ? strings.value["included_list"] : strings.value["excluded_list"]
             return sprintf(strings.value["x_category"], x)
         })
 
         const title_course = (course) => {
-            let x = course.blacklisted ? strings.value["whitelist"] : strings.value["blacklist"]
+            let x = course.excluded ? strings.value["included_list"] : strings.value["excluded_list"]
             return sprintf(strings.value["x_course"], x)
         }
 
@@ -169,15 +168,15 @@ export default {
             strings,
             tree,
             expanded,
-            blacklisted,
+            excluded: excluded,
             loadedChildren,
             loadChildren,
             hasChildren,
-            loadBlacklist,
-            manage_course_blacklist,
-            manage_category_blacklist,
-            class_eye_blacklist,
-            course_class_eye_blacklist,
+            loadExclusions,
+            manage_course_exclusion: manage_course_exclusion,
+            manage_category_exclusion: manage_category_exclusion,
+            class_eye_exclusion: class_eye_exclusion,
+            course_class_eye_exclusion: course_class_eye_exclusion,
             category_caret,
             title_category,
             title_course,
@@ -199,7 +198,7 @@ export default {
         }
     },
     created() {
-        this.loadBlacklist();
+        this.loadExclusions();
     },
     name : "Category",
 }

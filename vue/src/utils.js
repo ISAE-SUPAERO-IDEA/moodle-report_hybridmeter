@@ -136,8 +136,8 @@ export default function utils() {
         return get("configuration_handler").then(config => store.dispatch('loadConfig', config))
     }
 
-    function updateBlacklist() {
-        return get("configuration_handler").then(config => store.dispatch('updateBlacklistFromConfig', config))
+    function updateExclusions() {
+        return get("configuration_handler").then(config => store.dispatch('updateExclusionsFromConfig', config))
     }
 
     function updateScheduledTime() {
@@ -162,7 +162,7 @@ export default function utils() {
         timestamp_to_time,
         getConfig,
         loadConfig,
-        updateBlacklist,
+        updateExclusions,
         updateScheduledTime,
         updateProgrammedDates,
         updateOtherData,

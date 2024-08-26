@@ -138,7 +138,7 @@ class renderer extends plugin_renderer_base {
         $html .= html_writer::start_div('container-fluid');
         $url = new moodle_url('/report/hybridmeter/management.php');
         $html .= html_writer::link($url,
-            get_string('blacklistmanagement', 'report_hybridmeter'),
+            get_string('exclusions_management', 'report_hybridmeter'),
             [
                 'class' => 'row m-1 mb-1 btn btn-secondary',
                 'style' => 'margin-bottom : 10px; margin-top : 10px',

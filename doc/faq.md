@@ -47,9 +47,9 @@ L'équipe de développement n'est pas responsable des problèmes qui pourraient 
 
   
 
-*   Vérifiez que la configuration du plugin (blacklist et période à prendre en compte) est correcte.
+*   Vérifiez que la configuration du plugin (list d'exclusions et période à prendre en compte) est correcte.
 *   Le plugin se base sur le rôle "student" pour identifier les étudiants. si vous utilisez un autre rôle pour identifier les étudiants le plugin ne peut pas les identifier. il sera possible de choisir le rôle identifiant les étudiants dans une prochaine version du plugin.
-*   Le plugin se base sur l'existence d'entrées de log Moodle (en plus de la blacklist) pour identifier les cours actifs. Si vous purgez les logs, le plugin ne fonctionnera pas pour les périodes antérieures ou il n'y a plus de logs.
+*   Le plugin se base sur l'existence d'entrées de log Moodle (en plus de la liste d'exclusions) pour identifier les cours actifs. Si vous purgez les logs, le plugin ne fonctionnera pas pour les périodes antérieures ou il n'y a plus de logs.
 
   
 
