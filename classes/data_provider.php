@@ -107,6 +107,7 @@ class data_provider
 
         $studentroles = config::get_instance()->get_student_roles();
         list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
+        list($coursessql, $coursesparams) = $DB->get_in_or_equal($idscourses, SQL_PARAMS_NAMED, 'courses');
 
         $length = count($idscourses);
 
@@ -127,10 +128,12 @@ class data_provider
                  WHERE role.shortname $rolessql
                        AND eventname like '%course_viewed'
                        AND logs.contextlevel = :coursecontext
-                       AND logs.courseid in " . $wherecompil . "
+                       AND logs.courseid $coursessql
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp";
 
-        $params = array_merge($rolesparams,
+        $params = array_merge(
+            $rolesparams,
+            $coursesparams,
             [
                 'coursecontext' => CONTEXT_COURSE,
                 'begintimestamp' => $begintimestamp,
@@ -160,7 +163,8 @@ class data_provider
                        AND context.instanceid = :instanceid
                        AND context.contextlevel = :coursecontext";
 
-        $params = array_merge($rolesparams,
+        $params = array_merge(
+            $rolesparams,
             [
                 'instanceid' => $idcourse,
                 'coursecontext' => CONTEXT_COURSE,
@@ -187,18 +191,8 @@ class data_provider
             return 0;
         }
 
-        $wherecourseid = "enrol.courseid in (" . $idscourses[0];
-
-        for ($i = 1; $i < $length; $i++) {
-            if (!is_int($idscourses[$i])) {
-                throw new Exception("Course IDs must be integers");
-            }
-
-            $wherecourseid .= ", " . $idscourses[$i];
-        }
-        $wherecourseid .= ")";
-
         list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
+        list($coursessql, $coursesparams) = $DB->get_in_or_equal($idscourses, SQL_PARAMS_NAMED, 'courses');
 
         $sql = "SELECT count(DISTINCT user_enrolments.userid) AS count
                   FROM {user_enrolments} user_enrolments
@@ -206,9 +200,11 @@ class data_provider
                   JOIN {user} user ON user.id = user_enrolments.userid
                   JOIN {role_assignments} roleassignments ON roleassignments.userid = user.id    
                   JOIN {role} role ON roleassignments.roleid = role.id
-                 WHERE " . $wherecourseid . " AND role.shortname $rolessql AND (enrol.enrolenddate > :enddate OR enrol.enrolenddate = 0)";
+                 WHERE enrol.courseid $coursessql AND role.shortname $rolessql AND (enrol.enrolenddate > :enddate OR enrol.enrolenddate = 0)";
 
-        $params = array_merge($rolesparams, [
+        $params = array_merge(
+            $rolesparams,
+            $coursesparams, [
                 'enddate' => strtotime("now"),
             ]
         );
@@ -237,14 +233,16 @@ class data_provider
                  WHERE role.shortname $rolessql
                        AND logs.courseid = :courseid
                        AND logs.target = 'course_module'
-                       AND (context.contextlevel = " . CONTEXT_COURSE . " OR context.contextlevel = " . CONTEXT_MODULE . ")
+                       AND (context.contextlevel = :coursecontext OR context.contextlevel = :contextmodule)
               GROUP BY logs.objecttable";
 
-        $params = array_merge($rolesparams,
+        $params = array_merge(
+            $rolesparams,
             [
                 'courseid' => $idcourse,
                 'instanceid' => $idcourse,
                 'coursecontext' => CONTEXT_COURSE,
+                'contextmodule' => CONTEXT_MODULE,
                 'begintimestamp' => $begintimestamp,
                 'endtimestamp' => $endtimestamp,
             ]
@@ -469,6 +467,8 @@ class data_provider
             return [];
         }
 
+        list($coursessql, $coursesparams) = $DB->get_in_or_equal($idscourses, SQL_PARAMS_NAMED, 'courses');
+
         $sql = "SELECT DISTINCT course.id AS id,
                                 course.idnumber AS idnumber,
                                 course.fullname AS fullname,
@@ -482,9 +482,11 @@ class data_provider
                  WHERE role.shortname $rolessql
                        AND logs.timecreated BETWEEN :begintimestamp AND :endtimestamp
                        AND logs.eventname like '%course_viewed'
-                       AND course.id IN (" . implode(",", $idscourses) . ")";
+                       AND course.id $coursessql";
 
-        $params = array_merge($rolesparams,
+        $params = array_merge(
+            $rolesparams,
+            $coursesparams,
             [
                 'begintimestamp' => $begintimestamp,
                 'endtimestamp' => $endtimestamp,
