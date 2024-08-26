@@ -95,6 +95,9 @@ class data_provider {
 
     /**
      * Counts the number of unique users according to the course and the period chosen.
+     * @param array $idscourses
+     * @param int $begintimestamp
+     * @param int $endtimestamp
      */
     public function count_student_single_visitors_on_courses(array $idscourses, int $begintimestamp, int $endtimestamp): int {
         global $DB;
@@ -138,6 +141,7 @@ class data_provider {
 
     /**
      * Return the number of registrants in the ID course $id_course according to the assignment table.
+     * @param int $idcourse
      */
     public function count_registered_students_of_course(int $idcourse): int {
         global $DB;
@@ -167,6 +171,8 @@ class data_provider {
 
     /**
      * Return the distinct number of students enrolled in at least one course whose ID is an element of the $ids_courses list.
+     * @param array $idscourses
+     * @param array $studentroles
      */
     public function count_distinct_registered_students_of_courses(array $idscourses, array $studentroles): int {
         global $DB;
@@ -205,6 +211,9 @@ class data_provider {
     /**
      * Counts the number of clicks on activities in the $id_course ID space
      * by activity type and over the period from $begin_timestamp to $end_timestamp
+     * @param int $idcourse
+     * @param int $begintimestamp
+     * @param int $endtimestamp
      */
     public function count_hits_on_activities_per_type(int $idcourse, int $begintimestamp, int $endtimestamp): array {
         global $DB;
@@ -247,6 +256,7 @@ class data_provider {
 
     /**
      * Returns the courses of a category in the order chosen in the moodle settings.
+     * @param int $idcategory
      */
     public function get_children_courses_ordered(int $idcategory): array {
         global $DB;
@@ -270,6 +280,7 @@ class data_provider {
 
     /**
      * Returns the sub-categories of a category in the order chosen in the moodle settings.
+     * @param int $idcategory
      */
     public function get_children_categories_ordered(int $idcategory): array
     {
@@ -370,6 +381,7 @@ class data_provider {
 
     /**
      * Returns the full path of the category $id_category.
+     * @param int $idcategory
      */
     public function get_category_path(int $idcategory): string {
         return $this->get_category_path_rec($idcategory, "");
@@ -432,6 +444,9 @@ class data_provider {
      * Returns in an array of objects the id, idnumber, full name and class name of the courses
      * whose id is an element of the $ids array and which have been visited by at least one learner
      * during the period from timestamp $begin_date to timestamp $end_date.
+     * @param array $idscourses
+     * @param int $begintimestamp
+     * @param int $endtimestamp
      */
     public function filter_living_courses_on_period(array $idscourses, int $begintimestamp, int $endtimestamp): array {
         global $DB;
@@ -498,6 +513,7 @@ class data_provider {
 
     /**
      * Schedule an adhoc task at timestamp $timestamp.
+     * @param $timestamp
      */
     public function schedule_adhoc_task($timestamp) {
         $this->clear_adhoc_tasks();
