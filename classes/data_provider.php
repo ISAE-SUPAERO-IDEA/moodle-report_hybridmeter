@@ -111,12 +111,6 @@ class data_provider {
             return 0;
         }
 
-        $wherecompil = "(" . $idscourses[0];
-        for ($i = 1; $i < $length; $i++) {
-            $wherecompil .= ", " . $idscourses[$i];
-        }
-        $wherecompil .= ")";
-
         $sql = "SELECT count(DISTINCT logs.userid) AS count
                   FROM {logstore_standard_log} logs
                   JOIN {role_assignments} assign ON (logs.userid = assign.userid AND logs.contextid = assign.contextid)
