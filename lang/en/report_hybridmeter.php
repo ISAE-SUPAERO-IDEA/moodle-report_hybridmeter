@@ -24,6 +24,7 @@
 
 // Settings.
 $string['pluginname'] = "HybridMeter";
+$string['report/hybridmeter:all'] = "Access to HybridMeter";
 
 $string["hybridmeter_settings"] = "Hybridmeter settings";
 $string["hybridmeter_settings_help"] = "There are no settings for the hybridmeter plugin";
