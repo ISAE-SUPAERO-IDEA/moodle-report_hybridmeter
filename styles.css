@@ -45,13 +45,15 @@
     }
 }
 
-.hybridmeter-field > input, .hybridmeter-field select {
+.hybridmeter-field > input,
+.hybridmeter-field select {
     width: 250px;
     display: inline-block;
 }
 
 @media screen and (max-width: 499px) {
-    .hybridmeter-field > input, .hybridmeter-field select {
+    .hybridmeter-field > input,
+    .hybridmeter-field select {
         width: 150px;
         display: inline;
         margin-bottom: 10px;
@@ -142,7 +144,7 @@
 }
 
 .hybridmeter-message span {
-    vertical-align: center;
+    vertical-align: middle;
     display: inline-block;
     padding-left: 3%;
 }
@@ -175,7 +177,7 @@
 .hybridmeter-message i {
     width: 15px;
     display: inline-block;
-    vertical-align: end;
+    vertical-align: bottom;
 }
 
 .hybridmeter-message i:hover {
