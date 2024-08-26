@@ -32,7 +32,7 @@ use report_hybridmeter\tests\NU\inconsistent_nu as inconsistent_nu;
 require_login();
 $context = context_system::instance();
 $PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
+require_capability('report/hybridmeter:all', $context);
 
 
 $backlink = "<p><a href=\"management.php\">Retour à l'écran de configuration</a></p>";

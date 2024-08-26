@@ -40,7 +40,7 @@ use report_hybridmeter\output\renderer;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
+require_capability('report/hybridmeter:all', $context);
 
 admin_externalpage_setup('report_hybridmeter');
 

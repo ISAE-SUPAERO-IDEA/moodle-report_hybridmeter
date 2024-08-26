@@ -32,7 +32,7 @@ require_login();
 
 $context = \context_system::instance();
 $PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
+require_capability('report/hybridmeter:all', $context);
 
 $roles = $DB->get_records("role");
 echo json_encode($roles);

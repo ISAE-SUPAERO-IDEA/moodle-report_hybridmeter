@@ -31,7 +31,7 @@ require_login();
 
 $context = context_system::instance();
 $PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
+require_capability('report/hybridmeter:all', $context);
 $id  = optional_param('id' , null, PARAM_INT);
 
 $pathserializeddata = $CFG->dataroot."/hybridmeter/records/serialized_data";

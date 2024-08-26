@@ -36,7 +36,7 @@ require_login();
 
 $context = \context_system::instance();
 $PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
+require_capability('report/hybridmeter:all', $context);
 
 $config = config::get_instance();
 $scheduler = scheduler::get_instance();
