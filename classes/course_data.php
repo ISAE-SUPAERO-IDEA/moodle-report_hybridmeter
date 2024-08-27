@@ -123,7 +123,7 @@ class course_data {
      * Construct the HybridMeter course data from Moodle course data.
      * @param object $course
      * @param string $wwwroot
-     * @param $categoriespathcache array associating to each encountered category its category path name
+     * @param array $categoriespathcache associating to each encountered category its category path name
      */
     public function __construct($course, $wwwroot, &$categoriespathcache) {
         $this->id = $course->id;

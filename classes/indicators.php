@@ -32,8 +32,8 @@ class indicators {
     /**
      * Get the category path from a category ID
      * @param int $categoryid
-     * @return string
      * @param $categoriespathcache array associating to each encountered category its category path name
+     * @return string
      */
     public static function get_category_path($categoryid, &$categoriespathcache): string {
         if (isset($categoriespathcache[$categoryid])) {

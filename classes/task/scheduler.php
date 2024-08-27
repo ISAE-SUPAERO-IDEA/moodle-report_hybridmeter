@@ -63,8 +63,8 @@ class scheduler {
 
     /**
      * Schedule the next report calculation.
-     * @param $timestamp int when to launch the calculation
-     * @param $config config used to store
+     * @param int $timestamp when to launch the calculation
+     * @param config $config used to store
      * @return void
      */
     public function schedule_calculation(int $timestamp, config $config) {
