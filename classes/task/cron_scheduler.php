@@ -40,11 +40,11 @@ class cron_scheduler extends scheduled_task {
 
     /**
      * Return the timestamp of the beginning of a month.
-     * @param $month
-     * @param $year
+     * @param int $month
+     * @param int $year
      * @return int
      */
-    private function month_to_timestamp($month, $year) {
+    private function month_to_timestamp(int $month, int $year): int {
         return \DateTime::createFromFormat(
             "d n Y G i s",
             "1 ".$month." ".$year. " 0 00 00")

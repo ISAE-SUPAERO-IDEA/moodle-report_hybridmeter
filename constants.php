@@ -98,7 +98,7 @@ define("REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES", "nb_analysed_courses");
 /**
  * Associate a field to its type (for rendering format).
  */
-const FIELDS_TYPE = [
+const REPORT_HYBRIDMETER_FIELDS_TYPE = [
     REPORT_HYBRIDMETER_FIELD_DIGITALISATION_LEVEL => REPORT_HYBRIDMETER_DOUBLE,
     REPORT_HYBRIDMETER_FIELD_USAGE_LEVEL => REPORT_HYBRIDMETER_DOUBLE,
 ];
@@ -106,7 +106,7 @@ const FIELDS_TYPE = [
 /**
  * Report fields
  */
-const FIELDS = [
+const REPORT_HYBRIDMETER_FIELDS = [
     REPORT_HYBRIDMETER_FIELD_ID_MOODLE,
     REPORT_HYBRIDMETER_FIELD_ID_NUMBER,
     REPORT_HYBRIDMETER_FIELD_CATEGORY_NAME,
@@ -125,7 +125,7 @@ const FIELDS = [
 /**
  * Fields displayed label (note: this should be i18ned).
  */
-const ALIAS = [
+const REPORT_HYBRIDMETER_ALIAS = [
     REPORT_HYBRIDMETER_FIELD_ID_NUMBER => 'Identifiant du cours',
     REPORT_HYBRIDMETER_FIELD_CATEGORY_NAME => 'Catégorie',
     REPORT_HYBRIDMETER_FIELD_CATEGORY_PATH => 'Chemin de la catégorie',

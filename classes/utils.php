@@ -33,6 +33,47 @@ use DateTime;
 class utils {
 
     /**
+     * Create directory structure for plugin local storage.
+     * @return void
+     * @package report_hybridmeter
+     */
+    public static function create_hybridmeter_dirs() {
+        global $CFG;
+        $path = $CFG->dataroot."/hybridmeter/records/backup";
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+    }
+
+    /**
+     * Remove directory structure of the plugin local storage.
+     * @return void
+     * @package report_hybridmeter
+     */
+    public static function rm_hybridmeter_dirs() {
+        global $CFG;
+        $path = $CFG->dataroot."/hybridmeter";
+
+        if (is_dir($path)) {
+            self::rm_dir_rec($path);
+        }
+    }
+
+    /**
+     * Remove a directory and all its content.
+     * @param string $path
+     * @return bool
+     * @package report_hybridmeter
+     */
+    protected static function rm_dir_rec($path): bool {
+        $files = array_diff(scandir($path), ['.', '..']);
+        foreach ($files as $file) {
+            (is_dir("$path/$file")) ? self::rm_dir_rec("$path/$file") : unlink("$path/$file");
+        }
+        return rmdir($path);
+    }
+
+    /**
      * Checks that an array contains only int values.
      *
      * @param array $idscourses
@@ -198,11 +239,11 @@ class utils {
     /**
      * Modulo operation ensuring a positive result.
      *
-     * @param $x
+     * @param int $x
      * @param int $n
      * @return int
      */
-    public static function modulo_fixed($x, int $n): int {
+    public static function modulo_fixed(int $x, int $n): int {
         $r = $x % $n;
         if ($r < 0) {
             $r += abs($n);

@@ -6,7 +6,11 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
-## Hybridmeter version 1.3.0 (2024-06-10)$
+## Hybridmeter version 1.3.1 (2024-08-27)
+### Chore
+- Improve code source compliance with Moodle standards
+
+## Hybridmeter version 1.3.0 (2024-06-10)
 ### Feature
 - Allow to configure multiple roles instead of one role archetype
 
