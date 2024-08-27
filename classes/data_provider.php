@@ -192,9 +192,10 @@ class data_provider {
                   FROM {user_enrolments} user_enrolments
                   JOIN {enrol} enrol ON user_enrolments.enrolid = enrol.id
                   JOIN {user} user ON user.id = user_enrolments.userid
-                  JOIN {role_assignments} roleassignments ON roleassignments.userid = user.id    
+                  JOIN {role_assignments} roleassignments ON roleassignments.userid = user.id
                   JOIN {role} role ON roleassignments.roleid = role.id
-                 WHERE enrol.courseid $coursessql AND role.shortname $rolessql AND (enrol.enrolenddate > :enddate OR enrol.enrolenddate = 0)";
+                 WHERE enrol.courseid $coursessql AND role.shortname $rolessql
+                    AND (enrol.enrolenddate > :enddate OR enrol.enrolenddate = 0)";
 
         $params = array_merge(
             $rolesparams,
@@ -282,8 +283,7 @@ class data_provider {
      * Returns the sub-categories of a category in the order chosen in the moodle settings.
      * @param int $idcategory
      */
-    public function get_children_categories_ordered(int $idcategory): array
-    {
+    public function get_children_categories_ordered(int $idcategory): array {
         global $DB;
 
         $sql = "SELECT * from {course_categories}
