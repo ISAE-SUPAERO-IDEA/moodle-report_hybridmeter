@@ -195,8 +195,8 @@ class config {
 
     /**
      * Update the period of the report.
-     * @param $begindate
-     * @param $enddate
+     * @param int $begindate
+     * @param int $enddate
      * @return void
      */
     public function update_period($begindate, $enddate) {
@@ -207,8 +207,8 @@ class config {
 
     /**
      * Update the additional info of the config.
-     * @param $studentroles
-     * @param $debug
+     * @param string $studentroles
+     * @param bool $debug
      * @return void
      */
     public function update_additionnal_config($studentroles, $debug) {
@@ -295,7 +295,7 @@ class config {
 
     /**
      * Set a scheduled date and save the config.
-     * @param int $scheduled_date
+     * @param int $scheduleddate
      */
     public function set_scheduled_date(int $scheduleddate): void {
         $this->scheduled_date = $scheduleddate;
@@ -339,7 +339,7 @@ class config {
 
     /**
      * Get the usage coeff for a module.
-     * @param $modulename string
+     * @param string $modulename
      * @return int
      */
     public function get_usage_coeff($modulename): int {
@@ -351,7 +351,7 @@ class config {
 
     /**
      * Get the digitalization coeff for a module.
-     * @param $modulename string
+     * @param string $modulename
      * @return int
      */
     public function get_digitalisation_coeffs($modulename): int {
@@ -363,8 +363,8 @@ class config {
 
     /**
      * Get the coeff for "usage" or "digitalization" for a module.
-     * @param $type
-     * @param $modulename
+     * @param string $type
+     * @param string $modulename
      * @return int
      */
     public function get_coeff($type, $modulename): int {
@@ -383,7 +383,7 @@ class config {
 
     /**
      * Gets the coeffs associated to module names either for "usage" or for "digitalization"
-     * @param $type
+     * @param string $type
      * @return array
      * @throws \Exception
      */
@@ -427,8 +427,8 @@ class config {
 
     /**
      * Update the usage coefficients and the digitalization coefficients.
-     * @param $usagecoeffs
-     * @param $digitalizationcoeffs
+     * @param array $usagecoeffs
+     * @param array $digitalizationcoeffs
      * @return void
      */
     public function update_coeffs($usagecoeffs, $digitalizationcoeffs) {
@@ -440,7 +440,7 @@ class config {
     /**
      * Transform a description of coefficients in the form of [<module_name> => <coeff>]* to the form
      * required by the config object, which [<module_name> => ["value" => <coeff>, "name" => "modulename"]]*
-     * @param $coeffs
+     * @param array $coeffs
      * @return array
      */
     private function generate_coeffs_config($coeffs): array {
@@ -519,7 +519,7 @@ class config {
 
     /**
      * Update the blacklist with the provided tree of courses to integrate new courses and categories.
-     * @param $tree
+     * @param array $tree
      * @return void
      */
     public function update_blacklisted_data_rec($tree) {

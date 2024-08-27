@@ -31,9 +31,9 @@ class indicators {
 
     /**
      * Get the category path from a category ID
-     * @param $categoryid
+     * @param int $categoryid
+     * @param array $categoriespathcache associating to each encountered category its category path name
      * @return string
-     * @param $categoriespathcache array associating to each encountered category its category path name
      */
     public static function get_category_path($categoryid, &$categoriespathcache): string {
         if (isset($categoriespathcache[$categoryid])) {
@@ -48,7 +48,7 @@ class indicators {
 
     /**
      * Compute the digitalization level of a course.
-     * @param $courseid
+     * @param int $courseid
      * @return float
      */
     public static function digitalisation_level($courseid): float {
@@ -58,7 +58,7 @@ class indicators {
 
     /**
      * Compute the usage level of a course.
-     * @param $courseid
+     * @param int $courseid
      * @return float
      */
     public static function usage_level($courseid): float {
@@ -74,7 +74,7 @@ class indicators {
 
     /**
      * Check if the course has been used on the configured period.
-     * @param $courseid
+     * @param int $courseid
      * @return int 1 if the course has been used ; 0 otherwise.
      */
     public static function is_course_active_on_period($courseid): int {
@@ -96,7 +96,7 @@ class indicators {
 
     /**
      * Count the number of student that have accessed the course during the period.
-     * @param $courseid
+     * @param int $courseid
      * @return int
      */
     public static function active_students($courseid): int {
@@ -110,7 +110,7 @@ class indicators {
 
     /**
      * Count the number of students registered on the course.
-     * @param $courseid
+     * @param int $courseid
      * @return int
      */
     public static function nb_registered_students($courseid): int {
@@ -119,7 +119,7 @@ class indicators {
 
     /**
      * Count activities by type on the course.
-     * @param $courseid
+     * @param int $courseid
      * @return array
      */
     public static function raw_data($courseid): array {

@@ -63,21 +63,21 @@ class scheduler {
 
     /**
      * Schedule the next report calculation.
-     * @param $timestamp int when to launch the calculation
-     * @param $config config used to store
+     * @param int $timestamp when to launch the calculation
+     * @param config $config used to store
      * @return void
      */
-    public function schedule_calculation($timestamp, $config) {
+    public function schedule_calculation(int $timestamp, config $config) {
         $this->dataprovider->schedule_adhoc_task($timestamp);
         $config->set_scheduled_date($timestamp);
     }
 
     /**
      * Unschedule the next report calculation.
-     * @param $config
+     * @param config $config
      * @return void
      */
-    public function unschedule_calculation($config) {
+    public function unschedule_calculation(config $config) {
         $this->dataprovider->clear_adhoc_tasks();
         $config->unschedule_calculation();
     }

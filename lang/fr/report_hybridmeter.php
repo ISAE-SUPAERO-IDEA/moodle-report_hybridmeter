@@ -28,7 +28,7 @@ $string['report/hybridmeter:all'] = "Accès à HybridMeter";
 $string["hybridmeter_settings"] = "Paramètres hybridmeter";
 $string["hybridmeter_settings_help"] = "Il n'y a pas de paramètres pour le plugin hybridmeter";
 
-// index.php or renderer.php.
+// Used in index.php or renderer.php.
 $string['download_csv'] = "Télécharger le compte rendu";
 $string['config'] = "Configuration";
 $string['blacklistmanagement'] = "Configuration";
