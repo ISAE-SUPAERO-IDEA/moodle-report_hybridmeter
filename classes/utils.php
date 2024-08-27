@@ -65,7 +65,7 @@ class utils {
      * @return bool
      * @package report_hybridmeter
      */
-    static function rm_dir_rec($path): bool {
+    protected static function rm_dir_rec($path): bool {
         $files = array_diff(scandir($path), ['.', '..']);
         foreach ($files as $file) {
             (is_dir("$path/$file")) ? rm_dir_rec("$path/$file") : unlink("$path/$file");
