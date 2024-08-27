@@ -28,7 +28,7 @@ use report_hybridmeter\utils as utils;
 
 /**
  * Upgrade plugin.
- * @param $oldversion
+ * @param int $oldversion
  * @return true
  */
 function xmldb_report_hybridmeter_upgrade($oldversion) {

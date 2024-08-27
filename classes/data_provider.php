@@ -513,7 +513,7 @@ class data_provider {
 
     /**
      * Schedule an adhoc task at timestamp $timestamp.
-     * @param $timestamp
+     * @param int $timestamp
      */
     public function schedule_adhoc_task($timestamp) {
         $this->clear_adhoc_tasks();
