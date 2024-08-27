@@ -33,7 +33,7 @@ class logger {
 
     /**
      * Print an object if debug mode is enabled.
-     * @param $object
+     * @param object $object
      * @return void
      */
     public static function log($object) {

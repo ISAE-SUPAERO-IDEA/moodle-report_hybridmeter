@@ -123,6 +123,7 @@ class exporter {
 
     /**
      * Manually set fields of the CSV file.
+     * @param array $fields
      */
     public function set_fields(array $fields) {
         $preconditionarray = array_map('is_string', $fields);
@@ -135,6 +136,7 @@ class exporter {
 
     /**
      * Add a tuple to the $data array.
+     * @param array $data
      */
     public function add_data(array $data) {
         array_push($this->data, $data);
@@ -225,8 +227,8 @@ class exporter {
     /**
      * Format a value.
      * @param array $record
-     * @param $key
-     * @param $field
+     * @param string $key
+     * @param string $field
      * @return mixed|string
      */
     protected function format_value(array $record, $key, $field) {

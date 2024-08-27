@@ -29,7 +29,7 @@ require_once('classes/processing.php');
 require_login();
 $context = context_system::instance();
 $PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
+require_capability('report/hybridmeter:all', $context);
 
 $data = report_hybridmeter\processing::launch();
 

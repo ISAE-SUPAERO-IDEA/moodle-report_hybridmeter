@@ -80,7 +80,7 @@ class report_data {
 
     /**
      * Construct the report based on courses data.
-     * @param $courses
+     * @param array $courses
      * @throws \Exception
      */
     public function __construct($courses) {
@@ -184,7 +184,7 @@ class report_data {
 
     /**
      * Get the list of course ids.
-     * @param $courses
+     * @param array $courses
      * @return array|int[]
      */
     protected function getids($courses) {

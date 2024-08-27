@@ -40,7 +40,7 @@ use report_hybridmeter\output\renderer;
 
 $context = context_system::instance();
 $PAGE->set_context($context);
-has_capability('report/hybridmeter:all', $context) || die();
+require_capability('report/hybridmeter:all', $context);
 
 admin_externalpage_setup('report_hybridmeter');
 
@@ -89,7 +89,7 @@ if (file_exists($pathserializeddata)) {
 $task = optional_param('task', [], PARAM_TEXT);
 
 if ($task == 'download') {
-    $exporter = new exporter(FIELDS, ALIAS, FIELDS_TYPE);
+    $exporter = new exporter(REPORT_HYBRIDMETER_FIELDS, REPORT_HYBRIDMETER_ALIAS, REPORT_HYBRIDMETER_FIELDS_TYPE);
     $exporter->set_data($dataunserialized['data']);
     $exporter->create_csv($SITE->fullname . "-" . $formatteddate);
     $exporter->download_file();
@@ -115,8 +115,8 @@ $PAGE->set_heading($title);
 
 $output = $PAGE->get_renderer('report_hybridmeter');
 
-$debug = optional_param('debug', 0, PARAM_INTEGER);
-$unschedule = optional_param('unschedule', 0, PARAM_INTEGER);
+$debug = optional_param('debug', 0, PARAM_INT);
+$unschedule = optional_param('unschedule', 0, PARAM_INT);
 
 $isunscheduling = 0;
 
