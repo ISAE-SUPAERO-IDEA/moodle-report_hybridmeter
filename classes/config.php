@@ -295,7 +295,7 @@ class config {
 
     /**
      * Set a scheduled date and save the config.
-     * @param int $scheduled_date
+     * @param int $scheduleddate
      */
     public function set_scheduled_date(int $scheduleddate): void {
         $this->scheduled_date = $scheduleddate;

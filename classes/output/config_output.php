@@ -39,9 +39,9 @@ class config_output {
 
     /**
      * Constructor.
-     * @param $config
+     * @param config $config
      */
-    public function __construct($config) {
+    public function __construct(config $config) {
         $this->config = $config;
     }
 

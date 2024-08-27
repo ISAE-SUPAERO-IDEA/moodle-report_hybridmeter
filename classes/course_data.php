@@ -121,8 +121,8 @@ class course_data {
 
     /**
      * Construct the HybridMeter course data from Moodle course data.
-     * @param $course
-     * @param $wwwroot
+     * @param object $course
+     * @param string $wwwroot
      * @param $categoriespathcache array associating to each encountered category its category path name
      */
     public function __construct($course, $wwwroot, &$categoriespathcache) {
@@ -143,7 +143,7 @@ class course_data {
 
     /**
      * Set the beginning date of the considered period.
-     * @param $begindate
+     * @param int $begindate
      * @return void
      */
     public function set_begindate($begindate) {
@@ -152,7 +152,7 @@ class course_data {
 
     /**
      * Set the ending date of the considered period.
-     * @param $enddate
+     * @param int $enddate
      * @return void
      */
     public function set_enddate($enddate) {

@@ -61,7 +61,7 @@ class utils {
 
     /**
      * Remove a directory and all its content.
-     * @param $path
+     * @param string $path
      * @return bool
      * @package report_hybridmeter
      */
@@ -239,11 +239,11 @@ class utils {
     /**
      * Modulo operation ensuring a positive result.
      *
-     * @param $x
+     * @param int $x
      * @param int $n
      * @return int
      */
-    public static function modulo_fixed($x, int $n): int {
+    public static function modulo_fixed(int $x, int $n): int {
         $r = $x % $n;
         if ($r < 0) {
             $r += abs($n);
