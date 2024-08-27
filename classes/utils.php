@@ -68,7 +68,7 @@ class utils {
     protected static function rm_dir_rec($path): bool {
         $files = array_diff(scandir($path), ['.', '..']);
         foreach ($files as $file) {
-            (is_dir("$path/$file")) ? rm_dir_rec("$path/$file") : unlink("$path/$file");
+            (is_dir("$path/$file")) ? self::rm_dir_rec("$path/$file") : unlink("$path/$file");
         }
         return rmdir($path);
     }
