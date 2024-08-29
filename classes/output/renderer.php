@@ -31,6 +31,7 @@ use DateTime;
 use html_writer;
 use moodle_url;
 use plugin_renderer_base;
+use report_hybridmeter\utils as utils;
 
 /**
  * Render HTML pages of the plugin.
@@ -161,19 +162,22 @@ class renderer extends plugin_renderer_base {
             ]);
         $html .= html_writer::end_div();
 
-        // Documentation link.
         $html .= html_writer::tag("hr", "");
+        $html .= html_writer::span("HybridMeter v." . utils::get_release_from_plugin()) . " :";
+
+        $listitems = "";
+        // Documentation link.
 
         $url = 'https://doc.clickup.com/d/h/2f5v0-8317/29996805f942cfc';
-        $html .= html_writer::link($url, get_string('documentation', 'report_hybridmeter'),
-            ['target' => 'blank']);
-
-        $html .= html_writer::tag("br", "");
+        $listitems .= html_writer::tag("li",
+                html_writer::link($url, get_string('documentation', 'report_hybridmeter'), ['target' => 'blank']));
 
         // Changelog link.
-        $url = 'https://doc.clickup.com/d/h/2f5v0-8568/7b507d8c7c54778';
-        $html .= html_writer::link($url, get_string('changelog', 'report_hybridmeter'),
-            ['target' => 'blank']);
+        $url = 'https://github.com/ISAE-SUPAERO-IDEA/moodle-report_hybridmeter/releases';
+        $listitems .= html_writer::tag("li",
+                html_writer::link($url, get_string('changelog', 'report_hybridmeter'), ['target' => 'blank']));
+
+        $html .= html_writer::tag("ul", $listitems);
 
         return $html;
     }
