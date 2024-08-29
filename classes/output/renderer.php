@@ -33,6 +33,13 @@ use plugin_renderer_base;
 
 class renderer extends plugin_renderer_base {
 
+    /**
+     * Render the "Next scheduled report" section.
+     * @param boolean $isscheduled
+     * @param int $timestampscheduled
+     * @param boolean $unscheduledaction
+     * @return string
+     */
     public function next_schedule($isscheduled, $timestampscheduled, $unscheduledaction) {
         $html = "";
 
@@ -118,6 +125,11 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
+    /**
+     * Render the actions "Download report" and "Configure".
+     * @param bool $isdataavailable
+     * @return string
+     */
     public function index_links($isdataavailable) {
 
         // Download button.
@@ -162,6 +174,12 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
+    /**
+     * Render the "scheduled task" section.
+     * @param int $countpending
+     * @param int $isrunning
+     * @return string
+     */
     public function is_task_planned(int $countpending, int $isrunning) {
         $html = html_writer::tag("hr", "");
         $html .= html_writer::start_div('container-fluid');
@@ -194,6 +212,14 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
+
+    /**
+     * Render the "last calculation" section in debug mode.
+     * @param boolean $isdataavailable
+     * @param int $date
+     * @param int $interval
+     * @return string
+     */
     public function last_calculation($isdataavailable, $date, $interval) {
 
         $html = html_writer::start_div('container-fluid');
@@ -225,6 +251,16 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
+    /**
+     * Render the general indicators table.
+     * @param boolean $isdataavailable
+     * @param array $generaldata
+     * @param int $timestampbegin
+     * @param int $timestampend
+     * @param int $endprocessing
+     * @param int $processingduration
+     * @return string
+     */
     public function general_indicators($isdataavailable,
                                        $generaldata,
                                        $timestampbegin,
