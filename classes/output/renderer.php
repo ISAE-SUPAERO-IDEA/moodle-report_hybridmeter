@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Render HTML pages of the plugin.
  * @author Nassim Bennouar, Bruno Ilponse
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright (C) 2020  ISAE-SUPAERO (https://www.isae-supaero.fr/)
@@ -30,9 +31,20 @@ use DateTime;
 use html_writer;
 use moodle_url;
 use plugin_renderer_base;
+use report_hybridmeter\utils as utils;
 
+/**
+ * Render HTML pages of the plugin.
+ */
 class renderer extends plugin_renderer_base {
 
+    /**
+     * Render the "Next scheduled report" section.
+     * @param boolean $isscheduled
+     * @param int $timestampscheduled
+     * @param boolean $unscheduledaction
+     * @return string
+     */
     public function next_schedule($isscheduled, $timestampscheduled, $unscheduledaction) {
         $html = "";
 
@@ -118,6 +130,11 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
+    /**
+     * Render the actions "Download report" and "Configure".
+     * @param bool $isdataavailable
+     * @return string
+     */
     public function index_links($isdataavailable) {
 
         // Download button.
@@ -145,23 +162,32 @@ class renderer extends plugin_renderer_base {
             ]);
         $html .= html_writer::end_div();
 
-        // Documentation link.
         $html .= html_writer::tag("hr", "");
+        $html .= html_writer::span("HybridMeter v." . utils::get_release_from_plugin()) . " :";
+
+        $listitems = "";
+        // Documentation link.
 
         $url = 'https://doc.clickup.com/d/h/2f5v0-8317/29996805f942cfc';
-        $html .= html_writer::link($url, get_string('documentation', 'report_hybridmeter'),
-            ['target' => 'blank']);
-
-        $html .= html_writer::tag("br", "");
+        $listitems .= html_writer::tag("li",
+                html_writer::link($url, get_string('documentation', 'report_hybridmeter'), ['target' => 'blank']));
 
         // Changelog link.
-        $url = 'https://doc.clickup.com/d/h/2f5v0-8568/7b507d8c7c54778';
-        $html .= html_writer::link($url, get_string('changelog', 'report_hybridmeter'),
-            ['target' => 'blank']);
+        $url = 'https://github.com/ISAE-SUPAERO-IDEA/moodle-report_hybridmeter/releases';
+        $listitems .= html_writer::tag("li",
+                html_writer::link($url, get_string('changelog', 'report_hybridmeter'), ['target' => 'blank']));
+
+        $html .= html_writer::tag("ul", $listitems);
 
         return $html;
     }
 
+    /**
+     * Render the "scheduled task" section.
+     * @param int $countpending
+     * @param int $isrunning
+     * @return string
+     */
     public function is_task_planned(int $countpending, int $isrunning) {
         $html = html_writer::tag("hr", "");
         $html .= html_writer::start_div('container-fluid');
@@ -194,6 +220,14 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
+
+    /**
+     * Render the "last calculation" section in debug mode.
+     * @param boolean $isdataavailable
+     * @param int $date
+     * @param int $interval
+     * @return string
+     */
     public function last_calculation($isdataavailable, $date, $interval) {
 
         $html = html_writer::start_div('container-fluid');
@@ -225,6 +259,16 @@ class renderer extends plugin_renderer_base {
         return $html;
     }
 
+    /**
+     * Render the general indicators table.
+     * @param boolean $isdataavailable
+     * @param array $generaldata
+     * @param int $timestampbegin
+     * @param int $timestampend
+     * @param int $endprocessing
+     * @param int $processingduration
+     * @return string
+     */
     public function general_indicators($isdataavailable,
                                        $generaldata,
                                        $timestampbegin,

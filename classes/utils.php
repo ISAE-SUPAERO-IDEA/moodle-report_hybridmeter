@@ -250,4 +250,17 @@ class utils {
         }
         return $r;
     }
+
+    /**
+     * Get the release version of HybridMeter.
+     * @return string
+     */
+    public static function get_release_from_plugin() {
+        $pluginpath = \core_component::get_plugin_directory("report", "hybridmeter");
+
+        $plugin = new \stdClass();
+        require $pluginpath.'/version.php';
+
+        return $plugin->release;
+    }
 }

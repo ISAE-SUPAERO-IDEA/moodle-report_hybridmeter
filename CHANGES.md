@@ -6,6 +6,16 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.3.2 (2024-08-29)
+### Fix
+- The "debug" checkbox wasn't displayed properly
+- Update the CHANGELOG link
+
+### Chore
+- Display HybridMeter release number on the plugin home page
+- Improve code source compliance with Moodle standards
+
+
 ## Hybridmeter version 1.3.1 (2024-08-27)
 ### Chore
 - Improve code source compliance with Moodle standards
