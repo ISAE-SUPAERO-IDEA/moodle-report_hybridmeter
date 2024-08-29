@@ -84,7 +84,7 @@ export default {
         }
 
         store.watch(state => state.debug, debug => {
-            dispatchCurrentDebug(debug)
+            dispatchCurrentDebug(!!debug)
         })
 
         const saveOtherData = () => {
@@ -97,9 +97,9 @@ export default {
                 const data = new FormData();
                 data.append('action', action);
 
-              Object.values(student_roles.value).forEach((role) => {
-                data.append('student_roles[]', role);
-              })
+                Object.values(student_roles.value).forEach((role) => {
+                  data.append('student_roles[]', role);
+                })
 
                 data.append('debug', debug.value ? 1 : 0);
 
