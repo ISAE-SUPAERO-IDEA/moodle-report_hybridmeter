@@ -1,6 +1,5 @@
 hybrid_dev.env
 install.sh
-build
 *.whl
 venv
 .Trash*
