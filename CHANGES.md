@@ -6,6 +6,11 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.3.3 (2024-09-02)
+### Fix
+- Do not ignore "amd/build"
+
+
 ## Hybridmeter version 1.3.2 (2024-08-29)
 ### Fix
 - The "debug" checkbox wasn't displayed properly
