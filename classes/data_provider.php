@@ -105,14 +105,13 @@ class data_provider {
         utils::precondition_ids($idscourses);
 
         $studentroles = config::get_instance()->get_student_roles();
-        list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
-        list($coursessql, $coursesparams) = $DB->get_in_or_equal($idscourses, SQL_PARAMS_NAMED, 'courses');
 
-        $length = count($idscourses);
-
-        if ($length === 0) {
+        if (count($idscourses) === 0 || count($studentroles) === 0) {
             return 0;
         }
+
+        list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
+        list($coursessql, $coursesparams) = $DB->get_in_or_equal($idscourses, SQL_PARAMS_NAMED, 'courses');
 
         $sql = "SELECT count(DISTINCT logs.userid) AS count
                   FROM {logstore_standard_log} logs
@@ -146,6 +145,10 @@ class data_provider {
     public function count_registered_students_of_course(int $idcourse): int {
         global $DB;
         $studentroles = config::get_instance()->get_student_roles();
+        if (count($studentroles) === 0) {
+            return 0;
+        }
+
         list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
         $sql = "SELECT count(DISTINCT assign.userid) AS count
@@ -179,9 +182,7 @@ class data_provider {
 
         utils::precondition_ids($idscourses);
 
-        $length = count($idscourses);
-
-        if ($length === 0) {
+        if (count($idscourses) === 0 || count($studentroles) === 0) {
             return 0;
         }
 
@@ -220,6 +221,10 @@ class data_provider {
         global $DB;
 
         $studentroles = config::get_instance()->get_student_roles();
+        if(count($studentroles) === 0) {
+            return [];
+        }
+
         list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
         $sql = "SELECT logs.objecttable AS module, count(DISTINCT logs.id) AS count
@@ -452,6 +457,9 @@ class data_provider {
         global $DB;
 
         $studentroles = config::get_instance()->get_student_roles();
+        if(count($studentroles) === 0) {
+            return [];
+        }
         list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');
 
         utils::precondition_ids($idscourses);
