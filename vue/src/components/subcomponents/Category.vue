@@ -17,7 +17,7 @@
             </div>
             <div v-for="course in tree.courses" :key="course.id" class="hybrid-course" >
                 <i :title="title_course(course)" class="icon fa fa-fw " :class="course_class_eye_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
-                <a :title="strings['diagnostic_course']" :href="'tests.php?task=course&id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
+                <a :title="strings['diagnostic_course']" :href="'course.php?id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
                 {{course.fullname}}
             </div>
         </div>

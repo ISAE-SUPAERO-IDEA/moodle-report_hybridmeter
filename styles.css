@@ -221,3 +221,35 @@
     background-color: #343a40;
     border-color: #454d55;
 }
+
+.indicators-section {
+    margin-top: 20px;
+}
+
+.indicators-section > h3 {
+    margin-bottom: 17px;
+}
+
+.indicators-section table {
+    border: 2px solid #00acdf;
+    border-radius: 3px;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 17px;
+}
+
+.indicators-section th {
+    background-color: #00acdf;
+    color: white;
+}
+
+.indicators-section td {
+    background-color: #f9f9f9;
+}
+
+.indicators-section th,
+.indicators-section td {
+    min-width: 120px;
+    padding: 7px 20px;
+}

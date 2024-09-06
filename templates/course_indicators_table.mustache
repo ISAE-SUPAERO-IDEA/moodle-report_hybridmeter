@@ -1,0 +1,56 @@
+<div class="indicators-section">
+    <h3 class="main">Data for the course "{{title}}"</h3>
+    <p>{{measurement_period_intro}} {{measurement_period}}<br>
+        <i>{{measurement_disclaimer}}</i>
+    </p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>{{name_columnname}}</th>
+            <th>{{value_columnname}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{name_digitalisation_level}}</td>
+            <td>{{value_digitalisation_level}}</td>
+        </tr>
+        <tr>
+            <td>{{name_usage_level}}</td>
+            <td>{{value_usage_level}}</td>
+        </tr>
+        <tr>
+            <td>{{name_nb_registered_students}}</td>
+            <td>{{value_nb_registered_students}}</td>
+        </tr>
+        <tr>
+            <td>{{name_nb_active_students}}</td>
+            <td>{{value_nb_active_students}}</td>
+        </tr>
+        <tr>
+            <td>{{name_is_course_active_onperiod}}</td>
+            <td>{{value_is_course_active_onperiod}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Activity type</th>
+            <th>Count</th>
+            <th>Hits</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#activityrows}}
+            <tr>
+                <td>{{activitytype}}</td>
+                <td>{{nb}}</td>
+                <td>{{hits}}</td>
+            </tr>
+        {{/activityrows}}
+        </tbody>
+    </table>
+</div>
