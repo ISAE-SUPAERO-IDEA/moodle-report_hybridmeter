@@ -6,6 +6,11 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.4.1 (2024-09-09)
+### Fix
+- Category paths were displayed the reversed way within CSV exports
+
+
 ## Hybridmeter version 1.4.0 (2024-09-09)
 ### Feature
 - Show indicators for a specific course
