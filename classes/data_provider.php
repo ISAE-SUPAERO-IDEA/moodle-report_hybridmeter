@@ -405,9 +405,9 @@ class data_provider {
         $record = $DB->get_record("course_categories", ["id" => $idcategory]);
 
         if ($record->parent == 0) {
-            return $output . $record->name;
+            return $record->name . "/" . $output;
         } else {
-            return $this->get_category_path_rec($record->parent, $output . $record->name . "/");
+            return $this->get_category_path_rec($record->parent,  $record->name . "/" . $output);
         }
     }
 
