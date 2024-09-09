@@ -370,46 +370,16 @@ class renderer extends plugin_renderer_base {
         }
 
         $params = [
-            "title" => get_string('last_processing_results', 'report_hybridmeter'),
-            "measurement_period_intro" => get_string('measurement_period_intro', 'report_hybridmeter'),
             "measurement_period" => $stringmeasurementperiod,
-            "measurement_disclaimer" => get_string('measurement_disclaimer', 'report_hybridmeter'),
             "end_processing" => $stringendprocessing,
             "processing_date" => $processingdate,
             "processing_duration" => $stringprocessingduration,
-            "name_columnname" => get_string('indicator_name', 'report_hybridmeter'),
-            "value_columnname" => get_string('number', 'report_hybridmeter'),
-            "name_digitalised_course" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES,
-                'report_hybridmeter'
-            ),
             "value_digitalised_course" => $nbcourshybridesstatiques,
-            "name_used_course" => get_string(REPORT_HYBRIDMETER_GENERAL_NB_USED_COURSES, 'report_hybridmeter'),
             "value_used_course" => $nbcourshybridesdynamiques,
-            "name_digitalisation_registered_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED,
-                'report_hybridmeter'
-            ),
             "value_digitalisation_registered_students" => $nbetudiantsconcernesstatiques,
-            "name_digitalisation_active_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE,
-                'report_hybridmeter'
-            ),
             "value_digitalisation_active_students" => $nbetudiantsconcernesstatiquesactifs,
-            "name_usage_registered_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED,
-                'report_hybridmeter'
-            ),
             "value_usage_registered_students" => $nbetudiantsconcernesdynamiques,
-            "name_usage_active_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE,
-                'report_hybridmeter'
-            ),
             "value_usage_active_students" => $nbetudiantsconcernesdynamiquesactifs,
-            "name_nb_analysed_courses" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES,
-                'report_hybridmeter'
-            ),
             "value_nb_analysed_courses" => $nbcoursanalyses,
         ];
 
@@ -469,19 +439,11 @@ class renderer extends plugin_renderer_base {
 
         $params = [
             "title" => $courseindicators->coursefullname,
-            "measurement_period_intro" => get_string('measurement_period_intro', 'report_hybridmeter'),
             "measurement_period" => $stringmeasurementperiod,
-            "name_columnname" => get_string('indicator_name', 'report_hybridmeter'),
-            "value_columnname" => get_string('number', 'report_hybridmeter'),
-            "name_digitalisation_level" => 'Digitalisation level',
             "value_digitalisation_level" => $courseindicators->digitalisationlevel,
-            "name_usage_level" => 'Usage level',
             "value_usage_level" => $courseindicators->usagelevel,
-            "name_nb_registered_students" => "Nb registered students",
             "value_nb_registered_students" => $courseindicators->nbregisteredstudents,
-            "name_nb_active_students" => "Nb active students",
             "value_nb_active_students" => $courseindicators->nbactivestudents,
-            "name_is_course_active_onperiod" => "Is active course",
             "value_is_course_active_onperiod" => $courseindicators->active,
             "activityrows" => $activityrows,
         ];

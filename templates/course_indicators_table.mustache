@@ -1,35 +1,84 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+
+{{!
+    @template report/hybridmeter
+
+    Template for displaying indicators computed for a specific course.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * none
+
+    Example context (json):
+    {
+        "title": "Course title",
+        "measurement_period": "from 26/09/2023 to 31/12/2023.",
+        "value_digitalisation_level": 1.65,
+        "value_usage_level": 1.12,
+        "value_nb_registered_students": 55,
+        "value_nb_active_students": 45,
+        "value_is_course_active_onperiod": 1,
+        "activityrows": [
+            {
+                "activitytype": "forum",
+                "nb": 3,
+                "hits": 1453
+            }
+        ]
+    }
+}}
 <div class="indicators-section">
     <h3 class="main">Data for the course "{{title}}"</h3>
-    <p>{{measurement_period_intro}} {{measurement_period}}<br>
-        <i>{{measurement_disclaimer}}</i>
+    <p>{{#str}} measurement_period_intro, report_hybridmeter {{/str}} {{measurement_period}}<br>
+        <i>{{#str}} measurement_disclaimer, report_hybridmeter {{/str}}</i>
     </p>
 
     <table>
         <thead>
         <tr>
-            <th>{{name_columnname}}</th>
-            <th>{{value_columnname}}</th>
+            <th>{{#str}} indicator_name, report_hybridmeter {{/str}}</th>
+            <th>{{#str}} number, report_hybridmeter {{/str}}</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td>{{name_digitalisation_level}}</td>
+            <td>Digitalisation level</td>
             <td>{{value_digitalisation_level}}</td>
         </tr>
         <tr>
-            <td>{{name_usage_level}}</td>
+            <td>Usage level</td>
             <td>{{value_usage_level}}</td>
         </tr>
         <tr>
-            <td>{{name_nb_registered_students}}</td>
+            <td>Nb registered students</td>
             <td>{{value_nb_registered_students}}</td>
         </tr>
         <tr>
-            <td>{{name_nb_active_students}}</td>
+            <td>Nb active students</td>
             <td>{{value_nb_active_students}}</td>
         </tr>
         <tr>
-            <td>{{name_is_course_active_onperiod}}</td>
+            <td>Is active course</td>
             <td>{{value_is_course_active_onperiod}}</td>
         </tr>
         </tbody>
