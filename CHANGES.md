@@ -6,6 +6,14 @@ _Ce document décrit les modifications du plugin HybridMeter pour chaque version
 
 [Site HybridMeter](https://online.isae-supaero.fr/hybridmeter)
 
+## Hybridmeter version 1.4.0 (2024-09-09)
+### Feature
+- Show indicators for a specific course
+- Move "fr" language to AMOS system
+
+### Chore
+- Improve Mustache templates
+
 ## Hybridmeter version 1.3.4 (2024-09-03)
 ### Fix
 - Fix report computation when there is no student roles configured or no courses selected
