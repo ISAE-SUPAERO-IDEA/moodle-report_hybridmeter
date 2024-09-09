@@ -105,124 +105,6 @@ class utils {
     }
 
     /**
-     * Render an array of objects as HTML.
-     *
-     * @param array $array
-     * @return string
-     */
-    public static function objects_array_to_html(array $array): string {
-        if (empty($array)) {
-            return "No data";
-        }
-
-        $array = array_map(
-            function($element) {
-                return (array) $element;
-            },
-            $array
-        );
-
-        $output = "<table>";
-        $output .= "<thead><tr>";
-        $keys = array_keys(current($array));
-        foreach ($keys as $key) {
-            $output .= "<th>".$key."</th>";
-        }
-        $output .= "</tr></thead>";
-        $output .= "<tbody>";
-        foreach ($array as $elem) {
-            $output .= "<tr>";
-            foreach ($keys as $key) {
-                $output .= "<td>".$elem[$key]."</td>";
-            }
-            $output .= "</tr>";
-        }
-        $output .= "</tbody>";
-        $output .= "</table>";
-
-        return $output;
-    }
-
-    /**
-     * Display an associative array as an HTML table.
-     *
-     * @param array $array
-     * @return string
-     */
-    public static function data_grouped_by_to_html(array $array): string {
-        $output = "<table>";
-        $output .= "<tbody>";
-        foreach ($array as $key => $elem) {
-            $output .= "<tr>";
-            $output .= "<th>";
-            $output .= $key;
-            $output .= "</th>";
-            $output .= "<td>";
-            $output .= $elem;
-            $output .= "</td>";
-            $output .= "</tr>";
-        }
-        $output .= "</tbody>";
-        $output .= "</table>";
-
-        return $output;
-    }
-
-    /**
-     * Display an array as an HTML table with headers.
-     *
-     * @param array $array
-     * @return string
-     */
-    public static function columns_rows_array_to_html(array $array): string {
-        $output = "<table>";
-        $output .= "<thead><tr>";
-        foreach ($array['columns'] as $key) {
-            $output .= "<th>".$key."</th>";
-        }
-        $output .= "</tr></thead>";
-        $output .= "<tbody>";
-        foreach ($array['rows'] as $elem) {
-            $output .= "<tr>";
-            foreach ($array['columns'] as $key) {
-                $output .= "<td>".$elem[$key]."</td>";
-            }
-            $output .= "</tr>";
-        }
-        $output .= "</tbody>";
-        $output .= "</table>";
-
-        return $output;
-    }
-
-    /**
-     * Render an array in HTML using n_uplets style.
-     *
-     * @param array $array
-     * @param int $n
-     * @return string
-     */
-    public static function array_to_n_uplets_table_html(array $array, int $n = 10): string {
-        $output = "<table>";
-        $output .= "<tbody>";
-        $length = count($array);
-        $i = 0;
-        $output .= "<tr class=\"n_uplets\">";
-        while ($i < $length) {
-            if ($i != 0 && ($i % $n) === 0) {
-                $output .= "</tr><tr>";
-            }
-            $output .= "<td>".$array[$i]."</td>";
-            $i++;
-        }
-        $output .= "</tr>";
-        $output .= "</tbody>";
-        $output .= "</table>";
-
-        return $output;
-    }
-
-    /**
      * Convert a timestamp to a datetime.
      *
      * @param int $timestamp
@@ -259,7 +141,7 @@ class utils {
         $pluginpath = \core_component::get_plugin_directory("report", "hybridmeter");
 
         $plugin = new \stdClass();
-        require $pluginpath.'/version.php';
+        require($pluginpath.'/version.php');
 
         return $plugin->release;
     }

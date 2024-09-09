@@ -31,6 +31,7 @@ use DateTime;
 use html_writer;
 use moodle_url;
 use plugin_renderer_base;
+use report_hybridmeter\course_indicators;
 use report_hybridmeter\utils as utils;
 
 /**
@@ -369,46 +370,16 @@ class renderer extends plugin_renderer_base {
         }
 
         $params = [
-            "title" => get_string('last_processing_results', 'report_hybridmeter'),
-            "measurement_period_intro" => get_string('measurement_period_intro', 'report_hybridmeter'),
             "measurement_period" => $stringmeasurementperiod,
-            "measurement_disclaimer" => get_string('measurement_disclaimer', 'report_hybridmeter'),
             "end_processing" => $stringendprocessing,
             "processing_date" => $processingdate,
             "processing_duration" => $stringprocessingduration,
-            "name_columnname" => get_string('indicator_name', 'report_hybridmeter'),
-            "value_columnname" => get_string('number', 'report_hybridmeter'),
-            "name_digitalised_course" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_DIGITALISED_COURSES,
-                'report_hybridmeter'
-            ),
             "value_digitalised_course" => $nbcourshybridesstatiques,
-            "name_used_course" => get_string(REPORT_HYBRIDMETER_GENERAL_NB_USED_COURSES, 'report_hybridmeter'),
             "value_used_course" => $nbcourshybridesdynamiques,
-            "name_digitalisation_registered_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED,
-                'report_hybridmeter'
-            ),
             "value_digitalisation_registered_students" => $nbetudiantsconcernesstatiques,
-            "name_digitalisation_active_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_DIGITALISED_ACTIVE,
-                'report_hybridmeter'
-            ),
             "value_digitalisation_active_students" => $nbetudiantsconcernesstatiquesactifs,
-            "name_usage_registered_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED,
-                'report_hybridmeter'
-            ),
             "value_usage_registered_students" => $nbetudiantsconcernesdynamiques,
-            "name_usage_active_students" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_STUDENTS_CONCERNED_USED_ACTIVE,
-                'report_hybridmeter'
-            ),
             "value_usage_active_students" => $nbetudiantsconcernesdynamiquesactifs,
-            "name_nb_analysed_courses" => get_string(
-                REPORT_HYBRIDMETER_GENERAL_NB_ANALYSED_COURSES,
-                'report_hybridmeter'
-            ),
             "value_nb_analysed_courses" => $nbcoursanalyses,
         ];
 
@@ -418,4 +389,67 @@ class renderer extends plugin_renderer_base {
 
         return $html;
     }
+
+    /**
+     * Render the indicators table for one specific course.
+     * @param course_indicators $courseindicators
+     * @return string
+     */
+    public function course_indicators(course_indicators $courseindicators) {
+        $datetimebegin = new DateTime();
+        $datetimeend = new DateTime();
+
+        $datetimebegin->setTimestamp($courseindicators->begindate);
+        $datetimeend->setTimestamp($courseindicators->enddate);
+
+        $format = "d/m/Y";
+
+        $stringmeasurementperiod = sprintf(
+            get_string('measurement_period', 'report_hybridmeter'),
+            $datetimebegin->format($format),
+            $datetimeend->format($format)
+        );
+
+        $activities = $courseindicators->countactivitiespertype;
+        $hits = $courseindicators->counthitsonactivitiespertype;
+
+        $keys = array_unique(
+            array_merge(
+                array_keys(
+                    array_filter(
+                        $activities,
+                        function($count) {
+                            return $count != 0;
+                        }
+                    )
+                ),
+                array_keys($hits)
+            )
+        );
+        sort($keys);
+
+        $activityrows = array_map(
+            function ($activity) use ($activities, $hits) {
+                return [
+                    "activitytype" => $activity,
+                    "nb" => $activities[$activity] ?? 0,
+                    "hits" => $hits[$activity] ?? 0,
+                    ];
+            },
+            $keys
+        );
+
+        $params = [
+            "title" => $courseindicators->coursefullname,
+            "measurement_period" => $stringmeasurementperiod,
+            "value_digitalisation_level" => $courseindicators->digitalisationlevel,
+            "value_usage_level" => $courseindicators->usagelevel,
+            "value_nb_registered_students" => $courseindicators->nbregisteredstudents,
+            "value_nb_active_students" => $courseindicators->nbactivestudents,
+            "value_is_course_active_onperiod" => $courseindicators->active,
+            "activityrows" => $activityrows,
+        ];
+        return  $this->render_from_template("report_hybridmeter/course_indicators_table", $params);
+    }
 }
+

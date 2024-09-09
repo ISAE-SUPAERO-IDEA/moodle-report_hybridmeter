@@ -221,7 +221,7 @@ class data_provider {
         global $DB;
 
         $studentroles = config::get_instance()->get_student_roles();
-        if(count($studentroles) === 0) {
+        if (count($studentroles) === 0) {
             return [];
         }
 
@@ -457,7 +457,7 @@ class data_provider {
         global $DB;
 
         $studentroles = config::get_instance()->get_student_roles();
-        if(count($studentroles) === 0) {
+        if (count($studentroles) === 0) {
             return [];
         }
         list($rolessql, $rolesparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'roles');

@@ -10,15 +10,15 @@
         <i v-if="loadedChildren && hasChildren" class="icon fa fa-fw " :class="category_caret" @click="expanded = !expanded"></i>
         <i v-else-if="!loadedChildren" class="icon fa fa-fw " :class="category_caret"></i>
         <i v-else class="icon fa"></i>
-        <span style="font-weight: bold">{{category_id}} {{category_name}}</span>
+        <span style="font-weight: bold">{{category_name}}</span>
         <div v-if="expanded">
             <div v-for="category in tree.categories" :key="category.id">
                 <category :parent_id="category_id" :category_id="category.id" :category_name="category.name" :strings="strings"></category>
             </div>
             <div v-for="course in tree.courses" :key="course.id" class="hybrid-course" >
                 <i :title="title_course(course)" class="icon fa fa-fw " :class="course_class_eye_blacklist(course)" @click="manage_course_blacklist(course)" ></i>
-                <a :title="strings['diagnostic_course']" :href="'tests.php?task=course&id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
-                {{course.id}} {{course.fullname}}
+                <a :title="strings['diagnostic_course']" :href="'course.php?id='+course.id"><i class="icon fa fa-fw fa-medkit"></i></a>
+                {{course.fullname}}
             </div>
         </div>
     </div>

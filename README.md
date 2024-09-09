@@ -6,7 +6,7 @@
 HybridMeter is a plugin dedicated to monitor the use of digital teaching tools within a Moodle LMS platform,
 in order to collect standardized hybridization indicators on a regular basis. 
 The plugin has been developed by ISAE-SUPAERO, in the context of the "THE Campus" and "OHE Campus" projects, 
-in response to an ANR/Hybridation call. 
+in response to an ANR/Hybridation calls from the Ministry of Higher education and research. 
 These projects are led by the University of Toulouse and involves all its institutions.
 
 The aim is to propose an automated system that would enable automatic measurements about the presence and 
