@@ -395,7 +395,7 @@ class renderer extends plugin_renderer_base {
      * @param course_indicators $courseindicators
      * @return string
      */
-    public function course_indicators(course_indicators $courseindicators)  {
+    public function course_indicators(course_indicators $courseindicators) {
         $datetimebegin = new DateTime();
         $datetimeend = new DateTime();
 
@@ -418,7 +418,9 @@ class renderer extends plugin_renderer_base {
                 array_keys(
                     array_filter(
                         $activities,
-                        function($count) { return $count != 0; }
+                        function($count) {
+                            return $count != 0;
+                        }
                     )
                 ),
                 array_keys($hits)

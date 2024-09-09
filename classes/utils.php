@@ -141,7 +141,7 @@ class utils {
         $pluginpath = \core_component::get_plugin_directory("report", "hybridmeter");
 
         $plugin = new \stdClass();
-        require $pluginpath.'/version.php';
+        require($pluginpath.'/version.php');
 
         return $plugin->release;
     }
